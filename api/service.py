@@ -156,7 +156,15 @@ def health():
 @app.post("/optimize", response_model=OptimizeResponse)
 def optimize(req: OptimizeRequest):
     # Build grocery_list spec (use item name as search_term)
-    grocery_list = {it: {"search_term": it} for it in req.items}
+    # Build a richer spec per item: include tokenized keywords so relevance scoring
+    # can use keyword matches even when the UI sent only a display name.
+    grocery_list = {}
+    def _is_size_token(t: str) -> bool:
+        return re.fullmatch(r"\d+(?:[.,]\d+)?(?:g|kg|ml|l)?", t) is not None
+    for it in req.items:
+        it_l = it.lower()
+        tokens = [t for t in re.findall(r"\w+", it_l) if len(t) > 1 and not _is_size_token(t)]
+        grocery_list[it] = {"search_term": it, "include": tokens}
     all_products, warnings = core_fetch.fetch_all(grocery_list, req.stores)
     cart, total_score, info = optimiser.optimize_cart(all_products, req.items, req.stores)
     # convert defaultdict to regular dict for JSON serialization
