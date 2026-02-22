@@ -16,6 +16,18 @@ services:
       dockerfile: api/Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg2://groceries:groceries@db:5432/groceries
+      # Catalog scheduler settings (API container runs the generator)
+      # Set to 1 to run generation on container start (default: 1)
+      # Disable automatic regeneration on container start to avoid expensive
+      # clustering work during development. Set to "0" to prevent auto-run.
+      CATALOG_RUN_ON_START: "0"
+      # Interval in hours between scheduled regenerations (default: 12)
+      CATALOG_GENERATE_INTERVAL_HOURS: "12"
+      # If set to 1, the background scheduler is disabled
+      DISABLE_CATALOG_SCHEDULE: "0"
+      # If the existing normalized_catalog.json is newer than this (hours),
+      # initial generation will be skipped (default equals interval)
+      CATALOG_MAX_AGE_HOURS: "12"
     depends_on:
       - db
     ports:

@@ -6,3 +6,5 @@ beautifulsoup4>=4.12
 httpx>=0.26
 psycopg2-binary>=2.9
 streamlit>=1.0
+numpy>=1.24
+scikit-learn>=1.2

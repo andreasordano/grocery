@@ -5,7 +5,7 @@
 # =============================================================================
 
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from .models import Base, Product
 
@@ -19,6 +19,8 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def create_tables():
     Base.metadata.create_all(bind=engine)
+    # ensure legacy DB has `macro` column
+    ensure_macro_column()
 
 
 def upsert_product(session, product_data: dict):
@@ -34,6 +36,7 @@ def upsert_product(session, product_data: dict):
             unit=product_data.get("unit"),
             store=product_data.get("store"),
             category=product_data.get("category"),
+                macro=product_data.get("macro"),
                 metadata_=product_data.get("metadata"),
         )
         session.add(obj)
@@ -43,6 +46,7 @@ def upsert_product(session, product_data: dict):
         obj.unit = product_data.get("unit", obj.unit)
         obj.store = product_data.get("store", obj.store)
         obj.category = product_data.get("category", obj.category)
+        obj.macro = product_data.get("macro", obj.macro)
         obj.metadata_ = product_data.get("metadata", obj.metadata_)
     session.commit()
     return obj
@@ -56,6 +60,8 @@ def load_json_into_db(json_path: str):
         products = json.load(f)
 
     create_tables()
+    # ensure macro column exists before inserting
+    ensure_macro_column()
     session = SessionLocal()
     inserted = 0
     try:
@@ -69,3 +75,28 @@ def load_json_into_db(json_path: str):
         session.close()
 
     return inserted
+
+
+def ensure_macro_column():
+    """Add `macro` column to products table if it doesn't exist.
+
+    This helper inspects existing table columns and issues an ALTER TABLE
+    to add the `macro` column when missing. Works for SQLite and Postgres.
+    For other DBs a proper migration tool is recommended.
+    """
+    from sqlalchemy import inspect
+
+    inspector = inspect(engine)
+    if "products" not in inspector.get_table_names():
+        return
+    cols = [c["name"] for c in inspector.get_columns("products")]
+    if "macro" in cols:
+        return
+    # add column using SQL that works for Postgres and SQLite
+    with engine.connect() as conn:
+        try:
+            conn.execute(text("ALTER TABLE products ADD COLUMN macro VARCHAR;"))
+            conn.commit()
+        except Exception:
+            # best-effort only; let higher-level code surface errors if persistent
+            pass

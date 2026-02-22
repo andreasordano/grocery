@@ -23,4 +23,5 @@ class Product(Base):
     unit = Column(String, nullable=True)
     store = Column(String, nullable=True)
     category = Column(String, nullable=True)
+    macro = Column(String, nullable=True, index=True)
     metadata_ = Column("metadata", SQLITE_JSON, nullable=True)

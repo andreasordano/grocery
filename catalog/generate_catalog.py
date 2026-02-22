@@ -3,27 +3,15 @@
 # The generated catalog can be used by other parts of the application to provide product information without needing to query the APIs in real-time.
 
 import json
-from groceries.api.rimi_api import search_rimi
-from groceries.api.selver_api import search_selver
-from groceries.api.barbora_api import search_barbora
+import os
+import inspect
+from api.rimi_api import search_rimi
+from api.selver_api import search_selver
+from api.barbora_api import search_barbora
+from catalog.normalize_catalog import normalize_catalog
 
-
-SEARCH_TERMS = [
-    "piim",
-    "leib",
-    "sai",
-    "juust",
-    "kana",
-    "hakkliha",
-    "jogurt",
-    "kohv",
-    "tee",
-    "või",
-    "õun",
-    "banaan",
-    "kartul",
-    "riis",
-]
+# Prefixes to crawl: a-z, digits and some common Estonian characters/prefixes.
+PREFIXES = [c for c in "abcdefghijklmnopqrstuvwxyz0123456789"] + ["õ", "ä", "ö", "ü", "ri", "pa", "ka", "le"]
 
 
 def collect_product_names():
@@ -36,25 +24,34 @@ def collect_product_names():
 
     catalog = set()
 
-    for term in SEARCH_TERMS:
-
-        print(f"Searching: {term}")
-
+    for prefix in PREFIXES:
+        print(f"Searching prefix: {prefix}")
         for store_name, search_fn in stores:
-
             try:
-
-                products = search_fn(term)
+                sig = inspect.signature(search_fn)
+                params = sig.parameters
+                products = []
+                if 'size' in params:
+                    products = search_fn(prefix, size=200) or []
+                elif 'page' in params:
+                    # try a few pages to collect more results
+                    for pg in range(0, 3):
+                        try:
+                            chunk = search_fn(prefix, page=pg) or []
+                        except TypeError:
+                            chunk = search_fn(prefix) or []
+                        if not chunk:
+                            break
+                        products.extend(chunk)
+                else:
+                    products = search_fn(prefix) or []
 
                 for p in products:
-
-                    name = p["name"].lower()
-
-                    catalog.add(name)
-
+                    name = (p.get("name") or "").lower()
+                    if name:
+                        catalog.add(name)
             except Exception as e:
-
-                print(f"Error {store_name}: {e}")
+                print(f"Error {store_name} for prefix '{prefix}': {e}")
 
     return sorted(list(catalog))
 
@@ -66,12 +63,24 @@ def generate_catalog():
     catalog = {
         "Auto-generated": product_names
     }
-
-    with open("groceries/catalog/catalog.json", "w") as f:
-
+    base = os.path.dirname(__file__)
+    catalog_path = os.path.join(base, "catalog.json")
+    with open(catalog_path, "w", encoding="utf-8") as f:
         json.dump(catalog, f, indent=2, ensure_ascii=False)
 
-    print(f"Saved {len(product_names)} products")
+    print(f"Saved {len(product_names)} products -> {catalog_path}")
+
+    # Immediately run the normalizer so a `normalized_catalog.json` is available
+    try:
+        normalize_catalog(input_path=catalog_path)
+    except Exception as e:
+        print(f"Normalization failed: {e}")
+    # Run auto-group to add `macro` labels and reload DB
+    try:
+        from catalog import auto_group_catalog
+        auto_group_catalog.run_auto_group()
+    except Exception as e:
+        print(f"Auto-group failed: {e}")
 
 
 if __name__ == "__main__":
