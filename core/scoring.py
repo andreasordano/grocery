@@ -19,8 +19,16 @@ def parse_price(price_str):
         return float("inf")
 
 
-def extract_weight_volume(name):
-    matches = re.findall(r"(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l)\b", name.lower())
+def extract_weight_volume(name, extras=None, max_weight_g: float = 10000.0, max_volume_ml: float = 10000.0):
+    """Extract weight/volume from product name plus optional hint strings.
+
+    Values above the given max thresholds are discarded to avoid bogus parses
+    (e.g., loose produce mistakenly parsed as tens of kilograms).
+    """
+    text = name.lower()
+    if extras:
+        text += " " + " ".join(str(x).lower() for x in extras if x)
+    matches = re.findall(r"(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l)\b", text)
     weight = volume = None
     for value, unit in matches:
         v = float(value.replace(",", "."))
@@ -32,6 +40,12 @@ def extract_weight_volume(name):
             volume = v * 1000
         elif unit == "ml":
             volume = v
+
+    if weight and weight > max_weight_g:
+        weight = None
+    if volume and volume > max_volume_ml:
+        volume = None
+
     return weight, volume
 
 
@@ -73,6 +87,10 @@ def relevance_score(name, rules):
     # Fuzzy similarity between query and product name (helps when tokens are reordered)
     ratio = SequenceMatcher(None, name_l, full_query).ratio()
 
+    # Require at least some whole-word overlap unless the fuzzy ratio is very high.
+    if matched == 0 and ratio < 0.72:
+        return 0
+
     # Combine signals into 0..5 scale, giving stronger weight to token overlap.
     score_float = token_fraction * 4.5 + ratio * 1.0
     score = int(round(min(5.0, score_float)))
@@ -83,7 +101,7 @@ def relevance_score(name, rules):
 
 
 def build_rules(spec):
-    """Merge catalog defaults with user overrides into a single rules dict."""
+    """Merge user-provided preferences into a single rules dict."""
     extra_inc = [kw.strip() for kw in spec.get("extra_include", "").split(",") if kw.strip()]
     extra_exc = [kw.strip() for kw in spec.get("extra_exclude", "").split(",") if kw.strip()]
     unit = spec.get("unit", "g")

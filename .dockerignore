@@ -11,5 +11,4 @@ env/
 .DS_Store
 .git
 groceries.db
-catalog/normalized_catalog.json
 **/node_modules

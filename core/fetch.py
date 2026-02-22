@@ -8,21 +8,36 @@
 
 from collections import defaultdict
 import os
-import json
+import re
 from api.selver_api import search_selver
 from api.barbora_api import search_barbora
-from core.scoring import build_rules, compute_product_score, extract_weight_volume, parse_price, relevance_score
 from api.rimi_api import search_rimi
+from core.cache import TTLCache
+from core.scoring import build_rules, compute_product_score, extract_weight_volume, parse_price, relevance_score
+
+
+# Default synonyms to broaden searches without requiring exact catalog names.
+_SYNONYMS = {
+    "piim": ["milk", "täispiim", "lahja piim"],
+    "riis": ["rice", "jasmiini riis", "basmati"],
+    "sojakaste": ["soy sauce", "soja kaste"],
+    "hambapasta": ["toothpaste", "suuhügieen"],
+    "õli": ["oil", "oliiviõli"],
+    "munad": ["eggs", "kana muna"],
+    "leib": ["bread"],
+}
 
 
 def _fetch_rimi(search_term, size=40):
-    return [{"name": p["name"], "price": p["price"], "brand": p.get("brand")} for p in search_rimi(search_term, page=0)]
+    return search_rimi(search_term, page=0)
+
 
 def _fetch_selver(search_term, size=40):
-    return [{"name": p["name"], "price": p["price"], "brand": p.get("brand")} for p in search_selver(search_term, size=size)]
+    return search_selver(search_term, size=size)
+
 
 def _fetch_barbora(search_term, size=40):
-    return [{"name": p["name"], "price": p["price"], "brand": p.get("brand")} for p in search_barbora(search_term, size=size)]
+    return search_barbora(search_term, size=size)
 
 
 _FETCHERS = {
@@ -31,136 +46,162 @@ _FETCHERS = {
     "barbora": _fetch_barbora,
 }
 
-# Load macro labels from normalized catalog to support macro-based fallback queries
-_MACRO_LABELS = set()
-try:
-    _CATALOG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "catalog", "normalized_catalog.json"))
-    with open(_CATALOG_PATH, "r", encoding="utf-8") as _f:
-        _cat = json.load(_f)
-    for _rec in _cat:
-        m = _rec.get("macro")
-        if m:
-            _MACRO_LABELS.add(m.lower())
-except Exception:
-    _MACRO_LABELS = set()
+
+# Cache store search responses to keep API usage and latency low.
+_CACHE = TTLCache(
+    ttl_seconds=int(os.environ.get("FETCH_CACHE_TTL", 6 * 3600)),
+    maxsize=int(os.environ.get("FETCH_CACHE_MAX", 512)),
+)
+
+
+def _cached_fetch(store: str, query: str, size: int = 40):
+    key = (store, query.strip().lower(), size)
+    cached = _CACHE.get(key)
+    if cached is not None:
+        return cached
+    data = _FETCHERS[store](query, size=size)
+    _CACHE.set(key, data)
+    return data
+
+
+
+def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict):
+    name = item.get("name") or ""
+    price = parse_price(item.get("price") or item.get("retail_price"))
+    if price == float("inf"):
+        return None
+
+    # Try to extract size from name and extra fields.
+    extra_text = []
+    for key in ("unit", "volume", "product_volume"):
+        val = item.get(key)
+        if val:
+            extra_text.append(str(val))
+    weight, volume = extract_weight_volume(name, extra_text)
+
+    # Fallbacks for loose/bulk items priced per kg/l when size isn't embedded.
+    unit_field = str(item.get("unit") or "").lower()
+    name_l = name.lower()
+    tokens = set(re.findall(r"[\wäöüõšžÄÖÜÕŠŽ]+", name_l))
+
+    if weight is None and (unit_field == "kg" or "kg" in tokens or "kg" in name_l):
+        weight = 1000.0
+    if volume is None and (unit_field == "l" or "l" in tokens or " l" in name_l):
+        volume = 1000.0
+
+    # Drop obviously bogus large sizes that slipped through.
+    if weight and weight > 10000:
+        weight = None
+    if volume and volume > 10000:
+        volume = None
+
+    product = {
+        "item": display_name,
+        "store": store,
+        "name": name,
+        "price": price,
+        "brand": item.get("brand"),
+        "weight_g": weight,
+        "volume_ml": volume,
+    }
+
+    rel = relevance_score(name, rules)
+    if rel < 1:
+        return None
+    product["relevance"] = rel
+    score, explanation = compute_product_score(product, rules)
+    if score > 5:
+        return None
+    product["score"] = score
+    product["explanation"] = explanation
+    return product
+
+
+def _build_queries(spec: dict):
+    base = spec.get("search_term", "").strip()
+    includes = [kw for kw in spec.get("include", []) if kw]
+    tokens = []
+    for kw in includes + [base]:
+        for t in re.findall(r"[\wäöüõšžÄÖÜÕŠŽ]+", kw.lower()):
+            if len(t) > 1:
+                tokens.append(t)
+
+    queries = []
+    if base:
+        queries.append(base)
+
+    # Add synonyms for the first token when known.
+    if tokens:
+        key = tokens[0]
+        for syn in _SYNONYMS.get(key, []):
+            queries.append(syn)
+
+    # Add individual tokens as fallbacks.
+    for t in tokens:
+        queries.append(t)
+
+    # Deduplicate while preserving order.
+    seen = set()
+    uniq = []
+    for q in queries:
+        if not q:
+            continue
+        qn = q.lower().strip()
+        if qn in seen:
+            continue
+        seen.add(qn)
+        uniq.append(q)
+    return uniq
 
 
 def fetch_all(grocery_list, selected_stores, on_progress=None):
     """
-    Fetch and score products for every item/store combination.
-
-    Args:
-        grocery_list:    dict of {display_name: spec}
-        selected_stores: list of store names
-        on_progress:     optional callable(count, total, store, display_name)
-                         called after each store/item pair is processed
-
-    Returns:
-        (all_products, warnings)
-          all_products — defaultdict(list) keyed by display_name
-          warnings     — list of error strings for failed fetches
+    Fetch and score products for every item/store combination using short,
+    generic queries with cached responses and strict relevance filtering.
     """
     all_products = defaultdict(list)
     warnings = []
     total = len(grocery_list) * len(selected_stores)
     count = 0
+
+    PER_STORE_LIMIT = int(os.environ.get("PER_STORE_LIMIT", 6))
+
     for display_name, spec in grocery_list.items():
         rules = build_rules(spec)
+        queries = _build_queries(spec)
+
         for store in selected_stores:
-            try:
-                raw = _FETCHERS[store](spec["search_term"])
-            except Exception as exc:
-                warnings.append(f"{store}/{display_name}: {exc}")
-                raw = []
-            for item in raw:
-                name = item.get("name") or ""
-                price = parse_price(item.get("price"))
-                rel = relevance_score(name, rules)
-                if rel < 0:
-                    continue
-                weight, volume = extract_weight_volume(name)
-                product = {
-                    "item": display_name,
-                    "store": store,
-                    "name": name,
-                    "price": price,
-                    "relevance": rel,
-                    "weight_g": weight,
-                    "volume_ml": volume,
-                }
-                score, explanation = compute_product_score(product, rules)
-                product["score"] = score
-                product["explanation"] = explanation
-                all_products[display_name].append(product)
-            # If no relevant candidates found, try falling back to individual keyword tokens
-            if not all_products[display_name]:
-                # build simple tokens from include keywords
-                include_tokens = []
-                for kw in rules.get("include", []):
-                    if not kw:
+            store_candidates = []
+            seen_ids = set()
+
+            for q in queries:
+                try:
+                    raw = _cached_fetch(store, q)
+                except Exception as exc:
+                    warnings.append(f"{store}/{display_name}: {exc}")
+                    raw = []
+
+                for item in raw:
+                    remote_id = item.get("id") or item.get("sku") or item.get("code") or item.get("name")
+                    if not remote_id:
                         continue
-                    for t in re.findall(r"[\wäöüõšžÄÖÜÕŠŽ]+", kw.lower()):
-                        if len(t) > 1:
-                            include_tokens.append(t)
+                    dedup_key = f"{store}:{str(remote_id).lower()}"
+                    if dedup_key in seen_ids:
+                        continue
+                    seen_ids.add(dedup_key)
 
-                tried = set()
-                for token in include_tokens:
-                    # try token query
-                    if token not in tried:
-                        tried.add(token)
-                        try:
-                            raw2 = _FETCHERS[store](token)
-                        except Exception:
-                            raw2 = []
-                        for item in raw2:
-                            name = item.get("name") or ""
-                            price = parse_price(item.get("price"))
-                            rel = relevance_score(name, rules)
-                            if rel < 0:
-                                continue
-                            weight, volume = extract_weight_volume(name)
-                            product = {
-                                "item": display_name,
-                                "store": store,
-                                "name": name,
-                                "price": price,
-                                "relevance": rel,
-                                "weight_g": weight,
-                                "volume_ml": volume,
-                            }
-                            score, explanation = compute_product_score(product, rules)
-                            product["score"] = score
-                            product["explanation"] = explanation
-                            all_products[display_name].append(product)
+                    product = _normalize_candidate(item, display_name, store, rules)
+                    if not product:
+                        continue
+                    store_candidates.append(product)
 
-                    # try macro-label queries that contain the token
-                    for macro_label in list(_MACRO_LABELS):
-                        if token in macro_label and macro_label not in tried:
-                            tried.add(macro_label)
-                            try:
-                                raw3 = _FETCHERS[store](macro_label)
-                            except Exception:
-                                raw3 = []
-                            for item in raw3:
-                                name = item.get("name") or ""
-                                price = parse_price(item.get("price"))
-                                rel = relevance_score(name, rules)
-                                if rel < 0:
-                                    continue
-                                weight, volume = extract_weight_volume(name)
-                                product = {
-                                    "item": display_name,
-                                    "store": store,
-                                    "name": name,
-                                    "price": price,
-                                    "relevance": rel,
-                                    "weight_g": weight,
-                                    "volume_ml": volume,
-                                }
-                                score, explanation = compute_product_score(product, rules)
-                                product["score"] = score
-                                product["explanation"] = explanation
-                                all_products[display_name].append(product)
+                if len(store_candidates) >= PER_STORE_LIMIT:
+                    break
+
+            # keep best scored candidates per store
+            store_candidates.sort(key=lambda p: p.get("score", float("inf")))
+            all_products[display_name].extend(store_candidates[:PER_STORE_LIMIT])
+
             count += 1
             if on_progress:
                 on_progress(count, total, store, display_name)
