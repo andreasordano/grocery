@@ -1,3 +1,7 @@
+# This script collects product names from multiple grocery store APIs and generates a consolidated catalog in JSON format.
+# It uses predefined search terms to query each store's API, collects the product names, and saves them in a JSON file for later use.
+# The generated catalog can be used by other parts of the application to provide product information without needing to query the APIs in real-time.
+
 import json
 from groceries.api.rimi_api import search_rimi
 from groceries.api.selver_api import search_selver

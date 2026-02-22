@@ -1,3 +1,9 @@
+
+# This module handles database interactions using SQLAlchemy. 
+# It provides functions to create tables, upsert products, and load JSON data into the database.
+# It runs after the initial data parsing and before the scoring and optimization phases, which rely on this structured product data.
+# =============================================================================
+
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

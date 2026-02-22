@@ -1,5 +1,9 @@
 # =============================================================================
 # FETCHERS  (delegated to the individual API modules)
+# This module defines functions to fetch product data from different stores (Rimi, Selver, Barbora) based on a search term.
+# The main function, `fetch_all`, orchestrates the fetching process for all items in the grocery list and selected stores, applies relevance scoring, and extracts weight/volume information. 
+# It returns a structured dictionary of products along with any warnings encountered during the fetching process.
+# It runs after the initial grocery list parsing and before the scoring and optimization phases, which rely on the fetched product data
 # =============================================================================
 
 from collections import defaultdict

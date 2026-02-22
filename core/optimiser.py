@@ -1,5 +1,8 @@
 # =============================================================================
-# OPTIMIZER
+# This module contains the core optimization logic for selecting the best combination of products based on their scores and prices. 
+# The main function, `optimize_cart`, takes a list of all products from the database, a grocery list, and selected stores, 
+# and returns the best cart along with its total score and price.
+# It runs after the scoring phase, which assigns a score to each product based on various factors (see scoring.py) and before the final output formatting.
 # =============================================================================
 
 def optimize_cart(all_products, grocery_list, selected_stores):

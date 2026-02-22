@@ -1,3 +1,5 @@
+# This module provides functionality to load the product catalog from a JSON file.
+
 import json
 import os
 

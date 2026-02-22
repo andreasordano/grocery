@@ -1,7 +1,9 @@
 import re
 
 # =============================================================================
-# UTILITIES
+# Score products based on price, relevance, and size. The scoring is designed to reward larger packs (lower unit price), 
+# penalize products that don't match keywords, and enforce a minimum size.
+# It runs after the initial parsing and before the optimization phase, which selects the best combination of products based on these scores.
 # =============================================================================
 
 def parse_price(price_str):

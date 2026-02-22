@@ -1,3 +1,9 @@
+# This script normalizes a product catalog from a JSON file, ensuring that each product has a consistent structure with fields like product_id, name, price, unit, store, category, and metadata. 
+# It also generates a slugified product_id based on the product name to ensure uniqueness and consistency. The normalized catalog is saved to a new JSON file for use in the application.
+# The script can handle input catalogs that are either a list of product names or a dictionary with lists of product names. 
+# It processes each product name, normalizes it, and outputs a structured JSON file that can be easily consumed by other parts of the application. 
+# The slugify function ensures that product IDs are URL-friendly and unique, even if there are duplicate product names in the input catalog.
+
 import json
 import os
 import re
