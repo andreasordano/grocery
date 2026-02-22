@@ -1,4 +1,5 @@
 import re
+from difflib import SequenceMatcher
 
 # =============================================================================
 # Score products based on price, relevance, and size. The scoring is designed to reward larger packs (lower unit price), 
@@ -35,15 +36,49 @@ def extract_weight_volume(name):
 
 
 def relevance_score(name, rules):
-    """Keyword-based relevance. Returns an integer; higher = more relevant."""
+    """Keyword-based relevance. Returns an integer 0..5; higher = more relevant.
+
+    Behavior:
+      - If any `exclude` token matches as a whole word -> return -1 to drop product.
+      - If the full include phrase appears verbatim in the product name -> return 5.
+      - Otherwise combine whole-word token overlap and a fuzzy ratio into 0..5.
+    """
     name_l = name.lower()
-    score = 0
-    for w in rules.get("include", []):
-        if w in name_l:
-            score += 3
+
+    # Exclude matches -> drop product
     for w in rules.get("exclude", []):
-        if w in name_l:
-            score -= 5
+        if not w:
+            continue
+        if re.search(r"\b" + re.escape(w.lower()) + r"\b", name_l):
+            return -1
+
+    includes = [kw.lower() for kw in rules.get("include", []) if kw]
+    # If no include keywords provided, return neutral relevance
+    if not includes:
+        return 2
+
+    # If full include phrase appears, treat as perfect match
+    full_query = " ".join(includes)
+    if full_query and full_query in name_l:
+        return 5
+
+    # Count whole-word token matches
+    matched = 0
+    for kw in includes:
+        if re.search(r"\b" + re.escape(kw) + r"\b", name_l):
+            matched += 1
+
+    token_fraction = matched / len(includes)
+
+    # Fuzzy similarity between query and product name (helps when tokens are reordered)
+    ratio = SequenceMatcher(None, name_l, full_query).ratio()
+
+    # Combine signals into 0..5 scale, giving stronger weight to token overlap.
+    score_float = token_fraction * 4.5 + ratio * 1.0
+    score = int(round(min(5.0, score_float)))
+
+    if score < 0:
+        score = 0
     return score
 
 
@@ -90,7 +125,10 @@ def compute_product_score(product, rules):
 
     unit_price = (price / (size / 100.0)) if size else price
 
-    relevance_penalty = max(0, 5 - relevance)
+    # Tuneable weights
+    RELEVANCE_WEIGHT = 3.0
+
+    relevance_penalty = max(0, 5 - relevance) * RELEVANCE_WEIGHT
 
     size_penalty = 0.0
     user_min = rules.get("min_volume_ml" if unit == "ml" else "min_weight_g", 0)

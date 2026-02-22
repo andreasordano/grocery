@@ -23,6 +23,8 @@ from collections import defaultdict, Counter
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.decomposition import TruncatedSVD
+from sklearn.preprocessing import normalize
 
 BASE = os.path.dirname(__file__)
 NORM_PATH = os.path.join(BASE, "normalized_catalog.json")
@@ -50,24 +52,40 @@ def tfidf_agglomerative_clusters(names, distance_threshold=0.7):
     """
     if not names:
         return []
-    # vectorize names
+    # vectorize names (sparse)
     vec = TfidfVectorizer(analyzer="word", token_pattern=r"[\wäöüõšžÄÖÜÕŠŽ]+", ngram_range=(1,2))
     X = vec.fit_transform(names)
-    # Agglomerative clustering with cosine metric. distance_threshold is 1 - similarity.
-    # sklearn >=1.2 uses `metric` instead of `affinity`; use `metric='cosine'` for modern versions
+
+    # Dimensionality reduction — essential for speed at scale (e.g., ~6k items)
+    n_features = X.shape[1]
+    if n_features > 1:
+        n_components = min(150, max(1, n_features - 1))
+        svd = TruncatedSVD(n_components=n_components, random_state=42)
+        X_reduced = svd.fit_transform(X)
+        X_reduced = normalize(X_reduced)
+    else:
+        # Degenerate case: very small vocab, fall back to dense normalization
+        X_reduced = normalize(X.toarray())
+
+    # Agglomerative on reduced dense features. distance_threshold is 1 - similarity.
+    # Avoid forcing a full tree build — let sklearn decide for performance.
     try:
-        model = AgglomerativeClustering(n_clusters=None, distance_threshold=1 - distance_threshold, metric="cosine", linkage="average", compute_full_tree=True)
+        model = AgglomerativeClustering(
+            n_clusters=None,
+            distance_threshold=1 - distance_threshold,
+            metric="cosine",
+            linkage="average",
+        )
     except TypeError:
-        # older sklearn versions accept `affinity`
-        model = AgglomerativeClustering(n_clusters=None, distance_threshold=1 - distance_threshold, affinity="cosine", linkage="average", compute_full_tree=True)
-    labels = model.fit_predict(X.toarray())
-    return labels
-    # vectorize names
-    vec = TfidfVectorizer(analyzer="word", token_pattern=r"[\wäöüõšžÄÖÜÕŠŽ]+", ngram_range=(1,2))
-    X = vec.fit_transform(names)
-    # Agglomerative clustering with cosine metric. distance_threshold is 1 - similarity.
-    model = AgglomerativeClustering(n_clusters=None, distance_threshold=1 - distance_threshold, affinity="cosine", linkage="average", compute_full_tree=True)
-    labels = model.fit_predict(X.toarray())
+        # older sklearn versions expect `affinity` instead of `metric`
+        model = AgglomerativeClustering(
+            n_clusters=None,
+            distance_threshold=1 - distance_threshold,
+            affinity="cosine",
+            linkage="average",
+        )
+
+    labels = model.fit_predict(X_reduced)
     return labels
 
 

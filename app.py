@@ -387,8 +387,10 @@ if st.session_state["analysis_result"]:
             missing_count = 0
             for name in gl:
                 candidates = [p for p in all_products.get(name, []) if p["store"] == store]
-                if candidates:
-                    best = min(candidates, key=lambda p: p["score"])
+                # ignore candidates without a numeric score
+                scored = [p for p in candidates if p.get("score") is not None]
+                if scored:
+                    best = min(scored, key=lambda p: p["score"])
                     total += best["price"]
                 else:
                     missing_count += 1
@@ -412,7 +414,8 @@ if st.session_state["analysis_result"]:
         for name in gl:
             spec = gl[name]
             st.markdown(f"**{name}**")
-            prods = sorted(all_products.get(name, []), key=lambda p: p["score"])[:8]
+            # sort candidates with None scores pushed to the end
+            prods = sorted(all_products.get(name, []), key=lambda p: (p.get("score") is None, p.get("score", float('inf'))))[:8]
             if prods:
                 table_rows = []
                 for p in prods:
