@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: groceries
+      POSTGRES_PASSWORD: groceries
+      POSTGRES_DB: groceries
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+psycopg2://groceries:groceries@db:5432/groceries
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app:delegated
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    environment:
+      GROCERIES_API_URL: http://api:8000
+      DATABASE_URL: postgresql+psycopg2://groceries:groceries@db:5432/groceries
+    depends_on:
+      - api
+    ports:
+      - "8505:8501"
+    volumes:
+      - ./:/app:delegated
+
+volumes:
+  db-data:

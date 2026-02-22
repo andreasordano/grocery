@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+venv
+.venv
+env/
+.env
+.pytest_cache
+.mypy_cache
+.DS_Store
+.git
+groceries.db
+catalog/normalized_catalog.json
+**/node_modules
