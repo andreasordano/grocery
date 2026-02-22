@@ -9,7 +9,7 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: groceries-db
-          databaseName: groceries
+          property: connectionString
       - key: CATALOG_RUN_ON_START
         value: "0"
       - key: DISABLE_CATALOG_SCHEDULE
@@ -27,7 +27,7 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: groceries-db
-          databaseName: groceries
+          property: connectionString
 
 databases:
   - name: groceries-db
