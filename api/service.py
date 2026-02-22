@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Dict, Any
 from core import fetch as core_fetch
 from core import optimiser
+from stores_config import get_default_stores
 
 import os
 import json
@@ -11,10 +12,13 @@ import re
 
 app = FastAPI(title="Groceries Optimizer API")
 
+# Get default stores from config
+_DEFAULT_STORES = get_default_stores()
+
 
 class OptimizeRequest(BaseModel):
     items: List[str]
-    stores: List[str] = ["rimi", "selver", "barbora"]
+    stores: List[str] = _DEFAULT_STORES
 
 
 class OptimizeResponse(BaseModel):
@@ -27,7 +31,7 @@ class OptimizeResponse(BaseModel):
 
 class AvailabilityRequest(BaseModel):
     items: List[str]
-    stores: List[str] = ["rimi", "selver", "barbora"]
+    stores: List[str] = _DEFAULT_STORES
 
 
 

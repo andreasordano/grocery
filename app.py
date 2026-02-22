@@ -11,6 +11,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
 from core.optimiser import optimize_cart
+from stores_config import get_store_names, get_default_stores
 import requests
 
 # Default API URL (change in sidebar if your API runs elsewhere)
@@ -21,7 +22,7 @@ DEFAULT_API_URL = os.environ.get("GROCERIES_API_URL", "http://localhost:8000")
 # STORE CONFIGURATION
 # =============================================================================
 
-STORES = ["selver", "barbora", "rimi"]
+STORES = get_store_names()
 
 
 # =============================================================================
@@ -76,7 +77,7 @@ with st.sidebar:
     selected_stores = st.multiselect(
         "Stores to search",
         options=store_options,
-        default=store_options,
+        default=get_default_stores(),
         key="selected_stores",
     )
 

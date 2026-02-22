@@ -1,6 +1,7 @@
 # =============================================================================
 # FETCHERS  (delegated to the individual API modules)
-# This module defines functions to fetch product data from different stores (Rimi, Selver, Barbora) based on a search term.
+# This module defines functions to fetch product data from different stores based on a search term.
+# Stores are configurable in stores_config.py — add new stores without modifying this file.
 # The main function, `fetch_all`, orchestrates the fetching process for all items in the grocery list and selected stores, applies relevance scoring, and extracts weight/volume information. 
 # It returns a structured dictionary of products along with any warnings encountered during the fetching process.
 # It runs after the initial grocery list parsing and before the scoring and optimization phases, which rely on the fetched product data
@@ -9,11 +10,9 @@
 from collections import defaultdict
 import os
 import re
-from api.selver_api import search_selver
-from api.barbora_api import search_barbora
-from api.rimi_api import search_rimi
 from core.cache import TTLCache
 from core.scoring import build_rules, compute_product_score, extract_weight_volume, parse_price, relevance_score
+from stores_config import get_fetcher, get_pagination_param
 
 
 # Default synonyms to broaden searches without requiring exact catalog names.
@@ -25,25 +24,6 @@ _SYNONYMS = {
     "õli": ["oil", "oliiviõli"],
     "munad": ["eggs", "kana muna"],
     "leib": ["bread"],
-}
-
-
-def _fetch_rimi(search_term, size=40):
-    return search_rimi(search_term, page=0)
-
-
-def _fetch_selver(search_term, size=40):
-    return search_selver(search_term, size=size)
-
-
-def _fetch_barbora(search_term, size=40):
-    return search_barbora(search_term, size=size)
-
-
-_FETCHERS = {
-    "rimi": _fetch_rimi,
-    "selver": _fetch_selver,
-    "barbora": _fetch_barbora,
 }
 
 
@@ -59,7 +39,17 @@ def _cached_fetch(store: str, query: str, size: int = 40):
     cached = _CACHE.get(key)
     if cached is not None:
         return cached
-    data = _FETCHERS[store](query, size=size)
+    fetcher = get_fetcher(store)
+    param_name = get_pagination_param(store)
+    
+    # Call fetcher with correct parameter
+    # - Rimi uses 'page' (pagination offset, always 0 for first page)
+    # - Others use 'size' (number of results to return)
+    if param_name == "page":
+        data = fetcher(query, page=0)
+    else:
+        data = fetcher(query, **{param_name: size})
+    
     _CACHE.set(key, data)
     return data
 
