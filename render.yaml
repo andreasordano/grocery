@@ -2,6 +2,41 @@ services:
   - type: web
     name: groceries-api
     env: docker
+    branch: main
+    dockerfilePath: api/Dockerfile
+    plan: starter
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: groceries-db
+          databaseName: groceries
+      - key: CATALOG_RUN_ON_START
+        value: "0"
+      - key: DISABLE_CATALOG_SCHEDULE
+        value: "1"
+
+  - type: web
+    name: groceries-frontend
+    env: docker
+    branch: main
+    dockerfilePath: frontend/Dockerfile
+    plan: starter
+    envVars:
+      - key: GROCERIES_API_URL
+        value: https://groceries-api.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: groceries-db
+          databaseName: groceries
+
+databases:
+  - name: groceries-db
+    databaseName: groceries
+    plan: starter
+services:
+  - type: web
+    name: groceries-api
+    env: docker
     dockerfilePath: api/Dockerfile
     branch: main
     plan: free
