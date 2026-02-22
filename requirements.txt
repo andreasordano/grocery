@@ -1,11 +1,7 @@
-SQLAlchemy>=1.4
 fastapi>=0.95
 uvicorn[standard]>=0.22
 requests>=2.0
 beautifulsoup4>=4.12
-httpx>=0.26
-psycopg2-binary>=2.9
 streamlit>=1.0
-numpy>=1.24
-scikit-learn>=1.2
+pandas>=1.5
 graphql-core>=3.2
