@@ -171,6 +171,26 @@ def optimize(req: OptimizeRequest):
     return {"cart": cart, "total_score": total_score, "info": info, "warnings": warnings, "all_products": dict(all_products)}
 
 
+@app.get("/_debug/db_info")
+def _debug_db_info():
+    """Return masked DB connection host and database name so we can confirm
+    which database the deployed service is using. This endpoint intentionally
+    avoids returning credentials.
+    """
+    url = os.environ.get("DATABASE_URL") or os.environ.get("DATABASE_URL")
+    if not url:
+        return {"connected": False, "reason": "DATABASE_URL not set"}
+    # parse common postgresql-style URLs like:
+    # postgresql+psycopg2://user:pass@host:port/dbname
+    m = re.match(r"(?P<scheme>postgresql(?:\+[\w]+)?)://(?:(?P<user>[^:]+):(?P<pwd>[^@]+)@)?(?P<host>[^:/?#]+)(?::(?P<port>\d+))?/(?P<db>[^\?]+)", url)
+    if not m:
+        # fallback: reveal a short sample (no credentials masking guaranteed)
+        return {"connected": True, "host": None, "db": None, "sample": url[:120]}
+    host = m.group("host")
+    db = m.group("db")
+    return {"connected": True, "host": host, "db": db}
+
+
 # Optional background generation: enable by setting AUTO_GENERATE_CATALOG=1
 def _catalog_generator_loop(interval_hours: int = 24):
     interval = max(1, int(interval_hours)) * 3600
