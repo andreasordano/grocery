@@ -172,7 +172,7 @@ def _queries(rule):
     return rule["query"] if isinstance(rule["query"], list) else [rule["query"]]
 
 
-MAX_OPTIONS = 12
+MAX_OPTIONS = 40  # alternatives per line; the web app also previews preferences against them
 
 
 def _fold(text):

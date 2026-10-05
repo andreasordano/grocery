@@ -110,12 +110,17 @@ Note: GitHub disables scheduled workflows after 60 days without repository activ
 
 ### Preferences
 
-On the receipt, tap an item to see that store's acceptable alternatives. Picking one remembers it for that store;
-typing words ("Alma", "3,2%", "spaghetti") prefers matching products in every store (spelling-tolerant:
-"spaghetti" matches "Spagetid"). Preferences are kept in the browser (`localStorage`) and sent with each request:
+On the receipt, tap an item to see every acceptable product for it at that store, cheapest first, and pick one.
+The sheet then suggests words from the picked product's name (brand, type, fat %), e.g. *spagetid*, *laktoosivaba*,
+*tere*. Tapping one applies it to the other stores and shows straight away what it would pick there, or that
+nothing matches and the cheapest stays. Matching tolerates spelling: "spaghetti" matches "Spagetid".
+
+Each receipt says when preferences are in use ("Using your preferences for Makaronid") and links to
+**Edit preferences**, which lists them with Remove / Remove all. They're kept in the browser (`localStorage`)
+and sent with each request:
 
 ```json
-{"makaronid": {"words": ["spaghetti"], "products": {"rimi": "Makaronid Spaghetti Rimi 500g"}}}
+{"makaronid": {"label": "Makaronid", "words": ["spagetid"], "products": {"barbora": "Spagetid Nr 7 PRESTO 400g"}}}
 ```
 
 ## API examples

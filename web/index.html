@@ -184,7 +184,8 @@ h1 {
 .r-line:hover { background: rgba(35, 48, 59, 0.05); }
 .r-line .n { font-weight: 600; }
 .r-line .amt { color: #5d6971; font-weight: 400; }
-.r-line .p { grid-column: 1; color: #5d6971; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Product names wrap: stores put the pack size ("10tk", "500g") at the end. */
+.r-line .p { grid-column: 1; color: #5d6971; font-size: 11.5px; overflow-wrap: anywhere; }
 .r-line .c { grid-column: 2; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
 .r-tag { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid currentColor; border-radius: 3px; font-size: 10px; font-weight: 400; color: #9e2a3f; }
 .r-hint { margin-top: 8px; font-size: 11px; }
@@ -249,6 +250,21 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 .opts input { accent-color: var(--berry); margin: 0; }
 .opts .pc { font-variant-numeric: tabular-nums; font-weight: 600; }
 .sh-bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px 18px; }
+.cross { padding: 14px 20px 4px; border-bottom: 1px solid var(--line); }
+.cross h3, .prefs h3 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { border: 0; cursor: pointer; padding: 6px 10px; border-radius: 8px; font-size: 14px; font-weight: 500;
+  background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); }
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--fog); box-shadow: none; }
+.preview { list-style: none; margin: 12px 0 10px; padding: 0; font-size: 13px; color: var(--ink-soft); }
+.preview li { padding: 3px 0; }
+.preview b { color: var(--ink); font-weight: 600; }
+.prefs { list-style: none; margin: 0; padding: 4px 20px; overflow-y: auto; }
+.prefs li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.prefs li:last-child { border-bottom: 0; }
+.prefs p { margin: 2px 0 0; font-size: 13px; color: var(--ink-soft); }
+.r-prefs { margin-top: 10px; color: #5d6971; }
+.r-prefs button { border: 0; background: none; padding: 0; font: inherit; color: #9e2a3f; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 
 @media (max-width: 820px) {
   main { grid-template-columns: 1fr; gap: 28px; padding: 22px 16px 40px; }
@@ -475,10 +491,20 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     $("#retry").onclick = () => retry();
   }
 
+  // What to show next to the item name. Recipe lines say how much the recipe needs ("need 4 tk");
+  // the pack comes from the product name. List items have no amount of their own, except loose
+  // goods priced by weight, where the price only makes sense with the weight we assumed.
+  function lineAmount(l) {
+    if (l.need == null) return "";
+    if (!l.extra) return `need ${amount(l.need, l.unit)}`;
+    return l.packs == null ? amount(l.need, l.unit) : "";
+  }
+
   function line(l) {
     const tag = l.substitute ? "swap" : (l.pinned || l.preferred) ? "your pick" : "";
+    const amt = lineAmount(l);
     return `<li><button type="button" class="r-line" data-key="${esc(l.key)}" aria-label="Choose another ${esc(l.label)}">
-      <span class="n">${esc(l.label)}${l.need != null ? ` <span class="amt">${esc(amount(l.need, l.unit))}</span>` : ""}${tag ? `<span class="r-tag">${tag}</span>` : ""}</span>
+      <span class="n">${esc(l.label)}${amt ? ` <span class="amt">${esc(amt)}</span>` : ""}${tag ? `<span class="r-tag">${tag}</span>` : ""}</span>
       <span class="c">${num.format(l.cost)}</span>
       <span class="p">${esc(l.product)}</span></button></li>`;
   }
@@ -513,6 +539,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       <hr class="r-rule">
       <div class="r-total"><span>Total</span><span>${euro.format(b.total_price)}</span></div>
       ${res.recipe?.pantry?.length ? `<div class="r-note">Have at home: ${res.recipe.pantry.map(esc).join(", ")}</div>` : ""}
+      ${prefsNote(b)}
       ${res.baskets.length > 1 ? `<hr class="r-rule"><div class="r-head" style="margin-top:0">Compare stores</div>
         <ul class="stores">${res.baskets.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
           <span class="s">${esc(cap(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span></button></li>`).join("")}</ul>` : ""}
@@ -556,27 +583,75 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       showReceipt(s.dataset.store, true);
       return;
     }
+    if (e.target.closest("#editPrefs")) { openPrefs(); return; }
     const l = e.target.closest(".r-line");
     if (l) openSheet(l.dataset.key);
   });
 
   // ── choose another product / remember a preference ───────────────────
+  // Same spelling-tolerant comparison as the server (core/catalog.py _fold).
+  const fold = t => t.toLowerCase().replace(/(?<=[gctp])h/g, "").replace(/(.)\1+/g, "$1");
+  const matches = (product, words) => words.every(w => fold(product).includes(fold(w)));
+
+  // Words from a product name that could describe a preference: brand, type, fat %.
+  // Pack sizes and the ingredient's own name are left out.
+  function nameWords(product, label) {
+    const skip = new Set(fold(label).split(/\s+/));
+    const seen = new Set();
+    return product.split(/[\s,()/]+/)
+      .map(w => w.replace(/^[.\-]+|[.\-]+$/g, ""))
+      .filter(w => w.length >= 3 || /%/.test(w))
+      .filter(w => !/^\d+([.,]\d+)?(g|kg|ml|l|cl|tk|x\d+.*)?$/i.test(w) && !/^\d+x\d+/i.test(w))
+      .filter(w => !skip.has(fold(w)))
+      .filter(w => { const k = fold(w); if (seen.has(k)) return false; seen.add(k); return true; })
+      .slice(0, 6)
+      .map(w => /%/.test(w) ? w : w.toLowerCase());
+  }
+
+  function savePrefs(key, change) {
+    store.set("groceries.prefs", state.prefs);
+    logEvent("preference", { key, change, pref: state.prefs[key] || null });
+  }
+
   function openSheet(key) {
-    const b = state.result.baskets.find(x => x.store === state.view);
+    const res = state.result;
+    const b = res.baskets.find(x => x.store === state.view);
     const l = b.lines.find(x => x.key === key);
-    const pref = state.prefs[key] || {};
+    const old = state.prefs[key] || {};
+    const others = res.baskets.filter(x => x.store !== b.store)
+      .map(x => ({ store: x.store, line: x.lines.find(y => y.key === key) }));
+    let chosen = l.product;
+    let words = [...(old.words || [])];
+
+    function cross() {
+      const differs = chosen !== l.options[0].product || words.length;
+      if (!differs) return `<div class="cross"><p class="fine" style="margin:0 0 10px">The other stores keep their cheapest ${esc(l.label.toLowerCase())}.</p></div>`;
+      const suggestions = [...new Set([...words, ...nameWords(chosen, l.label)])];
+      const rows = others.map(o => {
+        if (!o.line) return `<li><b>${esc(cap(o.store))}:</b> doesn't sell it</li>`;
+        if (!words.length) return `<li><b>${esc(cap(o.store))}:</b> keeps the cheapest, ${esc(o.line.options[0].product)}</li>`;
+        const hit = o.line.options.find(x => matches(x.product, words));
+        return hit
+          ? `<li><b>${esc(cap(o.store))}:</b> ${esc(hit.product)}, ${num.format(hit.cost)} €</li>`
+          : `<li><b>${esc(cap(o.store))}:</b> nothing matches, so the cheapest stays</li>`;
+      }).join("");
+      return `<div class="cross">
+        <h3>At the other stores, look for</h3>
+        <div class="chips">${suggestions.map(w => `<button type="button" data-word="${esc(w)}" aria-pressed="${words.some(x => fold(x) === fold(w))}">${esc(w)}</button>`).join("")}</div>
+        <ul class="preview">${rows}</ul>
+      </div>`;
+    }
+
     sheetForm.innerHTML = `
       <div class="sh-top">
         <h2 id="sheetTitle">${esc(l.label)}</h2>
-        <p>${esc(amount(l.need, l.unit) || "1 pack")} at ${esc(cap(b.store))}</p>
-        <label for="words">I prefer</label>
-        <input id="words" value="${esc((pref.words || []).join(", "))}" placeholder="Brand or type, like Alma, 3,2%, spaghetti" autocomplete="off">
-        <div class="fine">Used in every store. Separate words with commas.</div>
+        <p style="margin-bottom:0">${esc(cap(lineAmount(l) ? lineAmount(l) + " at " : "At "))}${esc(cap(b.store))}. Pick the one you want.</p>
       </div>
       <ul class="opts">${l.options.map((o, i) => `
-        <li><label><input type="radio" name="opt" value="${i}" ${o.product === l.product ? "checked autofocus" : ""}>
+        <li><label><input type="radio" name="opt" value="${i}" ${o.product === chosen ? "checked autofocus" : ""}>
           <span>${esc(o.product)}</span><span class="pc">${num.format(o.cost)}</span></label></li>`).join("")}
       </ul>
+      <div id="cross">${cross()}</div>
       <div class="sh-bottom">
         <button class="link" value="reset" type="submit">Back to cheapest</button>
         <span style="display:flex;gap:8px">
@@ -584,6 +659,21 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
           <button class="btn dark" value="apply" type="submit">Done</button>
         </span>
       </div>`;
+
+    sheetForm.onchange = e => {
+      if (e.target.name !== "opt") return;
+      chosen = l.options[+e.target.value].product;
+      words = words.filter(w => matches(chosen, [w]));  // drop words the new pick doesn't have
+      $("#cross", sheetForm).innerHTML = cross();
+    };
+    sheetForm.onclick = e => {
+      const chip = e.target.closest("[data-word]");
+      if (!chip) return;
+      const w = chip.dataset.word;
+      words = words.some(x => fold(x) === fold(w)) ? words.filter(x => fold(x) !== fold(w)) : [...words, w];
+      $("#cross", sheetForm).innerHTML = cross();
+    };
+
     sheet.returnValue = "";
     sheet.onclose = () => {
       const action = sheet.returnValue;
@@ -592,19 +682,67 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       if (action === "reset") {
         delete state.prefs[key];
       } else {
-        const words = splitItems(($("#words", sheetForm).value || "").replace(/;/g, ","));
-        const picked = l.options[+(sheetForm.querySelector("input[name=opt]:checked")?.value ?? -1)];
-        const next = { words, products: { ...(pref.products || {}) } };
-        if (picked && picked.product !== l.product) next.products[b.store] = picked.product;
-        else if (words.join() !== (pref.words || []).join()) delete next.products[b.store];
+        const next = { label: l.label, words, products: { ...(old.products || {}) } };
+        if (chosen !== l.options[0].product) next.products[b.store] = chosen;
+        else delete next.products[b.store];
         if (!next.words.length && !Object.keys(next.products).length) delete state.prefs[key];
         else state.prefs[key] = next;
       }
       if (JSON.stringify(state.prefs[key] || {}) === before) return;
-      store.set("groceries.prefs", state.prefs);
-      logEvent("preference", { key, store: b.store, pref: state.prefs[key] || null, from_product: l.product });
+      savePrefs(key, action);
       ask({ keepView: true });
     };
+    sheet.showModal();
+  }
+
+  // ── what preferences are saved, and removing them ─────────────────────
+  function prefLabel(key) {
+    return state.prefs[key]?.label || (key.startsWith("text:") ? key.slice(5) : cap(key.replace(/_/g, " ")));
+  }
+  function describePref(p) {
+    const parts = [];
+    if (p.words?.length) parts.push(`In every store: products with “${p.words.join("”, “")}”`);
+    for (const [s, prod] of Object.entries(p.products || {})) parts.push(`At ${cap(s)}: ${prod}`);
+    return parts;
+  }
+
+  function prefsNote(b) {
+    const keys = Object.keys(state.prefs);
+    if (!keys.length) return "";
+    const used = b.lines.filter(l => l.pinned || l.preferred).map(l => l.label);
+    const text = used.length ? `Using your preferences for ${used.join(", ")}.` : `You have ${keys.length} saved ${keys.length === 1 ? "preference" : "preferences"}.`;
+    return `<div class="r-prefs">${esc(text)} <button type="button" id="editPrefs">Edit preferences</button></div>`;
+  }
+
+  function openPrefs() {
+    let changed = false;
+    const draw = () => {
+      const keys = Object.keys(state.prefs);
+      sheetForm.innerHTML = `
+        <div class="sh-top">
+          <h2 id="sheetTitle">Your preferences</h2>
+          <p style="margin-bottom:0">${keys.length ? "These replace the cheapest product when they match." : "No preferences saved. Tap an item on the receipt to pick another product."}</p>
+        </div>
+        ${keys.length ? `<ul class="prefs">${keys.map(k => `<li>
+          <div><b>${esc(prefLabel(k))}</b>${describePref(state.prefs[k]).map(t => `<p>${esc(t)}</p>`).join("")}</div>
+          <button class="btn quiet" type="button" data-remove-pref="${esc(k)}">Remove</button></li>`).join("")}</ul>` : ""}
+        <div class="sh-bottom">
+          ${keys.length > 1 ? `<button class="link" type="button" id="removeAll">Remove all</button>` : "<span></span>"}
+          <button class="btn dark" value="close" type="submit">Done</button>
+        </div>`;
+    };
+    draw();
+    sheetForm.onchange = null;
+    sheetForm.onclick = e => {
+      const one = e.target.closest("[data-remove-pref]");
+      if (one) { delete state.prefs[one.dataset.removePref]; savePrefs(one.dataset.removePref, "remove"); changed = true; draw(); }
+      if (e.target.closest("#removeAll")) {
+        for (const k of Object.keys(state.prefs)) { delete state.prefs[k]; savePrefs(k, "remove_all"); }
+        changed = true; draw();
+      }
+    };
+    sheet.returnValue = "";
+    sheet.onclose = () => { if (changed && state.result) ask({ keepView: true }); };
     sheet.showModal();
   }
 
