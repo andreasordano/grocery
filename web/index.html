@@ -310,6 +310,21 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   </section>
 </main>
 
+<dialog id="hello" aria-labelledby="helloTitle">
+  <form method="dialog" id="helloForm">
+    <div class="sh-top">
+      <h2 id="helloTitle">What’s your name?</h2>
+      <p>So we know who tried it. Your name stays on this device.</p>
+      <label for="helloName">Name</label>
+      <input id="helloName" name="name" autocomplete="given-name" maxlength="40" required>
+    </div>
+    <div class="sh-bottom">
+      <span></span>
+      <button class="btn dark" type="submit">Start</button>
+    </div>
+  </form>
+</dialog>
+
 <dialog id="sheet" aria-labelledby="sheetTitle">
   <form method="dialog" id="sheetForm"></form>
 </dialog>
@@ -317,11 +332,12 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 <script>
 (() => {
   // ── identity & saved preferences ──────────────────────────────────────
-  const USER_ID = new URLSearchParams(location.search).get("u") || null;
   const store = {
     get(k, fallback) { try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   };
+  // Who is using it: ?u= in the link wins, otherwise the name asked for on first visit.
+  let USER_ID = new URLSearchParams(location.search).get("u") || store.get("groceries.name", null);
   const SESSION_ID = (() => {
     try {
       let id = sessionStorage.getItem("sid");
@@ -816,13 +832,32 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     }
   }
 
+  // A name is required before using the app.
+  function askName() {
+    const hello = $("#hello"), input = $("#helloName");
+    return new Promise(resolve => {
+      hello.oncancel = e => e.preventDefault();
+      hello.onclose = () => { if (!USER_ID) hello.showModal(); };  // a second Escape still closes it in Chrome
+      $("#helloForm").onsubmit = () => {
+        USER_ID = input.value.trim().replace(/\s+/g, " ");
+        store.set("groceries.name", USER_ID);
+        logEvent("hello", {});
+        resolve();
+      };
+      input.oninput = () => input.setCustomValidity(input.value.trim() ? "" : "Please type your name.");
+      hello.showModal();
+    });
+  }
+
   // ── start ─────────────────────────────────────────────────────────────
   (async () => {
     placePill();
     document.fonts?.ready.then(placePill);
     idle("Getting the dinners", "One moment.");
+    const named = USER_ID ? Promise.resolve() : askName();
     try {
       state.recipes = (await api("/recipes")).recipes;
+      await named;
       render();
     } catch {
       failed(() => location.reload());
