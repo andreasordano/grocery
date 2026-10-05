@@ -1,6 +1,7 @@
 # How to find acceptable products for each ingredient, per store.
 #   query:    search term(s) sent to the store
-#   category: store categories to accept (Selver: category name; Rimi: code, matches sub-codes too)
+#   category: store categories to accept (Selver: category name; Rimi: code, matches sub-codes too;
+#             Barbora: any segment of the category path, e.g. Kanamunad)
 #   require:  product name must contain at least one of these (case-insensitive)
 #   exclude:  product name must contain none of these
 #   fallback: list of substitute rules (same fields), tried in order only if the rule finds nothing
@@ -13,38 +14,47 @@ hakkliha:
   # Pork-beef mince ("kodune"); pork-only seahakkliha and chicken mince are not accepted.
   selver: {query: [hakkliha, kotletisegu], category: [Hakkliha], require: [kodune hakkliha, sea-ja veiselihast, delikatesshakkliha, kodune kotletisegu]}
   rimi:   {query: [kodune hakkliha, kotletisegu], category: [SH-8-2-5], require: [kodune, kotletisegu]}
+  barbora: {query: kodune hakkliha, category: [Hakkliha], require: [kodune hakkliha, kodune kotletisegu, delikatesshakkliha, sea- ja veisehakkliha]}
 
 broileri_koivad:
   selver: {query: [poolkoivad, broileri koivad], category: [Linnuliha], require: [koib, koiv], exclude: [marin, suits]}
   rimi:   {query: [poolkoivad, broileri koivad], category: [SH-8-9-25], require: [koib, koiv, kint]}
+  barbora: {query: [broileri koivad, poolkoivad], category: [Linnuliha], require: [koib, koiv, kint], exclude: [marin, suits]}
 
 kanafilee:
   selver: {query: broileri rinnafilee, category: [Linnuliha], require: [broileri rinnafilee], exclude: [marin, mar., ribad, fit, šašlõkk, pihv]}
   rimi:   {query: broileri rinnafilee, category: [SH-8-9-25], require: [rinnafil]}
+  barbora: {query: broileri rinnafilee, category: [Linnuliha], require: [rinnafil, rinnaf.], exclude: [marin, mar.]}
 
 sealiha:
   selver: {query: [sea kaelakarbonaad, sea abatükk], category: [Sealiha], require: [kaelakarbonaad, abatük], exclude: [marin, grill, suits, seentega, lõigud]}
   rimi:   {query: [sea kaelakarbonaad, sea abatükk], category: [SH-8-14-25], require: [kaelakarbonaad, abatük]}
+  barbora: {query: [sea kaelakarbonaad, sea abatükk], category: [Sealiha], require: [kaelakarbonaad, abaliha, abatük], exclude: [majonees, marin, suits]}
 
 lohefilee:
   selver: {query: [lõhefilee jahutatud, lõhefilee], category: ["Värske kala, mereannid", "Külmutatud liha- ja kalatooted"], require: [lõhe], exclude: [suits, soola, marin, šašlõkk, suflee, graavi]}
   rimi:   {query: lõhefilee, category: [SH-8-20-27], require: [lõhe]}
+  barbora: {query: lõhefilee, category: [Värske kala], require: [lõhe], expect_missing: true}  # Barbora sells only smoked/salted/canned salmon online
 
 keeduvorst:
   selver: {query: keeduvorst, category: ["Keedu- ja suitsuvorstid, viinerid"], require: [vorst], exclude: [suits, viiner, lõige, juustu]}
   rimi:   {query: keeduvorst, category: [SH-8-4], require: [vorst], exclude: [suits, viiner, juustu]}
+  barbora: {query: keeduvorst, category: [Keeduvorstid], require: [vorst], exclude: [juustu]}
 
 kartul:
   selver: {query: kartul, category: ["Köögiviljad, juurviljad"], require: [kartul], exclude: [bataat, mini, beebi]}
   rimi:   {query: kartul, category: [SH-12-1-1], require: [kartul], exclude: [aurutatud]}
+  barbora: {query: kartul, category: ["Kartulid, porgandid ja kapsad"], require: [kartul]}
 
 sibul:
   selver: {query: sibul, category: ["Köögiviljad, juurviljad"], require: [sibul], exclude: [roheline, šalott]}
   rimi:   {query: sibul, category: [SH-12-1-6], require: [sibul], exclude: [šalott]}
+  barbora: {query: sibul, category: ["Sibul, küüslauk ja muud vürtsköögiviljad"], require: [sibul], exclude: [roheline, salatisibul]}
 
 porgand:
   selver: {query: porgand, category: ["Köögiviljad, juurviljad"], require: [porgand], exclude: [kooritud, valmis]}
   rimi:   {query: porgand, category: [SH-12-1-4], require: [porgand]}
+  barbora: {query: porgand, category: ["Kartulid, porgandid ja kapsad"], require: [porgand], exclude: [valmis]}
 
 hapukapsas:
   # e-Selver doesn't appear to sell plain sauerkraut online (only soups/borscht) → praekapsas as substitute.
@@ -62,67 +72,89 @@ hapukapsas:
     exclude: [salat, hautatud]
     fallback:
       - {query: praekapsas, category: [SH-13-10-64, SH-13-10-58], require: [praekapsas], exclude: [vürtsikas]}
+  barbora:
+    query: hapukapsas
+    category: ["Töödeldud köögi - ja juurviljad"]
+    require: [hapukapsas]
+    fallback:
+      - {query: praekapsas, category: [Valmistoidud purgis, "Töödeldud köögi - ja juurviljad"], require: [praekapsas], exclude: [vürtsikas, karam]}
 
 paprika:
   selver: {query: paprika, category: ["Köögiviljad, juurviljad"], require: [paprika]}
   rimi:   {query: paprika, category: [SH-12-2-13], require: [paprika]}
+  barbora: {query: paprika, category: [Paprikad ja baklažaanid], require: [paprika]}
 
 kurk:
   selver: {query: kurk, category: ["Köögiviljad, juurviljad"], require: [kurk]}
   rimi:   {query: kurk, category: [SH-12-2-11], require: [kurk]}
+  barbora: {query: kurk, category: [Tomatid ja kurgid], require: [kurk]}
 
 hapukurk:
   selver: {query: hapukurk, category: [Hoidised], require: [hapukurk, hapukurgid]}
   rimi:   {query: hapukurk, category: [SH-12-9, SH-13-10-51], require: [hapukurk]}
+  barbora: {query: hapukurk, category: ["Töödeldud köögi - ja juurviljad", Konserveeritud kurgid ja tomatid], require: [hapukurk, hapukurgid], exclude: [kuubik]}
 
 sidrun:
   selver: {query: sidrun, category: ["Troopilised, eksootilised viljad"], require: [sidrun]}
   rimi:   {query: sidrun, category: [SH-12-5-29], require: [sidrun]}
+  barbora: {query: sidrun, category: [Tsitrusviljalised], require: [sidrun]}
 
 tomatid_purk:
   selver: {query: [purustatud tomatid, tükeldatud tomatid], category: [Hoidised], require: [purustatud, tükeldatud], exclude: [kuivatatud, tšilli]}
   rimi:   {query: [purustatud tomatid, tomatid tükeldatud], category: [SH-13-10-63], require: [purust, tükeld, tük.], exclude: [kuiv]}
+  barbora: {query: [purustatud tomatid, tükeldatud tomatid], category: [Konserveeritud kurgid ja tomatid], require: [tük, purust], exclude: [ürdi, bas.]}
 
 munad:
   selver: {query: kanamunad, category: [Munad], require: [muna]}
   rimi:   {query: kanamunad, category: [SH-11-7-29], require: [muna]}
+  barbora: {query: munad, category: [Kanamunad], require: [muna]}
 
 piim:
-  selver: {query: piim, category: ["Piimad, koored"], require: [piim], exclude: [latte, cappuccino, laktoosivaba, rasvatu, joog, kakao, šokolaad, maasika]}
-  rimi:   {query: piim, category: [SH-11-8-37], require: [piim], exclude: [laktoosivaba]}
+  selver: {query: piim, category: ["Piimad, koored"], require: [piim], exclude: [latte, cappuccino, joog, kakao, šokolaad, maasika, kookos, kaera, soja, mandli]}
+  rimi:   {query: piim, category: [SH-11-8-37, SH-11-8-38], require: [piim], exclude: [piimajook, latte, cappuccino]}
+  barbora: {query: piim, category: [Piimad, Laktoosivabad piimatooted], require: [piim], exclude: [kohupiim, jogurt, keefir, hapukoor, juust, koor, pett, latte, joogipiim, cappuccino]}
 
 hapukoor:
   selver: {query: hapukoor, category: ["Piimad, koored"], require: [hapukoor]}
   rimi:   {query: hapukoor, category: [SH-11-5-22], require: [hapukoor]}
+  barbora: {query: hapukoor, category: [Hapukoor], require: [hapukoor]}
 
 kohupiim:
   selver: {query: kohupiim, category: ["Kohupiimad, kodujuustud"], require: [kohupiim], exclude: [rosina, vanilli, magus, maasika, ricotta, kreem]}
   rimi:   {query: kohupiim, category: [SH-11-4-21], require: [kohupiim], exclude: [rosina, vanilli, magus, maasika, ricotta, kreem]}
+  barbora: {query: kohupiim, category: [Kohupiimad], require: [kohupiim], exclude: [vanil, rosina, ricotta, magus, maasika, kreem]}
 
 riivjuust:
   selver: {query: riivjuust, category: [Juustud], require: [riivjuust, riivitud]}
   rimi:   {query: riivjuust, category: [SH-11-3-18], require: [riivjuust]}
+  barbora: {query: riivjuust, category: [Riivjuustud], require: [riivjuust]}
 
 makaronid:
-  selver: {query: makaronid, category: [Makaronid], exclude: [gluteenivaba, täistera]}
-  rimi:   {query: makaronid, category: [SH-13-14-20], exclude: [gluteenivaba, täistera, nuudl]}
+  selver: {query: [makaronid, pasta, spagetid, spaghetti], category: [Makaronid], exclude: [gluteenivaba, täistera]}
+  rimi:   {query: [makaronid, pasta, spagetid, spaghetti], category: [SH-13-14-20], exclude: [gluteenivaba, täistera, nuudl]}
+  barbora: {query: [makaronid, pasta, spagetid, spaghetti], category: [Makaronid], exclude: [nuudl, täistera, gluteenivaba]}
 
 nuudlid:
   selver: {query: [munanuudlid, nuudlid], category: [Makaronid, Maailma köök], require: [munanuudl, nuudlid], exclude: [pesad, supp, kiir, ramen, soba, udon, riisi]}
   rimi:   {query: nuudlid, category: [SH-13-14-20], require: [nuudl]}
+  barbora: {query: nuudlid, category: [Makaronid, Aasia nuudlid], require: [nuudlid], exclude: [ramen, riisi, kiir]}
 
 riis:
   selver: {query: riis, category: [Riisid], require: [riis], exclude: [pudru, poke]}
   rimi:   {query: riis, category: [SH-13-15-90, SH-13-15-91], require: [riis]}
+  barbora: {query: riis, category: [Riisid], require: [riis], exclude: [pudru]}
 
 sojakaste:
   selver: {query: sojakaste, category: [Maailma köök], require: [sojakaste], exclude: [magus]}
   rimi:   {query: sojakaste, category: [SH-13-11-71], require: [sojakaste]}
+  barbora: {query: sojakaste, category: [Sojakastmed], require: [sojakaste]}
 
 sai:
   selver: {query: röstsai, category: [Saiad], require: [röst]}
   rimi:   {query: röstsai, category: [SH-6-7-21, SH-6-7-22], require: [röst]}
+  barbora: {query: röstsai, category: [Röstsaiad], require: [röst]}
 
 moos:
   selver: {query: moos, category: [Magusad hoidised], require: [moos]}
   rimi:   {query: moos, category: [SH-13-10-54, SH-19-5], require: [moos, sahvt]}
+  barbora: {query: moos, category: [Magusad hoidised], require: [moos]}

@@ -9,7 +9,6 @@ from core import optimiser
 from stores_config import get_default_stores
 
 import os
-import re
 import time
 
 
@@ -17,8 +16,8 @@ app = FastAPI(title="Groceries Optimizer API")
 
 # Get default stores from config
 _DEFAULT_STORES = get_default_stores()
-# Stores with ingredient rules in data/rules.yaml (physical stores on the way home).
-DINNER_STORES = ["selver", "rimi"]
+# Stores with ingredient rules in data/rules.yaml (Barbora stands in for Maxima).
+DINNER_STORES = ["selver", "rimi", "barbora"]
 
 
 class OptimizeRequest(BaseModel):
@@ -44,6 +43,17 @@ class AvailabilityRequest(BaseModel):
 class DinnerRequest(BaseModel):
     recipe_id: str
     servings: int = 2
+    stores: List[str] = DINNER_STORES
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+
+
+class BasketRequest(BaseModel):
+    recipe_id: Optional[str] = None
+    servings: int = 2
+    items: List[str] = []
+    # {ingredient key or "text:<item>": {"products": {store: name}, "words": [...]}}
+    prefs: Dict[str, Any] = {}
     stores: List[str] = DINNER_STORES
     user_id: Optional[str] = None
     session_id: Optional[str] = None
@@ -83,6 +93,42 @@ def recipes():
     """Dinner recipes the app can recommend."""
     data = catalog.load_recipes()
     return {"recipes": [{"id": r["id"], "name": r["name"], "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]]}
+
+
+@app.post("/basket")
+def basket(req: BasketRequest):
+    """One store for a dinner (optional) plus extra items, honouring the user's preferences.
+
+    Every store's basket is returned (best first), each line with its acceptable alternatives.
+    """
+    if not req.recipe_id and not any(i.strip() for i in req.items):
+        raise HTTPException(status_code=400, detail="Pick a recipe or add at least one item")
+    started = time.monotonic()
+    try:
+        result = catalog.recommend(req.recipe_id, max(1, min(req.servings, 12)), req.items, req.stores, req.prefs)
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f"Unknown recipe: {req.recipe_id}")
+    events.log_event(
+        "basket",
+        {
+            "mission": "dinner" if req.recipe_id else "list",
+            "recipe_id": req.recipe_id,
+            "servings": result["servings"],
+            "items": result["items"],
+            "prefs": req.prefs,
+            "stores": req.stores,
+            "latency_s": round(time.monotonic() - started, 2),
+            "recommended_store": result["store"],
+            "baskets": [
+                {"store": b["store"], "total_price": b["total_price"], "missing": b["missing"],
+                 "chosen": {l["key"]: l["product"] for l in b["lines"]}}
+                for b in result["baskets"]
+            ],
+        },
+        user_id=req.user_id,
+        session_id=req.session_id,
+    )
+    return result
 
 
 @app.post("/dinner")
@@ -132,15 +178,14 @@ def optimize(req: OptimizeRequest):
     # Build grocery_list spec (use item name as search_term)
     # Build a richer spec per item: include tokenized keywords so relevance scoring
     # can use keyword matches even when the UI sent only a display name.
-    grocery_list = {}
-    def _is_size_token(t: str) -> bool:
-        return re.fullmatch(r"\d+(?:[.,]\d+)?(?:g|kg|ml|l)?", t) is not None
-    for it in req.items:
-        it_l = it.lower()
-        tokens = [t for t in re.findall(r"\w+", it_l) if len(t) > 1 and not _is_size_token(t)]
-        grocery_list[it] = {"search_term": it, "include": tokens}
     started = time.monotonic()
+    # Items that match a known ingredient (e.g. "piim", "kanamunad") use its hand-written rule;
+    # everything else falls back to free-text search and relevance scoring.
+    ruled = catalog.list_offers(req.items, req.stores)
+
+    grocery_list = {it: core_fetch.spec_for(it) for it in req.items if it not in ruled}
     all_products, warnings = core_fetch.fetch_all(grocery_list, req.stores)
+    all_products.update(ruled)
     cart, total_score, info = optimiser.optimize_cart(all_products, req.items, req.stores)
     events.log_event(
         "optimize",
@@ -153,6 +198,7 @@ def optimize(req: OptimizeRequest):
             "missing": info["missing"],
             "baskets": info["baskets"],
             "chosen": {p["item"]: p["name"] for p in cart},
+            "rule_matched": sorted(ruled),
             "warnings": len(warnings),
         },
         user_id=req.user_id,

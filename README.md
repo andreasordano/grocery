@@ -4,11 +4,14 @@
 Product prices are fetched live from store e-shops (Selver, Barbora, Rimi); there is no local product database.
 
 Two missions:
-- **🍽️ Dinner tonight** — pick one of 10 dinners and the number of people → one store (Selver or Rimi) with a priced basket.
-- **🛒 Shopping list** — type generic items (free-text search across Selver, Barbora, Rimi; best guess).
+- **🍽️ Dinner tonight** — pick one of 10 dinners, the number of people and anything else you need on the way
+  → one store (Selver, Rimi or Barbora) with a priced basket.
+- **🛒 Shopping list** — type items. Words that match a known ingredient (piim, munad, pasta, …) use its rule;
+  anything else is a free-text best guess. Searches Selver, Rimi and Barbora (Barbora stands in for Maxima).
 
 - **Frontend:** one self-contained page (`web/index.html`, plain HTML/CSS/JS), served by the API at `/`
-- **API:** FastAPI (`api/service.py`) — `GET /recipes`, `POST /dinner`, `POST /optimize`, `POST /events`, `GET /health`
+- **API:** FastAPI (`api/service.py`) — `POST /basket` (used by the web app), `GET /recipes`, `POST /events`, `GET /health`;
+  older `POST /dinner` and `POST /optimize` still work
 - **Events DB:** Postgres (via `DATABASE_URL`), falling back to SQLite at `logs/events.db`
 
 See `diagram.md` for the architecture.
@@ -54,8 +57,9 @@ Give each tester a personal link so repeat usage can be measured per person:
 http://localhost:8000/?u=maria
 ```
 
-Every recommendation is logged (`dinner` or `optimize` event), the 👍/👎 buttons log `accept`/`reject`,
-and "A product looks wrong?" logs `wrong_product` — use those to decide which rule to fix.
+Every recommendation is logged as a `basket` event (with the user's preferences). The receipt logs `accept`/`reject`
+(with the store chosen, which may not be the cheapest), `view_store` (comparing stores), `preference`
+(choosing another product or typing preference words) and `wrong_product` — use those to decide which rule to fix.
 Without `?u=` the user is anonymous (only a per-visit session id is stored).
 
 ### Looking at the data
@@ -71,7 +75,7 @@ FROM events ORDER BY ts DESC LIMIT 20;
 
 -- Per tester: requests, accepts, rejects, active days
 SELECT user_id,
-       count(*) FILTER (WHERE type IN ('dinner', 'optimize')) AS requests,
+       count(*) FILTER (WHERE type IN ('basket', 'dinner', 'optimize')) AS requests,
        count(*) FILTER (WHERE type = 'accept')   AS accepts,
        count(*) FILTER (WHERE type = 'reject')   AS rejects,
        count(DISTINCT ts::date)                  AS active_days
@@ -80,7 +84,8 @@ FROM events GROUP BY user_id ORDER BY requests DESC;
 
 ## Recipes and ingredient rules
 
-- `data/recipes.yaml` — dinners, ingredient amounts for 2 people, pantry items (not priced).
+- `data/recipes.yaml` — dinners, ingredient amounts for 2 people, pantry items (not priced), and per ingredient
+  the `aliases` people type in the shopping list (e.g. munad: munad, muna, kanamunad).
 - `data/rules.yaml` — per ingredient and store: search query + store category + required/excluded words.
   The cheapest acceptable product for the amount needed wins (whole packs; loose goods by weight).
   No product IDs are pinned, so product churn needs no upkeep.
@@ -103,14 +108,25 @@ integration breaks, a rule stops finding products, or a recipe total looks wrong
 a GitHub issue labelled `healthcheck` — that is the only maintenance signal to watch. Run it locally the same way.
 Note: GitHub disables scheduled workflows after 60 days without repository activity.
 
+### Preferences
+
+On the receipt, tap an item to see that store's acceptable alternatives. Picking one remembers it for that store;
+typing words ("Alma", "3,2%", "spaghetti") prefers matching products in every store (spelling-tolerant:
+"spaghetti" matches "Spagetid"). Preferences are kept in the browser (`localStorage`) and sent with each request:
+
+```json
+{"makaronid": {"words": ["spaghetti"], "products": {"rimi": "Makaronid Spaghetti Rimi 500g"}}}
+```
+
 ## API examples
 
 ```bash
 curl -s http://localhost:8000/health
 
-curl -s -X POST http://localhost:8000/dinner \
+curl -s -X POST http://localhost:8000/basket \
   -H "Content-Type: application/json" \
-  -d '{"recipe_id":"kana_riisikauss","servings":2,"user_id":"maria"}' | jq '.baskets[] | {store, total_price, missing}'
+  -d '{"recipe_id":"pasta_hakklihaga","servings":2,"items":["piim"],"prefs":{"piim":{"words":["laktoosivaba"]}},"user_id":"maria"}' \
+  | jq '.baskets[] | {store, total_price, missing}'
 
 curl -s -X POST http://localhost:8000/optimize \
   -H "Content-Type: application/json" \

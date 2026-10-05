@@ -1,35 +1,36 @@
-# DRAFT — dinner recipes for the "Dinner tonight" mission.
+# Dinner recipes for the "Dinner tonight" mission.
 # Amounts are for 2 servings. `pantry` items are assumed to be at home and are not priced.
-# Ingredient keys refer to `ingredients` below; each one gets hand-approved products per store
-# in data/ingredients.yaml (to be built with the curation tool).
+# Ingredient keys refer to `ingredients` below; data/rules.yaml says how to find them in each store.
+# `aliases` are words people type in the shopping list; a typed item matching one uses the rule
+# instead of free-text guessing.
 
 ingredients:
-  hakkliha:        {name: "Kodune hakkliha",            unit: g}
-  broileri_koivad: {name: "Broileri koivad / kintsud",  unit: g}
-  kanafilee:       {name: "Broileri rinnafilee",        unit: g}
-  sealiha:         {name: "Sea abatükk / kaelakarbonaad", unit: g}
-  lohefilee:       {name: "Lõhefilee",                  unit: g}
-  keeduvorst:      {name: "Keeduvorst / doktorivorst",  unit: g}
-  kartul:          {name: "Kartul",                     unit: g}
-  sibul:           {name: "Sibul",                      unit: g}
-  porgand:         {name: "Porgand",                    unit: g}
-  hapukapsas:      {name: "Hapukapsas",                 unit: g}
-  paprika:         {name: "Paprika",                    unit: g}
-  kurk:            {name: "Värske kurk",                unit: g}
-  hapukurk:        {name: "Hapukurgid",                 unit: g}
-  sidrun:          {name: "Sidrun",                     unit: pcs, piece_g: 120}  # sold per kg
-  tomatid_purk:    {name: "Purustatud tomatid (purk)",  unit: g}
-  munad:           {name: "Kanamunad",                  unit: pcs}
-  piim:            {name: "Piim",                       unit: ml}
-  hapukoor:        {name: "Hapukoor",                   unit: g}
-  kohupiim:        {name: "Kohupiim",                   unit: g}
-  riivjuust:       {name: "Riivjuust",                  unit: g}
-  makaronid:       {name: "Makaronid / pasta",          unit: g}
-  nuudlid:         {name: "Nuudlid",                    unit: g}
-  riis:            {name: "Riis",                       unit: g}
-  sojakaste:       {name: "Sojakaste",                  unit: ml}
-  sai:             {name: "Sai / röstsai",              unit: g}
-  moos:            {name: "Moos",                       unit: g}
+  hakkliha: {name: "Kodune hakkliha",            unit: g, aliases: [hakkliha, kodune hakkliha, sea-veise hakkliha, sea- ja veisehakkliha]}
+  broileri_koivad: {name: "Broileri koivad",  unit: g, aliases: [koivad, broileri koivad, kanakoivad, poolkoivad, kintsud]}
+  kanafilee: {name: "Broileri rinnafilee",        unit: g, aliases: [kanafilee, broileri rinnafilee, broiler rinnafilee, kana rinnafilee, rinnafilee]}
+  sealiha: {name: "Sealiha", unit: g, aliases: [sealiha, kaelakarbonaad, sea kaelakarbonaad, abatükk, sea abatükk]}
+  lohefilee: {name: "Lõhefilee",                  unit: g, aliases: [lõhe, lõhefilee]}
+  keeduvorst: {name: "Keeduvorst",  unit: g, aliases: [keeduvorst, doktorivorst, lastevorst]}
+  kartul: {name: "Kartul",                     unit: g, aliases: [kartul, kartulid]}
+  sibul: {name: "Sibul",                      unit: g, aliases: [sibul, sibulad]}
+  porgand: {name: "Porgand",                    unit: g, aliases: [porgand, porgandid]}
+  hapukapsas: {name: "Hapukapsas",                 unit: g, aliases: [hapukapsas]}
+  paprika: {name: "Paprika",                    unit: g, aliases: [paprika, paprikad]}
+  kurk: {name: "Värske kurk",                unit: g, aliases: [kurk, kurgid, värske kurk]}
+  hapukurk: {name: "Hapukurgid",                 unit: g, aliases: [hapukurk, hapukurgid]}
+  sidrun: {name: "Sidrun",                     unit: pcs, piece_g: 120, aliases: [sidrun, sidrunid]}  # sold per kg
+  tomatid_purk: {name: "Purustatud tomatid",  unit: g, aliases: [purustatud tomatid, tükeldatud tomatid, tomatikonserv, konserveeritud tomatid]}
+  munad: {name: "Kanamunad",                  unit: pcs, aliases: [munad, muna, kanamunad]}
+  piim: {name: "Piim",                       unit: ml, aliases: [piim]}
+  hapukoor: {name: "Hapukoor",                   unit: g, aliases: [hapukoor]}
+  kohupiim: {name: "Kohupiim",                   unit: g, aliases: [kohupiim]}
+  riivjuust: {name: "Riivjuust",                  unit: g, aliases: [riivjuust]}
+  makaronid: {name: "Makaronid", unit: g, aliases: [makaronid, pasta]}
+  nuudlid: {name: "Nuudlid",                    unit: g, aliases: [nuudlid]}
+  riis: {name: "Riis",                       unit: g, aliases: [riis]}
+  sojakaste: {name: "Sojakaste",                  unit: ml, aliases: [sojakaste]}
+  sai: {name: "Röstsai", unit: g, aliases: [röstsai, sai]}
+  moos: {name: "Moos",                       unit: g, aliases: [moos]}
 
 recipes:
   - id: hakklihakaste

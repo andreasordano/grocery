@@ -125,6 +125,10 @@ def test_barbora_reads_embedded_product_list(monkeypatch):
 
     class Resp:
         status_code = 200
+
+        def raise_for_status(self):
+            pass
+
         text = (
             '<script>window.b_productList = [{"id": "1", "title": "Kanamunad M 10tk", "price": 1.99,'
             ' "units": [{"unit": "tk"}], "comparative_unit": "tk", "status": "active",'
@@ -140,3 +144,28 @@ def test_barbora_reads_embedded_product_list(monkeypatch):
     assert (eggs["name"], eggs["price"], eggs["unit"], eggs["in_stock"]) == ("Kanamunad M 10tk", 1.99, "tk", True)
     assert eggs["category"] == ["Piimatooted ja munad", "Munad", "Kanamunad"]
     assert (onion["unit"], onion["in_stock"]) == ("kg", False)
+
+
+def test_barbora_page_without_product_list_raises(monkeypatch):
+    from api import barbora_api
+
+    class Resp:
+        status_code = 200
+        text = "<html>Please verify you are human</html>"
+
+        def raise_for_status(self):
+            pass
+
+    monkeypatch.setattr(barbora_api.requests, "get", lambda *a, **kw: Resp())
+    monkeypatch.setattr(barbora_api, "_RETRY_DELAYS", (0, 0))
+    with pytest.raises(RuntimeError):
+        barbora_api.search_barbora("piim")
+
+
+def test_empty_results_are_not_cached(monkeypatch):
+    calls = []
+    monkeypatch.setattr(fetch, "get_fetcher", lambda store: lambda q, **kw: calls.append(q) or [])
+    monkeypatch.setattr(fetch, "get_pagination_param", lambda store: "size")
+    fetch._cached_fetch("teststore", "uncached-query")
+    fetch._cached_fetch("teststore", "uncached-query")
+    assert len(calls) == 2

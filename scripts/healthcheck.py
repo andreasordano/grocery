@@ -17,7 +17,7 @@ from core import catalog  # noqa: E402
 from stores_config import get_store_names  # noqa: E402
 
 CANARY_QUERY = "piim"
-DINNER_STORES = ["selver", "rimi"]
+DINNER_STORES = ["selver", "rimi", "barbora"]
 SANE_TOTAL = (1.0, 40.0)  # € for one recipe, 2 people
 
 

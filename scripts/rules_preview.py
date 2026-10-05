@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core import catalog  # noqa: E402
 
-STORES = ["selver", "rimi"]
+STORES = ["selver", "rimi", "barbora"]
 
 
 def typical_need(recipes, key):
@@ -72,7 +72,7 @@ def show_rule(rule, store, need, spec, show_all):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("ingredients", nargs="*")
-    ap.add_argument("--store", choices=STORES + ["barbora"])
+    ap.add_argument("--store", choices=STORES)
     ap.add_argument("--all", action="store_true", help="also list rejected products")
     ap.add_argument("--raw", help="raw search query (shows categories, ignores rules)")
     args = ap.parse_args()

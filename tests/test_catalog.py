@@ -110,7 +110,7 @@ def test_every_recipe_ingredient_has_rules():
     used = {i["item"] for r in recipes["recipes"] for i in r["ingredients"]}
     assert used <= set(recipes["ingredients"])
     for key in used:
-        assert set(rules[key]) == {"selver", "rimi"}, key
+        assert set(rules[key]) == {"selver", "rimi", "barbora"}, key
 
 
 def test_fallback_only_when_primary_finds_nothing(monkeypatch):
@@ -125,3 +125,73 @@ def test_fallback_only_when_primary_finds_nothing(monkeypatch):
     stock["hapukapsas"] = [{"name": "Hapukapsas 900g", "price": 2.45}]
     offer = catalog.best_offer("kapsas", 800, "a", recipes, rules)
     assert (offer["product"], offer["substitute"]) == ("Hapukapsas 900g", False)
+
+
+@pytest.mark.parametrize("typed, key", [
+    ("piim", "piim"), ("Kanamunad", "munad"), ("munad", "munad"), ("broiler rinnafilee", "kanafilee"),
+    ("  pasta ", "makaronid"), ("Broileri rinnafilee", "kanafilee"), ("jogurt", None), ("piimapulber", None),
+])
+def test_match_ingredient(typed, key):
+    assert catalog.match_ingredient(typed) == key
+
+
+def test_list_offers_uses_rules_for_known_words(fake_store):
+    offers = catalog.list_offers(["Munad", "jogurt"], ["a", "b"])
+    assert list(offers) == ["Munad"]  # jogurt is left to free-text search
+    assert [(o["store"], o["name"], o["price"]) for o in offers["Munad"]] == [("a", "Munad 10 tk", 2.0)]
+
+
+# ── preferences, extra items, other stores ───────────────────────────────────
+
+OPTS = [{"product": "Makaronid EXTRA LINE 400g", "cost": 0.28}, {"product": "Spaghetti DIVELLA 500g", "cost": 0.89},
+        {"product": "Spaghetti BARILLA 500g", "cost": 1.99}]
+
+
+def test_pick_cheapest_by_default():
+    assert catalog._pick(OPTS, None, "a")["product"] == "Makaronid EXTRA LINE 400g"
+
+
+def test_pick_preferred_words_cheapest_match():
+    choice = catalog._pick(OPTS, {"words": ["spaghetti"]}, "a")
+    assert (choice["product"], choice["preferred"]) == ("Spaghetti DIVELLA 500g", True)
+
+
+def test_pick_pinned_product_at_that_store_only():
+    pref = {"products": {"a": "Spaghetti BARILLA 500g"}, "words": ["spaghetti"]}
+    assert catalog._pick(OPTS, pref, "a")["product"] == "Spaghetti BARILLA 500g"
+    assert catalog._pick(OPTS, pref, "b")["product"] == "Spaghetti DIVELLA 500g"  # falls back to words
+
+
+def test_pick_ignores_preference_that_matches_nothing():
+    assert catalog._pick(OPTS, {"words": ["penne"]}, "a")["product"] == "Makaronid EXTRA LINE 400g"
+
+
+def test_recommend_recipe_plus_extra_items(fake_store, monkeypatch):
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores: {
+        "jogurt": {"a": [{"product": "Jogurt 1kg", "price": 1.49, "cost": 1.49, "packs": 1, "how": "", "substitute": False}],
+                   "b": []}})
+    res = catalog.recommend("test", 2, ["jogurt", "Munad"], ["a", "b"])
+    best = res["baskets"][0]
+
+    assert res["store"] == "a"
+    assert [l["label"] for l in best["lines"]] == ["Kartul", "Kanamunad", "jogurt", "Munad"]
+    assert [l["extra"] for l in best["lines"]] == [False, False, True, True]
+    assert best["lines"][2]["key"] == "text:jogurt" and best["lines"][3]["key"] == "munad"
+    assert best["total_price"] == round(0.8 + 2.0 + 1.49 + 2.0, 2)
+    assert res["baskets"][1]["missing"] == ["Kanamunad", "jogurt", "Munad"]  # store b, every basket returned
+
+
+def test_recommend_items_only(fake_store, monkeypatch):
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores: {})
+    res = catalog.recommend(None, 2, ["kartul"], ["a", "b"])
+    assert res["recipe"] is None and res["store"] == "a"
+    assert res["baskets"][0]["lines"][0]["options"][0]["product"] == "Kartul, kg"
+
+
+@pytest.mark.parametrize("word, product", [
+    ("spaghetti", "Spagetid Nr 7 PRESTO 400g"), ("Laktoosivaba", "Piim laktoosivaba Tere 2,5% 1l"),
+    ("3,2%", "Piim FARM MILK 3,2%, 1L"), ("alma", "Piim ALMA 2,5%, 1,5L"),
+])
+def test_preference_words_tolerate_spelling(word, product):
+    opts = [{"product": "Cheapest thing 1kg", "cost": 0.1}, {"product": product, "cost": 1.0}]
+    assert catalog._pick(opts, {"words": [word]}, "a")["product"] == product

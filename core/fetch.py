@@ -50,8 +50,11 @@ def _cached_fetch(store: str, query: str, size: int = 40):
         data = fetcher(query, page=0)
     else:
         data = fetcher(query, **{param_name: size})
-    
-    _CACHE.set(key, data)
+
+    # Don't cache empty results: they are often a transient store error, and
+    # caching them would hide the product for the whole TTL.
+    if data:
+        _CACHE.set(key, data)
     return data
 
 
@@ -106,6 +109,13 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
     product["score"] = score
     product["explanation"] = explanation
     return product
+
+
+def spec_for(item: str) -> dict:
+    """Search spec for a typed item: the text itself plus its keyword tokens (sizes dropped)."""
+    tokens = [t for t in re.findall(r"\w+", item.lower())
+              if len(t) > 1 and not re.fullmatch(r"\d+(?:[.,]\d+)?(?:g|kg|ml|l)?", t)]
+    return {"search_term": item, "include": tokens}
 
 
 def _build_queries(spec: dict):
