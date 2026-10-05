@@ -27,16 +27,10 @@ STORES_CONFIG = {
         "function": "search_rimi",
         "pagination_param": "page",
     },
-    "prisma": {
-        "name": "Prisma",
-        "module": "api.prisma_api",
-        "function": "search_prisma",
-        "pagination_param": "page",
-    },
 }
 
 # Default stores to search (ordered list of store keys)
-DEFAULT_STORES = ["selver", "barbora", "rimi", "prisma"]
+DEFAULT_STORES = ["selver", "barbora", "rimi"]
 
 
 def get_store_names():

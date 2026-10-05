@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 from bs4 import BeautifulSoup
 
 HEADERS = {
@@ -7,32 +8,37 @@ HEADERS = {
     "Accept": "text/html",
 }
 
+# Screen-reader price text, e.g. "1.39 € per pcs." or "20.99 € per kg"
+_PRICE_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*€\s*per\s*([^\s.]+)")
+
+
 def search_rimi(query, page=0):
-    url = f"https://www.rimi.ee/epood/en/search?query={query}&currentPage={page}"
-    r = requests.get(url, headers=HEADERS)
+    url = "https://www.rimi.ee/epood/en/search"
+    r = requests.get(url, params={"query": query, "currentPage": page}, headers=HEADERS, timeout=15)
     soup = BeautifulSoup(r.text, "html.parser")
 
     products = []
     for card in soup.select("[data-product-code]"):
         name_el = card.select_one(".card__name")
-        price_int = card.select_one(".price-tag span")  # integer part
-        price_sup = card.select_one(".price-tag sup")   # decimal part
-
         name = name_el.get_text(strip=True) if name_el else None
 
-        # price-tag contains: <span>1</span><sup>29</sup> → "1.29"
-        if price_int and price_sup:
-            price = float(f"{price_int.get_text(strip=True)}.{price_sup.get_text(strip=True)}")
-        else:
-            price = None
+        # Shelf price per sold unit (per kg for loose items). The GTM "price"
+        # field is not used: for loose items it is the price of the default
+        # quantity (e.g. 0.25 kg), not the per-kg price.
+        price = unit = None
+        sr = card.select_one(".price-tag .sr-only")
+        m = _PRICE_RE.search(sr.get_text(" ", strip=True)) if sr else None
+        if m:
+            price = float(m.group(1).replace(",", "."))
+            unit = m.group(2)
 
-        gtm_raw = card.select_one("[data-gtm-eec-product]")
-        gtm = json.loads(gtm_raw["data-gtm-eec-product"]) if gtm_raw else {}
+        gtm = json.loads(card.get("data-gtm-eec-product") or "{}")
 
         products.append({
             "store": "rimi",
             "name": name,
             "price": price,
+            "unit": unit,
             "code": card.get("data-product-code"),
             "brand": gtm.get("brand"),
         })

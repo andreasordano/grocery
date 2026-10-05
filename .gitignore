@@ -93,4 +93,5 @@ venv.bak/
 
 
 # Local DB files (none required by repo)
+.DS_Store
 

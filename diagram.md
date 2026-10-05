@@ -17,7 +17,6 @@ Summary of the architecture
     * selver_api.py — Elasticsearch POST
     * barbora_api.py — REST GET
     * rimi_api.py — HTML scraping (BeautifulSoup)
-    * prisma_api.py — GraphQL query
     
     Store dispatching is handled dynamically via stores_config.py (get_fetcher() does a runtime import).
 
@@ -65,7 +64,6 @@ flowchart TD
         S1["Selver\nElasticsearch"]
         S2["Barbora\nREST GET"]
         S3["Rimi\nHTML scrape"]
-        S4["Prisma\nGraphQL"]
     end
 
     %% ── STEP 3b: SCORING ─────────────────────────────────────
