@@ -41,6 +41,8 @@ def search_rimi(query, page=0):
             "unit": unit,
             "code": card.get("data-product-code"),
             "brand": gtm.get("brand"),
+            "category": [gtm["category"]] if gtm.get("category") else [],
+            "in_stock": price is not None,
         })
 
     return products

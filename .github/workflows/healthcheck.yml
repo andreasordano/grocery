@@ -1,0 +1,53 @@
+name: Store health check
+
+# Daily check that store integrations and ingredient rules still work.
+# On failure it opens (or comments on) a GitHub issue labelled "healthcheck",
+# so you get an email only when something actually broke.
+on:
+  schedule:
+    - cron: "0 5 * * *"   # 05:00 UTC daily
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run health check
+        id: check
+        run: |
+          set +e
+          python -m scripts.healthcheck > report.md
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Report problems as an issue
+        if: steps.check.outputs.status != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create healthcheck --color B60205 --description "Store health check failures" --force
+          existing=$(gh issue list --label healthcheck --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file report.md
+          else
+            gh issue create --title "Store health check failed" --label healthcheck --body-file report.md
+          fi
+
+      - name: Fail the run
+        if: steps.check.outputs.status != '0'
+        run: exit 1

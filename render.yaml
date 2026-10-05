@@ -6,12 +6,3 @@ services:
     dockerfilePath: api/Dockerfile
     plan: starter
 
-  - type: web
-    name: groceries-frontend
-    env: docker
-    branch: main
-    dockerfilePath: frontend/Dockerfile
-    plan: starter
-    envVars:
-      - key: GROCERIES_API_URL
-        value: http://groceries-api:8000

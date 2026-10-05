@@ -4,7 +4,7 @@
 # Centralized store definitions. To add a new store:
 # 1. Create api/{store}_api.py with a search_{store}(query, page=0) function
 # 2. Add entry to STORES_CONFIG below
-# 3. Done! No need to update fetch.py, app.py, or service.py
+# 3. Done! No need to update fetch.py or service.py
 # =============================================================================
 
 # Available stores and their metadata

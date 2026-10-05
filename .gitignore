@@ -95,3 +95,7 @@ venv.bak/
 # Local DB files (none required by repo)
 .DS_Store
 
+
+# Local event log (validation data)
+logs/
+*.db

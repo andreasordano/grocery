@@ -1,0 +1,139 @@
+# DRAFT — dinner recipes for the "Dinner tonight" mission.
+# Amounts are for 2 servings. `pantry` items are assumed to be at home and are not priced.
+# Ingredient keys refer to `ingredients` below; each one gets hand-approved products per store
+# in data/ingredients.yaml (to be built with the curation tool).
+
+ingredients:
+  hakkliha:        {name: "Kodune hakkliha",            unit: g}
+  broileri_koivad: {name: "Broileri koivad / kintsud",  unit: g}
+  kanafilee:       {name: "Broileri rinnafilee",        unit: g}
+  sealiha:         {name: "Sea abatükk / kaelakarbonaad", unit: g}
+  lohefilee:       {name: "Lõhefilee",                  unit: g}
+  keeduvorst:      {name: "Keeduvorst / doktorivorst",  unit: g}
+  kartul:          {name: "Kartul",                     unit: g}
+  sibul:           {name: "Sibul",                      unit: g}
+  porgand:         {name: "Porgand",                    unit: g}
+  hapukapsas:      {name: "Hapukapsas",                 unit: g}
+  paprika:         {name: "Paprika",                    unit: g}
+  kurk:            {name: "Värske kurk",                unit: g}
+  hapukurk:        {name: "Hapukurgid",                 unit: g}
+  sidrun:          {name: "Sidrun",                     unit: pcs, piece_g: 120}  # sold per kg
+  tomatid_purk:    {name: "Purustatud tomatid (purk)",  unit: g}
+  munad:           {name: "Kanamunad",                  unit: pcs}
+  piim:            {name: "Piim",                       unit: ml}
+  hapukoor:        {name: "Hapukoor",                   unit: g}
+  kohupiim:        {name: "Kohupiim",                   unit: g}
+  riivjuust:       {name: "Riivjuust",                  unit: g}
+  makaronid:       {name: "Makaronid / pasta",          unit: g}
+  nuudlid:         {name: "Nuudlid",                    unit: g}
+  riis:            {name: "Riis",                       unit: g}
+  sojakaste:       {name: "Sojakaste",                  unit: ml}
+  sai:             {name: "Sai / röstsai",              unit: g}
+  moos:            {name: "Moos",                       unit: g}
+
+recipes:
+  - id: hakklihakaste
+    name: Hakklihakaste kartulitega
+    emoji: "🥔"
+    ingredients:
+      - {item: hakkliha, amount: 400}
+      - {item: sibul,    amount: 100}
+      - {item: hapukoor, amount: 200}
+      - {item: kartul,   amount: 800}
+    pantry: [nisujahu, õli, sool, pipar]
+
+  - id: kanasupp
+    name: Kanasupp
+    emoji: "🍲"
+    ingredients:
+      - {item: broileri_koivad, amount: 500}
+      - {item: kartul,          amount: 400}
+      - {item: porgand,         amount: 150}
+      - {item: sibul,           amount: 100}
+      - {item: nuudlid,         amount: 100}
+    pantry: [sool, pipar, loorberileht]
+
+  - id: pasta_hakklihaga
+    name: Pasta hakklihaga
+    emoji: "🍝"
+    ingredients:
+      - {item: makaronid,    amount: 250}
+      - {item: hakkliha,     amount: 400}
+      - {item: sibul,        amount: 100}
+      - {item: tomatid_purk, amount: 400}
+      - {item: riivjuust,    amount: 100}
+    pantry: [õli, sool, pipar]
+
+  - id: kapsahautis
+    name: Hapukapsahautis sealihaga
+    emoji: "🥬"
+    ingredients:
+      - {item: hapukapsas, amount: 800}
+      - {item: sealiha, amount: 400}
+      - {item: sibul,   amount: 100}
+      - {item: porgand, amount: 150}
+    pantry: [õli, sool, pipar]
+
+  - id: ahjusealiha
+    name: Ahjusealiha kartulitega
+    emoji: "🍖"
+    ingredients:
+      - {item: sealiha, amount: 600}
+      - {item: kartul,  amount: 800}
+      - {item: sibul,   amount: 100}
+      - {item: porgand, amount: 150}
+    pantry: [õli, sool, pipar]
+
+  - id: kana_riisikauss
+    name: Kana-riisikauss
+    emoji: "🍚"
+    ingredients:
+      - {item: kanafilee, amount: 400}
+      - {item: riis,      amount: 200}
+      - {item: paprika,   amount: 200}
+      - {item: kurk,      amount: 300}
+      - {item: sojakaste, amount: 30}
+    pantry: [õli]
+
+  - id: lohe_kartul
+    name: Ahjulõhe kartulitega
+    emoji: "🐟"
+    ingredients:
+      - {item: lohefilee, amount: 300}
+      - {item: kartul,    amount: 800}
+      - {item: sidrun,    amount: 1}
+      - {item: hapukoor,  amount: 200}
+    pantry: [õli, sool, pipar]
+
+  - id: shakshuka
+    name: Shakshuka
+    emoji: "🍳"
+    ingredients:
+      - {item: munad,        amount: 4}
+      - {item: tomatid_purk, amount: 400}
+      - {item: paprika,      amount: 200}
+      - {item: sibul,        amount: 100}
+      - {item: sai,          amount: 200}
+    pantry: [õli, sool, pipar]
+
+  - id: pannkoogid
+    name: Pannkoogid kohupiimaga
+    emoji: "🥞"
+    ingredients:
+      - {item: piim,     amount: 500}
+      - {item: munad,    amount: 2}
+      - {item: kohupiim, amount: 400}
+      - {item: moos,     amount: 200}
+    pantry: [nisujahu, suhkur, sool, õli]
+
+  - id: kartulisalat
+    name: Kartulisalat
+    emoji: "🥗"
+    ingredients:
+      - {item: kartul,     amount: 600}
+      - {item: porgand,    amount: 150}
+      - {item: munad,      amount: 4}
+      - {item: hapukurk,   amount: 300}
+      - {item: keeduvorst, amount: 300}
+      - {item: hapukoor,   amount: 200}
+    pantry: [sool, pipar]

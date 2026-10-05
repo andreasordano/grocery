@@ -1,24 +1,31 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+from core import catalog
+from core import events
 from core import fetch as core_fetch
 from core import optimiser
 from stores_config import get_default_stores
 
 import os
-import json
 import re
+import time
 
 
 app = FastAPI(title="Groceries Optimizer API")
 
 # Get default stores from config
 _DEFAULT_STORES = get_default_stores()
+# Stores with ingredient rules in data/rules.yaml (physical stores on the way home).
+DINNER_STORES = ["selver", "rimi"]
 
 
 class OptimizeRequest(BaseModel):
     items: List[str]
     stores: List[str] = _DEFAULT_STORES
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
 
 
 class OptimizeResponse(BaseModel):
@@ -34,6 +41,21 @@ class AvailabilityRequest(BaseModel):
     stores: List[str] = _DEFAULT_STORES
 
 
+class DinnerRequest(BaseModel):
+    recipe_id: str
+    servings: int = 2
+    stores: List[str] = DINNER_STORES
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+
+
+class EventRequest(BaseModel):
+    type: str
+    data: Dict[str, Any] = {}
+    user_id: Optional[str] = None
+    session_id: Optional[str] = None
+
+
 
 
 @app.post("/availability")
@@ -47,6 +69,57 @@ def availability(req: AvailabilityRequest):
         stores_with = sorted({p["store"] for p in prods})
         availability[it] = stores_with
     return {"availability": availability, "warnings": warnings}
+
+
+@app.post("/events")
+def log_event(req: EventRequest):
+    """Record a user action from the web app (e.g. accepted/rejected a recommendation)."""
+    ok = events.log_event(req.type, req.data, user_id=req.user_id, session_id=req.session_id)
+    return {"logged": ok}
+
+
+@app.get("/recipes")
+def recipes():
+    """Dinner recipes the app can recommend."""
+    data = catalog.load_recipes()
+    return {"recipes": [{"id": r["id"], "name": r["name"], "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]]}
+
+
+@app.post("/dinner")
+def dinner(req: DinnerRequest):
+    """Recommend one store for a recipe, with the priced basket and alternatives."""
+    started = time.monotonic()
+    try:
+        result = catalog.recommend_dinner(req.recipe_id, max(1, min(req.servings, 12)), req.stores)
+    except KeyError:
+        raise HTTPException(status_code=404, detail=f"Unknown recipe: {req.recipe_id}")
+    events.log_event(
+        "dinner",
+        {
+            "recipe_id": req.recipe_id,
+            "servings": result["servings"],
+            "stores": req.stores,
+            "latency_s": round(time.monotonic() - started, 2),
+            "recommended_store": result["store"],
+            "baskets": [
+                {"store": b["store"], "total_price": b["total_price"], "missing": b["missing"],
+                 "chosen": {l["ingredient"]: l["product"] for l in b["lines"]}}
+                for b in result["baskets"]
+            ],
+        },
+        user_id=req.user_id,
+        session_id=req.session_id,
+    )
+    return result
+
+
+_INDEX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "index.html")
+
+
+@app.get("/", include_in_schema=False)
+def index():
+    """The web app (a single self-contained page)."""
+    return FileResponse(_INDEX, headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/health")
@@ -66,8 +139,25 @@ def optimize(req: OptimizeRequest):
         it_l = it.lower()
         tokens = [t for t in re.findall(r"\w+", it_l) if len(t) > 1 and not _is_size_token(t)]
         grocery_list[it] = {"search_term": it, "include": tokens}
+    started = time.monotonic()
     all_products, warnings = core_fetch.fetch_all(grocery_list, req.stores)
     cart, total_score, info = optimiser.optimize_cart(all_products, req.items, req.stores)
+    events.log_event(
+        "optimize",
+        {
+            "items": req.items,
+            "stores": req.stores,
+            "latency_s": round(time.monotonic() - started, 2),
+            "recommended_store": info["store"],
+            "total_price": info["total_price"],
+            "missing": info["missing"],
+            "baskets": info["baskets"],
+            "chosen": {p["item"]: p["name"] for p in cart},
+            "warnings": len(warnings),
+        },
+        user_id=req.user_id,
+        session_id=req.session_id,
+    )
     # convert defaultdict to regular dict for JSON serialization
     return {"cart": cart, "total_score": total_score, "info": info, "warnings": warnings, "all_products": dict(all_products)}
 

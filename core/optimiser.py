@@ -1,38 +1,52 @@
 # =============================================================================
-# This module contains the core optimization logic for selecting the best combination of products based on their scores and prices. 
-# The main function, `optimize_cart`, takes a list of all products from the database, a grocery list, and selected stores, 
-# and returns the best cart along with its total score and price.
-# It runs after the scoring phase, which assigns a score to each product based on various factors (see scoring.py) and before the final output formatting.
+# This module turns scored candidates into a single-store recommendation.
+# The product answer is "go to one store, buy this", so baskets are never split
+# across stores. For each store we pick the best-scored product per item, then
+# rank stores by coverage (fewest missing items) and then by total price.
+# It runs after the fetch/scoring phase (see fetch.py and scoring.py).
 # =============================================================================
 
-def optimize_cart(all_products, grocery_list, selected_stores):
-
-    best_cart = []
-    total_score = 0.0
-
-    for name in grocery_list:
-
-        products = all_products.get(name, [])
-
-        valid = [
-            p for p in products
-            if p["store"] in selected_stores
-        ]
-
-        if not valid:
+def store_basket(all_products, items, store):
+    """Best-scored product per item at one store, plus the items it lacks."""
+    cart = []
+    missing = []
+    for name in items:
+        candidates = [p for p in all_products.get(name, []) if p["store"] == store]
+        if not candidates:
+            missing.append(name)
             continue
+        cart.append(min(candidates, key=lambda p: p.get("score", float("inf"))))
 
-        best = min(valid, key=lambda p: p.get("score", float("inf")))
-
-        best_cart.append(best)
-        total_score += best.get("score", 0.0)
-
-    total_price = sum(p["price"] for p in best_cart)
-
-    info = {
-        "total_score": round(total_score, 2),
-        "total_price": round(total_price, 2),
-        "stores": list(set(p["store"] for p in best_cart))
+    return {
+        "store": store,
+        "cart": cart,
+        "missing": missing,
+        "total_price": round(sum(p["price"] for p in cart), 2),
+        "total_score": round(sum(p.get("score", 0.0) for p in cart), 2),
     }
 
-    return best_cart, info["total_score"], info
+
+def optimize_cart(all_products, items, selected_stores):
+    """Return (cart, total_score, info) for the recommended single store.
+
+    info["baskets"] holds every store's summary, best first, so the caller can
+    show alternatives. Returns an empty cart when no store has any item.
+    """
+    baskets = [store_basket(all_products, items, s) for s in selected_stores]
+    baskets.sort(key=lambda b: (len(b["missing"]), b["total_price"]))
+    baskets = [b for b in baskets if b["cart"]]
+
+    if not baskets:
+        return [], 0.0, {"store": None, "total_price": 0.0, "missing": list(items), "baskets": []}
+
+    best = baskets[0]
+    info = {
+        "store": best["store"],
+        "total_price": best["total_price"],
+        "missing": best["missing"],
+        "baskets": [
+            {k: b[k] for k in ("store", "total_price", "missing")}
+            for b in baskets
+        ],
+    }
+    return best["cart"], best["total_score"], info

@@ -8,6 +8,7 @@
 # =============================================================================
 
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import re
 from core.cache import TTLCache
@@ -144,55 +145,74 @@ def _build_queries(spec: dict):
     return uniq
 
 
+def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit: int):
+    """Run the query fallbacks for one item at one store; return (candidates, warnings)."""
+    rules = build_rules(spec)
+    store_candidates = []
+    warnings = []
+    seen_ids = set()
+
+    for q in _build_queries(spec):
+        try:
+            raw = _cached_fetch(store, q)
+        except Exception as exc:
+            warnings.append(f"{store}/{display_name}: {exc}")
+            raw = []
+
+        for item in raw:
+            remote_id = item.get("id") or item.get("sku") or item.get("code") or item.get("name")
+            if not remote_id:
+                continue
+            dedup_key = f"{store}:{str(remote_id).lower()}"
+            if dedup_key in seen_ids:
+                continue
+            seen_ids.add(dedup_key)
+
+            product = _normalize_candidate(item, display_name, store, rules)
+            if not product:
+                continue
+            store_candidates.append(product)
+
+        if len(store_candidates) >= per_store_limit:
+            break
+
+    # keep best scored candidates per store
+    store_candidates.sort(key=lambda p: p.get("score", float("inf")))
+    return store_candidates[:per_store_limit], warnings
+
+
 def fetch_all(grocery_list, selected_stores, on_progress=None):
     """
     Fetch and score products for every item/store combination using short,
     generic queries with cached responses and strict relevance filtering.
+    Item/store combinations are fetched concurrently; results are assembled
+    in grocery-list and store order so output is deterministic.
     """
+    PER_STORE_LIMIT = int(os.environ.get("PER_STORE_LIMIT", 6))
+    MAX_WORKERS = int(os.environ.get("FETCH_WORKERS", 12))
+
+    jobs = [(name, store) for name in grocery_list for store in selected_stores]
+    results = {}
+    total = len(jobs)
+
+    with ThreadPoolExecutor(max_workers=max(1, MAX_WORKERS)) as pool:
+        futures = {
+            pool.submit(_fetch_item_store, name, grocery_list[name], store, PER_STORE_LIMIT): (name, store)
+            for name, store in jobs
+        }
+        for count, fut in enumerate(as_completed(futures), start=1):
+            name, store = futures[fut]
+            try:
+                results[(name, store)] = fut.result()
+            except Exception as exc:
+                results[(name, store)] = ([], [f"{store}/{name}: {exc}"])
+            if on_progress:
+                on_progress(count, total, store, name)
+
     all_products = defaultdict(list)
     warnings = []
-    total = len(grocery_list) * len(selected_stores)
-    count = 0
-
-    PER_STORE_LIMIT = int(os.environ.get("PER_STORE_LIMIT", 6))
-
-    for display_name, spec in grocery_list.items():
-        rules = build_rules(spec)
-        queries = _build_queries(spec)
-
-        for store in selected_stores:
-            store_candidates = []
-            seen_ids = set()
-
-            for q in queries:
-                try:
-                    raw = _cached_fetch(store, q)
-                except Exception as exc:
-                    warnings.append(f"{store}/{display_name}: {exc}")
-                    raw = []
-
-                for item in raw:
-                    remote_id = item.get("id") or item.get("sku") or item.get("code") or item.get("name")
-                    if not remote_id:
-                        continue
-                    dedup_key = f"{store}:{str(remote_id).lower()}"
-                    if dedup_key in seen_ids:
-                        continue
-                    seen_ids.add(dedup_key)
-
-                    product = _normalize_candidate(item, display_name, store, rules)
-                    if not product:
-                        continue
-                    store_candidates.append(product)
-
-                if len(store_candidates) >= PER_STORE_LIMIT:
-                    break
-
-            # keep best scored candidates per store
-            store_candidates.sort(key=lambda p: p.get("score", float("inf")))
-            all_products[display_name].extend(store_candidates[:PER_STORE_LIMIT])
-
-            count += 1
-            if on_progress:
-                on_progress(count, total, store, display_name)
+    for name, store in jobs:
+        candidates, job_warnings = results[(name, store)]
+        all_products[name].extend(candidates)
+        warnings.extend(job_warnings)
     return all_products, warnings

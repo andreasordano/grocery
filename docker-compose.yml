@@ -1,27 +1,37 @@
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: groceries
+      POSTGRES_PASSWORD: groceries
+      POSTGRES_DB: groceries
+    ports:
+      - "5433:5432"   # host 5433 to avoid clashing with a local Postgres on 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U groceries -d groceries"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
   api:
     build:
       context: .
       dockerfile: api/Dockerfile
     environment:
+      DATABASE_URL: postgresql://groceries:groceries@db:5432/groceries
       # Optional tuning knobs
       FETCH_CACHE_TTL: "21600"      # seconds
       FETCH_CACHE_MAX: "512"
       PER_STORE_LIMIT: "6"
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
       - ./:/app:delegated
 
-  frontend:
-    build:
-      context: .
-      dockerfile: frontend/Dockerfile
-    environment:
-      GROCERIES_API_URL: http://api:8000
-    depends_on:
-      - api
-    ports:
-      - "8505:8501"
-    volumes:
-      - ./:/app:delegated
+volumes:
+  pgdata:
