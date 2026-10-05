@@ -42,10 +42,14 @@ def search_barbora(query, size=24):
     products = []
     for item in items[:size]:
         path = item.get("category_name_full_path") or ""
+        price, regular, card, deal = _prices(item)
         products.append({
             "store": "barbora",
             "name": (item.get("title") or "").strip(),
-            "price": item.get("price"),
+            "price": price,
+            "regular_price": regular,
+            "card_price": card,
+            "deal": deal,
             "retail_price": item.get("retail_price"),
             "brand": item.get("brand_name"),
             # Sold unit ("tk" or "kg" for loose goods); comparative_unit is only the price-comparison unit.
@@ -56,6 +60,25 @@ def search_barbora(query, size=24):
             "in_stock": item.get("status") == "active",
         })
     return products
+
+
+def _prices(item):
+    """(public price, regular price if discounted, loyalty-card price, multi-buy note).
+
+    For card-only offers (LOYALTY_PRICE) Barbora's `price` is already the card price,
+    so the public price is the old price. Multi-buy offers only apply from minQuantity,
+    so a single item costs the old price.
+    """
+    price = item.get("price")
+    promo = item.get("promotion") or {}
+    old = promo.get("oldPrice") or item.get("retail_price")
+    if not promo or not old or not price or old <= price:
+        return price, None, None, None
+    if promo.get("loyaltyCardRequired"):
+        return old, None, price, None
+    if (promo.get("minQuantity") or 1) > 1:
+        return old, None, None, f"{promo['minQuantity']} or more: {price:.2f} € each"
+    return price, old, None, None
 
 
 if __name__ == "__main__":

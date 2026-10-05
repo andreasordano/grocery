@@ -31,6 +31,14 @@ ingredients:
   sojakaste: {name: "Sojakaste",                  unit: ml, aliases: [sojakaste]}
   sai: {name: "Röstsai", unit: g, aliases: [röstsai, sai]}
   moos: {name: "Moos",                       unit: g, aliases: [moos]}
+  # Pantry staples: recipes assume you have them; tapping one on the receipt adds one pack.
+  oli: {name: "Õli", unit: ml, aliases: [õli, toiduõli, taimeõli, praadimisõli]}  # any cooking oil; cheapest by default
+  oliivioli: {name: "Oliiviõli", unit: ml, aliases: [oliiviõli, oliivõli, oliivi õli]}
+  sool: {name: "Sool", unit: g, aliases: [sool, söögisool, meresool]}
+  pipar: {name: "Must pipar", unit: g, aliases: [pipar, must pipar, jahvatatud pipar]}
+  nisujahu: {name: "Nisujahu", unit: g, aliases: [nisujahu, jahu]}
+  suhkur: {name: "Suhkur", unit: g, aliases: [suhkur]}
+  loorberileht: {name: "Loorberilehed", unit: g, aliases: [loorberileht, loorberilehed, loorber]}
 
 recipes:
   - id: hakklihakaste

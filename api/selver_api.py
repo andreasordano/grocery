@@ -13,7 +13,8 @@ def search_selver(query, size=10):
             "query_string": {"query": query}
         },
         "size": size,
-        "_source": ["name", "final_price", "price", "sku", "product_brand", "product_volume", "category", "stock"]
+        "_source": ["name", "final_price", "price", "original_price", "special_to_date",
+                    "sku", "product_brand", "product_volume", "category", "stock"]
     }
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -29,10 +30,17 @@ def search_selver(query, size=10):
     for h in r.json().get("hits", {}).get("hits", []):
         src = h["_source"]
         volume = (src.get("product_volume") or "").strip()
+        price = src.get("final_price") or src.get("price")
+        # Campaign price: original_price is the regular price. Selver's loyalty (Partnerkaart)
+        # prices are per numbered customer group and can't be identified, so they're not used.
+        regular = src.get("original_price")
+        on_sale = bool(regular and price and float(regular) > float(price) + 0.004)
         products.append({
             "store": "selver",
             "name": src.get("name"),
-            "price": src.get("final_price") or src.get("price"),
+            "price": price,
+            "regular_price": float(regular) if on_sale else None,
+            "deal_until": (src.get("special_to_date") or "")[:10] or None if on_sale else None,
             "sku": src.get("sku"),
             "brand": src.get("product_brand"),
             "volume": volume,

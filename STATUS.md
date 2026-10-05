@@ -34,7 +34,7 @@ All 61 events in the local database are from one person (the founder).
   fallbacks (sauerkraut → praekapsas) and typed-word aliases (`data/recipes.yaml`).
 - 10 dinners with amounts for 2, scaled by people; extra items on a dinner trip.
 - Daily health check (`scripts/healthcheck.py`, GitHub Actions) that opens an issue when a store or rule breaks.
-- Postgres in Docker Compose, event log, 54 tests, README.
+- Postgres in Docker Compose, event log, 61 tests, README.
 
 ---
 
@@ -64,7 +64,16 @@ All 61 events in the local database are from one person (the founder).
       sites might block GitHub's servers.
 - [ ] Note: GitHub turns scheduled workflows off after 60 days without repository activity.
 
-### 3. Product gaps found while testing
+### 3. Product direction agreed on 6 Oct 2026 (in progress)
+- [x] **Show discounts** on the receipt (regular price, % off, offer end date, card price, multi-buy notes, "You save").
+- [x] **Pantry items can be added** to a dinner trip (tap "õli" under "Have at home").
+- [ ] **One list with Ideas:** merge Dinner and Shopping list. Free items are the core; recipes become ideas
+      that add their ingredients to the list as editable items. No new hand-written recipes.
+- [ ] **"Save as my dinner":** users keep their own lists (zero upkeep, shows what people cook).
+- [ ] **Featured ideas from discounts**, computed automatically ("Shakshuka is 30% cheaper at Rimi this week").
+      Later the slot for store-paid placement, always labelled.
+
+### 4. Product gaps found while testing
 - [ ] **Quantities in the shopping list** ("2 piim", "kartul 2 kg"). Today an item means one pack, or 800 g
       for loose goods (borrowed from recipe amounts).
 - [ ] **Free-text matching is still guesswork** for words without a rule (e.g. "jogurt", "leib").
@@ -76,7 +85,7 @@ All 61 events in the local database are from one person (the founder).
       only worth it if validation passes.
 - [ ] **Coop** (now owns the former Prisma stores, regional e-shops) is not covered. Lidl has no e-shop.
 
-### 4. Technical debt (low priority)
+### 5. Technical debt (low priority)
 - [ ] Old endpoints `POST /dinner` and `POST /optimize` are unused by the web app; remove them once
       nothing depends on them.
 - [ ] Barbora searches run one at a time (it throttles parallel requests), so the first pricing of a dinner
@@ -97,7 +106,7 @@ All 61 events in the local database are from one person (the founder).
 ## Picking it up again
 ```bash
 docker compose up --build -d                 # app at http://localhost:8000/?u=yourname
-python -m pytest -q tests                    # 54 tests
+python -m pytest -q tests                    # 61 tests
 python -m scripts.healthcheck                # are the stores and rules still OK?
 docker compose exec db psql -U groceries     # look at events (queries in README.md)
 ```

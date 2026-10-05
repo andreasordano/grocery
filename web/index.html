@@ -187,6 +187,14 @@ h1 {
 /* Product names wrap: stores put the pack size ("10tk", "500g") at the end. */
 .r-line .p { grid-column: 1; color: #5d6971; font-size: 11.5px; overflow-wrap: anywhere; }
 .r-line .c { grid-column: 2; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
+.r-line .c s { color: #8a949b; margin-right: 6px; text-decoration-thickness: 1px; }
+.r-line .d { grid-column: 1; color: #9e2a3f; font-size: 11px; }
+.r-off { display: inline-block; margin-left: 6px; padding: 0 5px; border-radius: 3px; font-size: 10px; font-weight: 600; background: #9e2a3f; color: #fbfbf8; }
+.r-save { display: flex; justify-content: space-between; margin-top: 6px; color: #9e2a3f; font-weight: 600; }
+.r-card { color: #5d6971; margin-top: 2px; }
+.r-pantry button { border: 0; background: none; padding: 0 1px; font: inherit; color: #23303b; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
+.r-pantry button:hover { color: #9e2a3f; }
+.opts s { color: var(--ink-soft); font-weight: 400; margin-right: 6px; }
 .r-tag { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid currentColor; border-radius: 3px; font-size: 10px; font-weight: 400; color: #9e2a3f; }
 .r-hint { margin-top: 8px; font-size: 11px; }
 .r-total { display: flex; justify-content: space-between; align-items: baseline; font: 800 22px/1 var(--sans); letter-spacing: -0.02em; }
@@ -500,13 +508,23 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     return l.packs == null ? amount(l.need, l.unit) : "";
   }
 
+  const shortDate = iso => { const [, m, d] = iso.split("-"); return `${+d}.${m}`; };
+  const percentOff = (regular, cost) => Math.round((1 - cost / regular) * 100);
+
   function line(l) {
     const tag = l.substitute ? "swap" : (l.pinned || l.preferred) ? "your pick" : "";
     const amt = lineAmount(l);
+    const onSale = l.regular_cost && l.regular_cost > l.cost;
+    const off = onSale ? `<span class="r-off">−${percentOff(l.regular_cost, l.cost)}%${l.deal_until ? ` until ${shortDate(l.deal_until)}` : ""}</span>` : "";
+    const notes = [
+      l.card_cost && l.card_cost < l.cost ? `${num.format(l.card_cost)} with a loyalty card` : "",
+      l.deal || "",
+    ].filter(Boolean);
     return `<li><button type="button" class="r-line" data-key="${esc(l.key)}" aria-label="Choose another ${esc(l.label)}">
-      <span class="n">${esc(l.label)}${amt ? ` <span class="amt">${esc(amt)}</span>` : ""}${tag ? `<span class="r-tag">${tag}</span>` : ""}</span>
-      <span class="c">${num.format(l.cost)}</span>
-      <span class="p">${esc(l.product)}</span></button></li>`;
+      <span class="n">${esc(l.label)}${amt ? ` <span class="amt">${esc(amt)}</span>` : ""}${off}${tag ? `<span class="r-tag">${tag}</span>` : ""}</span>
+      <span class="c">${onSale ? `<s>${num.format(l.regular_cost)}</s>` : ""}${num.format(l.cost)}</span>
+      <span class="p">${esc(l.product)}</span>
+      ${notes.length ? `<span class="d">${esc(notes.join(". "))}</span>` : ""}</button></li>`;
   }
 
   // Draw the receipt for one store of the current result.
@@ -538,7 +556,9 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       <div class="r-hint">Tap an item to choose another.</div>
       <hr class="r-rule">
       <div class="r-total"><span>Total</span><span>${euro.format(b.total_price)}</span></div>
-      ${res.recipe?.pantry?.length ? `<div class="r-note">Have at home: ${res.recipe.pantry.map(esc).join(", ")}</div>` : ""}
+      ${b.savings > 0 ? `<div class="r-save"><span>You save</span><span>${euro.format(b.savings)}</span></div>` : ""}
+      ${b.card_savings > 0 ? `<div class="r-card">${euro.format(b.card_savings)} less with a loyalty card</div>` : ""}
+      ${pantryNote(res)}
       ${prefsNote(b)}
       ${res.baskets.length > 1 ? `<hr class="r-rule"><div class="r-head" style="margin-top:0">Compare stores</div>
         <ul class="stores">${res.baskets.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
@@ -584,6 +604,14 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       return;
     }
     if (e.target.closest("#editPrefs")) { openPrefs(); return; }
+    const pantry = e.target.closest("[data-pantry]");
+    if (pantry) {
+      state.extras.push(pantry.dataset.pantry);
+      logEvent("add_pantry", { item: pantry.dataset.pantry, recipe_id: state.result?.recipe?.id ?? null });
+      renderDinner();
+      ask();
+      return;
+    }
     const l = e.target.closest(".r-line");
     if (l) openSheet(l.dataset.key);
   });
@@ -649,7 +677,8 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       </div>
       <ul class="opts">${l.options.map((o, i) => `
         <li><label><input type="radio" name="opt" value="${i}" ${o.product === chosen ? "checked autofocus" : ""}>
-          <span>${esc(o.product)}</span><span class="pc">${num.format(o.cost)}</span></label></li>`).join("")}
+          <span>${esc(o.product)}${o.deal ? ` <span class="fine">${esc(o.deal)}</span>` : ""}</span>
+          <span class="pc">${o.regular_cost && o.regular_cost > o.cost ? `<s>${num.format(o.regular_cost)}</s>` : ""}${num.format(o.cost)}</span></label></li>`).join("")}
       </ul>
       <div id="cross">${cross()}</div>
       <div class="sh-bottom">
@@ -704,6 +733,13 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     if (p.words?.length) parts.push(`In every store: products with “${p.words.join("”, “")}”`);
     for (const [s, prod] of Object.entries(p.products || {})) parts.push(`At ${cap(s)}: ${prod}`);
     return parts;
+  }
+
+  // Items the recipe assumes you have. Tapping one adds it to this trip.
+  function pantryNote(res) {
+    const left = (res.recipe?.pantry || []).filter(p => !state.extras.some(e => e.toLowerCase() === p.toLowerCase()));
+    if (!left.length) return "";
+    return `<div class="r-note r-pantry">Have at home: ${left.map(p => `<button type="button" data-pantry="${esc(p)}" aria-label="Add ${esc(p)} to the trip">${esc(p)}</button>`).join(", ")}. Missing one? Tap it to add it.</div>`;
   }
 
   function prefsNote(b) {

@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import yaml
 
-from core.fetch import _cached_fetch
+from core.fetch import _cached_fetch, discount_fields
 from core.scoring import parse_price
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
@@ -172,7 +172,16 @@ def _queries(rule):
     return rule["query"] if isinstance(rule["query"], list) else [rule["query"]]
 
 
-MAX_OPTIONS = 40  # alternatives per line; the web app also previews preferences against them
+def _with_discount(option, product):
+    """Add discount info to an option. Regular and card costs scale with the cost
+    (same packs or weight), so they compare directly with it."""
+    d = discount_fields(product)
+    price, cost = option["price"], option["cost"]
+    scale = lambda other: round(cost * other / price, 2) if other and price else None
+    return {**option, **d, "regular_cost": scale(d["regular_price"]), "card_cost": scale(d["card_price"])}
+
+
+MAX_OPTIONS = 100  # alternatives per line; the web app also previews preferences against them
 
 
 def _fold(text):
@@ -218,8 +227,8 @@ def ingredient_offers(ingredient_key, need, store, recipes, rules, pref=None):
             priced = cost_for(p, need, spec["unit"], spec.get("piece_g"))
             if priced:
                 cost, packs, how = priced
-                options.append({"product": p["name"], "price": parse_price(p["price"]), "cost": cost,
-                                "packs": packs, "how": how, "substitute": level > 0})
+                options.append(_with_discount({"product": p["name"], "price": parse_price(p["price"]), "cost": cost,
+                                               "packs": packs, "how": how, "substitute": level > 0}, p))
         if options:
             options.sort(key=lambda o: o["cost"])
             return _pick(options, pref, store), options
@@ -304,8 +313,8 @@ def free_text_offers(items, stores):
         out[it] = {}
         for store in stores:
             cands = sorted((p for p in all_products.get(it, []) if p["store"] == store), key=lambda p: p["score"])
-            out[it][store] = [{"product": p["name"], "price": p["price"], "cost": p["price"], "packs": 1,
-                               "how": f"1 × {p['price']:.2f} €", "substitute": False} for p in cands]
+            out[it][store] = [_with_discount({"product": p["name"], "price": p["price"], "cost": p["price"], "packs": 1,
+                                              "how": f"1 × {p['price']:.2f} €", "substitute": False}, p) for p in cands]
     return out
 
 
@@ -314,7 +323,8 @@ def _line(key, label, need, unit, offer, options, extra):
         "key": key, "ingredient": key if not key.startswith("text:") else None,
         "label": label, "need": need, "unit": unit, "extra": extra,
         **offer,
-        "options": [{"product": o["product"], "cost": o["cost"], "how": o["how"]} for o in options[:MAX_OPTIONS]],
+        "options": [{k: o.get(k) for k in ("product", "cost", "how", "regular_cost", "card_cost", "deal")}
+                    for o in options[:MAX_OPTIONS]],
     }
 
 
@@ -346,11 +356,16 @@ def build_basket(store, recipe, servings, items, prefs, recipes, rules, free):
         else:
             missing.append(item)
 
+    total = round(sum(l["cost"] for l in lines), 2)
     return {
         "store": store,
         "lines": lines,
         "missing": missing,
-        "total_price": round(sum(l["cost"] for l in lines), 2),
+        "total_price": total,
+        # Already included in total_price: what the discounts take off regular prices.
+        "savings": round(sum((l.get("regular_cost") or l["cost"]) - l["cost"] for l in lines), 2),
+        # Not included: what loyalty-card prices would take off on top.
+        "card_savings": round(sum(l["cost"] - (l.get("card_cost") or l["cost"]) for l in lines), 2),
     }
 
 

@@ -59,6 +59,20 @@ def _cached_fetch(store: str, query: str, size: int = 40):
 
 
 
+def discount_fields(item: dict) -> dict:
+    """Discount info from a store adapter's product: regular price (when on sale), loyalty-card
+    price, multi-buy note and offer end date. Missing values are None."""
+    def num(v):
+        p = parse_price(v)
+        return None if p == float("inf") else p
+    return {
+        "regular_price": num(item.get("regular_price")),
+        "card_price": num(item.get("card_price")),
+        "deal": item.get("deal"),
+        "deal_until": item.get("deal_until"),
+    }
+
+
 def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict):
     name = item.get("name") or ""
     price = parse_price(item.get("price") or item.get("retail_price"))
@@ -94,6 +108,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "store": store,
         "name": name,
         "price": price,
+        **discount_fields(item),
         "brand": item.get("brand"),
         "weight_g": weight,
         "volume_ml": volume,

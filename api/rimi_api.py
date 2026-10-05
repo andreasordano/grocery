@@ -10,6 +10,9 @@ HEADERS = {
 
 # Screen-reader price text, e.g. "1.39 € per pcs." or "20.99 € per kg"
 _PRICE_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*€\s*per\s*([^\s.]+)")
+_NUMBER_RE = re.compile(r"(\d+[.,]\d+)")
+# Multi-buy label, e.g. "2 and more -23%"
+_MULTIBUY_RE = re.compile(r"(\d+)\s+and more\s*-\s*(\d+)\s*%")
 
 
 def search_rimi(query, page=0):
@@ -34,10 +37,26 @@ def search_rimi(query, page=0):
 
         gtm = json.loads(card.get("data-gtm-eec-product") or "{}")
 
+        # Discounted cards show the regular price separately ("Regular price: 1,69 €").
+        regular = None
+        old = card.select_one(".card__old-price, .old-price-tag")
+        m = _NUMBER_RE.search(old.get_text(" ", strip=True)) if old else None
+        if m and price is not None:
+            value = float(m.group(1).replace(",", "."))
+            regular = value if value > price + 0.004 else None
+
+        deal = None
+        label = card.select_one(".price-label")
+        m = _MULTIBUY_RE.search(label.get_text(" ", strip=True)) if label else None
+        if m:
+            deal = f"{m.group(1)} or more: −{m.group(2)}%"
+
         products.append({
             "store": "rimi",
             "name": name,
             "price": price,
+            "regular_price": regular,
+            "deal": deal,
             "unit": unit,
             "code": card.get("data-product-code"),
             "brand": gtm.get("brand"),

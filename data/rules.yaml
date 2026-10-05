@@ -158,3 +158,41 @@ moos:
   selver: {query: moos, category: [Magusad hoidised], require: [moos]}
   rimi:   {query: moos, category: [SH-13-10-54, SH-19-5], require: [moos, sahvt]}
   barbora: {query: moos, category: [Magusad hoidised], require: [moos]}
+
+# ── pantry staples (one pack when added) ─────────────────────────────────────
+# Any cooking oil: rapeseed, sunflower, olive, corn, avocado… The cheapest wins unless the user
+# picks or prefers another (e.g. "oliiviõli"). Sprays, deep-fry and essential oils are left out.
+oli:
+  selver: {query: [rapsiõli, päevalilleõli, oliiviõli, toiduõli], category: ["Õlid, äädikad"], require: [õli], exclude: [sprei, spr., fritüür, küüslau, maitsestatud, ürdi]}
+  rimi:   {query: [rapsiõli, päevalilleõli, oliiviõli], category: [SH-13-19], require: [õli], exclude: [sprei, spr., fritüür]}
+  barbora: {query: [rapsiõli, päevalilleõli, oliiviõli, toiduõli], category: [Õlid], require: [õli], exclude: [sprei, spr., fritüür, eeterlik]}
+
+oliivioli:
+  selver: {query: oliiviõli, category: ["Õlid, äädikad"], require: [oliiv], exclude: [sprei, spr.]}
+  rimi:   {query: oliiviõli, category: [SH-13-19-108, SH-13-19-114], require: [oliiv]}
+  barbora: {query: oliiviõli, category: [Oliiviõlid], require: [oliiv, ol.õli, neitsiol]}
+
+sool:
+  selver: {query: [söögisool, sool], category: [Maitseained], require: [sool], exclude: [soolat, soolaga, maitse]}
+  rimi:   {query: [söögisool, sool], category: [SH-13-12-77], require: [sool]}
+  barbora: {query: söögisool, category: [Soolad], require: [sool]}
+
+pipar:
+  selver: {query: must pipar, category: [Maitseained], require: [must pipar]}
+  rimi:   {query: must pipar, category: [SH-13-12-75], require: [must pipar]}
+  barbora: {query: must pipar, category: [Piprad], require: [must pipar]}
+
+nisujahu:
+  selver: {query: nisujahu, category: [Jahud], require: [nisujahu]}
+  rimi:   {query: nisujahu, category: [SH-13-4-21], require: [nisujahu]}
+  barbora: {query: nisujahu, category: [Nisujahud], require: [nisujahu]}
+
+suhkur:
+  selver: {query: suhkur, category: [Maitseained], require: [suhkur], exclude: [demerara, muscovado, pruun, rafineerimata, tuhk, vanilli, fariin]}
+  rimi:   {query: suhkur, category: [SH-13-13-85], require: [suhkur], exclude: [pruun, demerara, moosi, tuhk, vanilli]}
+  barbora: {query: suhkur, category: [Suhkrud ja suhkruasendajad], require: [suhkur], exclude: [demerara, pruun, 5g, tuhk, vanilli]}
+
+loorberileht:
+  selver: {query: loorberilehed, category: [Maitseained], require: [loorber]}
+  rimi:   {query: loorberilehed, category: [SH-13-12-76], require: [loorber]}
+  barbora: {query: loorberilehed, category: [Ürdid ja puhtad maitsed], require: [loorbe]}

@@ -169,3 +169,37 @@ def test_empty_results_are_not_cached(monkeypatch):
     fetch._cached_fetch("teststore", "uncached-query")
     fetch._cached_fetch("teststore", "uncached-query")
     assert len(calls) == 2
+
+
+# ── discounts in adapters ────────────────────────────────────────────────────
+
+@pytest.mark.parametrize("item, expected", [
+    ({"price": 1.39, "retail_price": 1.39}, (1.39, None, None, None)),
+    ({"price": 1.39, "promotion": {"oldPrice": 1.58, "loyaltyCardRequired": False, "minQuantity": 1}}, (1.39, 1.58, None, None)),
+    # card-only: Barbora's price is the card price, the public price is the old one
+    ({"price": 7.99, "promotion": {"oldPrice": 10.69, "loyaltyCardRequired": True, "minQuantity": 1}}, (10.69, None, 7.99, None)),
+    # multi-buy: one item costs the old price
+    ({"price": 1.0, "promotion": {"oldPrice": 1.5, "loyaltyCardRequired": False, "minQuantity": 3}}, (1.5, None, None, "3 or more: 1.00 € each")),
+])
+def test_barbora_prices(item, expected):
+    from api.barbora_api import _prices
+    assert _prices(item) == expected
+
+
+def test_rimi_parses_regular_price_and_multibuy(monkeypatch):
+    html = """
+    <div data-product-code="1"><p class="card__name">Jogurt Alma 370g</p>
+      <div class="price-tag card__price"><span class="sr-only">1.29 € per pcs.</span></div>
+      <div class="card__old-price">Regular price: 1,69 € 1,69€</div></div>
+    <div data-product-code="2"><p class="card__name">Riivjuust Rimi 80g</p>
+      <div class="price-label"><span>2 and more</span> <span>-23%</span> 1 19 €</div>
+      <div class="price-tag card__price"><span class="sr-only">1.55 € per pcs.</span></div></div>
+    """
+
+    class Resp:
+        text = html
+
+    monkeypatch.setattr(rimi_api.requests, "get", lambda *a, **kw: Resp())
+    yogurt, cheese = rimi_api.search_rimi("x")
+    assert (yogurt["price"], yogurt["regular_price"], yogurt["deal"]) == (1.29, 1.69, None)
+    assert (cheese["price"], cheese["regular_price"], cheese["deal"]) == (1.55, None, "2 or more: −23%")

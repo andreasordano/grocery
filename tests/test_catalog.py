@@ -195,3 +195,33 @@ def test_recommend_items_only(fake_store, monkeypatch):
 def test_preference_words_tolerate_spelling(word, product):
     opts = [{"product": "Cheapest thing 1kg", "cost": 0.1}, {"product": product, "cost": 1.0}]
     assert catalog._pick(opts, {"words": [word]}, "a")["product"] == product
+
+
+# ── discounts ────────────────────────────────────────────────────────────────
+
+def test_discounts_scale_with_packs_and_add_up(monkeypatch):
+    recipes = {"ingredients": {"kohupiim": {"name": "Kohupiim", "unit": "g"}, "sibul": {"name": "Sibul", "unit": "g"}},
+               "recipes": [{"id": "r", "name": "R", "ingredients": [{"item": "kohupiim", "amount": 400}, {"item": "sibul", "amount": 500}]}]}
+    rules = {"kohupiim": {"a": {"query": "kohupiim"}}, "sibul": {"a": {"query": "sibul"}}}
+    stock = {
+        "kohupiim": [{"name": "Kohupiim 200 g", "price": 0.99, "regular_price": 1.29, "card_price": 0.89}],
+        "sibul": [{"name": "Sibul, kg", "price": 0.40, "unit": "kg", "regular_price": 0.60}],
+    }
+    monkeypatch.setattr(catalog, "load_recipes", lambda: recipes)
+    monkeypatch.setattr(catalog, "load_rules", lambda: rules)
+    monkeypatch.setattr(catalog, "_cached_fetch", lambda store, q: stock[q])
+
+    basket = catalog.recommend("r", 2, [], ["a"])["baskets"][0]
+    quark, onion = basket["lines"]
+    assert (quark["cost"], quark["regular_cost"], quark["card_cost"]) == (1.98, 2.58, 1.78)  # 2 packs
+    assert (onion["cost"], onion["regular_cost"]) == (0.2, 0.3)                               # 0.5 kg
+    assert basket["savings"] == 0.7 and basket["card_savings"] == 0.2
+
+
+def test_every_pantry_item_has_rules():
+    """Pantry items are offered as buttons on the receipt, so each must map to a rule, not a guess."""
+    recipes, rules = catalog.load_recipes(), catalog.load_rules()
+    for item in {p for r in recipes["recipes"] for p in r.get("pantry", [])}:
+        key = catalog.match_ingredient(item, recipes)
+        assert key, item
+        assert set(rules[key]) == {"selver", "rimi", "barbora"}, item

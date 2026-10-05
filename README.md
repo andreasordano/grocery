@@ -108,6 +108,19 @@ integration breaks, a rule stops finding products, or a recipe total looks wrong
 a GitHub issue labelled `healthcheck` — that is the only maintenance signal to watch. Run it locally the same way.
 Note: GitHub disables scheduled workflows after 60 days without repository activity.
 
+### Discounts
+
+Each store adapter returns the public `price` plus, when known, `regular_price` (on sale), `card_price`
+(loyalty card), `deal` (multi-buy, not counted) and `deal_until`. The receipt shows the crossed-out regular
+price, "−22%", "You save …" and "… less with a loyalty card". Totals always use public prices.
+Barbora card-only offers report the card price as `price`, so the adapter swaps them; Selver card prices
+can't be identified (numbered customer groups) and are not shown.
+
+### Pantry items
+
+Recipes list `pantry` items assumed at home (õli, sool, …). On the receipt they're buttons: tapping one adds a
+pack to the trip. Each has its own ingredient rule; a test fails if a pantry item has no rule.
+
 ### Preferences
 
 On the receipt, tap an item to see every acceptable product for it at that store, cheapest first, and pick one.
