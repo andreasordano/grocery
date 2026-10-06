@@ -7,10 +7,10 @@
 <meta name="description" content="Pick tonight's dinner. Get one store and a shopping list.">
 <meta name="theme-color" content="#e3e7e9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131a20" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2323303b'/><text x='13' y='42' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='40' fill='%23fbfbf8'>p</text><circle cx='47' cy='37' r='5' fill='%23d4566b'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='15' fill='%2323303b'/><path fill='%23fbfbf8' d='M10.91 45.15V19.31H16.76V23.06L16.71 22.79Q17.77 20.71 19.35 19.77Q20.93 18.84 22.98 18.84Q25.41 18.84 27.15 20.01Q28.90 21.19 29.83 23.43Q30.77 25.67 30.77 28.85Q30.77 32.00 29.83 34.23Q28.88 36.45 27.11 37.61Q25.34 38.78 22.85 38.78Q20.66 38.78 19.09 37.78Q17.53 36.79 16.47 34.60L17.05 34.60V45.15ZM20.57 34.20Q22.30 34.20 23.30 32.73Q24.29 31.27 24.29 28.73Q24.29 26.20 23.32 24.80Q22.35 23.40 20.60 23.40Q19.50 23.40 18.63 24.00Q17.75 24.60 17.26 25.80Q16.76 27.00 16.76 28.78Q16.76 31.45 17.85 32.82Q18.94 34.20 20.57 34.20Z'/><path fill='%23fbfbf8' d='M29.80 38.30 33.80 19.31H39.55L38.62 23.72L38.28 23.53Q39.76 20.87 41.38 19.85Q43.00 18.84 44.75 18.84Q45.33 18.84 45.92 18.93Q46.51 19.02 46.97 19.19L45.71 24.36Q45.19 24.17 44.57 24.05Q43.96 23.94 43.37 23.94Q42.49 23.94 41.60 24.25Q40.71 24.56 39.89 25.33Q39.07 26.10 38.39 27.46Q37.72 28.82 37.28 30.93L35.73 38.30Z'/><path fill='%23d4566b' d='M49.08 38.78Q47.27 38.78 46.17 37.68Q45.08 36.59 45.08 34.78Q45.08 32.96 46.17 31.87Q47.27 30.78 49.08 30.78Q50.90 30.78 51.99 31.87Q53.08 32.96 53.08 34.78Q53.08 36.59 51.99 37.68Q50.90 38.78 49.08 38.78Z'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;600&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;600&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;0,800;1,800&display=swap" rel="stylesheet">
 <style>
 :root {
   --fog: #e3e7e9;
@@ -63,8 +63,10 @@ button { font: inherit; color: inherit; }
   background: color-mix(in srgb, var(--fog) 85%, transparent);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
-/* The mark is the wordmark itself; the full stop is the decision. */
+/* The mark is the wordmark itself: the pantry stands still, the run leans forward to the full stop, the store.
+   The icon is the same in miniature ("pr."), outlined from Schibsted Grotesk 800 so it needs no font. */
 .brand { font-weight: 800; font-size: 22px; letter-spacing: -0.045em; line-height: 1; }
+.brand i { font-style: italic; }
 .brand b { color: var(--berry); font-weight: 800; }
 
 .switch { position: relative; display: inline-flex; padding: 3px; border-radius: 10px; background: var(--hover); }
@@ -313,7 +315,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 <body>
 
 <header class="bar">
-  <div class="brand" aria-label="pantryrun">pantryrun<b>.</b></div>
+  <div class="brand" aria-label="pantryrun">pantry<i>run</i><b>.</b></div>
   <nav class="switch" aria-label="What you need">
     <span class="pill" aria-hidden="true"></span>
     <button type="button" data-mode="dinner" aria-pressed="true">Dinner</button>
