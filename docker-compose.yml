@@ -24,7 +24,7 @@ services:
       # Optional tuning knobs
       FETCH_CACHE_TTL: "21600"      # seconds
       FETCH_CACHE_MAX: "512"
-      PER_STORE_LIMIT: "6"
+      PER_STORE_LIMIT: "12"
     depends_on:
       db:
         condition: service_healthy

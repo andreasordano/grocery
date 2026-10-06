@@ -1,0 +1,3404 @@
+{
+"barbora|maapähklivõi": [
+{
+"name": "Maapähklikreem WELL DONE Creamy 300g",
+"price": 3.95,
+"shelf": "Magusad määrded",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Magusad määrded"
+],
+"id": "000000000001320607",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklikreem WELL DONE Crunchy 300g",
+"price": 4.05,
+"shelf": "Magusad määrded",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Magusad määrded"
+],
+"id": "000000000001320644",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklikreem ALVO 500g",
+"price": 4.85,
+"shelf": "Magusad määrded",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Magusad määrded"
+],
+"id": "000000000001262203",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklikreem SANTE 350g",
+"price": 3.15,
+"shelf": "Magusad määrded",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Magusad määrded"
+],
+"id": "000000000000980585",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklikreem ALVO Crunchy 500g",
+"price": 5.19,
+"shelf": "Magusad määrded",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Magusad määrded"
+],
+"id": "000000000001262204",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklikreem SANTE crunchy 350g",
+"price": 3.09,
+"shelf": "Magusad määrded",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Magusad määrded"
+],
+"id": "000000000001235019",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Karam. maapähk. mee&sool WELL DONE 140g",
+"price": 1.99,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000001412239",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklid Mehhiko salsaga TAFFEL 140g",
+"price": 2.29,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000001301667",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Koortega maapähklid,röst.EXTRA LINE 400g",
+"price": 2.19,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000001117576",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklid puhastatud EXTRA LINE 150g",
+"price": 1.29,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000001117569",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šok.batoonike maapähklivõiga REESE`S 47g",
+"price": 1.55,
+"shelf": "Šokolaadibatoonid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Šokolaadid",
+"Šokolaadibatoonid"
+],
+"id": "000000000001075399",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklihalvaa MIO RIO 300g",
+"price": 2.29,
+"shelf": "Muud maiustused",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Muud maiustused"
+],
+"id": "000000000001023469",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähklibatoon KALEV 50g",
+"price": 0.99,
+"shelf": "Piimašokolaadid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Šokolaadid",
+"Piimašokolaadid"
+],
+"id": "000000000001339621",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Röst.maapähkli juustumaits WELL DONE140g",
+"price": 1.99,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000001412189",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähk hapu.sibulamaits WELL DONE 140g",
+"price": 1.99,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000001412238",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähkel sibula-hapuk.Crasssh MOGYI,60g",
+"price": 0.89,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000000756199",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maapähkel peekonimaits.Crasssh MOGYI,60g",
+"price": 0.89,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000000756200",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Röstitud soolatud maapähklid MOGYI 85g",
+"price": 1.69,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000000862692",
+"unit": "tk",
+"in_stock": false
+},
+{
+"name": "Röstitud,tükeldatud maapähklid ALVO 30g",
+"price": 0.89,
+"shelf": "Koogikaunistused ja toiduvärvid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Koogikaunistused ja toiduvärvid"
+],
+"id": "000000000000879922",
+"unit": "tk",
+"in_stock": false
+},
+{
+"name": "Maapähklid koorega EXTRA LINE 150g",
+"price": 1.19,
+"shelf": "Pähklid ja pähklisegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Pähklid ja pähklisegud"
+],
+"id": "000000000001117564",
+"unit": "tk",
+"in_stock": true
+}
+],
+"barbora|piim": [
+{
+"name": "Piim 2,5% FARMI 1l kiles",
+"price": 0.89,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000144590",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim TERE D-vitamiin.lakt.vaba 2,5%., 1L",
+"price": 1.25,
+"shelf": "Laktoosivabad piimatooted",
+"category": [
+"Piimatooted ja munad",
+"Laktoosivabad tooted",
+"Laktoosivabad piimatooted"
+],
+"id": "000000000001198796",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim ALMA 2,5%, 1,5L",
+"price": 1.58,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000139701",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim ALMA 2,5%, 0,5L",
+"price": 0.8,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000512258",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim FARM MILK 3,2% UHT, 1L",
+"price": 0.95,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000892000",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Täispiim FARMI 3,6-4,2%, 2L",
+"price": 2.49,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001081798",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim ALMA 0.05% 1L",
+"price": 1.25,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000512255",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim FARM MILK 3,2%, 1L",
+"price": 1.05,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001191624",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim FARM MILK 2% UHT, 1L",
+"price": 0.89,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000891999",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Täispiim ALMA 3.6-4.2% 1.5L",
+"price": 1.59,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001124532",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim FARMI 2.5% 1l",
+"price": 1.29,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001020928",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim TERE D-vitamiiniga 1.8% 1L",
+"price": 1.19,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001420446",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kõrgkuum.joogipiim TERE Latte 2,5%,1L",
+"price": 1.99,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000799381",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim WELL DONE 1,5% UHT,laktoosivaba,1L",
+"price": 1.05,
+"shelf": "Laktoosivabad piimatooted",
+"category": [
+"Piimatooted ja munad",
+"Laktoosivabad tooted",
+"Laktoosivabad piimatooted"
+],
+"id": "000000000001318567",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Täispiim FARMI 3,6-4,2%, 1L",
+"price": 1.55,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001013504",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim FARM MILK 2%, 1L",
+"price": 0.99,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001001777",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim WELL DONE 3,2% UHT,laktoosivaba,1L",
+"price": 1.09,
+"shelf": "Laktoosivabad piimatooted",
+"category": [
+"Piimatooted ja munad",
+"Laktoosivabad tooted",
+"Laktoosivabad piimatooted"
+],
+"id": "000000000001318568",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Piim UHT FARM MILK 0,5% 1L",
+"price": 0.85,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000961803",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Täispiim NOPRI 3,8-4,4%, 1L",
+"price": 2.15,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001122995",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maisikep.kond.piim. LOTTE 130g",
+"price": 1.65,
+"shelf": "Maisisnäkid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Maisisnäkid"
+],
+"id": "000000000001321161",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kõrgkuum.joogipiim TERE Capuccino3,5%,1L",
+"price": 2.19,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000000791593",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Riivjuust E-PIIM Light, 250g",
+"price": 2.69,
+"shelf": "Riivjuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Riivjuustud"
+],
+"id": "000000000001312983",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Täispiim ALMA 3,8-4,2%, 0.5L",
+"price": 0.99,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001207724",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Eesti E-PIIM light viilutatud,300g",
+"price": 2.59,
+"shelf": "Viilujuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Viilujuustud"
+],
+"id": "000000000001312982",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eesti piim FARM MILK 2,5%, 1L kile",
+"price": 0.55,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001004395",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Mahetäispiim MO SAAREMAA Öko 3,8-4,4%,1L",
+"price": 1.69,
+"shelf": "Piimad",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Piimad"
+],
+"id": "000000000001226547",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tatra.puder õun.aprik.KABRITA 180g 5k",
+"price": 7.99,
+"shelf": "Pudrud piimaga 4+ kuud",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud piimaga 4+ kuud"
+],
+"id": "000000000001381311",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kaerapuder SEMPER passioni;120g 6k",
+"price": 2.15,
+"shelf": "Pudrud ilma piimata",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud ilma piimata"
+],
+"id": "000000000001386197",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Eesti E-PIIM viilutatud, 500g",
+"price": 5.59,
+"shelf": "Viilujuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Viilujuustud"
+],
+"id": "000000000000654142",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "7-viljapuder banaaniga KABRITA 180g 6k",
+"price": 7.99,
+"shelf": "Pudrud piimaga 6+ kuud",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud piimaga 6+ kuud"
+],
+"id": "000000000001384914",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tatra piimapudrupulberHIPP250g4k",
+"price": 3.99,
+"shelf": "Pudrud piimaga 4+ kuud",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud piimaga 4+ kuud"
+],
+"id": "000000000001002970",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Või E-PIIM Eesti 82%, 250g",
+"price": 2.29,
+"shelf": "Võid",
+"category": [
+"Piimatooted ja munad",
+"Võid ja margariinid",
+"Võid"
+],
+"id": "000000000000663020",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Küpsised piim.meega Zoo BAHLSEN 100g",
+"price": 1.79,
+"shelf": "Magusad küpsised ja vahvlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Küpsised",
+"Magusad küpsised ja vahvlid"
+],
+"id": "000000000000133505",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Küpsised piima/tum.šok.tük.WELL DONE150g",
+"price": 1.99,
+"shelf": "Magusad küpsised ja vahvlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Küpsised",
+"Magusad küpsised ja vahvlid"
+],
+"id": "000000000001393812",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Müslibatoon kakao-piimaga Big CORNY 40g",
+"price": 1.29,
+"shelf": "Hommikusöögibatoonid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hommikusöögid ja batoonid",
+"Hommikusöögibatoonid"
+],
+"id": "000000000001009826",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Puder banaan. Head Ööd HIPP190g, 4k",
+"price": 1.96,
+"shelf": "Pudrud piimaga 4+ kuud",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud piimaga 4+ kuud"
+],
+"id": "000000000000011641",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "4-vil.puder ban.-must.Öko SALVEST 110g6k",
+"price": 1.85,
+"shelf": "Pudrud piimaga 6+ kuud",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud piimaga 6+ kuud"
+],
+"id": "000000000001005399",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Batoon.piima ja helv.CiniMinis NESTLE25g",
+"price": 0.59,
+"shelf": "Hommikusöögibatoonid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hommikusöögid ja batoonid",
+"Hommikusöögibatoonid"
+],
+"id": "000000000000145305",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Vaarikad piima-kakaoglasuuris PICKS 90g",
+"price": 3.59,
+"shelf": "Muud maiustused",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Muud maiustused"
+],
+"id": "000000000001377408",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Gouda E-PIIM viilutatud, 300g",
+"price": 3.49,
+"shelf": "Viilujuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Viilujuustud"
+],
+"id": "000000000001312964",
+"unit": "tk",
+"in_stock": true
+}
+],
+"rimi|maapähklivõi": [
+{
+"name": "Mahe maapähklivõie kreemjas \"Smuud\" 333g",
+"price": 7.89,
+"shelf": "SH-19-5",
+"category": [
+"SH-19-5"
+],
+"code": "934841",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Mahe maapähklivõie krõbisev \"Kranži\" 333g",
+"price": 7.89,
+"shelf": "SH-19-5",
+"category": [
+"SH-19-5"
+],
+"code": "934843",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Maapähklivõi-proteiini toorbatoon Be Fit 35g",
+"price": 2.29,
+"shelf": "SH-19-6",
+"category": [
+"SH-19-6-1"
+],
+"code": "943714",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Mahe maapähklivõie chia seemn. \"Tšiia\" 333g",
+"price": 7.89,
+"shelf": "SH-19-5",
+"category": [
+"SH-19-5"
+],
+"code": "934842",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Maapähklikreemi jäätis šok.tk 473ml/266g",
+"price": 7.29,
+"shelf": "SH-4-1",
+"category": [
+"SH-4-1-8"
+],
+"code": "982389",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Küpsis maapähklivõiga Frank&Oli glut.vaba 50g",
+"price": 1.65,
+"shelf": "SH-13-1",
+"category": [
+"SH-13-1-7"
+],
+"code": "1017710",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Valgubatoon maapähklivõimaitseline Fiteg2 35g",
+"price": 2.39,
+"shelf": "SH-13-16",
+"category": [
+"SH-13-16"
+],
+"code": "1020992",
+"unit": "pcs",
+"in_stock": true
+}
+],
+"rimi|tee": [
+{
+"name": "Tee kummeli Herba 25x1,25g",
+"price": 1.55,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "1003128",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee piparmündi Herba 25x1,5g",
+"price": 1.44,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "1003131",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi kummeli Teekanne 20x1,5g",
+"price": 2.89,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "135187",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee puuvilja Rimi Smart 20x2g",
+"price": 0.79,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-96"
+],
+"code": "804288",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee puuvilja metsamarja Loyd 20x2g",
+"price": 2.79,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-96"
+],
+"code": "171957",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi piparmündi Teekanne 20x1,5g",
+"price": 2.89,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "135185",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline Green Rimi 20x2g",
+"price": 2.49,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "804448",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee apteegitilli Herba 25x1,75g",
+"price": 1.55,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "1003130",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi ingver&sidrun Teekanne 20x1,75g",
+"price": 2.89,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "164285",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi Vahemere virsik Teekanne 20x2,5g",
+"price": 2.99,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-96"
+],
+"code": "183484",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi piparmündi Rimi Smart 20x1,5g",
+"price": 0.45,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "804289",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kummeli tee Rimi 20x1g",
+"price": 1.35,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "812983",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee must Earl Grey Rimi 20x2g",
+"price": 2.39,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "804445",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee kibuvitsa-hibiski Herba 25x2g",
+"price": 1.55,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-96"
+],
+"code": "1003126",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline Rimi Smart 80g",
+"price": 1.19,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "804285",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Must tee Rimi Smart 80g",
+"price": 1.15,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "813205",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline jasmiini Rimi 20x2g",
+"price": 2.49,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "804450",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Must tee Earl Grey Lipton 25pk",
+"price": 2.55,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "156194",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline Rimi 80g",
+"price": 1.69,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "805756",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi Tai ingver Teekanne 20x2,25g",
+"price": 2.99,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "183475",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee puuvilja vaarika&maasika Loyd 20x2g",
+"price": 2.79,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-96"
+],
+"code": "160578",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee must metsamarja Rimi 20x2g",
+"price": 2.39,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "804446",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline piparmündi Rimi 20x2g",
+"price": 2.49,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "804449",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee must Ceylon Rimi 20x2g",
+"price": 2.39,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "804424",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kassiliiv Pet Perfect Tofu roh.tee eks. 2,5kg",
+"price": 5.99,
+"shelf": "SH-7-3",
+"category": [
+"SH-7-3-7"
+],
+"code": "815242",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Roheline tee Ahmad 100g",
+"price": 2.59,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "103503",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Roheline tee Gunpowder Ahmad 100g",
+"price": 2.59,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "112540",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi jõhvika&ingveri Loyd 20x2g",
+"price": 2.79,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-96"
+],
+"code": "179402",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi kummeli Rimi 30g",
+"price": 1.65,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "808832",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi piparmündi Rimi 50g",
+"price": 1.65,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "808858",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee must Dilmah Premium 25x2g",
+"price": 2.59,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "179725",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline Classic Lipton 25pk",
+"price": 2.55,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "160570",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline tsitruse Lipton 25pk",
+"price": 2.55,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "160571",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee roheline jasmiini Rimi 80g",
+"price": 1.69,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-97"
+],
+"code": "805767",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi jõhvika&vaarika Loyd 20x2g",
+"price": 2.79,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-96"
+],
+"code": "179408",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee must Rimi Smart 20x1,5g",
+"price": 0.79,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "804291",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee must sidruni Lipton 20pk",
+"price": 3.19,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "137065",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee Must Forest Fruit Lipton 20pk",
+"price": 3.19,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "136987",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee must Ceylon Rimi 80g",
+"price": 1.69,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-95"
+],
+"code": "805759",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tee ürdi kummeli Rimi Smart 20g",
+"price": 0.45,
+"shelf": "SH-13-17",
+"category": [
+"SH-13-17-98"
+],
+"code": "804290",
+"unit": "pcs",
+"in_stock": true
+}
+],
+"selver|banaan": [
+{
+"name": "Mahe Banaan, kg",
+"price": 3.59,
+"shelf": "Troopilised, eksootilised viljad",
+"category": [
+"Troopilised, eksootilised viljad",
+"Mahe",
+"FB"
+],
+"sku": "T000030312",
+"unit": "kg",
+"volume": "kg",
+"in_stock": true
+},
+{
+"name": "Banaan, kg",
+"price": 1.29,
+"shelf": "Troopilised, eksootilised viljad",
+"category": [
+"Troopilised, eksootilised viljad",
+"FB"
+],
+"sku": "T000001313",
+"unit": "kg",
+"volume": "kg",
+"in_stock": true
+},
+{
+"name": "Kakao segu: õun, banaan, kaer ja kakao, NUTRINO, 180 g",
+"price": 2.69,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Vegan",
+"FB"
+],
+"sku": "T000089133",
+"volume": "180 g",
+"in_stock": true
+},
+{
+"name": "Go segu: õun, mango, papaia ja banaan, NUTRINO, 180 g",
+"price": 2.69,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Vegan",
+"FB"
+],
+"sku": "T000092809",
+"volume": "180 g",
+"in_stock": true
+},
+{
+"name": "Fitness segu: õun, kiivi, spinat ja banaan, NUTRINO, 180 g",
+"price": 2.69,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Vegan",
+"FB"
+],
+"sku": "T000092811",
+"volume": "180 g",
+"in_stock": true
+},
+{
+"name": "Müslibatoon šokolaadi-banaani, CORNY, 6x25 g",
+"price": 2.99,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000004786",
+"volume": "6x25 g",
+"in_stock": true
+},
+{
+"name": "Hapupiim Banaani-mango, NOPRI, 1 kg",
+"price": 3.39,
+"shelf": "Piimad, koored",
+"category": [
+"Piimad, koored",
+"FB"
+],
+"sku": "T000093097",
+"volume": "1 kg",
+"in_stock": true
+},
+{
+"name": "Head ööd! Banaan-kuivik piimapuder mahe 4+, HIPP, 250 g",
+"price": 5.05,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Mahe",
+"FB"
+],
+"sku": "T000043966",
+"volume": "250 g",
+"in_stock": true
+},
+{
+"name": "AB-jogurt banaani Laktoosivaba, TERE, 150 g",
+"price": 0.82,
+"shelf": "Jogurtid, jogurtijoogid",
+"category": [
+"Jogurtid, jogurtijoogid",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000058763",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "Banaani lõigud, TAKE1 REGULAR, 100 g",
+"price": 1.39,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB"
+],
+"sku": "T000040003",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Maasika-banaani smuuti, PAI, 250 ml",
+"price": 1.57,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000092674",
+"volume": "250 ml",
+"in_stock": true
+},
+{
+"name": "Banaani- ja šokolaadi-koorejäätis glasuuris, ONU ESKIMO, 90 g",
+"price": 1.49,
+"shelf": "Jäätised",
+"category": [
+"Jäätised",
+"FB"
+],
+"sku": "T000082603",
+"volume": "90 g",
+"in_stock": true
+},
+{
+"name": "Mahekohuke banaani täidisega ja kakaoglasuuriga, SAARE ÖKO, 40 g",
+"price": 0.63,
+"shelf": "Kohukesed",
+"category": [
+"Kohukesed",
+"Mahe",
+"FB"
+],
+"sku": "T000081409",
+"volume": "40 g",
+"in_stock": true
+},
+{
+"name": "Vaarika-banaani-mustasõstra smuutisegu, PAI, 300 g",
+"price": 3.79,
+"shelf": "Külmutatud köögiviljad, marjad, puuviljad",
+"category": [
+"Külmutatud köögiviljad, marjad, puuviljad",
+"FB"
+],
+"sku": "T000083230",
+"volume": "300 g",
+"in_stock": true
+},
+{
+"name": "Supersmuuti Kirsi-banaani-mango odra, AURA, 300 ml",
+"price": 1.85,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"FB"
+],
+"sku": "T000088785",
+"volume": "300 ml",
+"in_stock": true
+},
+{
+"name": "Röstitud müsli banaani-šokolaadi, SANTE, 350 g",
+"price": 2.19,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000018106",
+"volume": "350 g",
+"in_stock": true
+},
+{
+"name": "Šokolaadi-banaani amps, SELVERI PAGARID, 500 g, ettetellimisel",
+"price": 9.14,
+"shelf": "Pagaritooted",
+"category": [
+"Pagaritooted",
+"FB"
+],
+"sku": "T000025147",
+"volume": "500g",
+"in_stock": true
+},
+{
+"name": "Joogijogurt banaani-maasika 1,5%, ALMA, 1 kg",
+"price": 1.51,
+"shelf": "Jogurtid, jogurtijoogid",
+"category": [
+"Jogurtid, jogurtijoogid",
+"FB"
+],
+"sku": "T000026277",
+"volume": "1 kg",
+"in_stock": true
+},
+{
+"name": "Mangopüree banaani õuna ja porgandiga ÖKO peale 4.k, HIPP,",
+"price": 1.39,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Hea hinnaga tooted",
+"Mahe",
+"Gluteenivaba",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000084771",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Seemnete-banaani-kookose granola ilma lisatud suhkruta, AXA, 300 g",
+"price": 3.79,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"FB"
+],
+"sku": "T000088281",
+"volume": "300 g",
+"in_stock": true
+},
+{
+"name": "Mango-banaani smuuti, PAI, 250ml",
+"price": 1.57,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000092428",
+"volume": "250ml",
+"in_stock": true
+},
+{
+"name": "Banaani-kohupiimapannkoogid, MAMMA, 200 g",
+"price": 3.19,
+"shelf": "Magustoidud",
+"category": [
+"Magustoidud",
+"FB"
+],
+"sku": "T000048284",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Maasika-banaani smuuti, PAI, 750 ml",
+"price": 3.99,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"FB"
+],
+"sku": "T000092671",
+"volume": "750 ml",
+"in_stock": true
+},
+{
+"name": "Keefir maasika-banaani, VALIO GEFILUS, 1 kg",
+"price": 2.08,
+"shelf": "Piimad, koored",
+"category": [
+"Piimad, koored",
+"FB"
+],
+"sku": "T000039053",
+"volume": "1 kg",
+"in_stock": true
+},
+{
+"name": "Maasika-banaani maisipulgad, ELLA'S KITCHEN, 20g",
+"price": 1.59,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"FB"
+],
+"sku": "T000050433",
+"volume": "20g",
+"in_stock": true
+},
+{
+"name": "Banaani ja ploomipüree Organic 4+, MAMUKO, 100 g",
+"price": 1.75,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Mahe",
+"Laktoosivaba",
+"Gluteenivaba",
+"FB"
+],
+"sku": "T000092533",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Banaani-müslibatoon, šokolaadikattega, SANTE, 40 g",
+"price": 0.45,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Püsivalt head tavahinnad",
+"FB"
+],
+"sku": "T000045853",
+"volume": "40 g",
+"in_stock": true
+},
+{
+"name": "Kohupiimakreem banaani, EMMA, 150 g",
+"price": 0.89,
+"shelf": "Kohupiimad, kodujuustud",
+"category": [
+"Kohupiimad, kodujuustud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000010131",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "Smuuti aprikoosi-banaani-porgandi, AURA, 300ml",
+"price": 1.55,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Vegan",
+"FB"
+],
+"sku": "T000090224",
+"volume": "300 ml",
+"in_stock": true
+},
+{
+"name": "Neljaviljapuder banaani ja mustikaga öko 6+, PÕNN, 110 g",
+"price": 1.49,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Hea hinnaga tooted",
+"Mahe",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000033441",
+"volume": "110 g",
+"in_stock": true
+},
+{
+"name": "Supersmuuti Kookose-Ananassi-Banaani, AURA, 300 ml",
+"price": 0.99,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Püsivalt head tavahinnad",
+"Vegan",
+"FB"
+],
+"sku": "T000090544",
+"volume": "300 ml",
+"in_stock": true
+},
+{
+"name": "Fruktmums puuviljapüree õuna, vaarika, banaani 6+, SEMPER, 110 g",
+"price": 1.85,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"FB"
+],
+"sku": "T000047432",
+"volume": "110 g",
+"in_stock": true
+},
+{
+"name": "Fruktmums puuviljapüree virsiku, õuna, banaani 6+, SEMPER, 110 g",
+"price": 1.82,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"FB"
+],
+"sku": "T000047433",
+"volume": "110 g",
+"in_stock": true
+},
+{
+"name": "Õuna-banaani smuutijook punaste marjadega mahe 6+, HIPP, 120 ml",
+"price": 1.59,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Püsivalt head tavahinnad",
+"Mahe",
+"FB"
+],
+"sku": "T000049881",
+"volume": "120 ml",
+"in_stock": true
+},
+{
+"name": "Õuna-banaani-kaerabatoon mahe 12+, HIPP, 23 g",
+"price": 1.25,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Püsivalt head tavahinnad",
+"Mahe",
+"FB"
+],
+"sku": "T000045947",
+"volume": "23 g",
+"in_stock": true
+},
+{
+"name": "Mandliliköör AMARETTO BONINO, 20 cl",
+"price": 3.85,
+"shelf": "Liköörid",
+"category": [
+"Liköörid",
+"FB"
+],
+"sku": "T000005186",
+"volume": "20 cl",
+"in_stock": true
+},
+{
+"name": "Juuksemask Fructis Hair Food Banaani, GARNIER, 400 ml",
+"price": 11.29,
+"shelf": "Šampoonid, palsamid, maskid",
+"category": [
+"Šampoonid, palsamid, maskid",
+"FB"
+],
+"sku": "H000120826",
+"volume": "400ml",
+"in_stock": true
+},
+{
+"name": "Jogurt mango-banaani-chia  laktoosivaba, VALIO GEFILUS, 380 g",
+"price": 1.56,
+"shelf": "Jogurtid, jogurtijoogid",
+"category": [
+"Jogurtid, jogurtijoogid",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000050343",
+"volume": "380 g",
+"in_stock": true
+},
+{
+"name": "HULGI Banaani-müslibatoon, šokolaadikattega 10tk, SANTE, 10 x 40 g",
+"price": 4,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Hulgipakkumised",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"Toidukaubad",
+"FB"
+],
+"sku": "T000088067",
+"volume": "10 x 40 g",
+"in_stock": true
+},
+{
+"name": "Proteiinijook Move banaani-šokolaadimaitseline, ARCTIC SPORT, 330 ml",
+"price": 2.12,
+"shelf": "Spordijoogid",
+"category": [
+"Spordijoogid",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000081250",
+"volume": "330 ml",
+"in_stock": true
+}
+],
+"selver|banaanid": [
+{
+"name": "Õunapüree maasikate ja banaanidega mahe 4+, HIPP, 100 g",
+"price": 1.39,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Hea hinnaga tooted",
+"Mahe",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000044571",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Kohupiimapasta banaanitoru, TERE, 300 g",
+"price": 1.25,
+"shelf": "Kohupiimad, kodujuustud",
+"category": [
+"Kohupiimad, kodujuustud",
+"Püsivalt head tavahinnad",
+"FB"
+],
+"sku": "T000006973",
+"volume": "300 g",
+"in_stock": true
+},
+{
+"name": "HULGI Kohupiimapasta banaanitoru 4,2% 3tk, TERE, 3 x 300 g",
+"price": 3.45,
+"shelf": "Kohupiimad, kodujuustud",
+"category": [
+"Kohupiimad, kodujuustud",
+"Hulgipakkumised",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"Toidukaubad",
+"FB"
+],
+"sku": "T000087982",
+"volume": "3 x 300 g",
+"in_stock": true
+},
+{
+"name": "AB-jogurt banaani Laktoosivaba, TERE, 150 g",
+"price": 0.82,
+"shelf": "Jogurtid, jogurtijoogid",
+"category": [
+"Jogurtid, jogurtijoogid",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000058763",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "Banaani lõigud, TAKE1 REGULAR, 100 g",
+"price": 1.39,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB"
+],
+"sku": "T000040003",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Šokolaadi ja banaaniga müslibatoon, NESTLÉ, 35 g",
+"price": 0.73,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"FB"
+],
+"sku": "T000041817",
+"volume": "35 g",
+"in_stock": true
+},
+{
+"name": "Sefiiritort, PIHLAKA, 850 g",
+"price": 13.29,
+"shelf": "Tordid",
+"category": [
+"Tordid",
+"FB"
+],
+"sku": "T000012556",
+"volume": "850 g",
+"in_stock": true
+},
+{
+"name": "Banaani- ja šokolaadi-koorejäätis glasuuris, ONU ESKIMO, 90 g",
+"price": 1.49,
+"shelf": "Jäätised",
+"category": [
+"Jäätised",
+"FB"
+],
+"sku": "T000082603",
+"volume": "90 g",
+"in_stock": true
+},
+{
+"name": "Mahekohuke banaani täidisega ja kakaoglasuuriga, SAARE ÖKO, 40 g",
+"price": 0.63,
+"shelf": "Kohukesed",
+"category": [
+"Kohukesed",
+"Mahe",
+"FB"
+],
+"sku": "T000081409",
+"volume": "40 g",
+"in_stock": true
+},
+{
+"name": "Banaani-müslibatoon, šokolaadikattega, SANTE, 40 g",
+"price": 0.45,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Püsivalt head tavahinnad",
+"FB"
+],
+"sku": "T000045853",
+"volume": "40 g",
+"in_stock": true
+},
+{
+"name": "Vaarika-banaani-mustasõstra smuutisegu, PAI, 300 g",
+"price": 3.79,
+"shelf": "Külmutatud köögiviljad, marjad, puuviljad",
+"category": [
+"Külmutatud köögiviljad, marjad, puuviljad",
+"FB"
+],
+"sku": "T000083230",
+"volume": "300 g",
+"in_stock": true
+},
+{
+"name": "Supersmuuti Kirsi-banaani-mango odra, AURA, 300 ml",
+"price": 1.85,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"FB"
+],
+"sku": "T000088785",
+"volume": "300 ml",
+"in_stock": true
+},
+{
+"name": "Müslibatoon šokolaadi-banaani, CORNY, 6x25 g",
+"price": 2.99,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000004786",
+"volume": "6x25 g",
+"in_stock": true
+},
+{
+"name": "Röstitud müsli banaani-šokolaadi, SANTE, 350 g",
+"price": 2.19,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000018106",
+"volume": "350 g",
+"in_stock": true
+},
+{
+"name": "Pähklibatoon šokolaadi ja banaaniga, EMCO, 35g",
+"price": 1.19,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Püsivalt head tavahinnad",
+"Gluteenivaba",
+"Vegan",
+"FB"
+],
+"sku": "T000073050",
+"volume": "35g",
+"in_stock": true
+},
+{
+"name": "Šokolaadi-banaani amps, SELVERI PAGARID, 500 g, ettetellimisel",
+"price": 9.14,
+"shelf": "Pagaritooted",
+"category": [
+"Pagaritooted",
+"FB"
+],
+"sku": "T000025147",
+"volume": "500g",
+"in_stock": true
+},
+{
+"name": "HULGI Banaani-müslibatoon, šokolaadikattega 10tk, SANTE, 10 x 40 g",
+"price": 4,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Hulgipakkumised",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"Toidukaubad",
+"FB"
+],
+"sku": "T000088067",
+"volume": "10 x 40 g",
+"in_stock": true
+},
+{
+"name": "Joogijogurt banaani-maasika 1,5%, ALMA, 1 kg",
+"price": 1.51,
+"shelf": "Jogurtid, jogurtijoogid",
+"category": [
+"Jogurtid, jogurtijoogid",
+"FB"
+],
+"sku": "T000026277",
+"volume": "1 kg",
+"in_stock": true
+},
+{
+"name": "Banaani-kohupiimapannkoogid, MAMMA, 200 g",
+"price": 3.19,
+"shelf": "Magustoidud",
+"category": [
+"Magustoidud",
+"FB"
+],
+"sku": "T000048284",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Mangopüree banaani õuna ja porgandiga ÖKO peale 4.k, HIPP,",
+"price": 1.39,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Hea hinnaga tooted",
+"Mahe",
+"Gluteenivaba",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000084771",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Seemnete-banaani-kookose granola ilma lisatud suhkruta, AXA, 300 g",
+"price": 3.79,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"FB"
+],
+"sku": "T000088281",
+"volume": "300 g",
+"in_stock": true
+},
+{
+"name": "Müslibatoon šokolaadi-banaani, CORNY BIG, 50 g",
+"price": 1.25,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"FB"
+],
+"sku": "T000004785",
+"volume": "50 g",
+"in_stock": true
+},
+{
+"name": "Keefir maasika-banaani, VALIO GEFILUS, 1 kg",
+"price": 2.08,
+"shelf": "Piimad, koored",
+"category": [
+"Piimad, koored",
+"FB"
+],
+"sku": "T000039053",
+"volume": "1 kg",
+"in_stock": true
+},
+{
+"name": "Maasika-banaani maisipulgad, ELLA'S KITCHEN, 20g",
+"price": 1.59,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"FB"
+],
+"sku": "T000050433",
+"volume": "20g",
+"in_stock": true
+},
+{
+"name": "Hapupiim Banaani-mango, NOPRI, 1 kg",
+"price": 3.39,
+"shelf": "Piimad, koored",
+"category": [
+"Piimad, koored",
+"FB"
+],
+"sku": "T000093097",
+"volume": "1 kg",
+"in_stock": true
+},
+{
+"name": "Banaani ja ploomipüree Organic 4+, MAMUKO, 100 g",
+"price": 1.75,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Mahe",
+"Laktoosivaba",
+"Gluteenivaba",
+"FB"
+],
+"sku": "T000092533",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Maisikrõbuskid mango ja banaaniga 7+, mahe, PÕNN, 20g",
+"price": 1.45,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Laktoosivaba",
+"Gluteenivaba",
+"FB"
+],
+"sku": "T000070694",
+"volume": "20g",
+"in_stock": true
+},
+{
+"name": "Head ööd teraviljapuder piimasegu ja banaaniga mahe 4+, HIPP, 190 g",
+"price": 1.99,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Püsivalt head tavahinnad",
+"Mahe",
+"FB"
+],
+"sku": "T000005337",
+"volume": "190 g",
+"in_stock": true
+},
+{
+"name": "Kohupiimakreem banaani, EMMA, 150 g",
+"price": 0.89,
+"shelf": "Kohupiimad, kodujuustud",
+"category": [
+"Kohupiimad, kodujuustud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000010131",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "Neljaviljapuder banaani ja mustikaga öko 6+, PÕNN, 110 g",
+"price": 1.49,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Hea hinnaga tooted",
+"Mahe",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000033441",
+"volume": "110 g",
+"in_stock": true
+},
+{
+"name": "Juuksemask Fructis Hair Food Banaani, GARNIER, 400 ml",
+"price": 11.29,
+"shelf": "Šampoonid, palsamid, maskid",
+"category": [
+"Šampoonid, palsamid, maskid",
+"FB"
+],
+"sku": "H000120826",
+"volume": "400ml",
+"in_stock": true
+},
+{
+"name": "Hippis õunapüree banaaniga BIO 4+, HIPP, 100 g",
+"price": 2.02,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Mahe",
+"FB"
+],
+"sku": "T000048872",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Fruktmums puuviljapüree õuna, vaarika, banaani 6+, SEMPER, 110 g",
+"price": 1.85,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"FB"
+],
+"sku": "T000047432",
+"volume": "110 g",
+"in_stock": true
+},
+{
+"name": "Fruktmums puuviljapüree virsiku, õuna, banaani 6+, SEMPER, 110 g",
+"price": 1.82,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"FB"
+],
+"sku": "T000047433",
+"volume": "110 g",
+"in_stock": true
+},
+{
+"name": "Õuna-banaani smuutijook punaste marjadega mahe 6+, HIPP, 120 ml",
+"price": 1.59,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Püsivalt head tavahinnad",
+"Mahe",
+"FB"
+],
+"sku": "T000049881",
+"volume": "120 ml",
+"in_stock": true
+},
+{
+"name": "Õuna-banaani-kaerabatoon mahe 12+, HIPP, 23 g",
+"price": 1.25,
+"shelf": "Lastetoidud",
+"category": [
+"Lastetoidud",
+"Püsivalt head tavahinnad",
+"Mahe",
+"FB"
+],
+"sku": "T000045947",
+"volume": "23 g",
+"in_stock": true
+},
+{
+"name": "Jogurt mango-banaani-chia  laktoosivaba, VALIO GEFILUS, 380 g",
+"price": 1.56,
+"shelf": "Jogurtid, jogurtijoogid",
+"category": [
+"Jogurtid, jogurtijoogid",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000050343",
+"volume": "380 g",
+"in_stock": true
+},
+{
+"name": "Maasika-banaani smuuti, PAI, 250 ml",
+"price": 1.57,
+"shelf": "Smuutid, värsked mahlad",
+"category": [
+"Smuutid, värsked mahlad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000092674",
+"volume": "250 ml",
+"in_stock": true
+},
+{
+"name": "Torres San Valentin Parellada 75 cl",
+"price": 8.99,
+"shelf": "Valged veinid",
+"category": [
+"Valged veinid",
+"Vegan",
+"FB"
+],
+"sku": "T000023019",
+"volume": "75 cl",
+"in_stock": true
+},
+{
+"name": "Jogurtijook banaanimaitseline maasika 8-pakk laktoosivaba, VALIO GEFILUS, 800 g",
+"price": 2.99,
+"shelf": "Jogurtid, jogurtijoogid",
+"category": [
+"Jogurtid, jogurtijoogid",
+"Püsivalt head tavahinnad",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000045691",
+"volume": "800 g",
+"in_stock": true
+}
+],
+"selver|maapähklivõi": [
+{
+"name": "Datlid Creamy Peanut Butter, TRUE DATES, 100 g",
+"price": 1.99,
+"shelf": "Muud maiustused",
+"category": [
+"Muud maiustused",
+"Hea hinnaga tooted",
+"Vegan",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000084632",
+"volume": "100 g",
+"in_stock": true
+},
+{
+"name": "Maapähkli karamelli batoon, KALEV, 50 g",
+"price": 0.77,
+"shelf": "Šokolaadid",
+"category": [
+"Šokolaadid",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB",
+"Kommipakid, kommikarbid, šokolaadid"
+],
+"sku": "T000079419",
+"volume": "50 g",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad maapähkli- ja karamellitäidisega, MILKA, 276 g",
+"price": 4.79,
+"shelf": "Šokolaadid",
+"category": [
+"Šokolaadid",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB",
+"Kommipakid, kommikarbid, šokolaadid",
+"Milka ja Oreo"
+],
+"sku": "T000041739",
+"volume": "276 g",
+"in_stock": true
+},
+{
+"name": "Proteiinibatoon maapähkli & karamelli, OSHEE, 49g",
+"price": 2.19,
+"shelf": "Toidulisandid",
+"category": [
+"Toidulisandid",
+"FB"
+],
+"sku": "T000092066",
+"volume": "49g",
+"in_stock": true
+},
+{
+"name": "Maapähklikreem Crunchy, SANTE, 350 g",
+"price": 3.14,
+"shelf": "Magusad hoidised",
+"category": [
+"Magusad hoidised",
+"FB"
+],
+"sku": "T000061565",
+"volume": "350 g",
+"in_stock": true
+},
+{
+"name": "Maapähkel, SELVER, 400 g",
+"price": 1.89,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Selver"
+],
+"sku": "T000047128",
+"volume": "400 g",
+"in_stock": true
+},
+{
+"name": "Soolakaramellis maapähkel, PÄHKLINÄPP, 200g",
+"price": 2.25,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB"
+],
+"sku": "T000069237",
+"volume": "200g",
+"in_stock": true
+},
+{
+"name": "Maapähkel kooritud, SELVER, 400 g",
+"price": 1.89,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Selver"
+],
+"sku": "T000047129",
+"volume": "400 g",
+"in_stock": true
+},
+{
+"name": "Röstitud müsli maapähklite ja maapähklikreemiga Granola, SANTE, 350 g",
+"price": 1.99,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Püsivalt head tavahinnad",
+"FB"
+],
+"sku": "T000018108",
+"volume": "350 g",
+"in_stock": true
+},
+{
+"name": "Soolatud maapähkel, PCD, 200 g",
+"price": 1.68,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB"
+],
+"sku": "T000023962",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Maapähklikreemi proteiinibatoon, NICKS, 50 g",
+"price": 1.99,
+"shelf": "Toidulisandid",
+"category": [
+"Toidulisandid",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000081325",
+"volume": "50 g",
+"in_stock": true
+},
+{
+"name": "Proteiinibatoon Protein Crisp maapähkli-karamelli, GO ON, 50 g",
+"price": 1.49,
+"shelf": "Toidulisandid",
+"category": [
+"Toidulisandid",
+"FB"
+],
+"sku": "T000079726",
+"volume": "50 g",
+"in_stock": true
+},
+{
+"name": "Röstitud maapähklid soolaga, ESTRELLA, 140 g",
+"price": 3.04,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000041846",
+"volume": "140 g",
+"in_stock": true
+},
+{
+"name": "Müslibatoon šokolaadi ja maapähkli, CORNY BIG, 50 g",
+"price": 1.25,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"FB"
+],
+"sku": "T000004784",
+"volume": "50 g",
+"in_stock": true
+},
+{
+"name": "Röstitud maapähklid meega, ESTRELLA, 140 g",
+"price": 3.04,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000039776",
+"volume": "140 g",
+"in_stock": true
+},
+{
+"name": "Röstitud soolatud maapähkel 400 g, SELVER, 400 g",
+"price": 1.99,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Selver"
+],
+"sku": "T000047130",
+"volume": "400 g",
+"in_stock": true
+},
+{
+"name": "Maapähklid hapukoore-sibulamaitselised, ESTRELLA, 140 g",
+"price": 2.33,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000059885",
+"volume": "140 g",
+"in_stock": true
+},
+{
+"name": "Röstitud maapähklid soolaga, ESTRELLA, 240 g",
+"price": 2.19,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000085117",
+"volume": "240 g",
+"in_stock": true
+},
+{
+"name": "Röstitud juustumaitselised krõbeda kattega maapähklid, ESTRELLA, 140g",
+"price": 2.33,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000073819",
+"volume": "140g",
+"in_stock": true
+},
+{
+"name": "Proteiinikreem röstitud maapähklitega, ilma lisatud suhkruta, GO ON, 180g",
+"price": 3.99,
+"shelf": "Tervisekaubad",
+"category": [
+"Tervisekaubad",
+"FB"
+],
+"sku": "T000090290",
+"volume": "180 g",
+"in_stock": true
+},
+{
+"name": "Maapähklikreemimaitseline jäätis šokolaaditükkide ja maapähklikreemiga (magusainetega), NICKS, 299 g",
+"price": 7.31,
+"shelf": "Jäätised",
+"category": [
+"Jäätised",
+"FB"
+],
+"sku": "T000070332",
+"volume": "299 g",
+"in_stock": true
+},
+{
+"name": "Röstitud vürtsika paprikamaitselised krõbeda kattega maapähklid, ESTRELLA, 140g",
+"price": 2.33,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000073820",
+"volume": "140g",
+"in_stock": true
+},
+{
+"name": "Chia Seemnetega mahe maapähklivõie, NATTY ORIGINAL, 333g",
+"price": 5.99,
+"shelf": "Magusad hoidised",
+"category": [
+"Magusad hoidised",
+"Hea hinnaga tooted",
+"Mahe",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000056610",
+"volume": "333g",
+"in_stock": true
+},
+{
+"name": "Kreemjas mahe maapähklivõie, NATTY ORIGINAL, 333g",
+"price": 5.99,
+"shelf": "Magusad hoidised",
+"category": [
+"Magusad hoidised",
+"Hea hinnaga tooted",
+"Mahe",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000056608",
+"volume": "333g",
+"in_stock": true
+},
+{
+"name": "Maapähklid soolaga, röstitud, ESTRELLA, 500g",
+"price": 4.59,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000092417",
+"volume": "500g",
+"in_stock": true
+},
+{
+"name": "Nuudlid maapähkli kastmes (tops), MAGGI, 75g",
+"price": 2.25,
+"shelf": "Paja- ja nuudliroad",
+"category": [
+"Paja- ja nuudliroad",
+"FB"
+],
+"sku": "T000070695",
+"volume": "75g",
+"in_stock": true
+},
+{
+"name": "Röstitud maapähkli puru, TAKE1 CHEF, 70 g",
+"price": 0.86,
+"shelf": "Maitseained",
+"category": [
+"Maitseained",
+"FB"
+],
+"sku": "T000040100",
+"volume": "70 g",
+"in_stock": true
+},
+{
+"name": "Sinihallitusjuustu maitselised röstitud maapähklid, TAFFEL, 140g",
+"price": 1.77,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000072416",
+"volume": "140g",
+"in_stock": true
+},
+{
+"name": "Müslibatoon maapähkliga, CORNY, 6x25 g",
+"price": 2.99,
+"shelf": "Hommikuhelbed, müslid, kiirpudrud",
+"category": [
+"Hommikuhelbed, müslid, kiirpudrud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000034919",
+"volume": "6x25 g",
+"in_stock": true
+},
+{
+"name": "Indiapähklivõie Kašu, NATTY, 333g",
+"price": 10.15,
+"shelf": "Magusad hoidised",
+"category": [
+"Magusad hoidised",
+"Mahe",
+"Laktoosivaba",
+"Gluteenivaba",
+"Vegan",
+"FB"
+],
+"sku": "T000090146",
+"volume": "333 g",
+"in_stock": true
+},
+{
+"name": "Ahjus röstitud maapähklid soolaga, ESTRELLA, 240g",
+"price": 2.19,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000092418",
+"volume": "240g",
+"in_stock": true
+},
+{
+"name": "Soolapähkli proteiinibatoon, NICKS, 50 g",
+"price": 1.99,
+"shelf": "Toidulisandid",
+"category": [
+"Toidulisandid",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000081328",
+"volume": "50 g",
+"in_stock": true
+},
+{
+"name": "Maapähkli fudge, NICKS, 40 g",
+"price": 2.09,
+"shelf": "Šokolaadid",
+"category": [
+"Šokolaadid",
+"FB",
+"Kommipakid, kommikarbid, šokolaadid"
+],
+"sku": "T000064981",
+"volume": "40 g",
+"in_stock": true
+},
+{
+"name": "Pähklibatoon krõbe maapähkel, NICKS, 40 g",
+"price": 2.59,
+"shelf": "Šokolaadid",
+"category": [
+"Šokolaadid",
+"FB",
+"Kommipakid, kommikarbid, šokolaadid"
+],
+"sku": "T000081312",
+"volume": "40 g",
+"in_stock": true
+},
+{
+"name": "Röstitud soolapähklid, GERMUND, 200 g",
+"price": 1.47,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"FB"
+],
+"sku": "T000012753",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Šokolaadibatoon, SNICKERS, 75g",
+"price": 1.59,
+"shelf": "Šokolaadid",
+"category": [
+"Šokolaadid",
+"FB",
+"Kommipakid, kommikarbid, šokolaadid"
+],
+"sku": "T000092366",
+"volume": "75g",
+"in_stock": true
+},
+{
+"name": "Tšillimaitselised röstitud maapähklid, TAFFEL, 140g",
+"price": 1.77,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000072418",
+"volume": "140g",
+"in_stock": true
+},
+{
+"name": "Mehhiko salsa maitselised röstitud maapähklid, TAFFEL, 140g",
+"price": 1.77,
+"shelf": "Pähklid ja kuivatatud puuviljad",
+"category": [
+"Pähklid ja kuivatatud puuviljad",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000072417",
+"volume": "140g",
+"in_stock": true
+},
+{
+"name": "Rosina-šokolaadi kringel pähklitega, SELVERI PAGARID, 1,4 kg, ettetellimisel",
+"price": 15.74,
+"shelf": "Pagaritooted",
+"category": [
+"Pagaritooted",
+"FB"
+],
+"sku": "T000001251",
+"volume": "1,4kg",
+"in_stock": true
+},
+{
+"name": "Šokolaadide 5-pakk, SNICKERS, 250 g",
+"price": 5.09,
+"shelf": "Šokolaadid",
+"category": [
+"Šokolaadid",
+"FB",
+"Kommipakid, kommikarbid, šokolaadid"
+],
+"sku": "T000080168",
+"volume": "250 g",
+"in_stock": true
+}
+],
+"selver|või": [
+{
+"name": "Või 82%, ALMA, 200 g",
+"price": 2.39,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB"
+],
+"sku": "T000073604",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Ghee või, LACTEOUS, 160 g",
+"price": 7.1,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB"
+],
+"sku": "T000055383",
+"volume": "160 g",
+"in_stock": true
+},
+{
+"name": "Või 82%, TERE, 200 g",
+"price": 2.59,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB"
+],
+"sku": "T000006945",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Või 82%, EPIIM, 250 g",
+"price": 3.29,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB"
+],
+"sku": "T000009091",
+"volume": "250 g",
+"in_stock": true
+},
+{
+"name": "MO Saaremaa või, SAAREMAA, 200 g",
+"price": 1.59,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000009117",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Eesti või, SELVER, 150 g",
+"price": 1.29,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"Püsivalt head tavahinnad",
+"FB",
+"Selver"
+],
+"sku": "T000093391",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "Või  laktoosivaba 82%, TERE, 200 g",
+"price": 3.29,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000039236",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Mahe Või, PAJUMÄE TALU, 150 g",
+"price": 6.99,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"Mahe",
+"FB"
+],
+"sku": "T000025790",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "Või koduaia ürtidega, SAAREMAA, 150 g",
+"price": 2.19,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB",
+"Saaremaa"
+],
+"sku": "T000042483",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "Saaremaa või, laktoosivaba, MO SAAREMAA, 200 g",
+"price": 1.99,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"Püsivalt head tavahinnad",
+"Laktoosivaba",
+"FB"
+],
+"sku": "T000093232",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Kartulikrõpsud või ja soolamaitselised, ESTRELLA, 170g",
+"price": 2.45,
+"shelf": "Sipsid",
+"category": [
+"Sipsid",
+"Püsivalt head tavahinnad",
+"FB",
+"Fanta ja Estrella"
+],
+"sku": "T000083101",
+"volume": "170 g",
+"in_stock": true
+},
+{
+"name": "Või soolakristallidega 80%, MO SAAREMAA, 200 g",
+"price": 2.49,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB"
+],
+"sku": "T000009118",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Mo Saaremaa või küüslaugu ja soolakristallidega, SAAREMAA, 150 g",
+"price": 2.19,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB"
+],
+"sku": "T000057624",
+"volume": "150 g",
+"in_stock": true
+},
+{
+"name": "HULGI Saaremaa või, laktoosivaba 3tk, MO SAAREMAA, 3 x 200g",
+"price": 5.4,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"Hulgipakkumised",
+"Hea hinnaga tooted",
+"Laktoosivaba",
+"Soodushinnaga toidukaubad",
+"Toidukaubad",
+"FB"
+],
+"sku": "T000093743",
+"volume": "3 x 200 g",
+"in_stock": true
+},
+{
+"name": "Soengukamm",
+"price": 2.02,
+"shelf": "Juukseharjad, kammid, kummid",
+"category": [
+"Juukseharjad, kammid, kummid",
+"FB"
+],
+"sku": "F000092737",
+"volume": "1 tk",
+"in_stock": true
+},
+{
+"name": "Kiirnuudlid kanamaitselised Asia, REEVA, 60g",
+"price": 0.85,
+"shelf": "Paja- ja nuudliroad",
+"category": [
+"Paja- ja nuudliroad",
+"FB"
+],
+"sku": "T000090653",
+"volume": "60g",
+"in_stock": true
+},
+{
+"name": "Rasvasegu võie Võideks light, MUMUU, 200 g",
+"price": 1.72,
+"shelf": "Võid, margariinid",
+"category": [
+"Võid, margariinid",
+"FB"
+],
+"sku": "T000007722",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Kiirnuudlid veiseliha maitselised Asia, REEVA, 60g",
+"price": 0.85,
+"shelf": "Paja- ja nuudliroad",
+"category": [
+"Paja- ja nuudliroad",
+"FB"
+],
+"sku": "T000090654",
+"volume": "60g",
+"in_stock": true
+},
+{
+"name": "Stitch patsikummid, DISNEY, 1tk",
+"price": 4.06,
+"shelf": "Juukseharjad, kammid, kummid",
+"category": [
+"Juukseharjad, kammid, kummid",
+"FB"
+],
+"sku": "F000156428",
+"volume": "1tk",
+"in_stock": true
+},
+{
+"name": "Kana-juustupihvid, TALLEGG, 320 g",
+"price": 1.99,
+"shelf": "Muud lihatooted",
+"category": [
+"Muud lihatooted",
+"FB"
+],
+"sku": "T000007182",
+"volume": "320 g",
+"in_stock": true
+},
+{
+"name": "Kanapihvid, TALLEGG, 320 g",
+"price": 1.69,
+"shelf": "Muud lihatooted",
+"category": [
+"Muud lihatooted",
+"FB"
+],
+"sku": "T000007184",
+"volume": "320 g",
+"in_stock": true
+},
+{
+"name": "Õllemops juustuga, WÕRO, 500 g",
+"price": 2.49,
+"shelf": "Grillvorstid, verivorstid",
+"category": [
+"Grillvorstid, verivorstid",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000010933",
+"volume": "500 g",
+"in_stock": true
+},
+{
+"name": "Kodused kalakotletid tilliga, SAARE KALA, 200 g",
+"price": 3.25,
+"shelf": "Muud kalatooted",
+"category": [
+"Muud kalatooted",
+"FB"
+],
+"sku": "T000074897",
+"volume": "200 g",
+"in_stock": true
+},
+{
+"name": "Basiilik, GRÜNE FEE, 1 tk",
+"price": 1.79,
+"shelf": "Maitsetaimed, värsked salatid, piprad, idud",
+"category": [
+"Maitsetaimed, värsked salatid, piprad, idud",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000012350",
+"volume": "1 tk",
+"in_stock": true
+},
+{
+"name": "Pere lihapallid, RAKVERE, 400 g",
+"price": 2.69,
+"shelf": "Muud lihatooted",
+"category": [
+"Muud lihatooted",
+"FB"
+],
+"sku": "T000089198",
+"volume": "400g",
+"in_stock": true
+},
+{
+"name": "Korea BBQ maitseaine, SANTA MARIA, 46 g",
+"price": 3.49,
+"shelf": "Maitseained",
+"category": [
+"Maitseained",
+"FB"
+],
+"sku": "T000076077",
+"volume": "46 g",
+"in_stock": true
+},
+{
+"name": "Mini-croissant võiga XL, SELVER, 600 g",
+"price": 4.77,
+"shelf": "Külmutatud tainad ja kondiitritooted",
+"category": [
+"Külmutatud tainad ja kondiitritooted",
+"FB",
+"Selver"
+],
+"sku": "T000077046",
+"volume": "600 g",
+"in_stock": true
+},
+{
+"name": "Kiievi kotlet, TALLEGG, 300 g",
+"price": 4.19,
+"shelf": "Muud lihatooted",
+"category": [
+"Muud lihatooted",
+"Hea hinnaga tooted",
+"Soodushinnaga toidukaubad",
+"FB"
+],
+"sku": "T000056833",
+"volume": "300 g",
+"in_stock": true
+},
+{
+"name": "Olivia Rapsiõli, OLIVIA, 5 L, ettetellimisel",
+"price": 16.25,
+"shelf": "Õlid, äädikad",
+"category": [
+"Õlid, äädikad",
+"Kastmed ja õlid",
+"FB"
+],
+"sku": "T000083523",
+"volume": "5L",
+"in_stock": true
+},
+{
+"name": "Juubeli tordipulber, KALEW, 450 g",
+"price": 2.79,
+"shelf": "Jahud",
+"category": [
+"Jahud",
+"FB"
+],
+"sku": "T000089657",
+"volume": "450 g",
+"in_stock": true
+},
+{
+"name": "Jahvatatud kohv Qualita Rossa, LAVAZZA, 250 g",
+"price": 8.69,
+"shelf": "Kohvid",
+"category": [
+"Kohvid",
+"FB"
+],
+"sku": "T000021484",
+"volume": "250 g",
+"in_stock": true
+},
+{
+"name": "Autolaadija USB-C 30W, D-FRUIT, 1 tk",
+"price": 10.15,
+"shelf": "Audiotehnika",
+"category": [
+"Audiotehnika",
+"FB"
+],
+"sku": "H000195393",
+"volume": "1 tk",
+"in_stock": true
+},
+{
+"name": "Peet, kg",
+"price": 0.79,
+"shelf": "Köögiviljad, juurviljad",
+"category": [
+"Köögiviljad, juurviljad",
+"FB"
+],
+"sku": "T000002472",
+"unit": "kg",
+"volume": "kg",
+"in_stock": true
+},
+{
+"name": "Kohvioad Qualita Rossa, LAVAZZA, 1 kg",
+"price": 29.99,
+"shelf": "Kohvid",
+"category": [
+"Kohvid",
+"FB"
+],
+"sku": "T000021485",
+"volume": "1 kg",
+"in_stock": true
+},
+{
+"name": "Lihahaamer, MAKU, 1 tk",
+"price": 11.17,
+"shelf": "Muud köögitarbed",
+"category": [
+"Muud köögitarbed",
+"FB"
+],
+"sku": "H000191719",
+"volume": "1 tk",
+"in_stock": true
+},
+{
+"name": "Lapi leib kaeraga Street Food, FAZER, 180 g",
+"price": 2.39,
+"shelf": "Leivad",
+"category": [
+"Leivad",
+"FB"
+],
+"sku": "T000056800",
+"volume": "180 g",
+"in_stock": true
+},
+{
+"name": "Vispel silikoonist FF, FISKARS, 1 tk",
+"price": 12.99,
+"shelf": "Muud köögitarbed",
+"category": [
+"Muud köögitarbed",
+"FB"
+],
+"sku": "H000105532",
+"volume": "1 tk",
+"in_stock": true
+},
+{
+"name": "Näopuhastusvahend Low pH Good Morning, COSRX, 150ml",
+"price": 12.99,
+"shelf": "Näopuhastus",
+"category": [
+"Näopuhastus",
+"FB"
+],
+"sku": "H000213832",
+"volume": "150ml",
+"in_stock": true
+},
+{
+"name": "Naiste põlvikud Cover 20den 1 suurus, BELLISSIMA, 3 paari",
+"price": 3.05,
+"shelf": "Naiste sokid, sukad",
+"category": [
+"Naiste sokid, sukad",
+"FB"
+],
+"sku": "F000018943",
+"volume": "üks suurus",
+"in_stock": true
+},
+{
+"name": "Seesamiõli, THAI CHOICE, 200 ml",
+"price": 6.59,
+"shelf": "Kastmed, õlid",
+"category": [
+"Kastmed, õlid",
+"FB"
+],
+"sku": "T000024526",
+"volume": "200 ml",
+"in_stock": true
+}
+]
+}

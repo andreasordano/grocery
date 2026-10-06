@@ -51,6 +51,10 @@ def search_rimi(query, page=0):
         if m:
             deal = f"{m.group(1)} or more: −{m.group(2)}%"
 
+        # The card's src is a tiny blurred placeholder (q_1); ask Cloudinary for normal quality.
+        img = card.select_one("img")
+        image = img.get("src").replace(",q_1,", ",q_auto,") if img and img.get("src") else None
+
         products.append({
             "store": "rimi",
             "name": name,
@@ -61,6 +65,10 @@ def search_rimi(query, page=0):
             "code": card.get("data-product-code"),
             "brand": gtm.get("brand"),
             "category": [gtm["category"]] if gtm.get("category") else [],
+            # Category code cut to three levels (SH-11-2-5 → SH-11-2: all yoghurts, not just
+            # flavoured ones); Rimi's cards don't name the shelf.
+            "shelf": "-".join(gtm["category"].split("-")[:3]) if gtm.get("category") else None,
+            "image": image,
             "in_stock": price is not None,
         })
 

@@ -57,6 +57,8 @@ def search_barbora(query, size=24):
             "unit_price": item.get("comparative_unit_price"),
             "id": item.get("id"),
             "category": [c.strip() for c in path.split("/") if c.strip()],
+            "shelf": ([c.strip() for c in path.split("/") if c.strip()] or [None])[-1],
+            "image": item.get("image"),
             "in_stock": item.get("status") == "active",
         })
     return products

@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -13,6 +14,7 @@ import time
 
 
 app = FastAPI(title="Groceries Optimizer API")
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Get default stores from config
 _DEFAULT_STORES = get_default_stores()
@@ -159,13 +161,20 @@ def dinner(req: DinnerRequest):
     return result
 
 
-_INDEX = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web", "index.html")
+_WEB = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web")
+_INDEX = os.path.join(_WEB, "index.html")
 
 
 @app.get("/", include_in_schema=False)
 def index():
     """The web app (a single self-contained page)."""
     return FileResponse(_INDEX, headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/vocab.json", include_in_schema=False)
+def vocab():
+    """Product words for suggestions while typing (built by scripts/build_vocab.py)."""
+    return FileResponse(os.path.join(_WEB, "vocab.json"), headers={"Cache-Control": "public, max-age=86400"})
 
 
 @app.get("/health")

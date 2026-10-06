@@ -7,10 +7,12 @@ Two missions:
 - **🍽️ Dinner tonight** — pick one of 10 dinners, the number of people and anything else you need on the way
   → one store (Selver, Rimi or Barbora) with a priced basket.
 - **🛒 Shopping list** — type items. Words that match a known ingredient (piim, munad, pasta, …) use its rule;
-  anything else is a free-text best guess. Searches Selver, Rimi and Barbora (Barbora stands in for Maxima).
+  anything else goes through free-text matching (see below). Suggestions appear while typing.
+  Searches Selver, Rimi and Barbora (Barbora stands in for Maxima).
 
 - **Frontend:** one self-contained page (`web/index.html`, plain HTML/CSS/JS), served by the API at `/`
-- **API:** FastAPI (`api/service.py`) — `POST /basket` (used by the web app), `GET /recipes`, `POST /events`, `GET /health`;
+- **API:** FastAPI (`api/service.py`) — `POST /basket` (used by the web app), `GET /recipes`, `POST /events`,
+  `GET /vocab.json` (suggestion words), `GET /health`;
   older `POST /dinner` and `POST /optimize` still work
 - **Events DB:** Postgres (via `DATABASE_URL`), falling back to SQLite at `logs/events.db`
 
@@ -108,6 +110,33 @@ integration breaks, a rule stops finding products, or a recipe total looks wrong
 a GitHub issue labelled `healthcheck` — that is the only maintenance signal to watch. Run it locally the same way.
 Note: GitHub disables scheduled workflows after 60 days without repository activity.
 
+### Free-text items
+
+Items without an ingredient rule (`core/fetch.py`, `core/scoring.py`) trust the stores' own search, then filter it:
+- Each product name word is graded against the typed word: **the thing itself** (õun for "õunad", rukkileib for
+  "leib"), a **near form** (õuna mahl = "of apple", maapähklivõie, a typo) or only a **mention** ("with X":
+  maapähklivõi*ga*; "for X": tee *jaoks*; a hyphen prefix: maapähklivõi-proteiinibatoon). Brands in capitals are ignored.
+- **Shelf vote:** per store, the shelf where most real matches sit wins. Votes count more when the name says the
+  word early ("Banaan, kg" beats "Kakao segu: õun, banaan"). Other products on that shelf are accepted too
+  (Barbora's "Maapähklikreem" for "maapähklivõi"); mentions on other shelves are dropped (chocolate bars,
+  cat litter "roh.tee"). With no match at all, the store's own top results decide the shelf.
+- A plural that finds little ("banaanid") is searched again in the singular ("banaan").
+- Up to 12 products per store, best tier first, cheapest per kg/l within a tier.
+- The receipt shows the store shelf under unclear products ("… NATTY ORIGINAL, 333g · magusad hoidised"),
+  and the choose-another sheet shows product photos.
+
+### Suggestions while typing
+
+`web/vocab.json` (~3,400 words, 27 KB gzipped) holds product words from Selver's whole catalog with the shelf
+most of their products sit on; ingredient aliases come first. The page loads it on the first focus and suggests
+words that start with, contain, or nearly match (typos) what's typed. Plain Enter still adds the typed text.
+Each add is logged as an `item_added` event with `via: "suggestion"` or `"typed"`. Rebuild the list every
+month or two (an outdated list does no harm):
+
+```bash
+python -m scripts.build_vocab
+```
+
 ### Discounts
 
 Each store adapter returns the public `price` plus, when known, `regular_price` (on sale), `card_price`
@@ -168,7 +197,7 @@ Tests don't call the stores. To check the store integrations and rules against t
 | `DATABASE_URL` | API | unset → SQLite |
 | `EVENTS_DB` | API (SQLite path) | `logs/events.db` |
 | `FETCH_CACHE_TTL` / `FETCH_CACHE_MAX` | API | `21600` s / `512` |
-| `PER_STORE_LIMIT` | API | `6` candidates per item per store |
+| `PER_STORE_LIMIT` | API | `12` candidates per item per store |
 | `FETCH_WORKERS` | API | `12` parallel store requests |
 
 Keep secrets out of the repo; set env vars in your deployment platform.

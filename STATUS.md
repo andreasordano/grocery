@@ -1,6 +1,6 @@
 # Project status and next steps
 
-_Last updated: 6 October 2026. Written to pick the project up again later._
+_Last updated: 6 October 2026 (evening). Written to pick the project up again later._
 
 **Thesis:** "Don't compare groceries. Decide what to do." Someone leaving work picks a dinner and gets
 **one store and a shopping list** ("Go to Barbora: 5,92 €"), not a price spreadsheet.
@@ -70,15 +70,26 @@ All 61 events in the local database are from one person (the founder).
 - [ ] **One list with Ideas:** merge Dinner and Shopping list. Free items are the core; recipes become ideas
       that add their ingredients to the list as editable items. No new hand-written recipes.
 - [ ] **"Save as my dinner":** users keep their own lists (zero upkeep, shows what people cook).
+- [ ] **NutriData dinners (next, after testing the search changes):** the state food database
+      (tka.nutridata.ee, Tervise Arengu Instituut) has an open JSON API with ~300 distinct Estonian main
+      courses and soups (805 with variants), ingredients in grams and categories (Hakkliharoad, Kalaroad,
+      Road linnulihast, Lihata põhiroad, Supid). No steps or photos. Plan: a script generates `data/dishes.yaml`
+      once; ingredients go through free-text matching (≈225 distinct ingredient names per 120 dishes, so not
+      hand rules); the Dinner screen shows categories with 5 random dishes. **First ask TAI whether reuse with
+      attribution is allowed.** Endpoints: `/api-foods/recipes/tka` (list), `/api-foods/recipes/tka/{id}/tka/subrecipes`.
 - [ ] **Featured ideas from discounts**, computed automatically ("Shakshuka is 30% cheaper at Rimi this week").
       Later the slot for store-paid placement, always labelled.
 
 ### 4. Product gaps found while testing
 - [ ] **Quantities in the shopping list** ("2 piim", "kartul 2 kg"). Today an item means one pack, or 800 g
       for loose goods (borrowed from recipe amounts).
-- [ ] **Free-text matching is still guesswork** for words without a rule (e.g. "jogurt", "leib").
-      `core/scoring.py:76` treats "the word appears inside the name" as a perfect match. Adding aliases or
-      rules for the most common words would cover most lists.
+- [x] **Free-text matching** (6 Oct 2026, after the first tester's feedback): word forms ("with X" / "of X" /
+      the thing itself), a per-store shelf vote and a singular retry. "maapähklivõi" now finds peanut butter at
+      all three stores instead of a Reese's bar; "tee" no longer picks cat litter, "või" no longer picks
+      mashed potato *with* butter. See README "Free-text items".
+- [x] **Suggestions while typing** from a word list built from Selver's catalog (`python -m scripts.build_vocab`,
+      re-run every month or two). The receipt shows the store shelf, and the picker shows product photos.
+- [ ] **Watch `item_added` events:** do testers pick suggestions (`via: "suggestion"`) or type freely?
 - [ ] **Preferences live in one browser** (`localStorage`); they don't follow a tester to another device.
       Fine for validation.
 - [ ] **No route or location yet** ("Rimi is 4 min off your route"). This was the original "NEXT" stage;
@@ -106,7 +117,7 @@ All 61 events in the local database are from one person (the founder).
 ## Picking it up again
 ```bash
 docker compose up --build -d                 # app at http://localhost:8000/?u=yourname
-python -m pytest -q tests                    # 61 tests
+python -m pytest -q tests                    # 79 tests
 python -m scripts.healthcheck                # are the stores and rules still OK?
 docker compose exec db psql -U groceries     # look at events (queries in README.md)
 ```

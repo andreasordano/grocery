@@ -18,7 +18,7 @@ from concurrent.futures import ThreadPoolExecutor
 import yaml
 
 from core.fetch import _cached_fetch, discount_fields
-from core.scoring import parse_price
+from core.scoring import fold, parse_price
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 BASE_SERVINGS = 2
@@ -181,14 +181,14 @@ def _with_discount(option, product):
     return {**option, **d, "regular_cost": scale(d["regular_price"]), "card_cost": scale(d["card_price"])}
 
 
+def _looks(product):
+    """What helps a person recognise a product: its photo and the store shelf it sits on.
+    Rimi only gives shelf codes (SH-19-5), which mean nothing to a person, so those are left out."""
+    shelf = product.get("shelf")
+    return {"image": product.get("image"), "shelf": None if not shelf or re.match(r"SH-\d", shelf) else shelf}
+
+
 MAX_OPTIONS = 100  # alternatives per line; the web app also previews preferences against them
-
-
-def _fold(text):
-    """Spelling-tolerant form for preference words: "spaghetti" and "Spagetid" both become "spageti…"."""
-    t = text.lower()
-    t = re.sub(r"(?<=[gctp])h", "", t)   # spaghetti → spagetti
-    return re.sub(r"(.)\1+", r"\1", t)  # double letters → single
 
 
 def _pick(options, pref, store):
@@ -206,10 +206,10 @@ def _pick(options, pref, store):
         for o in options:
             if o["product"] == pinned:
                 return {**o, "pinned": True}
-    words = [_fold(w.strip()) for w in pref.get("words") or [] if w.strip()]
+    words = [fold(w.strip()) for w in pref.get("words") or [] if w.strip()]
     if words:
         for o in options:
-            if all(w in _fold(o["product"]) for w in words):
+            if all(w in fold(o["product"]) for w in words):
                 return {**o, "preferred": True}
     return options[0]
 
@@ -228,7 +228,8 @@ def ingredient_offers(ingredient_key, need, store, recipes, rules, pref=None):
             if priced:
                 cost, packs, how = priced
                 options.append(_with_discount({"product": p["name"], "price": parse_price(p["price"]), "cost": cost,
-                                               "packs": packs, "how": how, "substitute": level > 0}, p))
+                                               "packs": packs, "how": how, "substitute": level > 0,
+                                               **_looks(p)}, p))
         if options:
             options.sort(key=lambda o: o["cost"])
             return _pick(options, pref, store), options
@@ -314,7 +315,8 @@ def free_text_offers(items, stores):
         for store in stores:
             cands = sorted((p for p in all_products.get(it, []) if p["store"] == store), key=lambda p: p["score"])
             out[it][store] = [_with_discount({"product": p["name"], "price": p["price"], "cost": p["price"], "packs": 1,
-                                              "how": f"1 × {p['price']:.2f} €", "substitute": False}, p) for p in cands]
+                                              "how": f"1 × {p['price']:.2f} €", "substitute": False, **_looks(p)}, p)
+                              for p in cands]
     return out
 
 
@@ -323,7 +325,7 @@ def _line(key, label, need, unit, offer, options, extra):
         "key": key, "ingredient": key if not key.startswith("text:") else None,
         "label": label, "need": need, "unit": unit, "extra": extra,
         **offer,
-        "options": [{k: o.get(k) for k in ("product", "cost", "how", "regular_cost", "card_cost", "deal")}
+        "options": [{k: o.get(k) for k in ("product", "cost", "how", "regular_cost", "card_cost", "deal", "image", "shelf")}
                     for o in options[:MAX_OPTIONS]],
     }
 
