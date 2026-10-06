@@ -157,9 +157,9 @@ def matches_rule(product, rule):
     return _category_ok(product.get("category"), rule.get("category"))
 
 
-def _safe_fetch(store, query):
+def _safe_fetch(store, query, refresh=False):
     try:
-        return _cached_fetch(store, query)
+        return _cached_fetch(store, query, refresh=True) if refresh else _cached_fetch(store, query)
     except Exception as exc:
         print(f"catalog fetch failed {store}/{query}: {exc}")
         return []
@@ -260,8 +260,9 @@ def best_offer(ingredient_key, need, store, recipes=None, rules=None):
     return ingredient_offers(ingredient_key, need, store, recipes, rules)[0]
 
 
-def prefetch(rules, keys, stores):
-    """Warm the fetch cache with every search these ingredients need, concurrently."""
+def prefetch(rules, keys, stores, refresh=False):
+    """Warm the fetch cache with every search these ingredients need, concurrently.
+    refresh=True asks the stores again even when the results are still cached."""
     searches = {
         (store, q)
         for key in keys
@@ -270,7 +271,14 @@ def prefetch(rules, keys, stores):
         for q in _queries(rule)
     }
     with ThreadPoolExecutor(max_workers=12) as pool:
-        list(pool.map(lambda sq: _safe_fetch(*sq), searches))
+        list(pool.map(lambda sq: _safe_fetch(*sq, refresh=refresh), searches))
+
+
+def warm_cache(stores, refresh=False):
+    """Every ingredient rule's searches at every store, so dinners price quickly even right after a
+    restart (Barbora answers one request at a time, so a cold dinner can take 5–20 s)."""
+    rules = load_rules()
+    prefetch(rules, set(rules), stores, refresh)
 
 
 # ── shopping list: typed words → known ingredients ──────────────────────────
@@ -389,27 +397,6 @@ def recipe_needs(recipe, servings, recipes):
         if n.get("packs"):
             n["packs"] = max(1, math.ceil(n["packs"] * scale - 1e-9))
         out.append({**n, "asked": None})
-    return out
-
-
-def list_offers(items, stores):
-    """Rule-based offers for typed items that match a known ingredient.
-
-    Returns {item: [product dicts, one per store that has it]} for matched items
-    only; unmatched items are left to free-text search.
-    """
-    recipes, rules = load_recipes(), load_rules()
-    matched = {item: key for item in items if (key := match_ingredient(item, recipes))}
-    prefetch(rules, set(matched.values()), stores)
-
-    out = {}
-    for item, key in matched.items():
-        out[item] = []
-        for store in stores:
-            offer = best_offer(key, list_amount(key, recipes), store, recipes, rules)
-            if offer:
-                out[item].append({"item": item, "store": store, "name": offer["product"], "price": offer["cost"],
-                                  "score": 0.0, "ingredient": key, "substitute": offer["substitute"]})
     return out
 
 

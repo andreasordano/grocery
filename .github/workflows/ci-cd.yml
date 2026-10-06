@@ -3,6 +3,7 @@ name: CI/CD - Build & Deploy
 on:
   push:
     branches: [ main ]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -24,14 +25,17 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt pytest
+        run: |
+          pip install -r requirements.txt -r requirements-dev.txt
+          python -m playwright install --with-deps chromium
 
-      - name: Run tests
+      - name: Run tests (including the browser tests in tests/e2e)
         run: python -m pytest -q tests
 
   build-and-push:
     name: Build and push Docker images
     needs: test
+    if: github.event_name != 'pull_request'  # pull requests are only tested
     runs-on: ubuntu-latest
     env:
       RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}

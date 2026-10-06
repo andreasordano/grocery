@@ -135,12 +135,6 @@ def test_match_ingredient(typed, key):
     assert catalog.match_ingredient(typed) == key
 
 
-def test_list_offers_uses_rules_for_known_words(fake_store):
-    offers = catalog.list_offers(["Munad", "jogurt"], ["a", "b"])
-    assert list(offers) == ["Munad"]  # jogurt is left to free-text search
-    assert [(o["store"], o["name"], o["price"]) for o in offers["Munad"]] == [("a", "Munad 10 tk", 2.0)]
-
-
 # ── preferences, extra items, other stores ───────────────────────────────────
 
 OPTS = [{"product": "Makaronid EXTRA LINE 400g", "cost": 0.28}, {"product": "Spaghetti DIVELLA 500g", "cost": 0.89},
@@ -373,3 +367,14 @@ def test_dishes_become_typed_items_that_price_the_same(fake_store):
     assert items == ["kartul 800g", "4 tk kanamunad", "küüslauk 11g"]
     needs = [catalog.to_need(i, catalog.load_recipes()) for i in items]
     assert [(n.get("rule") or n.get("text"), n["amount"]) for n in needs] == [("kartul", 800), ("munad", 4), ("küüslauk", 11)]
+
+
+def test_warm_cache_runs_every_rule_search_and_can_refresh(monkeypatch):
+    calls = []
+    monkeypatch.setattr(catalog, "load_rules", lambda: RULES)
+    monkeypatch.setattr(catalog, "_cached_fetch", lambda store, q, refresh=False: calls.append((store, q, refresh)) or [])
+    catalog.warm_cache(["a", "b"])
+    assert sorted(calls) == [("a", "kartul", False), ("a", "munad", False), ("b", "kartul", False), ("b", "munad", False)]
+    calls.clear()
+    catalog.warm_cache(["a"], refresh=True)
+    assert all(refresh for _, _, refresh in calls) and len(calls) == 2

@@ -1,3 +1,6 @@
+import threading
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
@@ -6,49 +9,40 @@ from typing import List, Dict, Any, Optional
 from core import catalog
 from core import my_dinners
 from core import events
-from core import fetch as core_fetch
-from core import optimiser
-from stores_config import get_default_stores
+from core import fetch
 
 import os
 import time
 
 
-app = FastAPI(title="pantryrun API")
-app.add_middleware(GZipMiddleware, minimum_size=1000)
-
-# Get default stores from config
-_DEFAULT_STORES = get_default_stores()
 # Stores with ingredient rules in data/rules.yaml (Barbora stands in for Maxima).
 DINNER_STORES = ["selver", "rimi", "barbora"]
 
 
-class OptimizeRequest(BaseModel):
-    items: List[str]
-    stores: List[str] = _DEFAULT_STORES
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
+def _keep_cache_warm():
+    """Fetch every ingredient rule's searches at startup, then again before the cache expires
+    (about 120 store requests each time). Set CACHE_WARMUP=0 to turn it off."""
+    refresh = False
+    while True:
+        started = time.monotonic()
+        try:
+            catalog.warm_cache(DINNER_STORES, refresh)
+            print(f"cache warm-up done in {time.monotonic() - started:.0f} s")
+        except Exception as exc:  # never take the service down over it
+            print(f"cache warm-up failed: {exc}")
+        refresh = True
+        time.sleep(fetch._CACHE.ttl * 0.8)
 
 
-class OptimizeResponse(BaseModel):
-    cart: List[Dict[str, Any]]
-    total_score: float
-    info: Dict[str, Any]
-    warnings: List[str]
-    all_products: Dict[str, List[Dict[str, Any]]]
+@asynccontextmanager
+async def lifespan(app):
+    if os.environ.get("CACHE_WARMUP", "1") == "1":
+        threading.Thread(target=_keep_cache_warm, name="cache-warmup", daemon=True).start()
+    yield
 
 
-class AvailabilityRequest(BaseModel):
-    items: List[str]
-    stores: List[str] = _DEFAULT_STORES
-
-
-class DinnerRequest(BaseModel):
-    recipe_id: str
-    servings: int = 2
-    stores: List[str] = DINNER_STORES
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
+app = FastAPI(title="pantryrun API", lifespan=lifespan)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
 class BasketRequest(BaseModel):
@@ -80,21 +74,6 @@ class EventRequest(BaseModel):
     data: Dict[str, Any] = {}
     user_id: Optional[str] = None
     session_id: Optional[str] = None
-
-
-
-
-@app.post("/availability")
-def availability(req: AvailabilityRequest):
-    """Return availability per item: which stores returned candidates."""
-    grocery_list = {it: {"search_term": it} for it in req.items}
-    all_products, warnings = core_fetch.fetch_all(grocery_list, req.stores)
-    availability = {}
-    for it in req.items:
-        prods = all_products.get(it, [])
-        stores_with = sorted({p["store"] for p in prods})
-        availability[it] = stores_with
-    return {"availability": availability, "warnings": warnings}
 
 
 @app.post("/events")
@@ -213,34 +192,6 @@ def open_share(token: str, user_id: Optional[str] = None):
     return dinner
 
 
-@app.post("/dinner")
-def dinner(req: DinnerRequest):
-    """Recommend one store for a recipe, with the priced basket and alternatives."""
-    started = time.monotonic()
-    try:
-        result = catalog.recommend_dinner(req.recipe_id, max(1, min(req.servings, 12)), req.stores)
-    except KeyError:
-        raise HTTPException(status_code=404, detail=f"Unknown recipe: {req.recipe_id}")
-    events.log_event(
-        "dinner",
-        {
-            "recipe_id": req.recipe_id,
-            "servings": result["servings"],
-            "stores": req.stores,
-            "latency_s": round(time.monotonic() - started, 2),
-            "recommended_store": result["store"],
-            "baskets": [
-                {"store": b["store"], "total_price": b["total_price"], "missing": b["missing"],
-                 "chosen": {l["ingredient"]: l["product"] for l in b["lines"]}}
-                for b in result["baskets"]
-            ],
-        },
-        user_id=req.user_id,
-        session_id=req.session_id,
-    )
-    return result
-
-
 _WEB = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web")
 _INDEX = os.path.join(_WEB, "index.html")
 
@@ -260,39 +211,3 @@ def vocab():
 @app.get("/health")
 def health():
     return {"status": "ok"}
-
-
-@app.post("/optimize", response_model=OptimizeResponse)
-def optimize(req: OptimizeRequest):
-    # Build grocery_list spec (use item name as search_term)
-    # Build a richer spec per item: include tokenized keywords so relevance scoring
-    # can use keyword matches even when the UI sent only a display name.
-    started = time.monotonic()
-    # Items that match a known ingredient (e.g. "piim", "kanamunad") use its hand-written rule;
-    # everything else falls back to free-text search and relevance scoring.
-    ruled = catalog.list_offers(req.items, req.stores)
-
-    grocery_list = {it: core_fetch.spec_for(it) for it in req.items if it not in ruled}
-    all_products, warnings = core_fetch.fetch_all(grocery_list, req.stores)
-    all_products.update(ruled)
-    cart, total_score, info = optimiser.optimize_cart(all_products, req.items, req.stores)
-    events.log_event(
-        "optimize",
-        {
-            "items": req.items,
-            "stores": req.stores,
-            "latency_s": round(time.monotonic() - started, 2),
-            "recommended_store": info["store"],
-            "total_price": info["total_price"],
-            "missing": info["missing"],
-            "baskets": info["baskets"],
-            "chosen": {p["item"]: p["name"] for p in cart},
-            "rule_matched": sorted(ruled),
-            "warnings": len(warnings),
-        },
-        user_id=req.user_id,
-        session_id=req.session_id,
-    )
-    # convert defaultdict to regular dict for JSON serialization
-    return {"cart": cart, "total_score": total_score, "info": info, "warnings": warnings, "all_products": dict(all_products)}
-

@@ -12,9 +12,8 @@ Two missions:
   Searches Selver, Rimi and Barbora (Barbora stands in for Maxima).
 
 - **Frontend:** one self-contained page (`web/index.html`, plain HTML/CSS/JS), served by the API at `/`
-- **API:** FastAPI (`api/service.py`) — `POST /basket` (used by the web app), `GET /recipes`, `POST /events`,
-  `GET /vocab.json` (suggestion words), `GET /health`;
-  older `POST /dinner` and `POST /optimize` still work
+- **API:** FastAPI (`api/service.py`) — `POST /basket` (prices a dinner and/or list at every store), `GET /recipes`,
+  `/my-dinners`, `/shares`, `POST /events`, `GET /vocab.json` (suggestion words), `GET /health`
 - **Events DB:** Postgres (via `DATABASE_URL`), falling back to SQLite at `logs/events.db`
 
 See `diagram.md` for the architecture.
@@ -234,9 +233,14 @@ curl -s -X POST http://localhost:8000/optimize \
 ## Tests
 
 ```bash
-pip install pytest
+pip install -r requirements.txt -r requirements-dev.txt
+python -m playwright install chromium   # once, for the browser tests in tests/e2e
 python -m pytest -q tests
 ```
+
+`tests/e2e` drives the web page in a real browser against the API with fake stores (skipped when Playwright
+isn't installed; `PW_CHANNEL=chrome` uses an installed Google Chrome). CI runs everything on pushes to `main`
+and on pull requests.
 
 Tests don't call the stores. To check the store integrations and rules against the live sites:
 `python -m scripts.healthcheck`.
@@ -249,6 +253,7 @@ Tests don't call the stores. To check the store integrations and rules against t
 | `EVENTS_DB` | API (SQLite path) | `logs/events.db` |
 | `FETCH_CACHE_TTL` / `FETCH_CACHE_MAX` | API | `21600` s / `512` |
 | `PER_STORE_LIMIT` | API | `12` candidates per item per store |
+| `CACHE_WARMUP` | API | `1`: fetch every ingredient rule's searches at startup and before they expire; `0` turns it off |
 | `FETCH_WORKERS` | API | `12` parallel store requests |
 
 Keep secrets out of the repo; set env vars in your deployment platform.

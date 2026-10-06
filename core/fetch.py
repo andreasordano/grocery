@@ -39,9 +39,10 @@ _CACHE = TTLCache(
 )
 
 
-def _cached_fetch(store: str, query: str, size: int = 40):
+def _cached_fetch(store: str, query: str, size: int = 40, refresh: bool = False):
+    """Store search results, cached for FETCH_CACHE_TTL. refresh=True asks the store again (cache warm-up)."""
     key = (store, query.strip().lower(), size)
-    cached = _CACHE.get(key)
+    cached = None if refresh else _CACHE.get(key)
     if cached is not None:
         return cached
     fetcher = get_fetcher(store)
