@@ -67,6 +67,12 @@ class MyDinnerRequest(BaseModel):
     name: str
     servings: int = 2
     items: List[str]
+    from_share: Optional[str] = None  # link token, when saved from a dinner someone sent
+
+
+class ShareRequest(BaseModel):
+    recipe_id: str
+    user_id: Optional[str] = None
 
 
 class EventRequest(BaseModel):
@@ -161,8 +167,8 @@ def _save_my_dinner(req: MyDinnerRequest, dinner_id: Optional[str] = None):
         raise HTTPException(status_code=400, detail=str(exc))
     if dinner is None:
         raise HTTPException(status_code=404, detail="No such dinner")
-    events.log_event("my_dinner_saved", {"id": dinner["id"], "new": dinner_id is None, "items": len(dinner["items"])},
-                     user_id=req.user_id)
+    events.log_event("my_dinner_saved", {"id": dinner["id"], "new": dinner_id is None, "items": len(dinner["items"]),
+                                         "from_share": req.from_share}, user_id=req.user_id)
     return dinner
 
 
@@ -182,6 +188,29 @@ def delete_my_dinner(dinner_id: str, user_id: str):
         raise HTTPException(status_code=404, detail="No such dinner")
     events.log_event("my_dinner_deleted", {"id": dinner_id}, user_id=user_id)
     return {"deleted": dinner_id}
+
+
+@app.post("/shares")
+def create_share(req: ShareRequest):
+    """A link to send a dinner to someone: a snapshot of it, priced for whoever opens it."""
+    recipes = catalog.load_recipes()
+    recipe = catalog.find_recipe(req.recipe_id, recipes, req.user_id)
+    if recipe is None:
+        raise HTTPException(status_code=404, detail="No such dinner")
+    token = my_dinners.share(req.user_id, req.recipe_id, recipe["name"], recipe.get("servings", catalog.BASE_SERVINGS),
+                             catalog.recipe_as_items(recipe, recipes), recipe.get("pantry", []))
+    events.log_event("share_created", {"token": token, "recipe_id": req.recipe_id}, user_id=req.user_id)
+    return {"token": token, "path": f"/?dinner={token}"}
+
+
+@app.get("/shares/{token}")
+def open_share(token: str, user_id: Optional[str] = None):
+    """The dinner behind a link."""
+    dinner = my_dinners.shared(token)
+    if dinner is None:
+        raise HTTPException(status_code=404, detail="This link doesn't lead to a dinner")
+    events.log_event("share_opened", {"token": token}, user_id=user_id)
+    return dinner
 
 
 @app.post("/dinner")

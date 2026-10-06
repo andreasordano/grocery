@@ -50,8 +50,10 @@ def load_dishes():
 
 def find_recipe(recipe_id, recipes, user_id=None):
     """A hand-written recipe, a NutriData dish ("nd-…") or one of this person's dinners ("my-…"), or None."""
-    if recipe_id.startswith("my-"):
+    if recipe_id.startswith(("my-", "sh-")):
         from core import my_dinners
+        if recipe_id.startswith("sh-"):  # shared by link: anyone with it may open it
+            return my_dinners.as_recipe(my_dinners.shared(recipe_id[3:]))
         return my_dinners.as_recipe(my_dinners.get(user_id, recipe_id))
     pool = recipes["recipes"] + (load_dishes()["dishes"] if recipe_id.startswith("nd-") else [])
     return next((r for r in pool if r["id"] == recipe_id), None)
@@ -349,6 +351,24 @@ def to_need(item, recipes):
     if qty and qty[1] in ("g", "ml"):
         return {**need, "text": name, "amount": qty[0], "unit": qty[1]}
     return {**need, "text": name, "packs": qty[0] if qty else 1}
+
+
+def recipe_as_items(recipe, recipes):
+    """A recipe's ingredients as typed items ("kodune hakkliha 400g", "küüslauk 11g", "4 tk munad"),
+    so a classic or NutriData dish can be shared and saved like someone's own dinner."""
+    out = []
+    for ing in recipe["ingredients"]:
+        if isinstance(ing, str):
+            out.append(ing)
+            continue
+        if "item" in ing:
+            spec = recipes["ingredients"][ing["item"]]
+            name, unit = spec["name"].lower(), spec["unit"]
+        else:
+            name, unit = ing["text"], "g"
+        amount = round(ing["amount"])
+        out.append(f"{amount} tk {name}" if unit == "pcs" else f"{name} {amount}{unit}")
+    return out
 
 
 def recipe_needs(recipe, servings, recipes):

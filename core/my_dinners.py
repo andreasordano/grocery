@@ -1,6 +1,8 @@
 # =============================================================================
-# MY DINNERS  (people's own recipes)
-# One table: my_dinners(id, user_id, name, servings, items JSON, created, updated).
+# MY DINNERS  (people's own recipes, and dinners shared by link)
+# my_dinners(id, user_id, name, servings, items JSON, created, updated).
+# shares(token, user_id, recipe_id, name, servings, items JSON, pantry JSON, created):
+# a snapshot of a dinner someone sent; anyone with the link can open it.
 # Items are typed lines with optional quantities ("paprika 600g", "2 piim"), priced
 # like a shopping list and scaled from `servings` to the number of people cooking.
 # Owners are the name in the personal link (?u=…); there are no passwords, so the
@@ -10,6 +12,7 @@
 
 import json
 import os
+import secrets
 import sqlite3
 from datetime import datetime, timezone
 
@@ -26,6 +29,22 @@ CREATE TABLE IF NOT EXISTS my_dinners (
     updated TEXT NOT NULL
 )
 """
+
+_SQLITE_SHARES = """
+CREATE TABLE IF NOT EXISTS shares (
+    token TEXT PRIMARY KEY,
+    user_id TEXT,
+    recipe_id TEXT,
+    name TEXT NOT NULL,
+    servings INTEGER NOT NULL,
+    items TEXT NOT NULL,
+    pantry TEXT NOT NULL,
+    created TEXT NOT NULL
+)
+"""
+
+_POSTGRES_SHARES = _SQLITE_SHARES.replace("items TEXT", "items JSONB").replace("pantry TEXT", "pantry JSONB") \
+    .replace("created TEXT", "created TIMESTAMPTZ")
 
 _POSTGRES_SCHEMA = """
 CREATE TABLE IF NOT EXISTS my_dinners (
@@ -45,12 +64,13 @@ def _connect():
     url = os.environ.get("DATABASE_URL")
     if url:
         import psycopg  # only needed when Postgres is configured
-        conn, schema, ph = psycopg.connect(url), _POSTGRES_SCHEMA, "%s"
+        conn, schemas, ph = psycopg.connect(url), (_POSTGRES_SCHEMA, _POSTGRES_SHARES), "%s"
     else:
         path = os.environ.get("EVENTS_DB", "logs/events.db")
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        conn, schema, ph = sqlite3.connect(path), _SQLITE_SCHEMA, "?"
-    conn.execute(schema)
+        conn, schemas, ph = sqlite3.connect(path), (_SQLITE_SCHEMA, _SQLITE_SHARES), "?"
+    for schema in schemas:
+        conn.execute(schema)
     return conn, ph
 
 
@@ -140,9 +160,40 @@ def delete(user_id, dinner_id):
         conn.close()
 
 
+def share(user_id, recipe_id, name, servings, items, pantry=()):
+    """Store a snapshot of a dinner and return its link token. Later edits don't change what was sent."""
+    name, servings, items = clean(name, servings, items)
+    token = secrets.token_urlsafe(6)  # 8 characters, ~48 bits: not guessable
+    conn, ph = _connect()
+    try:
+        conn.execute(
+            f"INSERT INTO shares (token, user_id, recipe_id, name, servings, items, pantry, created) "
+            f"VALUES ({ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph})",
+            (token, user_id, recipe_id, name, servings, json.dumps(items, ensure_ascii=False),
+             json.dumps(list(pantry), ensure_ascii=False), datetime.now(timezone.utc).isoformat()))
+        conn.commit()
+        return token
+    finally:
+        conn.close()
+
+
+def shared(token):
+    """The dinner behind a link, or None."""
+    conn, ph = _connect()
+    try:
+        r = conn.execute(f"SELECT token, name, servings, items, pantry FROM shares WHERE token = {ph}",
+                         (token,)).fetchone()
+    finally:
+        conn.close()
+    if not r:
+        return None
+    load = lambda v: v if isinstance(v, list) else json.loads(v)
+    return {"id": f"sh-{r[0]}", "token": r[0], "name": r[1], "servings": r[2], "items": load(r[3]), "pantry": load(r[4])}
+
+
 def as_recipe(dinner):
     """A saved dinner in the shape catalog.recommend uses: typed items are its ingredients."""
     if dinner is None:
         return None
     return {"id": dinner["id"], "name": dinner["name"], "servings": dinner["servings"],
-            "ingredients": dinner["items"], "pantry": []}
+            "ingredients": dinner["items"], "pantry": dinner.get("pantry", [])}

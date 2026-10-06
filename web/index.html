@@ -271,6 +271,18 @@ h1 {
 .small { margin-top: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
 .fine { font-size: 12px; color: var(--ink-soft); }
 .report { margin-top: 12px; display: flex; gap: 8px; }
+.share { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.share input { flex: 1 1 100%; padding: 9px 10px; border-radius: 8px; border: 0; background: var(--hover); color: var(--ink);
+  font: 13px var(--mono); box-shadow: inset 0 0 0 1px var(--line); }
+/* a dinner someone sent by link */
+.sent { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap;
+  margin: 0 0 18px; padding: 12px 12px 12px 16px; border-radius: 12px; background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); }
+.sent p { margin: 0; flex: 1 1 220px; }
+.sent .what { display: block; font-size: 13px; color: var(--ink-soft); }
+.sent .name { font-weight: 700; font-size: 17px; }
+.sent .btns { display: flex; align-items: center; gap: 4px; }
+.sent .x { border: 0; background: none; cursor: pointer; color: var(--ink-soft); font-size: 18px; width: 32px; height: 32px; border-radius: 6px; }
+.sent .x:hover { background: var(--hover); color: var(--ink); }
 select { flex: 1; min-width: 0; padding: 10px; border-radius: 10px; border: 0; background: var(--hover); color: var(--ink); font: 14px var(--sans); box-shadow: inset 0 0 0 1px var(--line); }
 
 /* ── Choose-another sheet ──────────────────────────────────────────────── */
@@ -401,6 +413,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     shown: [],           // dinner ids on screen; kept until the category changes or "Show others"
     mine: [],            // this person's own dinners: {id, name, servings, items}
     editing: null,       // the dinner being written: {id or null, name, servings, items}
+    shared: null,        // a dinner someone sent by link: {id "sh-…", token, name, servings, items, saved}
     recipeId: null,
     servings: 2,
     extras: [],          // dinner: anything else for this trip
@@ -467,6 +480,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   function dinnerById(id) {
     const d = state.dishes.find(x => x.id === id);
     if (d) return { ...d, emoji: state.categories.find(c => c.id === d.category)?.emoji || "🍽️" };
+    if (state.shared && id === state.shared.id) return { ...state.shared, emoji: "💌" };
     const m = state.mine.find(x => x.id === id);
     return m ? { ...m, emoji: "📝" } : state.recipes.find(r => r.id === id);
   }
@@ -502,6 +516,12 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
           <button type="button" data-step="1" aria-label="More people">+</button>
         </span>
       </div>
+      ${state.shared ? `<div class="sent">
+        <p><span class="what">A dinner sent to you</span><span class="name" lang="et">${esc(state.shared.name)}</span></p>
+        <span class="btns">${state.shared.saved ? `<span class="fine">Saved to Mine</span>`
+          : `<button type="button" class="btn quiet" id="saveShared">Save to my dinners</button>`}
+          <button type="button" class="x" id="dropShared" aria-label="Close">×</button></span>
+      </div>` : ""}
       <div class="chips cats" role="group" aria-label="Kind of dinner">${[
         { id: "ideas", name: "Ideas", emoji: "✨" }, { id: "classics", name: "Classics", emoji: "⭐" },
         { id: "mine", name: "Mine", emoji: "📝" }, ...state.categories,
@@ -799,6 +819,14 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     const editD = e.target.closest("[data-edit-dinner]");
     if (editD) { editDinner(editD.dataset.editDinner); return; }
     if (e.target.closest("#newDinner")) { editDinner(null); return; }
+    if (e.target.closest("#saveShared")) { saveShared(); return; }
+    if (e.target.closest("#dropShared")) {
+      if (state.recipeId === state.shared.id) { state.recipeId = null; idle("Pick a dinner", "Your store and shopping list print here."); }
+      state.shared = null;
+      history.replaceState(null, "", location.pathname + location.search.replace(/[?&]dinner=[^&]*/, "").replace(/^&/, "?"));
+      renderDinner();
+      return;
+    }
     if (e.target.closest("#saveDinner")) { saveDinner(); return; }
     if (e.target.closest("#cancelDinner")) { state.editing = null; render(); return; }
     if (e.target.closest("#deleteDinner")) { deleteDinner(); return; }
@@ -911,7 +939,10 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
         <button class="link" type="button" id="wrong">Wrong product?</button>
         <span class="fine">E-shop prices. In store they can differ a little.</span>
       </div>
-      <div id="report"></div>`;
+      <div id="report"></div>
+      ${res.recipe ? `<div class="share"><button class="btn quiet" type="button" id="share">Send this dinner to someone</button>
+        <span class="fine" id="shareNote" role="status"></span></div>` : ""}`;
+    if (res.recipe) $("#share").onclick = () => shareDinner(res.recipe);
 
     const feedback = { mission: state.mode, recipe_id: res.recipe?.id ?? null, servings: res.servings, items: res.items,
                        store: b.store, recommended_store: best.store, total_price: b.total_price, result_id: res.id };
@@ -931,6 +962,41 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
         $("#report").innerHTML = `<p class="thanks" style="margin-top:12px">Reported. We'll fix it.</p>`;
       };
     };
+  }
+
+  // A link to this dinner, priced for whoever opens it. On phones the share sheet opens; elsewhere it's copied.
+  async function shareDinner(recipe) {
+    const note = $("#shareNote");
+    try {
+      const { path } = await api("/shares", { recipe_id: recipe.id, user_id: USER_ID });
+      const url = location.origin + path;
+      if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+        await navigator.share({ title: recipe.name, text: `${recipe.name}: here's where to shop for it`, url }).catch(() => {});
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        note.textContent = "Link copied. Paste it in a message.";
+      } catch {  // no clipboard access: show the link to copy by hand
+        note.insertAdjacentHTML("afterend", `<input readonly value="${esc(url)}" aria-label="Link to this dinner">`);
+        note.textContent = "Copy this link:";
+        note.nextElementSibling.select();
+      }
+    } catch {
+      note.textContent = "Couldn't make a link. Try again.";
+    }
+  }
+
+  async function saveShared() {
+    const d = state.shared;
+    try {
+      const saved = await api("/my-dinners", { user_id: USER_ID, name: d.name, servings: d.servings, items: d.items, from_share: d.token });
+      state.mine = [...state.mine, saved].sort((a, b) => a.name.localeCompare(b.name));
+      d.saved = true;
+      renderDinner();
+    } catch {
+      $("#saveShared").textContent = "Couldn't save. Try again";
+    }
   }
 
   feed.addEventListener("click", e => {
@@ -1183,7 +1249,13 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       if (!["ideas", "classics", "mine", ...state.categories.map(c => c.id)].includes(state.category)) state.category = "ideas";
       await named;
       state.mine = (await api(`/my-dinners?user_id=${encodeURIComponent(USER_ID)}`).catch(() => ({ dinners: [] }))).dinners;
+      const token = new URLSearchParams(location.search).get("dinner");
+      if (token) {
+        state.shared = await api(`/shares/${encodeURIComponent(token)}?user_id=${encodeURIComponent(USER_ID)}`).catch(() => null);
+        if (state.shared) state.recipeId = state.shared.id;
+      }
       render();
+      if (token && !state.shared) idle("This link doesn't lead to a dinner", "It may be mistyped. Pick a dinner here instead.");
     } catch {
       failed(() => location.reload());
     }

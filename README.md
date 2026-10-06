@@ -168,6 +168,14 @@ link, priced like a list and scaled to the number of people cooking. There are n
 tester a unique link (`/?u=anna-k7`). API: `GET /my-dinners?user_id=…`, `POST /my-dinners`,
 `PUT /my-dinners/{id}`, `DELETE /my-dinners/{id}?user_id=…`.
 
+### Sending a dinner
+
+Under a dinner's receipt, "Send this dinner to someone" makes a link (`/?dinner=<token>`): the phone's share sheet
+opens, or the link is copied. The link holds a snapshot (`shares` table): name, servings and what to buy as typed
+items, so later edits don't change it, and NutriData or classic dishes become plain items ("kodune hakkliha 400g").
+Whoever opens it sees it priced at their best store and can save it to their own dinners. Tokens are 8 random
+characters. Events: `share_created`, `share_opened`, and `my_dinner_saved` with `from_share`.
+
 ### Suggestions while typing
 
 `web/vocab.json` (~3,400 words, 27 KB gzipped) holds product words from Selver's whole catalog with the shelf

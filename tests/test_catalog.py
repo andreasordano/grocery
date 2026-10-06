@@ -348,3 +348,28 @@ def test_my_dinner_scales_from_its_own_servings(fake_store, sqlite_db, monkeypat
     assert res["recipe"]["name"] == "Kartulid" and line["need"] == 1000 and not line["extra"]  # 2 kg for 4 → 1 kg for 2
     with pytest.raises(KeyError):
         catalog.recommend(d["id"], 2, [], ["a"], user_id="ben")
+
+
+# ── dinners shared by link ───────────────────────────────────────────────────
+
+def test_shared_dinner_is_a_snapshot_anyone_can_open(fake_store, sqlite_db, monkeypatch):
+    from core import my_dinners
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None: {})
+    d = my_dinners.save("anna", "Kartulid", 4, ["kartul 2 kg"])
+    token = my_dinners.share("anna", d["id"], d["name"], d["servings"], d["items"])
+    my_dinners.save("anna", "Kartulid", 4, ["kartul 5 kg"], d["id"])         # a later edit…
+
+    shared = my_dinners.shared(token)
+    assert shared["items"] == ["kartul 2 kg"] and len(token) == 8           # …doesn't change what was sent
+    res = catalog.recommend(f"sh-{token}", 2, [], ["a"], user_id="ben")      # someone else can price it
+    assert res["baskets"][0]["lines"][0]["need"] == 1000
+    assert my_dinners.shared("nope") is None
+
+
+def test_dishes_become_typed_items_that_price_the_same(fake_store):
+    recipe = {"ingredients": [{"item": "kartul", "amount": 800}, {"item": "munad", "amount": 4},
+                              {"text": "küüslauk", "amount": 11}]}
+    items = catalog.recipe_as_items(recipe, catalog.load_recipes())
+    assert items == ["kartul 800g", "4 tk kanamunad", "küüslauk 11g"]
+    needs = [catalog.to_need(i, catalog.load_recipes()) for i in items]
+    assert [(n.get("rule") or n.get("text"), n["amount"]) for n in needs] == [("kartul", 800), ("munad", 4), ("küüslauk", 11)]
