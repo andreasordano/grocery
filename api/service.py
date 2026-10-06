@@ -4,6 +4,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from core import catalog
+from core import my_dinners
 from core import events
 from core import fetch as core_fetch
 from core import optimiser
@@ -61,6 +62,13 @@ class BasketRequest(BaseModel):
     session_id: Optional[str] = None
 
 
+class MyDinnerRequest(BaseModel):
+    user_id: str
+    name: str
+    servings: int = 2
+    items: List[str]
+
+
 class EventRequest(BaseModel):
     type: str
     data: Dict[str, Any] = {}
@@ -111,7 +119,8 @@ def basket(req: BasketRequest):
         raise HTTPException(status_code=400, detail="Pick a recipe or add at least one item")
     started = time.monotonic()
     try:
-        result = catalog.recommend(req.recipe_id, max(1, min(req.servings, 12)), req.items, req.stores, req.prefs)
+        result = catalog.recommend(req.recipe_id, max(1, min(req.servings, 12)), req.items, req.stores, req.prefs,
+                                   user_id=req.user_id)
     except KeyError:
         raise HTTPException(status_code=404, detail=f"Unknown recipe: {req.recipe_id}")
     events.log_event(
@@ -135,6 +144,44 @@ def basket(req: BasketRequest):
         session_id=req.session_id,
     )
     return result
+
+
+@app.get("/my-dinners")
+def list_my_dinners(user_id: str):
+    """This person's own dinners (owner = the name in their personal link)."""
+    return {"dinners": my_dinners.list_for(user_id)}
+
+
+def _save_my_dinner(req: MyDinnerRequest, dinner_id: Optional[str] = None):
+    if not req.user_id.strip():
+        raise HTTPException(status_code=400, detail="Missing user")
+    try:
+        dinner = my_dinners.save(req.user_id, req.name, req.servings, req.items, dinner_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    if dinner is None:
+        raise HTTPException(status_code=404, detail="No such dinner")
+    events.log_event("my_dinner_saved", {"id": dinner["id"], "new": dinner_id is None, "items": len(dinner["items"])},
+                     user_id=req.user_id)
+    return dinner
+
+
+@app.post("/my-dinners")
+def create_my_dinner(req: MyDinnerRequest):
+    return _save_my_dinner(req)
+
+
+@app.put("/my-dinners/{dinner_id}")
+def update_my_dinner(dinner_id: str, req: MyDinnerRequest):
+    return _save_my_dinner(req, dinner_id)
+
+
+@app.delete("/my-dinners/{dinner_id}")
+def delete_my_dinner(dinner_id: str, user_id: str):
+    if not my_dinners.delete(user_id, dinner_id):
+        raise HTTPException(status_code=404, detail="No such dinner")
+    events.log_event("my_dinner_deleted", {"id": dinner_id}, user_id=user_id)
+    return {"deleted": dinner_id}
 
 
 @app.post("/dinner")

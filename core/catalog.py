@@ -48,8 +48,11 @@ def load_dishes():
     return load_yaml("dishes.yaml")
 
 
-def find_recipe(recipe_id, recipes):
-    """A hand-written recipe or a NutriData dish (ids "nd-…"), or None."""
+def find_recipe(recipe_id, recipes, user_id=None):
+    """A hand-written recipe, a NutriData dish ("nd-…") or one of this person's dinners ("my-…"), or None."""
+    if recipe_id.startswith("my-"):
+        from core import my_dinners
+        return my_dinners.as_recipe(my_dinners.get(user_id, recipe_id))
     pool = recipes["recipes"] + (load_dishes()["dishes"] if recipe_id.startswith("nd-") else [])
     return next((r for r in pool if r["id"] == recipe_id), None)
 
@@ -295,6 +298,80 @@ def list_amount(key, recipes):
     return max(amounts) if amounts else 1
 
 
+# ── quantities typed with an item ("paprika 600g", "2 piim", "3 tk sidrun") ──
+
+_QTY = r"(?P<n>\d+(?:[.,]\d+)?)\s*(?P<u>kg|g|dl|cl|ml|l|tk|x|×)?"
+_LEADING_QTY = re.compile(rf"^\s*{_QTY}\s+(?P<name>\S.*)$", re.I)
+_TRAILING_QTY = re.compile(rf"^(?P<name>.*\S)\s+{_QTY}\s*$", re.I)
+_UNITS = {"kg": (1000, "g"), "g": (1, "g"), "l": (1000, "ml"), "dl": (100, "ml"), "cl": (10, "ml"), "ml": (1, "ml"),
+          "tk": (1, "pcs"), "x": (1, "packs"), "×": (1, "packs"), None: (1, "packs")}
+
+
+def parse_quantity(text):
+    """(name, (amount, unit) or None) for a typed item. Units come out as g, ml, pcs or packs;
+    a bare number means packs ("2 piim"). "Piim 2,5%" keeps its number: it's part of the name."""
+    text = " ".join(text.split())
+    for pattern in (_LEADING_QTY, _TRAILING_QTY):
+        m = pattern.match(text)
+        if m:
+            factor, unit = _UNITS[(m["u"] or "").lower() or None]
+            amount = float(m["n"].replace(",", ".")) * factor
+            if 0 < amount <= (50 if unit in ("packs", "pcs") else 20000):
+                return m["name"].strip(), (amount, unit)
+    return text, None
+
+
+def _amount_label(amount, unit):
+    if unit == "packs":
+        return f"{amount:g} pack" + ("" if amount == 1 else "s")
+    if unit == "pcs":
+        return f"{amount:g} tk"
+    big = {"g": "kg", "ml": "l"}[unit]
+    return f"{amount / 1000:g} {big}" if amount >= 1000 else f"{amount:g} {unit}"
+
+
+def to_need(item, recipes):
+    """What to buy for one typed item: an ingredient rule with an amount, or a free-text search
+    with an amount (grams/ml) or a number of packs. Without a quantity, a rule item gets its usual
+    amount (largest any recipe uses) and a free-text item one pack."""
+    name, qty = parse_quantity(item)
+    key = match_ingredient(name, recipes)
+    need = {"label": name, "asked": _amount_label(*qty) if qty else None}
+    if key:
+        spec = recipes["ingredients"][key]
+        usual = list_amount(key, recipes)
+        amount = None
+        if qty and qty[1] != "packs":
+            amount = _convert(qty[0], qty[1], spec["unit"], spec.get("piece_g"))
+        if amount is None:  # no quantity, a number of packs, or pieces of something sold by weight
+            amount = usual * (qty[0] if qty else 1)
+        return {**need, "rule": key, "amount": amount, "unit": spec["unit"]}
+    if qty and qty[1] in ("g", "ml"):
+        return {**need, "text": name, "amount": qty[0], "unit": qty[1]}
+    return {**need, "text": name, "packs": qty[0] if qty else 1}
+
+
+def recipe_needs(recipe, servings, recipes):
+    """A recipe's ingredients as needs for this many people. Hand-written recipes and NutriData
+    dishes give `item`/`text` amounts for 2; people's own dinners are typed items for their servings."""
+    scale = servings / recipe.get("servings", BASE_SERVINGS)
+    out = []
+    for ing in recipe["ingredients"]:
+        if isinstance(ing, str):
+            n = to_need(ing, recipes)
+        elif "item" in ing:
+            spec = recipes["ingredients"][ing["item"]]
+            n = {"label": spec["name"], "rule": ing["item"], "amount": ing["amount"], "unit": spec["unit"]}
+        else:
+            n = {"label": cap(ing["text"]), "text": ing["text"], "amount": ing["amount"], "unit": "g"}
+        if n.get("amount") is not None:
+            n["amount"] = n["amount"] * scale
+        if n.get("packs"):
+            n["packs"] = max(1, math.ceil(n["packs"] * scale - 1e-9))
+        out.append({**n, "asked": None})
+    return out
+
+
 def list_offers(items, stores):
     """Rule-based offers for typed items that match a known ingredient.
 
@@ -358,39 +435,37 @@ def _line(key, label, need, unit, offer, options, extra):
     }
 
 
-def build_basket(store, recipe, servings, items, prefs, recipes, rules, free):
-    lines, missing = [], []
-    for ing in recipe["ingredients"] if recipe else []:
-        need = ing["amount"] * servings / BASE_SERVINGS
-        if "text" in ing:  # NutriData dish ingredient without a rule: free-text search
-            key, label, unit = "text:" + _norm(ing["text"]), cap(ing["text"]), "g"
-            options = free.get(ing["text"], {}).get(store, [])
-            offer = _pick(options, prefs.get(key), store)
-        else:
-            key = ing["item"]
-            spec = recipes["ingredients"][key]
-            label, unit = spec["name"], spec["unit"]
-            offer, options = ingredient_offers(key, need, store, recipes, rules, prefs.get(key))
-        if offer:
-            lines.append(_line(key, label, need, unit, offer, options, extra=False))
-        else:
-            missing.append(label)
+def _times(option, n):
+    """An option bought n times (n packs of a free-text item)."""
+    if n == 1:
+        return option
+    mul = lambda v: round(v * n, 2) if v is not None else None
+    return {**option, "cost": mul(option["cost"]), "regular_cost": mul(option.get("regular_cost")),
+            "card_cost": mul(option.get("card_cost")), "packs": n, "how": f"{n:g} × {option['price']:.2f} €"}
 
-    for item in items:
-        key = match_ingredient(item, recipes)
-        if key:
-            spec = recipes["ingredients"][key]
-            need = list_amount(key, recipes)
-            offer, options = ingredient_offers(key, need, store, recipes, rules, prefs.get(key))
-            unit = spec["unit"]
+
+def build_basket(store, needs, prefs, recipes, rules, free):
+    """One store's basket. needs: recipe ingredients (extra=False) then list items (extra=True)."""
+    lines, missing = [], []
+    for n in needs:
+        if n.get("rule"):
+            key = n["rule"]
+            offer, options = ingredient_offers(key, n["amount"], store, recipes, rules, prefs.get(key))
+            need, unit = n["amount"], n["unit"]
         else:
-            key, need, unit = "text:" + _norm(item), None, None
-            options = free.get(item, {}).get(store, [])
+            key = "text:" + _norm(n["text"])
+            options = free.get(n["text"], {}).get(store, [])
+            if n.get("packs"):
+                options = [_times(o, n["packs"]) for o in options]
+                need, unit = None, None
+            else:
+                need, unit = n["amount"], n["unit"]
             offer = _pick(options, prefs.get(key), store)
         if offer:
-            lines.append(_line(key, item, need, unit, offer, options, extra=True))
+            line = _line(key, n["label"], need, unit, offer, options, extra=n["extra"])
+            lines.append({**line, "asked": n.get("asked")})
         else:
-            missing.append(item)
+            missing.append(n["label"])
 
     total = round(sum(l["cost"] for l in lines), 2)
     return {
@@ -405,7 +480,7 @@ def build_basket(store, recipe, servings, items, prefs, recipes, rules, free):
     }
 
 
-def recommend(recipe_id, servings, items, stores, prefs=None):
+def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None):
     """Rank stores for a recipe (optional) plus extra items: fewest missing, then cheapest.
 
     prefs: {ingredient key or "text:<item>": {"products": {store: name}, "words": [...]}}
@@ -413,28 +488,27 @@ def recommend(recipe_id, servings, items, stores, prefs=None):
     recipes, rules = load_recipes(), load_rules()
     recipe = None
     if recipe_id:
-        recipe = find_recipe(recipe_id, recipes)
+        recipe = find_recipe(recipe_id, recipes, user_id)
         if recipe is None:
             raise KeyError(recipe_id)
     items = list(dict.fromkeys(i.strip() for i in items if i and i.strip()))
     prefs = prefs or {}
 
-    ingredients = recipe["ingredients"] if recipe else []
-    keys = [ing["item"] for ing in ingredients if "item" in ing]
-    # Dish ingredients without a rule, with the grams this many people need.
-    needs = {ing["text"]: ing["amount"] * servings / BASE_SERVINGS for ing in ingredients if "text" in ing}
-    matched = {it: match_ingredient(it, recipes) for it in items}
-    keys += [k for k in matched.values() if k]
-    free_items = list(dict.fromkeys(list(needs) + [it for it, k in matched.items() if not k]))
+    needs = [{**n, "extra": False} for n in (recipe_needs(recipe, servings, recipes) if recipe else [])]
+    needs += [{**to_need(it, recipes), "extra": True} for it in items]
+    keys = {n["rule"] for n in needs if n.get("rule")}
+    # Free-text searches; those with an amount are priced for it (grams or ml).
+    amounts = {n["text"]: n["amount"] for n in needs if n.get("text") and n.get("amount") is not None}
+    free_items = list(dict.fromkeys(n["text"] for n in needs if n.get("text")))
 
     # Rule searches and free-text searches run side by side.
     with ThreadPoolExecutor(max_workers=2) as pool:
-        warm = pool.submit(prefetch, rules, set(keys), stores)
-        free_job = pool.submit(free_text_offers, free_items, stores, needs)
+        warm = pool.submit(prefetch, rules, keys, stores)
+        free_job = pool.submit(free_text_offers, free_items, stores, amounts)
         warm.result()
         free = free_job.result()
 
-    baskets = [build_basket(s, recipe, servings, items, prefs, recipes, rules, free) for s in stores]
+    baskets = [build_basket(s, needs, prefs, recipes, rules, free) for s in stores]
     baskets.sort(key=lambda b: (len(b["missing"]), b["total_price"]))
 
     return {

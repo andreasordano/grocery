@@ -269,3 +269,82 @@ def test_dish_free_text_ingredient_is_priced_for_the_amount(fake_store, monkeypa
     assert line["product"] == "Küüslauk, kg" and line["cost"] == 0.36   # 60 g of loose garlic, not a 100 g net
     assert [o["product"] for o in line["options"]][-1] == "Küüslaugusool 80g"  # lower tier stays last
     assert res["recipe"] == {"id": "nd-1", "name": "Küüslaugukartul", "pantry": ["õli"]}
+
+
+# ── quantities typed with an item ────────────────────────────────────────────
+
+@pytest.mark.parametrize("typed, expected", [
+    ("paprika 600g", ("paprika", (600, "g"))),
+    ("600 g paprika", ("paprika", (600, "g"))),
+    ("kartul 2kg", ("kartul", (2000, "g"))),
+    ("Piim 1,5 l", ("Piim", (1500, "ml"))),
+    ("2 piim", ("piim", (2, "packs"))),
+    ("2x leib", ("leib", (2, "packs"))),
+    ("3 tk sidrun", ("sidrun", (3, "pcs"))),
+    ("3 lõhe", ("lõhe", (3, "packs"))),                 # "l" followed by more letters isn't litres
+    ("Piim 2,5%", ("Piim 2,5%", None)),                # a fat %, not a quantity
+    ("paprika", ("paprika", None)),
+    ("leib 0", ("leib 0", None)),
+])
+def test_parse_quantity(typed, expected):
+    assert catalog.parse_quantity(typed) == expected
+
+
+def test_list_item_with_grams_uses_the_rule_for_that_amount(fake_store, monkeypatch):
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None: {})
+    res = catalog.recommend(None, 2, ["kartul 1,5 kg", "6 tk munad"], ["a"])
+    lines = {l["key"]: l for l in res["baskets"][0]["lines"]}
+    assert lines["kartul"]["need"] == 1500 and lines["kartul"]["cost"] == 1.5   # loose: 1.5 kg × 1.00
+    assert lines["kartul"]["label"] == "kartul" and lines["kartul"]["asked"] == "1.5 kg"
+    assert lines["munad"]["need"] == 6 and lines["munad"]["packs"] == 1          # 6 eggs fit one 10-pack
+
+
+def test_list_item_packs_and_grams_for_free_text(fake_store, monkeypatch):
+    from core import fetch
+    products = [{"store": "a", "name": "Paprika punane, kg", "price": 4.0, "unit": "kg", "score": 0.4, "relevance": 5},
+                {"store": "a", "name": "Kohv 500g", "price": 5.0, "score": 1.0, "relevance": 5}]
+    seen = {}
+    def fake_fetch_all(grocery_list, stores):
+        seen.update(grocery_list)
+        return {"paprika": products[:1], "kohv": products[1:]}, []
+    monkeypatch.setattr(fetch, "fetch_all", fake_fetch_all)
+
+    res = catalog.recommend(None, 2, ["paprika 600g", "2 kohv"], ["a"])
+    lines = {l["key"]: l for l in res["baskets"][0]["lines"]}
+
+    assert set(seen) == {"paprika", "kohv"}                       # searched without the quantity
+    assert lines["text:paprika"]["cost"] == 2.4                   # 600 g × 4.00 €/kg
+    assert lines["text:kohv"]["cost"] == 10.0 and lines["text:kohv"]["packs"] == 2
+    assert lines["text:kohv"]["asked"] == "2 packs" and lines["text:kohv"]["options"][0]["cost"] == 10.0
+
+
+# ── my dinners (people's own recipes) ────────────────────────────────────────
+
+@pytest.fixture
+def sqlite_db(tmp_path, monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setenv("EVENTS_DB", str(tmp_path / "app.db"))
+
+
+def test_my_dinners_belong_to_their_owner(sqlite_db):
+    from core import my_dinners
+    d = my_dinners.save("anna", "  Pühapäeva   pasta ", 4, ["makaronid 500g", "hakkliha 400 g", "makaronid 500g"])
+    assert d["name"] == "Pühapäeva pasta" and d["items"] == ["makaronid 500g", "hakkliha 400 g"]
+    assert my_dinners.list_for("anna") == [d] and my_dinners.list_for("ben") == []
+    assert my_dinners.get("ben", d["id"]) is None                                 # not someone else's
+    assert my_dinners.save("ben", "x", 2, ["y"], d["id"]) is None                 # can't overwrite it
+    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"])["name"] == "Pasta"
+    assert not my_dinners.delete("ben", d["id"]) and my_dinners.delete("anna", d["id"])
+    with pytest.raises(ValueError):
+        my_dinners.save("anna", "", 2, ["x"])
+
+
+def test_my_dinner_scales_from_its_own_servings(fake_store, sqlite_db, monkeypatch):
+    from core import my_dinners
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None: {})
+    d = my_dinners.save("anna", "Kartulid", 4, ["kartul 2 kg"])
+    res = catalog.recommend(d["id"], 2, [], ["a"], user_id="anna")
+    line = res["baskets"][0]["lines"][0]
+    assert res["recipe"]["name"] == "Kartulid" and line["need"] == 1000 and not line["extra"]  # 2 kg for 4 → 1 kg for 2
+    with pytest.raises(KeyError):
+        catalog.recommend(d["id"], 2, [], ["a"], user_id="ben")

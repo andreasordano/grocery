@@ -149,6 +149,25 @@ Items without an ingredient rule (`core/fetch.py`, `core/scoring.py`) trust the 
 - The receipt shows the store shelf under unclear products ("… NATTY ORIGINAL, 333g · magusad hoidised"),
   and the choose-another sheet shows product photos.
 
+### Quantities
+
+Items can carry an amount, before or after the name: `paprika 600g`, `600 g paprika`, `kartul 2kg`, `piim 1,5 l`,
+`3 tk sidrun`. A bare number means packs: `2 piim`, `2x leib` (for an item with a rule, that's twice its usual
+amount). `Piim 2,5%` keeps its number, since a % is part of the name. `core/catalog.py` (`parse_quantity`,
+`to_need`) turns each item into an ingredient rule or a free-text search with an amount or a number of packs;
+the search itself never sees the quantity. Loose goods cost weight × price per kg, packaged goods the cheapest
+packs that cover the amount. The receipt shows the amount asked for ("600 g", "2 packs"). Tap an item on the
+list to change it, e.g. to add an amount. Preferences stay with the name, so `paprika` and `paprika 600g` share them.
+
+### My dinners
+
+People can write their own dinners on the Dinner screen ("Mine" → New dinner): a name, how many people the
+amounts are for, and what to buy, typed like a shopping list (with suggestions and quantities). They're stored
+in the `my_dinners` table (`core/my_dinners.py`, same database as the events) under the name in the person's
+link, priced like a list and scaled to the number of people cooking. There are no passwords, so give each
+tester a unique link (`/?u=anna-k7`). API: `GET /my-dinners?user_id=…`, `POST /my-dinners`,
+`PUT /my-dinners/{id}`, `DELETE /my-dinners/{id}?user_id=…`.
+
 ### Suggestions while typing
 
 `web/vocab.json` (~3,400 words, 27 KB gzipped) holds product words from Selver's whole catalog with the shelf
