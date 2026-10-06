@@ -5,160 +5,190 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>pantryrun</title>
 <meta name="description" content="Pick tonight's dinner. Get one store and a shopping list.">
-<meta name="theme-color" content="#e3e7e9" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#131a20" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='15' fill='%2323303b'/><path fill='%23fbfbf8' d='M10.91 45.15V19.31H16.76V23.06L16.71 22.79Q17.77 20.71 19.35 19.77Q20.93 18.84 22.98 18.84Q25.41 18.84 27.15 20.01Q28.90 21.19 29.83 23.43Q30.77 25.67 30.77 28.85Q30.77 32.00 29.83 34.23Q28.88 36.45 27.11 37.61Q25.34 38.78 22.85 38.78Q20.66 38.78 19.09 37.78Q17.53 36.79 16.47 34.60L17.05 34.60V45.15ZM20.57 34.20Q22.30 34.20 23.30 32.73Q24.29 31.27 24.29 28.73Q24.29 26.20 23.32 24.80Q22.35 23.40 20.60 23.40Q19.50 23.40 18.63 24.00Q17.75 24.60 17.26 25.80Q16.76 27.00 16.76 28.78Q16.76 31.45 17.85 32.82Q18.94 34.20 20.57 34.20Z'/><path fill='%23fbfbf8' d='M29.80 38.30 33.80 19.31H39.55L38.62 23.72L38.28 23.53Q39.76 20.87 41.38 19.85Q43.00 18.84 44.75 18.84Q45.33 18.84 45.92 18.93Q46.51 19.02 46.97 19.19L45.71 24.36Q45.19 24.17 44.57 24.05Q43.96 23.94 43.37 23.94Q42.49 23.94 41.60 24.25Q40.71 24.56 39.89 25.33Q39.07 26.10 38.39 27.46Q37.72 28.82 37.28 30.93L35.73 38.30Z'/><path fill='%23d4566b' d='M49.08 38.78Q47.27 38.78 46.17 37.68Q45.08 36.59 45.08 34.78Q45.08 32.96 46.17 31.87Q47.27 30.78 49.08 30.78Q50.90 30.78 51.99 31.87Q53.08 32.96 53.08 34.78Q53.08 36.59 51.99 37.68Q50.90 38.78 49.08 38.78Z'/></svg>">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16183a" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><ellipse cx='32' cy='32' rx='30' ry='22' transform='rotate(-12 32 32)' fill='%23ff4d6d'/><text x='32' y='42' text-anchor='middle' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='30' fill='%23fff' transform='rotate(-12 32 32)'>pr</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;600&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@600;700;800&family=Funnel+Sans:wght@400;500;600;700&family=Martian+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
+/* pantryrun: the produce sticker. Estonian garden colours on white; stickers only mark what's yours or a deal. */
 :root {
-  --fog: #e3e7e9;
-  --ink: #23303b;
-  --ink-soft: #55626b;
-  --line: rgba(35, 48, 59, 0.14);
-  --berry: #9e2a3f;
-  --berry-ink: #fbfbf8;
-  --slot: #23303b;
-  --hover: rgba(35, 48, 59, 0.06);
-  --sheet: #f2f4f5;
-  --grain: 0.28;
-  --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --milk: #ffffff;
+  --ink: #1c1f4a;            /* blueberry */
+  --ink-soft: #5b5f86;
+  --line: rgba(28, 31, 74, 0.12);
+  --hover: rgba(28, 31, 74, 0.05);
+  --rhubarb: #ff4d6d;
+  --rhubarb-text: #d6284b;   /* rhubarb that passes as text on white */
+  --panel: #ffdce3;          /* rhubarb milk: where the answer prints */
+  --butter: #ffd84d;
+  --dill: #17824a;
+  --sheet: #ffffff;
+  --slot: #1c1f4a;
+  --display: "Funnel Display", ui-sans-serif, system-ui, sans-serif;
+  --sans: "Funnel Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --ease: cubic-bezier(.3, .7, .2, 1);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --fog: #131a20; --ink: #e6eaec; --ink-soft: #9aa6ae; --line: rgba(230, 234, 236, 0.13);
-    --berry: #d4566b; --berry-ink: #131a20; --slot: #05080b; --hover: rgba(230, 234, 236, 0.06); --sheet: #1b232a; --grain: 0.16;
+    --milk: #16183a; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
+    --rhubarb-text: #ff7d93; --panel: #2a1d4a; --sheet: #1f2250; --slot: #0b0c24;
   }
 }
 :root[data-theme="dark"] {
-  --fog: #131a20; --ink: #e6eaec; --ink-soft: #9aa6ae; --line: rgba(230, 234, 236, 0.13);
-  --berry: #d4566b; --berry-ink: #131a20; --slot: #05080b; --hover: rgba(230, 234, 236, 0.06); --sheet: #1b232a; --grain: 0.16;
+  --milk: #16183a; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
+  --rhubarb-text: #ff7d93; --panel: #2a1d4a; --sheet: #1f2250; --slot: #0b0c24;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
   min-height: 100vh; min-height: 100dvh;
-  background: var(--fog); color: var(--ink);
+  background: var(--milk); color: var(--ink);
   font: 400 16px/1.5 var(--sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
-body::before {
-  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: var(--grain);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.55  0 0 0 0 0.6  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
 button { font: inherit; color: inherit; }
-:focus-visible { outline: 2px solid var(--berry); outline-offset: 3px; }
+:focus-visible { outline: 2.5px solid var(--rhubarb); outline-offset: 3px; }
 [hidden] { display: none !important; }
 
 /* ── Top bar ───────────────────────────────────────────────────────────── */
 .bar {
-  position: sticky; top: 0; z-index: 20;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 20;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
-  padding: max(14px, env(safe-area-inset-top)) max(20px, calc((100vw - 1000px) / 2)) 14px;
-  background: color-mix(in srgb, var(--fog) 85%, transparent);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  padding: max(20px, env(safe-area-inset-top)) 40px 20px max(40px, calc(58vw - 780px));
 }
-/* The mark is the wordmark itself: the pantry stands still, the run leans forward to the full stop, the store.
-   The icon is the same in miniature ("pr."), outlined from Schibsted Grotesk 800 so it needs no font. */
-.brand { font-weight: 800; font-size: 22px; letter-spacing: -0.045em; line-height: 1; }
-.brand i { font-style: italic; }
-.brand b { color: var(--berry); font-weight: 800; }
+/* The logo is a produce sticker: an oval label slapped on slightly crooked. */
+.brand {
+  display: inline-block; padding: 8px 22px 9px; border-radius: 50%;
+  background: var(--rhubarb); color: #fff;
+  font: 800 21px/1 var(--display); letter-spacing: -0.03em;
+  transform: rotate(-5deg);
+  box-shadow: 0 1px 0 rgba(28, 31, 74, .15), 0 6px 14px -8px rgba(214, 40, 75, .7);
+}
 
-.switch { position: relative; display: inline-flex; padding: 3px; border-radius: 10px; background: var(--hover); }
+.switch { position: relative; display: inline-flex; padding: 4px; border-radius: 999px; background: var(--milk); box-shadow: inset 0 0 0 1.5px var(--ink); }
 .switch button {
   position: relative; z-index: 1; border: 0; background: none; cursor: pointer;
-  padding: 8px 14px; border-radius: 8px; font-weight: 500; font-size: 14px; color: var(--ink-soft);
+  padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--ink);
   transition: color .25s;
 }
-.switch button[aria-pressed="true"] { color: var(--fog); }
-.switch .pill { position: absolute; top: 3px; bottom: 3px; left: 3px; border-radius: 8px; background: var(--ink);
-  transition: transform .35s cubic-bezier(.3, .7, .2, 1), width .35s cubic-bezier(.3, .7, .2, 1); }
+.switch button[aria-pressed="true"] { color: var(--milk); }
+.switch .pill { position: absolute; top: 4px; bottom: 4px; left: 3px; border-radius: 999px; background: var(--ink);
+  transition: transform .35s var(--ease), width .35s var(--ease); }
 
-/* ── Layout ────────────────────────────────────────────────────────────── */
+/* ── Layout: choose on the left, the answer prints on the rhubarb panel ── */
 main {
-  position: relative; z-index: 1;
-  max-width: 1000px; margin: 0 auto; padding: 24px 20px 48px;
-  display: grid; grid-template-columns: minmax(0, 1fr) 372px; gap: 64px; align-items: start;
+  min-height: 100vh; min-height: 100dvh;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(400px, 42%);
 }
+#left { padding: 116px 56px 56px 40px; max-width: 820px; width: 100%; justify-self: end; }
+.printer { position: relative; background: var(--panel); padding: 108px 48px 56px; }
+/* slot, receipt and buttons share one centred column; the paper is inset from the slot's ends */
+.printer > * { width: 100%; max-width: 400px; margin-inline: auto; }
 
 h1 {
-  margin: 0; font-weight: 800; letter-spacing: -0.045em; line-height: .95;
-  font-size: clamp(40px, 5.6vw, 60px); max-width: 11ch;
+  margin: 0 0 28px; font: 800 clamp(44px, 5.4vw, 76px)/.98 var(--display); letter-spacing: -0.035em;
 }
-.sub { margin: 16px 0 20px; display: flex; align-items: center; gap: 12px; color: var(--ink-soft); font-size: 15px; }
+h1 .for { white-space: nowrap; }
+.sub { margin: 0 0 20px; color: var(--ink-soft); font-size: 17px; max-width: 34ch; }
 
-.stepper { display: inline-flex; align-items: center; border-radius: 10px; background: var(--hover); }
-.stepper button { width: 34px; height: 34px; border: 0; background: none; cursor: pointer; font-size: 18px; border-radius: 10px; }
-.stepper button:hover { background: var(--hover); }
-.stepper output { min-width: 18px; text-align: center; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* How many people: a butter sticker in the headline */
+.stepper {
+  display: inline-flex; align-items: center; gap: .1em; vertical-align: .06em;
+  padding: .06em .1em; margin: 0 .04em; border-radius: 999px;
+  background: var(--butter); color: #1c1f4a; transform: rotate(-3deg);
+  font: inherit; letter-spacing: 0;
+}
+.stepper output { min-width: .6em; text-align: center; font-variant-numeric: tabular-nums; line-height: 1; }
+.stepper button { width: max(32px, .46em); height: max(32px, .46em); border: 0; border-radius: 50%; background: #fff; cursor: pointer;
+  font: 700 max(18px, .28em)/1 var(--sans); color: #1c1f4a; display: grid; place-items: center; transition: transform .15s; }
+.stepper button:hover { transform: scale(1.08); }
+.stepper button:active { transform: scale(.94); }
+/* in smaller places (the dinner editor) the sticker is text-sized */
+.sub .stepper { font: 700 17px var(--sans); padding: 3px; transform: none; gap: 4px; }
+.sub .stepper button { width: 28px; height: 28px; font-size: 16px; }
 
-/* dinners: a plain two-column list, not cards */
-.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 18px; }
+/* kinds of dinner: plain text pills */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { border: 0; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 14px; font-weight: 500;
+  background: none; box-shadow: inset 0 0 0 1.5px var(--line); transition: box-shadow .2s, background .2s; }
+.chips button:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--milk); box-shadow: none; }
+.cats { margin: 0 0 18px; }
+
+/* dinners: a menu in big type */
+.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
+.dishes li { border-bottom: 1.5px solid var(--line); }
 .dish {
-  width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer;
-  border: 0; background: none; padding: 9px 12px 9px 8px; border-radius: 10px;
-  font-size: 16px; font-weight: 500; line-height: 1.2; letter-spacing: -0.01em;
-  transition: background .2s;
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; cursor: pointer;
+  border: 0; background: none; padding: 15px 4px 14px;
+  font: 600 21px/1.15 var(--display); letter-spacing: -0.02em;
   min-width: 0; overflow-wrap: anywhere; hyphens: auto;  /* long Estonian compounds: Suvikõrvitsapüreesupp */
+  transition: color .2s, padding .25s var(--ease);
 }
-.dish:hover { background: var(--hover); }
-.dish[aria-pressed="true"] { background: var(--ink); color: var(--fog); }
-.dish .e { font-size: 20px; width: 26px; text-align: center; flex: none; }
-
-.cats { margin: 0 0 14px; }
-.chips.cats button { padding: 6px 11px; }
-.more { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 10px; padding: 0 8px; }
+.dish:hover { color: var(--rhubarb-text); }
+.dish::after {
+  content: "✓"; flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+  font: 800 15px/1 var(--sans); color: #fff; background: var(--rhubarb);
+  transform: scale(0) rotate(-30deg); transition: transform .3s cubic-bezier(.3, 1.6, .5, 1);
+}
+.dish[aria-pressed="true"] { color: var(--rhubarb-text); padding-left: 10px; }
+.dish[aria-pressed="true"]::after { transform: none; }
+.more { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
 
 /* adding items (dinner extras and the shopping list) */
-.extras { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); max-width: 520px; }
-.extras h2 { margin: 0 0 10px; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
-.field { display: flex; gap: 8px; max-width: 460px; }
+.extras { margin-top: 30px; max-width: 520px; }
+.extras h2 { margin: 0 0 10px; font: 700 17px var(--display); letter-spacing: -0.01em; }
+.open-extras { border: 0; background: none; padding: 0; cursor: pointer; font-weight: 600; color: var(--ink); }
+.open-extras span { display: inline-grid; place-items: center; width: 26px; height: 26px; margin-right: 8px; border-radius: 50%;
+  background: var(--butter); color: #1c1f4a; font-weight: 800; }
+.open-extras:hover { color: var(--rhubarb-text); }
+.field { position: relative; display: flex; gap: 8px; max-width: 480px; }
 .field input {
-  flex: 1; min-width: 0; padding: 12px 14px; border-radius: 10px; border: 0; outline: none;
-  background: var(--hover); color: var(--ink); font: 16px var(--sans);
-  box-shadow: inset 0 0 0 1px var(--line);
+  flex: 1; min-width: 0; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
+  background: var(--milk); color: var(--ink); font: 16px var(--sans);
+  box-shadow: inset 0 0 0 1.5px var(--line);
 }
 .field input:focus { box-shadow: inset 0 0 0 2px var(--ink); }
 /* suggestions while typing: product words from the store catalogs */
-.field { position: relative; }
 .suggest {
-  position: absolute; z-index: 15; top: calc(100% + 4px); left: 0; right: 0;
-  list-style: none; margin: 0; padding: 4px; border-radius: 10px;
-  background: var(--sheet); box-shadow: 0 0 0 1px var(--line), 0 14px 32px -16px rgba(0, 0, 0, .4);
+  position: absolute; z-index: 15; top: calc(100% + 6px); left: 0; right: 0;
+  list-style: none; margin: 0; padding: 6px; border-radius: 18px;
+  background: var(--sheet); box-shadow: 0 0 0 1.5px var(--ink), 0 18px 36px -20px rgba(28, 31, 74, .5);
 }
-.suggest li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 7px; cursor: pointer; font-weight: 500; }
-.suggest li[aria-selected="true"], .suggest li:hover { background: var(--hover); }
-.suggest .s-shelf { font: 10.5px var(--mono); color: var(--ink-soft); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; list-style: none; padding: 0; }
-.tags li { display: inline-flex; align-items: center; gap: 2px; padding: 4px 4px 4px 10px; border-radius: 8px; background: var(--hover); font-size: 14px; font-weight: 500; }
-.tags button, .items li button { border: 0; background: none; cursor: pointer; color: var(--ink-soft); border-radius: 6px; }
-.tags button { width: 24px; height: 24px; font-size: 15px; }
+.suggest li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 12px; cursor: pointer; font-weight: 500; }
+.suggest li[aria-selected="true"], .suggest li:hover { background: var(--panel); }
+.suggest .s-shelf { font-size: 12px; color: var(--ink-soft); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; list-style: none; padding: 0; }
+.tags li { display: inline-flex; align-items: center; gap: 2px; padding: 4px 4px 4px 12px; border-radius: 999px; background: var(--butter); color: #1c1f4a; font-size: 14px; font-weight: 600; }
+.tags button, .items li button { border: 0; background: none; cursor: pointer; color: var(--ink-soft); border-radius: 50%; }
+.tags button { width: 24px; height: 24px; font-size: 15px; color: #1c1f4a; }
 .tags button:hover, .items li button:hover { background: var(--hover); color: var(--ink); }
-.items { list-style: none; margin: 18px 0 22px; padding: 0; max-width: 460px; }
-.items li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 8px 2px; border-bottom: 1px solid var(--line); font-weight: 500; }
+.items { list-style: none; margin: 18px 0 24px; padding: 0; max-width: 480px; }
+.items li { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 10px 2px; border-bottom: 1.5px solid var(--line);
+  font: 600 19px/1.2 var(--display); letter-spacing: -0.01em; }
 .items li button { font-size: 18px; width: 32px; height: 32px; }
-.items .none { color: var(--ink-soft); font-weight: 400; border: 0; }
+.items .none { color: var(--ink-soft); font: 400 16px var(--sans); border: 0; }
 /* tap an item to change it, e.g. to add an amount ("paprika" → "paprika 600g") */
 .items .it, .tags .it { flex: 1; min-width: 0; text-align: left; border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: text; }
-.items li button.it, .tags button.it { width: auto; height: auto; font-size: inherit; color: inherit; }
+.items li button.it, .tags button.it { width: auto; height: auto; font-size: inherit; color: inherit; border-radius: 0; }
 .items .it:hover, .tags .it:hover { background: none; text-decoration: underline dotted; text-underline-offset: 4px; }
 .items input.edit, .tags input.edit { flex: 1; min-width: 0; font: inherit; color: inherit; background: var(--hover); border: 0; outline: none;
-  border-radius: 6px; padding: 2px 6px; box-shadow: inset 0 0 0 2px var(--ink); }
+  border-radius: 8px; padding: 2px 6px; box-shadow: inset 0 0 0 2px var(--ink); }
 
 /* my dinners: the editor */
 .editor label { display: block; margin: 0 0 6px; font-size: 14px; font-weight: 700; }
-.editor .name { width: 100%; max-width: 460px; padding: 12px 14px; border-radius: 10px; border: 0; outline: none;
-  background: var(--hover); color: var(--ink); font: 600 18px var(--sans); box-shadow: inset 0 0 0 1px var(--line); }
+.editor .name { width: 100%; max-width: 480px; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
+  background: var(--milk); color: var(--ink); font: 600 19px var(--display); box-shadow: inset 0 0 0 1.5px var(--line); }
 .editor .name:focus { box-shadow: inset 0 0 0 2px var(--ink); }
-.editor h2 { margin: 22px 0 4px; font-size: 15px; font-weight: 700; }
+.editor h2 { margin: 26px 0 4px; font: 700 17px var(--display); }
 .editor .fine { margin: 0 0 10px; }
 .editor .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.editor .error { color: var(--berry); font-size: 14px; margin: 10px 0 0; min-height: 1.5em; }
+.editor .error { color: var(--rhubarb-text); font-size: 14px; margin: 10px 0 0; min-height: 1.5em; }
 .dishes .mine { display: flex; align-items: center; gap: 4px; }
 .dishes .mine .dish { flex: 1; }
 .dishes .mine .link { flex: none; padding: 6px; }
@@ -166,35 +196,35 @@ h1 {
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 0; border-radius: 10px; padding: 13px 18px; cursor: pointer;
-  font-weight: 700; font-size: 15px; letter-spacing: -0.01em; transition: transform .15s, opacity .2s;
+  border: 0; border-radius: 999px; padding: 14px 22px; cursor: pointer;
+  font-weight: 700; font-size: 15px; transition: transform .15s, opacity .2s, background .2s;
 }
-.btn:active { transform: translateY(1px); }
-.btn.go { background: var(--berry); color: var(--berry-ink); }
-.btn.quiet { background: var(--hover); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
-.btn.dark { background: var(--ink); color: var(--fog); }
-.btn[disabled] { opacity: .4; cursor: default; }
-.link { border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink-soft); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.btn:active { transform: scale(.97); }
+.btn.go { background: var(--rhubarb); color: #1c1f4a; }
+.btn.go:hover { background: #ff3a5e; }
+.btn.quiet { background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn.quiet:hover { background: var(--hover); }
+.btn.dark { background: var(--ink); color: var(--milk); }
+.btn[disabled] { opacity: .35; cursor: default; }
+.link { border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink); font-size: 14px; font-weight: 500;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+.link:hover { color: var(--rhubarb-text); }
 
 /* ── The printer and the receipt ───────────────────────────────────────── */
-.printer { position: relative; }
 .slot {
-  position: relative; z-index: 3; height: 14px; border-radius: 7px; background: var(--slot);
-  box-shadow: inset 0 -3px 0 rgba(255, 255, 255, 0.08), 0 6px 14px -6px rgba(0, 0, 0, .35);
+  position: relative; z-index: 3; height: 16px; border-radius: 8px; background: var(--slot);
+  box-shadow: inset 0 -3px 0 rgba(255, 255, 255, 0.1), 0 8px 16px -8px rgba(28, 31, 74, .5);
 }
-.feed { position: relative; z-index: 2; margin: -7px 14px 0; transition: opacity .2s; }
+.feed { position: relative; z-index: 2; margin-top: -8px; padding-inline: 14px; transition: opacity .2s; }
 .feed.busy { opacity: .45; pointer-events: none; }
-.paper-shadow { filter: drop-shadow(0 14px 18px rgba(10, 16, 22, 0.18)); }
+.paper-shadow { filter: drop-shadow(0 18px 22px rgba(120, 20, 50, 0.16)); }
 
-/* Always paper-white, also in dark mode: a receipt under a streetlight. */
+/* Always paper-white, also in dark mode. */
 .receipt {
-  position: relative; color: #23303b; background-color: #fbfbf8;
-  background-image:
-    repeating-linear-gradient(180deg, rgba(35, 48, 59, 0.018) 0 2px, transparent 2px 5px),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.42  0 0 0 0 0.45  0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E");
-  font: 400 12px/1.45 var(--mono);
+  position: relative; color: #1c1f4a; background-color: #fff;
+  font: 400 12px/1.5 var(--mono);
   --tooth: 9px;
-  padding: 20px 20px calc(16px + var(--tooth));
+  padding: 22px 20px calc(18px + var(--tooth));
   -webkit-mask: linear-gradient(#000 0 0) top / 100% calc(100% - var(--tooth)) no-repeat,
                 conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) bottom / calc(var(--tooth) * 2) var(--tooth) repeat-x;
           mask: linear-gradient(#000 0 0) top / 100% calc(100% - var(--tooth)) no-repeat,
@@ -207,137 +237,140 @@ h1 {
 }
 
 .r-center { text-align: center; }
-.r-go, .r-what, .r-hint, .r-head { color: #5d6971; }
-.r-store { font: 800 40px/1 var(--sans); letter-spacing: -0.04em; margin: 2px 0 4px; }
-.r-delta { margin-top: 6px; color: #9e2a3f; }
-.r-rule { border: 0; border-top: 1px dashed rgba(35, 48, 59, 0.35); margin: 12px 0; }
+.r-go, .r-what, .r-hint, .r-head { color: #5b5f86; }
+.r-store { font: 800 46px/1 var(--display); letter-spacing: -0.04em; margin: 4px 0 6px; }
+.r-delta { margin-top: 6px; color: #d6284b; }
+.r-rule { border: 0; border-top: 1.5px dashed rgba(28, 31, 74, 0.3); margin: 14px 0; }
 .r-head { margin: 10px 0 4px; }
-.r-items { list-style: none; margin: 0 -8px; padding: 0; display: grid; gap: 1px; }
+.r-items { list-style: none; margin: 0 -8px; padding: 0; display: grid; gap: 2px; }
 .r-line {
   width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px;
   text-align: left; border: 0; background: none; color: inherit; font: inherit; cursor: pointer;
-  padding: 3px 8px; border-radius: 4px;
+  padding: 4px 8px; border-radius: 6px;
 }
-.r-line:hover { background: rgba(35, 48, 59, 0.05); }
+.r-line:hover { background: #fff0f3; }
 .r-line .n { font-weight: 600; }
-.r-line .amt { color: #5d6971; font-weight: 400; }
+.r-line .amt { color: #5b5f86; font-weight: 400; }
 /* Product names wrap: stores put the pack size ("10tk", "500g") at the end. */
-.r-line .p { grid-column: 1; color: #5d6971; font-size: 11.5px; overflow-wrap: anywhere; }
-.r-line .shelf { color: #8a949b; }
-.r-line .c { grid-column: 2; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
-.r-line .c s { color: #8a949b; margin-right: 6px; text-decoration-thickness: 1px; }
-.r-line .d { grid-column: 1; color: #9e2a3f; font-size: 11px; }
-.r-off { display: inline-block; margin-left: 6px; padding: 0 5px; border-radius: 3px; font-size: 10px; font-weight: 600; background: #9e2a3f; color: #fbfbf8; }
-.r-save { display: flex; justify-content: space-between; margin-top: 6px; color: #9e2a3f; font-weight: 600; }
-.r-card { color: #5d6971; margin-top: 2px; }
-.r-pantry button { border: 0; background: none; padding: 0 1px; font: inherit; color: #23303b; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
-.r-pantry button:hover { color: #9e2a3f; }
+.r-line .p { grid-column: 1; color: #5b5f86; font-size: 11.5px; overflow-wrap: anywhere; }
+.r-line .shelf { color: #8c8fae; }
+.r-line .c { grid-column: 2; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.r-line .c s { color: #8c8fae; font-weight: 400; margin-right: 6px; text-decoration-thickness: 1px; }
+.r-line .d { grid-column: 1; color: #d6284b; font-size: 11px; }
+/* sale: the yellow shelf tag */
+.r-off { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; background: #ffd84d; color: #1c1f4a; }
+.r-save { display: flex; justify-content: space-between; margin-top: 6px; color: #17824a; font-weight: 600; }
+.r-card { color: #5b5f86; margin-top: 2px; }
+.r-pantry button { border: 0; background: none; padding: 0 1px; font: inherit; color: #1c1f4a; text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
+.r-pantry button:hover { color: #d6284b; }
 .opts s { color: var(--ink-soft); font-weight: 400; margin-right: 6px; }
-.r-tag { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid currentColor; border-radius: 3px; font-size: 10px; font-weight: 400; color: #9e2a3f; }
+.r-tag { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font-size: 10px; font-weight: 400; color: #d6284b; }
 .r-hint { margin-top: 8px; font-size: 11px; }
-.r-total { display: flex; justify-content: space-between; align-items: baseline; font: 800 22px/1 var(--sans); letter-spacing: -0.02em; }
-.r-note { margin-top: 10px; color: #5d6971; }
-.r-missing { margin-top: 10px; color: #9e2a3f; }
+.r-total { display: flex; justify-content: space-between; align-items: baseline; font: 800 26px/1 var(--display); letter-spacing: -0.02em; }
+.r-note { margin-top: 10px; color: #5b5f86; }
+.r-missing { margin-top: 10px; color: #d6284b; }
 .stores { list-style: none; margin: 2px -8px 0; padding: 0; }
 .stores button {
   width: 100%; display: flex; gap: 6px; align-items: baseline; border: 0; background: none; cursor: pointer;
-  color: inherit; font: inherit; padding: 2px 8px; border-radius: 4px; text-align: left;
+  color: inherit; font: inherit; padding: 2px 8px; border-radius: 6px; text-align: left;
 }
-.stores button:hover { background: rgba(35, 48, 59, 0.05); }
-.stores button::after { content: ""; order: 1; flex: 1; border-bottom: 1px dotted rgba(35, 48, 59, 0.45); transform: translateY(-4px); }
+.stores button:hover { background: #fff0f3; }
+.stores button::after { content: ""; order: 1; flex: 1; border-bottom: 1px dotted rgba(28, 31, 74, 0.45); transform: translateY(-4px); }
 .stores .v { order: 2; font-variant-numeric: tabular-nums; }
 .stores [aria-current="true"] { font-weight: 600; }
 .stores [aria-current="true"] .s::before { content: "▸ "; }
 
+/* "I'll go there": a butter sticker slapped on the receipt */
 .stamp {
-  position: absolute; right: 12px; top: 14px; z-index: 2; pointer-events: none;
-  padding: 6px 12px; border: 3px solid #9e2a3f; border-radius: 6px; color: #9e2a3f;
-  font: 800 18px/1 var(--sans); letter-spacing: -0.02em; opacity: .85; mix-blend-mode: multiply;
-  transform: rotate(-11deg); animation: stamp .35s cubic-bezier(.3, 1.6, .5, 1) both;
+  position: absolute; right: 10px; top: 12px; z-index: 2; pointer-events: none;
+  display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%;
+  background: #ffd84d; color: #1c1f4a; box-shadow: 0 4px 10px -4px rgba(28, 31, 74, .4);
+  font: 800 18px/1 var(--display); letter-spacing: -0.02em;
+  transform: rotate(12deg); animation: stamp .4s cubic-bezier(.3, 1.6, .5, 1) both;
 }
-@keyframes stamp { from { transform: rotate(-11deg) scale(1.8); opacity: 0; } }
+@keyframes stamp { from { transform: rotate(-20deg) scale(1.8); opacity: 0; } }
 
-.waiting { color: #5d6971; text-align: center; padding: 12px 6px 4px; }
-.waiting b { display: block; color: #23303b; font: 700 17px/1.35 var(--sans); letter-spacing: -0.01em; margin-bottom: 6px; }
+.waiting { color: #5b5f86; text-align: center; padding: 14px 6px 6px; }
+.waiting b { display: block; color: #1c1f4a; font: 700 20px/1.25 var(--display); letter-spacing: -0.02em; margin-bottom: 6px; }
 .dots i { display: inline-block; font-style: normal; animation: blink 1.2s infinite both; }
 .dots i:nth-child(2) { animation-delay: .2s; }
 .dots i:nth-child(3) { animation-delay: .4s; }
 @keyframes blink { 0%, 100% { opacity: .2; } 50% { opacity: 1; } }
 
-.after { margin: 14px 14px 0; }
+.after { margin-top: 18px; padding: 0 14px; }
 .actions { display: flex; gap: 8px; }
 .actions .btn { flex: 1; }
-.thanks { margin: 0; font-weight: 500; color: var(--ink-soft); }
-.small { margin-top: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
-.fine { font-size: 12px; color: var(--ink-soft); }
+.thanks { margin: 0; font: 700 18px var(--display); }
+.small { margin-top: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.fine { font-size: 12.5px; color: var(--ink-soft); }
 .report { margin-top: 12px; display: flex; gap: 8px; }
-.share { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.share input { flex: 1 1 100%; padding: 9px 10px; border-radius: 8px; border: 0; background: var(--hover); color: var(--ink);
-  font: 13px var(--mono); box-shadow: inset 0 0 0 1px var(--line); }
+.share { margin-top: 16px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.share input { flex: 1 1 100%; padding: 9px 14px; border-radius: 999px; border: 0; background: var(--milk); color: var(--ink);
+  font: 13px var(--sans); box-shadow: inset 0 0 0 1.5px var(--line); }
 /* a dinner someone sent by link */
 .sent { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap;
-  margin: 0 0 18px; padding: 12px 12px 12px 16px; border-radius: 12px; background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); }
+  margin: 0 0 22px; padding: 14px 14px 14px 20px; border-radius: 24px; background: var(--panel); }
 .sent p { margin: 0; flex: 1 1 220px; }
 .sent .what { display: block; font-size: 13px; color: var(--ink-soft); }
-.sent .name { font-weight: 700; font-size: 17px; }
+.sent .name { font: 700 19px var(--display); }
 .sent .btns { display: flex; align-items: center; gap: 4px; }
-.sent .x { border: 0; background: none; cursor: pointer; color: var(--ink-soft); font-size: 18px; width: 32px; height: 32px; border-radius: 6px; }
+.sent .x { border: 0; background: none; cursor: pointer; color: var(--ink-soft); font-size: 18px; width: 32px; height: 32px; border-radius: 50%; }
 .sent .x:hover { background: var(--hover); color: var(--ink); }
-select { flex: 1; min-width: 0; padding: 10px; border-radius: 10px; border: 0; background: var(--hover); color: var(--ink); font: 14px var(--sans); box-shadow: inset 0 0 0 1px var(--line); }
+select { flex: 1; min-width: 0; padding: 10px 14px; border-radius: 999px; border: 0; background: var(--milk); color: var(--ink); font: 14px var(--sans); box-shadow: inset 0 0 0 1.5px var(--line); }
 
-/* ── Choose-another sheet ──────────────────────────────────────────────── */
+/* ── Sheets ────────────────────────────────────────────────────────────── */
 dialog {
-  width: min(440px, calc(100vw - 24px)); max-height: min(640px, calc(100dvh - 48px));
-  padding: 0; border: 0; border-radius: 16px; background: var(--sheet); color: var(--ink);
-  box-shadow: 0 24px 60px -20px rgba(0, 0, 0, .45);
+  width: min(460px, calc(100vw - 24px)); max-height: min(660px, calc(100dvh - 48px));
+  padding: 0; border: 0; border-radius: 28px; background: var(--sheet); color: var(--ink);
+  box-shadow: 0 30px 70px -24px rgba(28, 31, 74, .55);
 }
-dialog::backdrop { background: rgba(19, 26, 32, .45); backdrop-filter: blur(2px); }
-dialog[open] { animation: sheet .3s cubic-bezier(.3, .8, .2, 1); }
+dialog::backdrop { background: rgba(28, 31, 74, .4); backdrop-filter: blur(3px); }
+dialog[open] { animation: sheet .3s var(--ease); }
 @keyframes sheet { from { transform: translateY(16px); opacity: 0; } }
 dialog form { display: flex; flex-direction: column; max-height: inherit; }
-.sh-top { padding: 20px 20px 12px; }
-.sh-top h2 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.03em; }
-.sh-top p { margin: 2px 0 14px; color: var(--ink-soft); font-size: 14px; }
+.sh-top { padding: 24px 24px 14px; }
+.sh-top h2 { margin: 0; font: 800 26px/1.1 var(--display); letter-spacing: -0.03em; }
+.sh-top p { margin: 4px 0 16px; color: var(--ink-soft); font-size: 14px; }
 .sh-top label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
-.sh-top input { width: 100%; padding: 11px 12px; border-radius: 10px; border: 0; outline: none; background: var(--hover); color: var(--ink); font: 15px var(--sans); box-shadow: inset 0 0 0 1px var(--line); }
+.sh-top input { width: 100%; padding: 12px 18px; border-radius: 999px; border: 0; outline: none; background: var(--milk); color: var(--ink); font: 16px var(--sans); box-shadow: inset 0 0 0 1.5px var(--line); }
 .sh-top input:focus { box-shadow: inset 0 0 0 2px var(--ink); }
 .sh-top .fine { margin-top: 6px; }
-.opts { list-style: none; margin: 0; padding: 4px 12px; overflow-y: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.opts label { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 8px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+.opts { list-style: none; margin: 0; padding: 4px 12px; overflow-y: auto; border-top: 1.5px solid var(--line); border-bottom: 1.5px solid var(--line); }
+.opts label { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 10px; border-radius: 14px; cursor: pointer; font-size: 14px; }
 .opts label:hover { background: var(--hover); }
-.opts input { accent-color: var(--berry); margin: 0; }
-.opts .pc { font-variant-numeric: tabular-nums; font-weight: 600; }
+.opts input { accent-color: var(--rhubarb); margin: 0; }
+.opts .pc { font-variant-numeric: tabular-nums; font-weight: 700; }
 .opts .o { display: flex; align-items: center; gap: 10px; min-width: 0; }
-.opts .thumb { flex: none; width: 40px; height: 40px; border-radius: 6px; background: #fff; overflow: hidden; display: grid; place-items: center; }
+.opts .thumb { flex: none; width: 44px; height: 44px; border-radius: 10px; background: #fff; overflow: hidden; display: grid; place-items: center; }
 .opts .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.opts .o-shelf { display: block; font: 10.5px var(--mono); color: var(--ink-soft); margin-top: 2px; }
-.sh-bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px 18px; }
-.cross { padding: 14px 20px 4px; border-bottom: 1px solid var(--line); }
+.opts .o-shelf { display: block; font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+.sh-bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 24px 20px; }
+.cross { padding: 16px 24px 6px; border-bottom: 1.5px solid var(--line); }
 .cross h3, .prefs h3 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
-.chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chips button { border: 0; cursor: pointer; padding: 6px 10px; border-radius: 8px; font-size: 14px; font-weight: 500;
-  background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); }
-.chips button[aria-pressed="true"] { background: var(--ink); color: var(--fog); box-shadow: none; }
 .preview { list-style: none; margin: 12px 0 10px; padding: 0; font-size: 13px; color: var(--ink-soft); }
 .preview li { padding: 3px 0; }
 .preview b { color: var(--ink); font-weight: 600; }
-.prefs { list-style: none; margin: 0; padding: 4px 20px; overflow-y: auto; }
-.prefs li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.prefs { list-style: none; margin: 0; padding: 4px 24px; overflow-y: auto; }
+.prefs li { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1.5px solid var(--line); }
 .prefs li:last-child { border-bottom: 0; }
 .prefs p { margin: 2px 0 0; font-size: 13px; color: var(--ink-soft); }
-.r-prefs { margin-top: 10px; color: #5d6971; }
-.r-prefs button { border: 0; background: none; padding: 0; font: inherit; color: #9e2a3f; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.r-prefs { margin-top: 10px; color: #5b5f86; }
+.r-prefs button { border: 0; background: none; padding: 0; font: inherit; color: #d6284b; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 
-@media (max-width: 820px) {
-  main { grid-template-columns: 1fr; gap: 28px; padding: 22px 16px 40px; }
-  .bar { padding-left: 16px; padding-right: 16px; }
-  h1 { font-size: 40px; }
-  .sub { margin: 12px 0 14px; }
-  .dishes { gap: 0 8px; }
-  .dish { font-size: 14.5px; padding: 9px 8px 9px 4px; gap: 8px; }
-  .dish .e { font-size: 18px; width: 22px; }
-  .printer { max-width: 420px; width: 100%; justify-self: center; }
-  dialog { margin: auto auto 0; width: 100vw; max-width: 100vw; border-radius: 16px 16px 0 0; }
+@media (max-width: 900px) {
+  .bar { position: sticky; padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+    background: color-mix(in srgb, var(--milk) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .brand { font-size: 18px; padding: 7px 18px 8px; }
+  .chips { gap: 6px; }
+  .chips button { padding: 6px 12px; font-size: 13.5px; }
+  .switch button { padding: 7px 13px; }
+  main { display: block; min-height: 0; }
+  #left { padding: 20px 16px 36px; max-width: none; }
+  h1 { font-size: 44px; margin-bottom: 22px; }
+  .dishes { grid-template-columns: 1fr; }
+  .dish { font-size: 19px; padding: 13px 2px 12px; }
+  .printer { padding: 40px 16px 48px; }
+  dialog { margin: auto auto 0; width: 100vw; max-width: 100vw; border-radius: 28px 28px 0 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -347,7 +380,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 <body>
 
 <header class="bar">
-  <div class="brand" aria-label="pantryrun">pantry<i>run</i><b>.</b></div>
+  <div class="brand">pantryrun</div>
   <nav class="switch" aria-label="What you need">
     <span class="pill" aria-hidden="true"></span>
     <button type="button" data-mode="dinner" aria-pressed="true">Dinner</button>
@@ -408,7 +441,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     mode: "dinner",
     recipes: [],         // hand-written classics
     dishes: [],          // NutriData dishes: {id, name, category}
-    categories: [],      // {id, name, emoji}
+    categories: [],      // {id, name}
     category: store.get("pantryrun.category", "ideas"),
     shown: [],           // dinner ids on screen; kept until the category changes or "Show others"
     mine: [],            // this person's own dinners: {id, name, servings, items}
@@ -417,6 +450,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     recipeId: null,
     servings: 2,
     extras: [],          // dinner: anything else for this trip
+    extrasOpen: false,   // the field for those is folded away until asked for
     items: [],           // shopping list
     prefs: store.get("pantryrun.prefs", {}),  // {key: {words: [], products: {store: name}}}
     result: null,        // last /basket answer for the current mode
@@ -476,13 +510,12 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   }
 
   // ── dinners: hand-written classics plus NutriData dishes by category ──
-  const DISHES_SHOWN = 8;
+  const DISHES_SHOWN = 6;
   function dinnerById(id) {
     const d = state.dishes.find(x => x.id === id);
-    if (d) return { ...d, emoji: state.categories.find(c => c.id === d.category)?.emoji || "🍽️" };
-    if (state.shared && id === state.shared.id) return { ...state.shared, emoji: "💌" };
-    const m = state.mine.find(x => x.id === id);
-    return m ? { ...m, emoji: "📝" } : state.recipes.find(r => r.id === id);
+    if (d) return d;
+    if (state.shared && id === state.shared.id) return state.shared;
+    return state.mine.find(x => x.id === id) || state.recipes.find(r => r.id === id);
   }
   function pool(category) {
     if (category === "mine") return state.mine.map(r => r.id);
@@ -508,14 +541,11 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 
   function renderDinner() {
     left.innerHTML = `
-      <h1>What's for dinner tonight?</h1>
-      <div class="sub">Cooking for
-        <span class="stepper" role="group" aria-label="Number of people">
+      <h1>Dinner <span class="for">for <span class="stepper" role="group" aria-label="Number of people">
           <button type="button" data-step="-1" aria-label="Fewer people">−</button>
           <output id="servings">${state.servings}</output>
           <button type="button" data-step="1" aria-label="More people">+</button>
-        </span>
-      </div>
+        </span></span> tonight</h1>
       ${state.shared ? `<div class="sent">
         <p><span class="what">A dinner sent to you</span><span class="name" lang="et">${esc(state.shared.name)}</span></p>
         <span class="btns">${state.shared.saved ? `<span class="fine">Saved to Mine</span>`
@@ -523,30 +553,30 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
           <button type="button" class="x" id="dropShared" aria-label="Close">×</button></span>
       </div>` : ""}
       <div class="chips cats" role="group" aria-label="Kind of dinner">${[
-        { id: "ideas", name: "Ideas", emoji: "✨" }, { id: "classics", name: "Classics", emoji: "⭐" },
-        { id: "mine", name: "Mine", emoji: "📝" }, ...state.categories,
-      ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}"><span aria-hidden="true">${esc(c.emoji)}</span> ${esc(c.name)}</button>`).join("")}</div>
+        { id: "ideas", name: "Ideas" }, { id: "classics", name: "Classics" }, { id: "mine", name: "Mine" }, ...state.categories,
+      ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}">${esc(c.name)}</button>`).join("")}</div>
       ${state.category === "mine" && !state.mine.length ? `<p class="empty">Write down a dinner you cook often. Type what you
         buy for it once, with amounts if you like, and pantryrun finds the store each time.</p>` : ""}
       <ul class="dishes">${shownDinners().map(r => `
         <li${r.id.startsWith("my-") ? ` class="mine"` : ""}><button type="button" class="dish" data-id="${esc(r.id)}" aria-pressed="${r.id === state.recipeId}">
-          <span class="e" aria-hidden="true">${esc(r.emoji)}</span><span lang="et">${esc(r.name)}</span></button>${r.id.startsWith("my-")
+          <span lang="et">${esc(r.name)}</span></button>${r.id.startsWith("my-")
           ? `<button type="button" class="link" data-edit-dinner="${esc(r.id)}" aria-label="Edit ${esc(r.name)}">Edit</button>` : ""}</li>`).join("")}
       </ul>
       <div class="more">${state.category === "mine" ? `<button type="button" class="btn quiet" id="newDinner">New dinner</button>`
         : state.category === "classics" ? ""
         : `<button type="button" class="link" id="shuffle">Show me others</button>`}
         ${shownDinners().some(r => r.id.startsWith("nd-")) ? `<span class="fine">Dishes from NutriData, Tervise Arengu Instituut</span>` : ""}</div>
-      <div class="extras">
+      <div class="extras">${state.extrasOpen || state.extras.length ? `
         <h2>Anything else on the way?</h2>
         <form class="field" id="add" autocomplete="off">
           <input id="item" placeholder="kohv, leib, banaanid 1kg" aria-label="Add more items" enterkeyhint="done">
           <button class="btn quiet" type="submit">Add</button>
         </form>
         ${state.extras.length ? `<ul class="tags">${state.extras.map((it, i) => `
-          <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")}</ul>` : ""}
+          <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")}</ul>` : ""}`
+        : `<button type="button" class="open-extras" id="openExtras"><span aria-hidden="true">+</span>Anything else on the way?</button>`}
       </div>`;
-    bindAdd(state.extras, () => { renderDinner(); if (state.recipeId) ask(); });
+    if ($("#add")) bindAdd(state.extras, () => { renderDinner(); if (state.recipeId) ask(); });
   }
 
   // ── my dinners: write one from scratch ──
@@ -819,6 +849,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     const editD = e.target.closest("[data-edit-dinner]");
     if (editD) { editDinner(editD.dataset.editDinner); return; }
     if (e.target.closest("#newDinner")) { editDinner(null); return; }
+    if (e.target.closest("#openExtras")) { state.extrasOpen = true; renderDinner(); $("#item").focus(); return; }
     if (e.target.closest("#saveShared")) { saveShared(); return; }
     if (e.target.closest("#dropShared")) {
       if (state.recipeId === state.shared.id) { state.recipeId = null; idle("Pick a dinner", "Your store and shopping list print here."); }
