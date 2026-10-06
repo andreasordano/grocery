@@ -7,12 +7,12 @@
 # It runs after the initial grocery list parsing and before the scoring and optimization phases, which rely on the fetched product data
 # =============================================================================
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import re
 from core.cache import TTLCache
-from core.scoring import build_rules, compute_product_score, extract_weight_volume, parse_price, relevance_score
+from core.scoring import build_rules, compute_product_score, extract_weight_volume, head_weight, parse_price, relevance_score
 from stores_config import get_fetcher, get_pagination_param
 
 
@@ -28,6 +28,10 @@ _SYNONYMS = {
 }
 
 
+# Never suitable for a basket, whatever the item: pre-order and bulk listings.
+GLOBAL_EXCLUDE = ["ettetellimisel", "hulgi "]
+
+
 # Cache store search responses to keep API usage and latency low.
 _CACHE = TTLCache(
     ttl_seconds=int(os.environ.get("FETCH_CACHE_TTL", 6 * 3600)),
@@ -35,9 +39,10 @@ _CACHE = TTLCache(
 )
 
 
-def _cached_fetch(store: str, query: str, size: int = 40):
+def _cached_fetch(store: str, query: str, size: int = 40, refresh: bool = False):
+    """Store search results, cached for FETCH_CACHE_TTL. refresh=True asks the store again (cache warm-up)."""
     key = (store, query.strip().lower(), size)
-    cached = _CACHE.get(key)
+    cached = None if refresh else _CACHE.get(key)
     if cached is not None:
         return cached
     fetcher = get_fetcher(store)
@@ -103,27 +108,66 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
     if volume and volume > 10000:
         volume = None
 
-    product = {
+    rel = relevance_score(name, rules)
+    if rel < 0 or any(x in name.lower() for x in GLOBAL_EXCLUDE):
+        return None
+    return {
         "item": display_name,
         "store": store,
         "name": name,
         "price": price,
         **discount_fields(item),
         "brand": item.get("brand"),
+        "shelf": item.get("shelf"),
+        "image": item.get("image"),
+        "unit": item.get("unit"),      # "kg"/"l" for loose goods (catalog.cost_for)
+        "volume": item.get("volume"),  # pack size when the name lacks it (Selver)
         "weight_g": weight,
         "volume_ml": volume,
+        "match": rel,
+        "weight": head_weight(name, rules),
     }
 
-    rel = relevance_score(name, rules)
-    if rel < 1:
-        return None
-    product["relevance"] = rel
-    score, explanation = compute_product_score(product, rules)
-    if score > 5:
-        return None
-    product["score"] = score
-    product["explanation"] = explanation
-    return product
+
+def _shelves(candidates):
+    """Shelves the typed thing sits on at this store, as (top shelf, shelves to trust).
+
+    Votes come from the best matches available: exact words (õun), else near forms
+    (maapähklivõie), else the store's own top results (it knows maapähklikreem is peanut
+    butter). Votes are weighted by how early the name says the word (see head_weight), so
+    two "Banaan, kg" outvote three smoothie mixes listing banana. A shelf is trusted if it
+    is the top one or holds at least two matches, so a lone cat litter "roh.tee" or a
+    protein bar doesn't count."""
+    for level in (5, 4):
+        voters = [p for p in candidates if p["match"] == level and p.get("shelf")]
+        if voters:
+            break
+    else:
+        voters = [{**p, "weight": 1.0} for p in candidates[:8] if p.get("shelf")]
+    if not voters:
+        return None, set()
+    weights, counts = Counter(), Counter()
+    for p in voters:
+        weights[p["shelf"]] += p["weight"]
+        counts[p["shelf"]] += 1
+    top = weights.most_common(1)[0][0]
+    if counts.most_common(1)[0][1] == 1:  # too few matches to tell outliers apart: trust them all
+        return top, set(counts)
+    return top, {top} | {s for s, n in counts.items() if n >= 2}
+
+
+def _tier(product, top, trusted):
+    """Match tier: 5 the thing on a trusted shelf, 4 something else from the top shelf
+    (maapähklikreem when you typed maapähklivõi), 2 a mention when the store has no
+    shelf information. None = drop."""
+    match, shelf = product["match"], product.get("shelf")
+    if match >= 4 and (top is None or shelf in trusted):
+        return 5
+    if top is not None and shelf == top:
+        return 4
+    if top is None and match >= 1:
+        return 2
+    return None
 
 
 def spec_for(item: str) -> dict:
@@ -170,6 +214,14 @@ def _build_queries(spec: dict):
     return uniq
 
 
+def _singular(item):
+    """"õunad" → "õun", "banaanid" → "banaan": some stores only find fresh fruit by the singular."""
+    w = item.strip().lower()
+    if " " in w or len(w) < 5 or not w.endswith("d"):
+        return None
+    return w[:-2] if w[-2] in "aeiu" else w[:-1]
+
+
 def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit: int):
     """Run the query fallbacks for one item at one store; return (candidates, warnings)."""
     rules = build_rules(spec)
@@ -177,7 +229,10 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
     warnings = []
     seen_ids = set()
 
-    for q in _build_queries(spec):
+    singular = _singular(spec.get("search_term", ""))
+    for q in _build_queries(spec) + ([singular] if singular else []):
+        if q == singular and sum(p["match"] == 5 for p in store_candidates) >= per_store_limit // 2:
+            break  # the plural found enough already
         try:
             raw = _cached_fetch(store, q)
         except Exception as exc:
@@ -194,26 +249,35 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
             seen_ids.add(dedup_key)
 
             product = _normalize_candidate(item, display_name, store, rules)
-            if not product:
-                continue
-            store_candidates.append(product)
+            if product:
+                store_candidates.append(product)
 
-        if len(store_candidates) >= per_store_limit:
+        if sum(p["match"] == 5 for p in store_candidates) >= per_store_limit:
             break
 
-    # keep best scored candidates per store
-    store_candidates.sort(key=lambda p: p.get("score", float("inf")))
-    return store_candidates[:per_store_limit], warnings
+    # Trust the store's shelves: the shelf most real matches sit on decides what else
+    # counts (same shelf) and what doesn't ("with peanut butter" snacks elsewhere).
+    top, trusted = _shelves(store_candidates)
+    ranked = []
+    for p in store_candidates:
+        tier = _tier(p, top, trusted)
+        if tier is None:
+            continue
+        p["relevance"] = tier
+        p["score"], p["explanation"] = compute_product_score(p, rules)
+        ranked.append(p)
+    ranked.sort(key=lambda p: p["score"])
+    return ranked[:per_store_limit], warnings
 
 
 def fetch_all(grocery_list, selected_stores, on_progress=None):
     """
     Fetch and score products for every item/store combination using short,
-    generic queries with cached responses and strict relevance filtering.
+    generic queries with cached responses, relevance tiers and a per-store shelf vote.
     Item/store combinations are fetched concurrently; results are assembled
     in grocery-list and store order so output is deterministic.
     """
-    PER_STORE_LIMIT = int(os.environ.get("PER_STORE_LIMIT", 6))
+    PER_STORE_LIMIT = int(os.environ.get("PER_STORE_LIMIT", 12))
     MAX_WORKERS = int(os.environ.get("FETCH_WORKERS", 12))
 
     jobs = [(name, store) for name in grocery_list for store in selected_stores]

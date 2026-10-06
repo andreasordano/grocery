@@ -29,18 +29,10 @@ STORES_CONFIG = {
     },
 }
 
-# Default stores to search (ordered list of store keys)
-DEFAULT_STORES = ["selver", "barbora", "rimi"]
-
 
 def get_store_names():
     """Return list of available store names (keys)."""
     return list(STORES_CONFIG.keys())
-
-
-def get_default_stores():
-    """Return default stores list."""
-    return DEFAULT_STORES
 
 
 def get_fetcher(store_name):

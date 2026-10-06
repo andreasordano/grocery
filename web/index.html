@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Groceries</title>
+<title>pantryrun</title>
 <meta name="description" content="Pick tonight's dinner. Get one store and a shopping list.">
 <meta name="theme-color" content="#e3e7e9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131a20" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%2323303b'/><text x='13' y='45' font-family='Helvetica,Arial,sans-serif' font-weight='800' font-size='40' fill='%23fbfbf8'>g</text><circle cx='47' cy='42' r='5' fill='%23d4566b'/></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='15' fill='%2323303b'/><path fill='%23fbfbf8' d='M10.91 45.15V19.31H16.76V23.06L16.71 22.79Q17.77 20.71 19.35 19.77Q20.93 18.84 22.98 18.84Q25.41 18.84 27.15 20.01Q28.90 21.19 29.83 23.43Q30.77 25.67 30.77 28.85Q30.77 32.00 29.83 34.23Q28.88 36.45 27.11 37.61Q25.34 38.78 22.85 38.78Q20.66 38.78 19.09 37.78Q17.53 36.79 16.47 34.60L17.05 34.60V45.15ZM20.57 34.20Q22.30 34.20 23.30 32.73Q24.29 31.27 24.29 28.73Q24.29 26.20 23.32 24.80Q22.35 23.40 20.60 23.40Q19.50 23.40 18.63 24.00Q17.75 24.60 17.26 25.80Q16.76 27.00 16.76 28.78Q16.76 31.45 17.85 32.82Q18.94 34.20 20.57 34.20Z'/><path fill='%23fbfbf8' d='M29.80 38.30 33.80 19.31H39.55L38.62 23.72L38.28 23.53Q39.76 20.87 41.38 19.85Q43.00 18.84 44.75 18.84Q45.33 18.84 45.92 18.93Q46.51 19.02 46.97 19.19L45.71 24.36Q45.19 24.17 44.57 24.05Q43.96 23.94 43.37 23.94Q42.49 23.94 41.60 24.25Q40.71 24.56 39.89 25.33Q39.07 26.10 38.39 27.46Q37.72 28.82 37.28 30.93L35.73 38.30Z'/><path fill='%23d4566b' d='M49.08 38.78Q47.27 38.78 46.17 37.68Q45.08 36.59 45.08 34.78Q45.08 32.96 46.17 31.87Q47.27 30.78 49.08 30.78Q50.90 30.78 51.99 31.87Q53.08 32.96 53.08 34.78Q53.08 36.59 51.99 37.68Q50.90 38.78 49.08 38.78Z'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;600&family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;600&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;0,800;1,800&display=swap" rel="stylesheet">
 <style>
 :root {
   --fog: #e3e7e9;
@@ -63,8 +63,10 @@ button { font: inherit; color: inherit; }
   background: color-mix(in srgb, var(--fog) 85%, transparent);
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
-/* The mark is the wordmark itself; the full stop is the decision. */
+/* The mark is the wordmark itself: the pantry stands still, the run leans forward to the full stop, the store.
+   The icon is the same in miniature ("pr."), outlined from Schibsted Grotesk 800 so it needs no font. */
 .brand { font-weight: 800; font-size: 22px; letter-spacing: -0.045em; line-height: 1; }
+.brand i { font-style: italic; }
 .brand b { color: var(--berry); font-weight: 800; }
 
 .switch { position: relative; display: inline-flex; padding: 3px; border-radius: 10px; background: var(--hover); }
@@ -96,16 +98,21 @@ h1 {
 .stepper output { min-width: 18px; text-align: center; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* dinners: a plain two-column list, not cards */
-.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
+.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 18px; }
 .dish {
   width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer;
   border: 0; background: none; padding: 9px 12px 9px 8px; border-radius: 10px;
   font-size: 16px; font-weight: 500; line-height: 1.2; letter-spacing: -0.01em;
   transition: background .2s;
+  min-width: 0; overflow-wrap: anywhere; hyphens: auto;  /* long Estonian compounds: Suvikõrvitsapüreesupp */
 }
 .dish:hover { background: var(--hover); }
 .dish[aria-pressed="true"] { background: var(--ink); color: var(--fog); }
 .dish .e { font-size: 20px; width: 26px; text-align: center; flex: none; }
+
+.cats { margin: 0 0 14px; }
+.chips.cats button { padding: 6px 11px; }
+.more { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 10px; padding: 0 8px; }
 
 /* adding items (dinner extras and the shopping list) */
 .extras { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); max-width: 520px; }
@@ -117,6 +124,16 @@ h1 {
   box-shadow: inset 0 0 0 1px var(--line);
 }
 .field input:focus { box-shadow: inset 0 0 0 2px var(--ink); }
+/* suggestions while typing: product words from the store catalogs */
+.field { position: relative; }
+.suggest {
+  position: absolute; z-index: 15; top: calc(100% + 4px); left: 0; right: 0;
+  list-style: none; margin: 0; padding: 4px; border-radius: 10px;
+  background: var(--sheet); box-shadow: 0 0 0 1px var(--line), 0 14px 32px -16px rgba(0, 0, 0, .4);
+}
+.suggest li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 7px; cursor: pointer; font-weight: 500; }
+.suggest li[aria-selected="true"], .suggest li:hover { background: var(--hover); }
+.suggest .s-shelf { font: 10.5px var(--mono); color: var(--ink-soft); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; list-style: none; padding: 0; }
 .tags li { display: inline-flex; align-items: center; gap: 2px; padding: 4px 4px 4px 10px; border-radius: 8px; background: var(--hover); font-size: 14px; font-weight: 500; }
 .tags button, .items li button { border: 0; background: none; cursor: pointer; color: var(--ink-soft); border-radius: 6px; }
@@ -126,6 +143,26 @@ h1 {
 .items li { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 8px 2px; border-bottom: 1px solid var(--line); font-weight: 500; }
 .items li button { font-size: 18px; width: 32px; height: 32px; }
 .items .none { color: var(--ink-soft); font-weight: 400; border: 0; }
+/* tap an item to change it, e.g. to add an amount ("paprika" → "paprika 600g") */
+.items .it, .tags .it { flex: 1; min-width: 0; text-align: left; border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: text; }
+.items li button.it, .tags button.it { width: auto; height: auto; font-size: inherit; color: inherit; }
+.items .it:hover, .tags .it:hover { background: none; text-decoration: underline dotted; text-underline-offset: 4px; }
+.items input.edit, .tags input.edit { flex: 1; min-width: 0; font: inherit; color: inherit; background: var(--hover); border: 0; outline: none;
+  border-radius: 6px; padding: 2px 6px; box-shadow: inset 0 0 0 2px var(--ink); }
+
+/* my dinners: the editor */
+.editor label { display: block; margin: 0 0 6px; font-size: 14px; font-weight: 700; }
+.editor .name { width: 100%; max-width: 460px; padding: 12px 14px; border-radius: 10px; border: 0; outline: none;
+  background: var(--hover); color: var(--ink); font: 600 18px var(--sans); box-shadow: inset 0 0 0 1px var(--line); }
+.editor .name:focus { box-shadow: inset 0 0 0 2px var(--ink); }
+.editor h2 { margin: 22px 0 4px; font-size: 15px; font-weight: 700; }
+.editor .fine { margin: 0 0 10px; }
+.editor .actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.editor .error { color: var(--berry); font-size: 14px; margin: 10px 0 0; min-height: 1.5em; }
+.dishes .mine { display: flex; align-items: center; gap: 4px; }
+.dishes .mine .dish { flex: 1; }
+.dishes .mine .link { flex: none; padding: 6px; }
+.empty { color: var(--ink-soft); max-width: 460px; margin: 4px 0 14px; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -186,6 +223,7 @@ h1 {
 .r-line .amt { color: #5d6971; font-weight: 400; }
 /* Product names wrap: stores put the pack size ("10tk", "500g") at the end. */
 .r-line .p { grid-column: 1; color: #5d6971; font-size: 11.5px; overflow-wrap: anywhere; }
+.r-line .shelf { color: #8a949b; }
 .r-line .c { grid-column: 2; grid-row: 1; text-align: right; font-variant-numeric: tabular-nums; }
 .r-line .c s { color: #8a949b; margin-right: 6px; text-decoration-thickness: 1px; }
 .r-line .d { grid-column: 1; color: #9e2a3f; font-size: 11px; }
@@ -233,6 +271,18 @@ h1 {
 .small { margin-top: 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
 .fine { font-size: 12px; color: var(--ink-soft); }
 .report { margin-top: 12px; display: flex; gap: 8px; }
+.share { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.share input { flex: 1 1 100%; padding: 9px 10px; border-radius: 8px; border: 0; background: var(--hover); color: var(--ink);
+  font: 13px var(--mono); box-shadow: inset 0 0 0 1px var(--line); }
+/* a dinner someone sent by link */
+.sent { display: flex; align-items: center; justify-content: space-between; gap: 10px 14px; flex-wrap: wrap;
+  margin: 0 0 18px; padding: 12px 12px 12px 16px; border-radius: 12px; background: var(--hover); box-shadow: inset 0 0 0 1px var(--line); }
+.sent p { margin: 0; flex: 1 1 220px; }
+.sent .what { display: block; font-size: 13px; color: var(--ink-soft); }
+.sent .name { font-weight: 700; font-size: 17px; }
+.sent .btns { display: flex; align-items: center; gap: 4px; }
+.sent .x { border: 0; background: none; cursor: pointer; color: var(--ink-soft); font-size: 18px; width: 32px; height: 32px; border-radius: 6px; }
+.sent .x:hover { background: var(--hover); color: var(--ink); }
 select { flex: 1; min-width: 0; padding: 10px; border-radius: 10px; border: 0; background: var(--hover); color: var(--ink); font: 14px var(--sans); box-shadow: inset 0 0 0 1px var(--line); }
 
 /* ── Choose-another sheet ──────────────────────────────────────────────── */
@@ -257,6 +307,10 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 .opts label:hover { background: var(--hover); }
 .opts input { accent-color: var(--berry); margin: 0; }
 .opts .pc { font-variant-numeric: tabular-nums; font-weight: 600; }
+.opts .o { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.opts .thumb { flex: none; width: 40px; height: 40px; border-radius: 6px; background: #fff; overflow: hidden; display: grid; place-items: center; }
+.opts .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.opts .o-shelf { display: block; font: 10.5px var(--mono); color: var(--ink-soft); margin-top: 2px; }
 .sh-bottom { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 20px 18px; }
 .cross { padding: 14px 20px 4px; border-bottom: 1px solid var(--line); }
 .cross h3, .prefs h3 { margin: 0 0 8px; font-size: 14px; font-weight: 700; }
@@ -293,7 +347,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 <body>
 
 <header class="bar">
-  <div class="brand" aria-label="groceries">groceries<b>.</b></div>
+  <div class="brand" aria-label="pantryrun">pantry<i>run</i><b>.</b></div>
   <nav class="switch" aria-label="What you need">
     <span class="pill" aria-hidden="true"></span>
     <button type="button" data-mode="dinner" aria-pressed="true">Dinner</button>
@@ -314,7 +368,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   <form method="dialog" id="helloForm">
     <div class="sh-top">
       <h2 id="helloTitle">What’s your name?</h2>
-      <p>So we know who tried it. Your name stays on this device.</p>
+      <p>So we know who tried it, and to keep the dinners you save. No password needed.</p>
       <label for="helloName">Name</label>
       <input id="helloName" name="name" autocomplete="given-name" maxlength="40" required>
     </div>
@@ -333,11 +387,15 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 (() => {
   // ── identity & saved preferences ──────────────────────────────────────
   const store = {
-    get(k, fallback) { try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; } },
+    // Keys were "groceries.*" before the rename to pantryrun; read those so testers keep their name and prefs.
+    get(k, fallback) {
+      try { return JSON.parse(localStorage.getItem(k) ?? localStorage.getItem(k.replace(/^pantryrun\./, "groceries."))) ?? fallback; }
+      catch { return fallback; }
+    },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   };
   // Who is using it: ?u= in the link wins, otherwise the name asked for on first visit.
-  let USER_ID = new URLSearchParams(location.search).get("u") || store.get("groceries.name", null);
+  let USER_ID = new URLSearchParams(location.search).get("u") || store.get("pantryrun.name", null);
   const SESSION_ID = (() => {
     try {
       let id = sessionStorage.getItem("sid");
@@ -348,12 +406,19 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 
   const state = {
     mode: "dinner",
-    recipes: [],
+    recipes: [],         // hand-written classics
+    dishes: [],          // NutriData dishes: {id, name, category}
+    categories: [],      // {id, name, emoji}
+    category: store.get("pantryrun.category", "ideas"),
+    shown: [],           // dinner ids on screen; kept until the category changes or "Show others"
+    mine: [],            // this person's own dinners: {id, name, servings, items}
+    editing: null,       // the dinner being written: {id or null, name, servings, items}
+    shared: null,        // a dinner someone sent by link: {id "sh-…", token, name, servings, items, saved}
     recipeId: null,
     servings: 2,
     extras: [],          // dinner: anything else for this trip
     items: [],           // shopping list
-    prefs: store.get("groceries.prefs", {}),  // {key: {words: [], products: {store: name}}}
+    prefs: store.get("pantryrun.prefs", {}),  // {key: {words: [], products: {store: name}}}
     result: null,        // last /basket answer for the current mode
     view: null,          // store whose receipt is showing
     request: 0,
@@ -398,13 +463,47 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   // ── left side ─────────────────────────────────────────────────────────
   function render() {
     state.request++;  // ignore any answer still on its way for the other mode
-    if (state.mode === "dinner") {
+    if (state.mode === "dinner" && state.editing) {
+      renderEditor();
+      idle("Your dinner", "Save it, then pick it to find the store.");
+    } else if (state.mode === "dinner") {
       renderDinner();
       state.recipeId ? ask({ fresh: true }) : idle("Pick a dinner", "Your store and shopping list print here.");
     } else {
       renderList();
       idle("Add what you need", "We'll find the one store that has it all.");
     }
+  }
+
+  // ── dinners: hand-written classics plus NutriData dishes by category ──
+  const DISHES_SHOWN = 8;
+  function dinnerById(id) {
+    const d = state.dishes.find(x => x.id === id);
+    if (d) return { ...d, emoji: state.categories.find(c => c.id === d.category)?.emoji || "🍽️" };
+    if (state.shared && id === state.shared.id) return { ...state.shared, emoji: "💌" };
+    const m = state.mine.find(x => x.id === id);
+    return m ? { ...m, emoji: "📝" } : state.recipes.find(r => r.id === id);
+  }
+  function pool(category) {
+    if (category === "mine") return state.mine.map(r => r.id);
+    if (category === "classics") return state.recipes.map(r => r.id);
+    if (category === "ideas") return [...state.recipes, ...state.dishes].map(r => r.id);
+    return state.dishes.filter(d => d.category === category).map(d => d.id);
+  }
+  // A random handful from the category; "Show me others" avoids repeating what was just on screen.
+  function shuffle(avoid = []) {
+    const ids = pool(state.category);
+    if (state.category === "classics" || state.category === "mine") { state.shown = ids; return; }
+    const fresh = ids.filter(id => !avoid.includes(id));
+    const from = fresh.length >= DISHES_SHOWN ? fresh : ids;
+    const picked = [...from].sort(() => Math.random() - 0.5).slice(0, DISHES_SHOWN);
+    // Keep the chosen dinner on screen so its button stays pressed.
+    if (state.recipeId && ids.includes(state.recipeId) && !picked.includes(state.recipeId)) picked[0] = state.recipeId;
+    state.shown = picked;
+  }
+  function shownDinners() {
+    if (!state.shown.length) shuffle();
+    return state.shown.map(dinnerById).filter(Boolean);
   }
 
   function renderDinner() {
@@ -417,32 +516,160 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
           <button type="button" data-step="1" aria-label="More people">+</button>
         </span>
       </div>
-      <ul class="dishes">${state.recipes.map(r => `
-        <li><button type="button" class="dish" data-id="${esc(r.id)}" aria-pressed="${r.id === state.recipeId}">
-          <span class="e" aria-hidden="true">${esc(r.emoji)}</span>${esc(r.name)}</button></li>`).join("")}
+      ${state.shared ? `<div class="sent">
+        <p><span class="what">A dinner sent to you</span><span class="name" lang="et">${esc(state.shared.name)}</span></p>
+        <span class="btns">${state.shared.saved ? `<span class="fine">Saved to Mine</span>`
+          : `<button type="button" class="btn quiet" id="saveShared">Save to my dinners</button>`}
+          <button type="button" class="x" id="dropShared" aria-label="Close">×</button></span>
+      </div>` : ""}
+      <div class="chips cats" role="group" aria-label="Kind of dinner">${[
+        { id: "ideas", name: "Ideas", emoji: "✨" }, { id: "classics", name: "Classics", emoji: "⭐" },
+        { id: "mine", name: "Mine", emoji: "📝" }, ...state.categories,
+      ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}"><span aria-hidden="true">${esc(c.emoji)}</span> ${esc(c.name)}</button>`).join("")}</div>
+      ${state.category === "mine" && !state.mine.length ? `<p class="empty">Write down a dinner you cook often. Type what you
+        buy for it once, with amounts if you like, and pantryrun finds the store each time.</p>` : ""}
+      <ul class="dishes">${shownDinners().map(r => `
+        <li${r.id.startsWith("my-") ? ` class="mine"` : ""}><button type="button" class="dish" data-id="${esc(r.id)}" aria-pressed="${r.id === state.recipeId}">
+          <span class="e" aria-hidden="true">${esc(r.emoji)}</span><span lang="et">${esc(r.name)}</span></button>${r.id.startsWith("my-")
+          ? `<button type="button" class="link" data-edit-dinner="${esc(r.id)}" aria-label="Edit ${esc(r.name)}">Edit</button>` : ""}</li>`).join("")}
       </ul>
+      <div class="more">${state.category === "mine" ? `<button type="button" class="btn quiet" id="newDinner">New dinner</button>`
+        : state.category === "classics" ? ""
+        : `<button type="button" class="link" id="shuffle">Show me others</button>`}
+        ${shownDinners().some(r => r.id.startsWith("nd-")) ? `<span class="fine">Dishes from NutriData, Tervise Arengu Instituut</span>` : ""}</div>
       <div class="extras">
         <h2>Anything else on the way?</h2>
         <form class="field" id="add" autocomplete="off">
-          <input id="item" placeholder="kohv, leib, banaanid" aria-label="Add more items" enterkeyhint="done">
+          <input id="item" placeholder="kohv, leib, banaanid 1kg" aria-label="Add more items" enterkeyhint="done">
           <button class="btn quiet" type="submit">Add</button>
         </form>
         ${state.extras.length ? `<ul class="tags">${state.extras.map((it, i) => `
-          <li>${esc(it)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")}</ul>` : ""}
+          <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")}</ul>` : ""}
       </div>`;
     bindAdd(state.extras, () => { renderDinner(); if (state.recipeId) ask(); });
+  }
+
+  // ── my dinners: write one from scratch ──
+  function renderEditor() {
+    const d = state.editing;
+    left.innerHTML = `
+      <div class="editor">
+        <h1>${d.id ? "Edit dinner" : "New dinner"}</h1>
+        <div class="sub">For
+          <span class="stepper" role="group" aria-label="Number of people the amounts are for">
+            <button type="button" data-dstep="-1" aria-label="Fewer people">−</button>
+            <output id="dservings">${d.servings}</output>
+            <button type="button" data-dstep="1" aria-label="More people">+</button>
+          </span> people</div>
+        <label for="dname">Name</label>
+        <input id="dname" class="name" maxlength="80" value="${esc(d.name)}" placeholder="Pühapäeva pasta" autocomplete="off">
+        <h2>What you buy for it</h2>
+        <p class="fine">Amounts are for ${d.servings} ${d.servings === 1 ? "person" : "people"} and scale with how many you cook for.</p>
+        <form class="field" id="add" autocomplete="off">
+          <input id="item" placeholder="hakkliha 500g, sibul, 2 purustatud tomatid" aria-label="Add things to buy" enterkeyhint="done">
+          <button class="btn quiet" type="submit">Add</button>
+        </form>
+        <ul class="items">${d.items.length ? d.items.map((it, i) => `
+          <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")
+          : `<li class="none">Nothing to buy yet.</li>`}
+        </ul>
+        <div class="actions">
+          <button class="btn dark" id="saveDinner" type="button">Save dinner</button>
+          <button class="btn quiet" id="cancelDinner" type="button">Cancel</button>
+          ${d.id ? `<button class="link" id="deleteDinner" type="button">Delete</button>` : ""}
+        </div>
+        <p class="error" id="dinnerError" role="alert"></p>
+      </div>`;
+    $("#dname").addEventListener("input", e => { d.name = e.target.value; });
+    bindAdd(d.items, renderEditor);
+  }
+
+  function editDinner(id) {
+    const m = id && state.mine.find(x => x.id === id);
+    state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items] }
+                      : { id: null, name: "", servings: state.servings, items: [] };
+    render();
+    $(m ? "#item" : "#dname").focus();
+  }
+
+  async function saveDinner() {
+    const d = state.editing;
+    const body = { user_id: USER_ID, name: d.name, servings: d.servings, items: d.items };
+    try {
+      const res = await fetch(d.id ? `/my-dinners/${encodeURIComponent(d.id)}` : "/my-dinners", {
+        method: d.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      const saved = await res.json();
+      if (!res.ok) { $("#dinnerError").textContent = saved.detail || "Couldn't save the dinner. Try again."; return; }
+      state.mine = [...state.mine.filter(x => x.id !== saved.id), saved].sort((a, b) => a.name.localeCompare(b.name));
+      state.editing = null;
+      state.category = "mine"; store.set("pantryrun.category", "mine"); state.shown = [];
+      state.recipeId = saved.id;
+      render();
+    } catch {
+      $("#dinnerError").textContent = "Couldn't reach pantryrun. Check your connection, then try again.";
+    }
+  }
+
+  async function deleteDinner() {
+    const d = state.editing;
+    if (!confirm(`Delete "${d.name}"?`)) return;
+    const res = await fetch(`/my-dinners/${encodeURIComponent(d.id)}?user_id=${encodeURIComponent(USER_ID)}`, { method: "DELETE" });
+    if (!res.ok && res.status !== 404) { $("#dinnerError").textContent = "Couldn't delete the dinner. Try again."; return; }
+    state.mine = state.mine.filter(x => x.id !== d.id);
+    if (state.recipeId === d.id) state.recipeId = null;
+    state.editing = null; state.shown = [];
+    render();
+  }
+
+  // An item on a list; tapping it turns it into a text field, e.g. to add an amount.
+  const itemButton = (it, i) => `<button type="button" class="it" data-edit="${i}" aria-label="Change ${esc(it)}">${esc(it)}</button>`;
+
+  // The list being edited on screen and what to do after it changes.
+  function itemContext() {
+    if (state.mode === "dinner" && state.editing) return { list: state.editing.items, after: renderEditor };
+    if (state.mode === "dinner") return { list: state.extras, after: () => { renderDinner(); if (state.recipeId) ask(); } };
+    return { list: state.items, after: () => {
+      renderList();
+      if (!state.items.length) idle("Add what you need", "We'll find the one store that has it all.");
+      else if (state.result) ask();
+    } };
+  }
+
+  function editItem(button) {
+    const { list, after } = itemContext();
+    const i = +button.dataset.edit;
+    const field = document.createElement("input");
+    field.className = "edit"; field.value = list[i]; field.setAttribute("aria-label", "Change item");
+    button.replaceWith(field);
+    field.focus(); field.select();
+    let done = false;
+    const finish = keep => {
+      if (done) return;
+      done = true;
+      const text = field.value.trim().replace(/\s+/g, " ");
+      if (keep && text !== list[i]) {
+        if (text) list[i] = text; else list.splice(i, 1);
+        logEvent("item_changed", { mode: state.mode, to: text || null });
+      }
+      after();
+    };
+    field.addEventListener("keydown", e => {
+      if (e.key === "Enter") { e.preventDefault(); finish(true); }
+      if (e.key === "Escape") { e.preventDefault(); finish(false); }
+    });
+    field.addEventListener("blur", () => finish(true));
   }
 
   function renderList() {
     left.innerHTML = `
       <h1>What do you need?</h1>
-      <div class="sub">Type a few things, separated by commas.</div>
+      <div class="sub">Type a few things, separated by commas. Add an amount if you like.</div>
       <form class="field" id="add" autocomplete="off">
-        <input id="item" placeholder="piim, munad, leib" aria-label="Add items" enterkeyhint="done">
+        <input id="item" placeholder="piim, paprika 600g, 2 leib" aria-label="Add items" enterkeyhint="done">
         <button class="btn quiet" type="submit">Add</button>
       </form>
       <ul class="items">${state.items.length ? state.items.map((it, i) => `
-        <li>${esc(it)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")
+        <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")
         : `<li class="none">Nothing on the list yet.</li>`}
       </ul>
       <button class="btn dark" id="find" type="button" ${state.items.length ? "" : "disabled"}>Find the store</button>`;
@@ -450,12 +677,97 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   }
 
   function bindAdd(list, onChange) {
-    $("#add").addEventListener("submit", e => {
-      e.preventDefault();
-      for (const it of splitItems($("#item").value)) if (!list.includes(it)) list.push(it);
+    const form = $("#add"), input = $("#item");
+    const box = document.createElement("ul");
+    box.className = "suggest"; box.id = "suggest"; box.setAttribute("role", "listbox"); box.hidden = true;
+    form.append(box);
+    Object.entries({ role: "combobox", "aria-autocomplete": "list", "aria-controls": "suggest", "aria-expanded": "false" })
+      .forEach(([k, v]) => input.setAttribute(k, v));
+    let shown = [], active = -1;
+
+    function add(text, via, typed) {
+      const added = splitItems(text).filter(it => !list.includes(it));
+      list.push(...added);
+      if (added.length) logEvent("item_added", { items: added, via, typed, mode: state.mode });
       onChange();
-      $("#item").focus();
+      $("#item").focus();  // the form was redrawn
+    }
+    function show(words) {
+      shown = words; active = -1;
+      box.innerHTML = words.map((v, i) => `<li role="option" id="sg${i}" aria-selected="false" data-i="${i}">
+        <span>${esc(v.w)}</span>${v.s ? `<span class="s-shelf">${esc(v.s.toLowerCase())}</span>` : ""}</li>`).join("");
+      box.hidden = !words.length;
+      input.setAttribute("aria-expanded", String(!box.hidden));
+      input.removeAttribute("aria-activedescendant");
+    }
+    function move(step) {
+      if (!shown.length) return;
+      active = (active + step + shown.length + 2) % (shown.length + 1) - 1;  // -1 = back to what was typed
+      box.querySelectorAll("li").forEach((li, i) => li.setAttribute("aria-selected", i === active));
+      active < 0 ? input.removeAttribute("aria-activedescendant") : input.setAttribute("aria-activedescendant", `sg${active}`);
+    }
+    function pick(i) {
+      const parts = input.value.split(",");
+      const typed = parts.pop().trim();
+      const { lead, trail } = splitQty(typed);  // keep "600g" in "600g pap" → "600g paprika"
+      add([...parts, lead + shown[i].w + trail].join(","), "suggestion", typed);
+    }
+
+    input.addEventListener("focus", loadVocab, { once: true });
+    input.addEventListener("input", () => show(suggest(splitQty(input.value.split(",").pop().trim()).name)));
+    input.addEventListener("keydown", e => {
+      if (box.hidden) return;
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); move(e.key === "ArrowDown" ? 1 : -1); }
+      else if (e.key === "Enter" && active >= 0) { e.preventDefault(); pick(active); }
+      else if (e.key === "Escape") show([]);
     });
+    input.addEventListener("blur", () => setTimeout(() => show([]), 150));
+    box.addEventListener("pointerdown", e => e.preventDefault());  // keep focus in the input
+    box.addEventListener("click", e => { const li = e.target.closest("li"); if (li) pick(+li.dataset.i); });
+    form.addEventListener("submit", e => { e.preventDefault(); add(input.value, "typed"); });
+  }
+
+  // An amount typed before or after the name ("600g paprika", "paprika 600 g", "2 piim"); same units as the server.
+  const QTY = String.raw`\d+(?:[.,]\d+)?\s*(?:kg|g|dl|cl|ml|l|tk|x|×)?`;
+  function splitQty(text) {
+    let m = text.match(new RegExp(String.raw`^(${QTY}\s+)(\S.*)$`, "i"));
+    if (m) return { lead: m[1], name: m[2], trail: "" };
+    m = text.match(new RegExp(String.raw`^(.*\S)(\s+${QTY})$`, "i"));
+    if (m) return { lead: "", name: m[1], trail: m[2] };
+    return { lead: "", name: text, trail: "" };
+  }
+
+  // Product words from the store catalogs (scripts/build_vocab.py): [word, products, shelf], most used first.
+  let VOCAB = null, vocabLoading = null;
+  function loadVocab() {
+    vocabLoading ||= fetch("/vocab.json").then(r => r.json())
+      .then(v => { VOCAB = v.map(([w, n, s]) => ({ w, s, f: fold(w) })); })
+      .then(() => { const el = document.activeElement; if (el?.id === "item" && el.value) el.dispatchEvent(new Event("input")); })
+      .catch(() => { vocabLoading = null; });
+  }
+  // Edit distance, giving up past `max` (typos like "maapäklivõi").
+  function within(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return false;
+    let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const row = [i];
+      for (let j = 1; j <= b.length; j++) row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (Math.min(...row) > max) return false;
+      prev = row;
+    }
+    return prev[b.length] <= max;
+  }
+  // Words that start with what was typed, then words containing it, then close typos.
+  function suggest(text) {
+    const q = fold(text.trim());
+    if (!VOCAB || q.length < 2) return [];
+    const starts = [], inside = [], typos = [];
+    for (const v of VOCAB) {
+      if (v.f.startsWith(q)) starts.push(v);
+      else if (q.length >= 3 && v.f.includes(q)) inside.push(v);
+      else if (q.length >= 5 && within(v.f, q, 2)) typos.push(v);
+    }
+    return [...starts, ...inside, ...typos].slice(0, 6);
   }
 
   left.addEventListener("click", e => {
@@ -464,6 +776,21 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       state.recipeId = dish.dataset.id;
       left.querySelectorAll(".dish").forEach(d => d.setAttribute("aria-pressed", d === dish));
       ask({ fresh: true });
+      return;
+    }
+    const cat = e.target.closest("[data-cat]");
+    if (cat) {
+      state.category = cat.dataset.cat;
+      store.set("pantryrun.category", state.category);
+      state.shown = [];
+      renderDinner();
+      logEvent("dinner_category", { category: state.category });
+      return;
+    }
+    if (e.target.closest("#shuffle")) {
+      shuffle(state.shown);
+      renderDinner();
+      logEvent("dinner_shuffle", { category: state.category });
       return;
     }
     const step = e.target.closest("[data-step]");
@@ -476,16 +803,33 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     }
     const rm = e.target.closest("[data-remove]");
     if (rm) {
-      const dinner = state.mode === "dinner";
-      (dinner ? state.extras : state.items).splice(+rm.dataset.remove, 1);
-      if (dinner) { renderDinner(); if (state.recipeId) ask(); }
-      else {
-        renderList();
-        if (!state.items.length) idle("Add what you need", "We'll find the one store that has it all.");
-        else if (state.result) ask();
-      }
+      const { list, after } = itemContext();
+      list.splice(+rm.dataset.remove, 1);
+      after();
       return;
     }
+    const edit = e.target.closest("[data-edit]");
+    if (edit) { editItem(edit); return; }
+    const dstep = e.target.closest("[data-dstep]");
+    if (dstep) {
+      state.editing.servings = Math.min(12, Math.max(1, state.editing.servings + +dstep.dataset.dstep));
+      renderEditor();
+      return;
+    }
+    const editD = e.target.closest("[data-edit-dinner]");
+    if (editD) { editDinner(editD.dataset.editDinner); return; }
+    if (e.target.closest("#newDinner")) { editDinner(null); return; }
+    if (e.target.closest("#saveShared")) { saveShared(); return; }
+    if (e.target.closest("#dropShared")) {
+      if (state.recipeId === state.shared.id) { state.recipeId = null; idle("Pick a dinner", "Your store and shopping list print here."); }
+      state.shared = null;
+      history.replaceState(null, "", location.pathname + location.search.replace(/[?&]dinner=[^&]*/, "").replace(/^&/, "?"));
+      renderDinner();
+      return;
+    }
+    if (e.target.closest("#saveDinner")) { saveDinner(); return; }
+    if (e.target.closest("#cancelDinner")) { state.editing = null; render(); return; }
+    if (e.target.closest("#deleteDinner")) { deleteDinner(); return; }
     if (e.target.closest("#find")) ask({ fresh: true });
   });
 
@@ -519,6 +863,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   // the pack comes from the product name. List items have no amount of their own, except loose
   // goods priced by weight, where the price only makes sense with the weight we assumed.
   function lineAmount(l) {
+    if (l.asked) return l.asked;  // typed with the item: "600 g", "2 packs"
     if (l.need == null) return "";
     if (!l.extra) return `need ${amount(l.need, l.unit)}`;
     return l.packs == null ? amount(l.need, l.unit) : "";
@@ -526,6 +871,10 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 
   const shortDate = iso => { const [, m, d] = iso.split("-"); return `${+d}.${m}`; };
   const percentOff = (regular, cost) => Math.round((1 - cost / regular) * 100);
+
+  // The store shelf says what an unclear product is ("… NATTY ORIGINAL, 333g · magusad hoidised");
+  // left out when it only repeats the item ("banaan · banaan").
+  const shelfNote = l => l.shelf && !fold(l.shelf).includes(fold(l.label).slice(0, 4)) ? l.shelf.toLowerCase() : "";
 
   function line(l) {
     const tag = l.substitute ? "swap" : (l.pinned || l.preferred) ? "your pick" : "";
@@ -539,7 +888,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     return `<li><button type="button" class="r-line" data-key="${esc(l.key)}" aria-label="Choose another ${esc(l.label)}">
       <span class="n">${esc(l.label)}${amt ? ` <span class="amt">${esc(amt)}</span>` : ""}${off}${tag ? `<span class="r-tag">${tag}</span>` : ""}</span>
       <span class="c">${onSale ? `<s>${num.format(l.regular_cost)}</s>` : ""}${num.format(l.cost)}</span>
-      <span class="p">${esc(l.product)}</span>
+      <span class="p">${esc(l.product)}${shelfNote(l) ? `<span class="shelf"> · ${esc(shelfNote(l))}</span>` : ""}</span>
       ${notes.length ? `<span class="d">${esc(notes.join(". "))}</span>` : ""}</button></li>`;
   }
 
@@ -590,7 +939,10 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
         <button class="link" type="button" id="wrong">Wrong product?</button>
         <span class="fine">E-shop prices. In store they can differ a little.</span>
       </div>
-      <div id="report"></div>`;
+      <div id="report"></div>
+      ${res.recipe ? `<div class="share"><button class="btn quiet" type="button" id="share">Send this dinner to someone</button>
+        <span class="fine" id="shareNote" role="status"></span></div>` : ""}`;
+    if (res.recipe) $("#share").onclick = () => shareDinner(res.recipe);
 
     const feedback = { mission: state.mode, recipe_id: res.recipe?.id ?? null, servings: res.servings, items: res.items,
                        store: b.store, recommended_store: best.store, total_price: b.total_price, result_id: res.id };
@@ -610,6 +962,41 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
         $("#report").innerHTML = `<p class="thanks" style="margin-top:12px">Reported. We'll fix it.</p>`;
       };
     };
+  }
+
+  // A link to this dinner, priced for whoever opens it. On phones the share sheet opens; elsewhere it's copied.
+  async function shareDinner(recipe) {
+    const note = $("#shareNote");
+    try {
+      const { path } = await api("/shares", { recipe_id: recipe.id, user_id: USER_ID });
+      const url = location.origin + path;
+      if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+        await navigator.share({ title: recipe.name, text: `${recipe.name}: here's where to shop for it`, url }).catch(() => {});
+        return;
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        note.textContent = "Link copied. Paste it in a message.";
+      } catch {  // no clipboard access: show the link to copy by hand
+        note.insertAdjacentHTML("afterend", `<input readonly value="${esc(url)}" aria-label="Link to this dinner">`);
+        note.textContent = "Copy this link:";
+        note.nextElementSibling.select();
+      }
+    } catch {
+      note.textContent = "Couldn't make a link. Try again.";
+    }
+  }
+
+  async function saveShared() {
+    const d = state.shared;
+    try {
+      const saved = await api("/my-dinners", { user_id: USER_ID, name: d.name, servings: d.servings, items: d.items, from_share: d.token });
+      state.mine = [...state.mine, saved].sort((a, b) => a.name.localeCompare(b.name));
+      d.saved = true;
+      renderDinner();
+    } catch {
+      $("#saveShared").textContent = "Couldn't save. Try again";
+    }
   }
 
   feed.addEventListener("click", e => {
@@ -633,7 +1020,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   });
 
   // ── choose another product / remember a preference ───────────────────
-  // Same spelling-tolerant comparison as the server (core/catalog.py _fold).
+  // Same spelling-tolerant comparison as the server (core/scoring.py fold).
   const fold = t => t.toLowerCase().replace(/(?<=[gctp])h/g, "").replace(/(.)\1+/g, "$1");
   const matches = (product, words) => words.every(w => fold(product).includes(fold(w)));
 
@@ -653,7 +1040,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   }
 
   function savePrefs(key, change) {
-    store.set("groceries.prefs", state.prefs);
+    store.set("pantryrun.prefs", state.prefs);
     logEvent("preference", { key, change, pref: state.prefs[key] || null });
   }
 
@@ -666,6 +1053,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       .map(x => ({ store: x.store, line: x.lines.find(y => y.key === key) }));
     let chosen = l.product;
     let words = [...(old.words || [])];
+    const photos = l.options.some(o => o.image);
 
     function cross() {
       const differs = chosen !== l.options[0].product || words.length;
@@ -693,7 +1081,8 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       </div>
       <ul class="opts">${l.options.map((o, i) => `
         <li><label><input type="radio" name="opt" value="${i}" ${o.product === chosen ? "checked autofocus" : ""}>
-          <span>${esc(o.product)}${o.deal ? ` <span class="fine">${esc(o.deal)}</span>` : ""}</span>
+          <span class="o">${photos ? `<span class="thumb">${o.image ? `<img src="${esc(o.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}</span>` : ""}
+            <span>${esc(o.product)}${o.deal ? ` <span class="fine">${esc(o.deal)}</span>` : ""}${o.shelf ? `<span class="o-shelf">${esc(o.shelf.toLowerCase())}</span>` : ""}</span></span>
           <span class="pc">${o.regular_cost && o.regular_cost > o.cost ? `<s>${num.format(o.regular_cost)}</s>` : ""}${num.format(o.cost)}</span></label></li>`).join("")}
       </ul>
       <div id="cross">${cross()}</div>
@@ -807,7 +1196,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     const view = keepView ? state.view : null;
 
     if (fresh || !state.result) {
-      const recipe = state.recipes.find(r => r.id === state.recipeId);
+      const recipe = dinnerById(state.recipeId);
       printing(dinner ? `${recipe.name} for ${state.servings}` : `${items.length} ${items.length === 1 ? "thing" : "things"} on your list`);
     } else {
       feed.classList.add("busy");
@@ -840,7 +1229,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       hello.onclose = () => { if (!USER_ID) hello.showModal(); };  // a second Escape still closes it in Chrome
       $("#helloForm").onsubmit = () => {
         USER_ID = input.value.trim().replace(/\s+/g, " ");
-        store.set("groceries.name", USER_ID);
+        store.set("pantryrun.name", USER_ID);
         logEvent("hello", {});
         resolve();
       };
@@ -856,9 +1245,17 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     idle("Getting the dinners", "One moment.");
     const named = USER_ID ? Promise.resolve() : askName();
     try {
-      state.recipes = (await api("/recipes")).recipes;
+      Object.assign(state, (({ recipes, dishes, categories }) => ({ recipes, dishes, categories }))(await api("/recipes")));
+      if (!["ideas", "classics", "mine", ...state.categories.map(c => c.id)].includes(state.category)) state.category = "ideas";
       await named;
+      state.mine = (await api(`/my-dinners?user_id=${encodeURIComponent(USER_ID)}`).catch(() => ({ dinners: [] }))).dinners;
+      const token = new URLSearchParams(location.search).get("dinner");
+      if (token) {
+        state.shared = await api(`/shares/${encodeURIComponent(token)}?user_id=${encodeURIComponent(USER_ID)}`).catch(() => null);
+        if (state.shared) state.recipeId = state.shared.id;
+      }
       render();
+      if (token && !state.shared) idle("This link doesn't lead to a dinner", "It may be mistyped. Pick a dinner here instead.");
     } catch {
       failed(() => location.reload());
     }

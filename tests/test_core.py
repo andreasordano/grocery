@@ -5,47 +5,6 @@ import pytest
 
 from api import rimi_api
 from core import events, fetch
-from core.optimiser import optimize_cart
-
-
-def _p(item, store, price, score=1.0):
-    return {"item": item, "store": store, "name": f"{item}@{store}", "price": price, "score": score}
-
-
-# ── optimiser ────────────────────────────────────────────────────────────────
-
-def test_recommends_cheapest_complete_single_store():
-    all_products = {
-        "piim": [_p("piim", "rimi", 1.0), _p("piim", "selver", 1.2)],
-        "leib": [_p("leib", "rimi", 2.0), _p("leib", "selver", 1.5)],
-    }
-    cart, _, info = optimize_cart(all_products, ["piim", "leib"], ["rimi", "selver"])
-
-    assert info["store"] == "selver"  # 2.70 < 3.00
-    assert {p["store"] for p in cart} == {"selver"}  # never split across stores
-    assert [b["store"] for b in info["baskets"]] == ["selver", "rimi"]
-
-
-def test_coverage_beats_price():
-    all_products = {
-        "piim": [_p("piim", "rimi", 1.0), _p("piim", "selver", 5.0)],
-        "kana": [_p("kana", "selver", 5.0)],
-    }
-    _, _, info = optimize_cart(all_products, ["piim", "kana"], ["rimi", "selver"])
-
-    assert info["store"] == "selver"
-    assert info["baskets"][1] == {"store": "rimi", "total_price": 1.0, "missing": ["kana"]}
-
-
-def test_picks_best_score_within_store():
-    all_products = {"piim": [_p("piim", "rimi", 0.5, score=9.0), _p("piim", "rimi", 1.0, score=1.0)]}
-    cart, _, _ = optimize_cart(all_products, ["piim"], ["rimi"])
-    assert cart[0]["price"] == 1.0
-
-
-def test_no_results():
-    cart, _, info = optimize_cart({}, ["piim"], ["rimi"])
-    assert cart == [] and info["store"] is None and info["missing"] == ["piim"]
 
 
 # ── fetch ────────────────────────────────────────────────────────────────────

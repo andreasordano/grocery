@@ -1,3 +1,4 @@
+import os
 import re
 from difflib import SequenceMatcher
 
@@ -49,55 +50,117 @@ def extract_weight_volume(name, extras=None, max_weight_g: float = 10000.0, max_
     return weight, volume
 
 
-def relevance_score(name, rules):
-    """Keyword-based relevance. Returns an integer 0..5; higher = more relevant.
+def fold(text):
+    """Spelling-tolerant form: "spaghetti" and "Spagetid" both become "spageti…"."""
+    t = text.lower()
+    t = re.sub(r"(?<=[gctp])h", "", t)   # spaghetti → spagetti
+    return re.sub(r"(.)\1+", r"\1", t)  # double letters → single
 
-    Behavior:
-      - If any `exclude` token matches as a whole word -> return -1 to drop product.
-      - If the full include phrase appears verbatim in the product name -> return 5.
-      - Otherwise combine whole-word token overlap and a fuzzy ratio into 0..5.
+
+_WORD_RE = re.compile(r"[^\W\d_]+(?:-[^\W\d_]*)*")  # letter words, hyphen groups kept: "roh.tee" → roh, tee
+
+
+def _form(word, query):
+    """3: the same word (õun, õunad), 2: a near form (õuna, maapähklivõie, a typo), 0: other."""
+    if word == query:
+        return 3
+    if len(word) >= 3 and query.startswith(word) and len(query) - len(word) <= 2:
+        # Typed a plural: "õun" is the thing, but "õuna" (= õunad minus d) is the "of apple" form.
+        return 2 if query.endswith("d") and word == query[:-1] else 3
+    if len(query) >= 3 and word == query + "d":  # typed singular, name has the plural
+        return 3
+    n = len(os.path.commonprefix([word, query]))
+    if n >= 3 and n >= max(len(word), len(query)) - 2:
+        return 2
+    if len(query) >= 6 and SequenceMatcher(None, word, query).ratio() >= 0.85:
+        return 2
+    return 0
+
+
+def word_match(word, query):
+    """How a name word relates to a typed word (both folded).
+
+    3: it *is* the thing: the same word or a compound ending in it (rukkileib → leib).
+    2: a near form: "of X" (õuna mahl), a close variant (maapähklivõie) or a typo.
+    1: it only mentions it: "with/without X" (maapähklivõiga), a hyphen prefix
+       (maapähklivõi-proteiinibatoon) or X inside a longer word.
+    0: unrelated.
+    """
+    parts = word.split("-")
+    if len(parts) > 1:
+        # In "mango-banaani" or "maapähkli- ja …" only the last part can be the thing itself.
+        head = word_match(parts[-1], query) if parts[-1] else 0
+        return head if head else (1 if any(word_match(p, query) for p in parts[:-1] if p) else 0)
+    form = _form(word, query)
+    if not form and len(query) >= 4:
+        form = max((_form(word[i:], query) for i in range(3, len(word) - 2)), default=0)
+    if form:
+        # Estonian comitative/abessive: "maapähklivõiga" = with peanut butter, not peanut butter.
+        if word.endswith(("ga", "ta")) and len(word) > len(query) and not query.endswith(("ga", "ta")):
+            return 1
+        return form
+    return 1 if query in word else 0
+
+
+def _name_words(name):
+    """Folded words of a product name. Brands are written in capitals ("Juust Eesti E-PIIM",
+    "NATTY ORIGINAL") and don't say what the product is, so they are left out."""
+    has_lower = any(c.islower() for c in name)
+    return [fold(w) for w in _WORD_RE.findall(name) if not (has_lower and len(w) > 1 and w.isupper())]
+
+
+# A match followed by one of these is not the thing: "tee jaoks" (for tea), "banaani maitseline" (banana-flavoured).
+_NOT_THE_THING_AFTER = {"jaoks", "maitseline", "maitselised", "maitsega", "maitsestatud"}
+
+
+def _word_matches(words, query):
+    """word_match for each name word, with "for/flavoured" phrases capped at a mention."""
+    out = []
+    for i, w in enumerate(words):
+        m = word_match(w, query)
+        if m >= 2 and i + 1 < len(words) and words[i + 1] in _NOT_THE_THING_AFTER:
+            m = 1
+        out.append(m)
+    return out
+
+
+def head_weight(name, rules):
+    """1 / position of the first word that is (nearly) the typed thing: "Banaan, kg" → 1,
+    "Mahe õun" → 0.5, "Kakao segu: õun, banaan, …" → 0.25. Names of the thing itself
+    tend to say it first; mixes and flavours list it later."""
+    includes = [fold(kw) for kw in rules.get("include", []) if kw]
+    words = _name_words(name)
+    per_query = [_word_matches(words, q) for q in includes]
+    for i in range(len(words)):
+        if any(m[i] >= 2 for m in per_query):
+            return 1 / (i + 1)
+    return 0.0
+
+
+def relevance_score(name, rules):
+    """How well a product name fits the typed words:
+    -1 excluded, 0 unrelated, 1 some words mentioned, 2 all mentioned, 4 near forms, 5 it is the thing.
     """
     name_l = name.lower()
 
-    # Exclude matches -> drop product
     for w in rules.get("exclude", []):
-        if not w:
-            continue
-        if re.search(r"\b" + re.escape(w.lower()) + r"\b", name_l):
+        if w and re.search(r"\b" + re.escape(w.lower()) + r"\b", name_l):
             return -1
 
-    includes = [kw.lower() for kw in rules.get("include", []) if kw]
-    # If no include keywords provided, return neutral relevance
+    includes = [fold(kw) for kw in rules.get("include", []) if kw]
     if not includes:
         return 2
 
-    # If full include phrase appears, treat as perfect match
-    full_query = " ".join(includes)
-    if full_query and full_query in name_l:
+    words = _name_words(name)
+    best = [max(_word_matches(words, q), default=0) for q in includes]
+    worst = min(best)
+    if worst == 3:
         return 5
-
-    # Count whole-word token matches
-    matched = 0
-    for kw in includes:
-        if re.search(r"\b" + re.escape(kw) + r"\b", name_l):
-            matched += 1
-
-    token_fraction = matched / len(includes)
-
-    # Fuzzy similarity between query and product name (helps when tokens are reordered)
-    ratio = SequenceMatcher(None, name_l, full_query).ratio()
-
-    # Require at least some whole-word overlap unless the fuzzy ratio is very high.
-    if matched == 0 and ratio < 0.72:
-        return 0
-
-    # Combine signals into 0..5 scale, giving stronger weight to token overlap.
-    score_float = token_fraction * 4.5 + ratio * 1.0
-    score = int(round(min(5.0, score_float)))
-
-    if score < 0:
-        score = 0
-    return score
+    if worst == 2:
+        return 4
+    if worst == 1:
+        return 2
+    return 1 if any(best) else 0
 
 
 def build_rules(spec):
@@ -121,7 +184,7 @@ def compute_product_score(product, rules):
     """
     Lower score = better. Components:
       1. Unit price per 100g or 100ml  →  rewards larger packs naturally
-      2. Relevance penalty             →  products with low keyword match score worse
+      2. Relevance penalty             →  a worse match tier always ranks below a better one
       3. Hard size penalty (+100)      →  if below the user's minimum size
     Returns (score, explanation_dict).
     """
@@ -143,8 +206,8 @@ def compute_product_score(product, rules):
 
     unit_price = (price / (size / 100.0)) if size else price
 
-    # Tuneable weights
-    RELEVANCE_WEIGHT = 3.0
+    # Large enough that unit price only orders products within the same match tier.
+    RELEVANCE_WEIGHT = 100.0
 
     relevance_penalty = max(0, 5 - relevance) * RELEVANCE_WEIGHT
 

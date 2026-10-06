@@ -14,7 +14,7 @@ def search_selver(query, size=10):
         },
         "size": size,
         "_source": ["name", "final_price", "price", "original_price", "special_to_date",
-                    "sku", "product_brand", "product_volume", "category", "stock"]
+                    "sku", "product_brand", "product_volume", "category", "stock", "thumbnail"]
     }
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -35,6 +35,10 @@ def search_selver(query, size=10):
         # prices are per numbered customer group and can't be identified, so they're not used.
         regular = src.get("original_price")
         on_sale = bool(regular and price and float(regular) > float(price) + 0.004)
+        categories = src.get("category") or []
+        # Virtual categories are campaigns and brands ("FB", "Soodushinnaga toidukaubad"); the first real one is the shelf.
+        shelf = next((c.get("name") for c in categories if str(c.get("is_virtual")).lower() != "true" and c.get("name")), None)
+        thumb = src.get("thumbnail")
         products.append({
             "store": "selver",
             "name": src.get("name"),
@@ -46,7 +50,9 @@ def search_selver(query, size=10):
             "volume": volume,
             # Loose goods have product_volume "kg"/"l" and are priced per that unit.
             "unit": volume.lower() if volume.lower() in ("kg", "l") else None,
-            "category": list(dict.fromkeys(c.get("name") for c in src.get("category") or [] if c.get("name"))),
+            "category": list(dict.fromkeys(c.get("name") for c in categories if c.get("name"))),
+            "shelf": shelf,
+            "image": f"https://www.selver.ee/img/200/200/resize{thumb}" if thumb else None,
             "in_stock": (src.get("stock") or {}).get("stock_status", 1) == 1,
         })
     return products
