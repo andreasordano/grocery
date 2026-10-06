@@ -28,6 +28,10 @@ _SYNONYMS = {
 }
 
 
+# Never suitable for a basket, whatever the item: pre-order and bulk listings.
+GLOBAL_EXCLUDE = ["ettetellimisel", "hulgi "]
+
+
 # Cache store search responses to keep API usage and latency low.
 _CACHE = TTLCache(
     ttl_seconds=int(os.environ.get("FETCH_CACHE_TTL", 6 * 3600)),
@@ -104,7 +108,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         volume = None
 
     rel = relevance_score(name, rules)
-    if rel < 0:
+    if rel < 0 or any(x in name.lower() for x in GLOBAL_EXCLUDE):
         return None
     return {
         "item": display_name,
@@ -115,6 +119,8 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "brand": item.get("brand"),
         "shelf": item.get("shelf"),
         "image": item.get("image"),
+        "unit": item.get("unit"),      # "kg"/"l" for loose goods (catalog.cost_for)
+        "volume": item.get("volume"),  # pack size when the name lacks it (Selver)
         "weight_g": weight,
         "volume_ml": volume,
         "match": rel,

@@ -167,7 +167,7 @@ def test_pick_ignores_preference_that_matches_nothing():
 
 
 def test_recommend_recipe_plus_extra_items(fake_store, monkeypatch):
-    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores: {
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None: {
         "jogurt": {"a": [{"product": "Jogurt 1kg", "price": 1.49, "cost": 1.49, "packs": 1, "how": "", "substitute": False}],
                    "b": []}})
     res = catalog.recommend("test", 2, ["jogurt", "Munad"], ["a", "b"])
@@ -182,7 +182,7 @@ def test_recommend_recipe_plus_extra_items(fake_store, monkeypatch):
 
 
 def test_recommend_items_only(fake_store, monkeypatch):
-    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores: {})
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None: {})
     res = catalog.recommend(None, 2, ["kartul"], ["a", "b"])
     assert res["recipe"] is None and res["store"] == "a"
     assert res["baskets"][0]["lines"][0]["options"][0]["product"] == "Kartul, kg"
@@ -225,3 +225,47 @@ def test_every_pantry_item_has_rules():
         key = catalog.match_ingredient(item, recipes)
         assert key, item
         assert set(rules[key]) == {"selver", "rimi", "barbora"}, item
+
+
+# ── NutriData dishes (data/dishes.yaml) ──────────────────────────────────────
+
+def test_dishes_are_well_formed():
+    recipes, rules, dishes = catalog.load_recipes(), catalog.load_rules(), catalog.load_dishes()
+    categories = {c["id"] for c in dishes["categories"]}
+    ids = [d["id"] for d in dishes["dishes"]]
+    assert len(ids) == len(set(ids)) and all(i.startswith("nd-") for i in ids)
+    for d in dishes["dishes"]:
+        assert d["category"] in categories, d["name"]
+        assert len(d["ingredients"]) >= 2, d["name"]
+        for ing in d["ingredients"]:
+            assert ing["amount"] > 0, d["name"]
+            if "item" in ing:  # rule-based: the rule must exist for every store
+                assert set(rules[ing["item"]]) == {"selver", "rimi", "barbora"}, (d["name"], ing)
+            else:
+                assert ing["text"].strip(), d["name"]
+
+
+def test_dish_free_text_ingredient_is_priced_for_the_amount(fake_store, monkeypatch):
+    from core import fetch
+    dish = {"id": "nd-1", "name": "Küüslaugukartul", "category": "veggie", "pantry": ["õli"],
+            "ingredients": [{"item": "kartul", "amount": 800}, {"text": "küüslauk", "amount": 30}]}
+    monkeypatch.setattr(catalog, "load_dishes", lambda: {"categories": [], "dishes": [dish]})
+    products = [
+        {"store": "a", "name": "Küüslauk 3 tk 100g", "price": 0.9, "score": 0.9, "relevance": 5},
+        {"store": "a", "name": "Küüslauk, kg", "price": 6.0, "unit": "kg", "score": 0.6, "relevance": 5},
+        {"store": "a", "name": "Küüslaugusool 80g", "price": 0.5, "score": 0.5, "relevance": 4},
+    ]
+    seen = {}
+    def fake_fetch_all(grocery_list, stores):
+        seen.update(grocery_list)
+        return {"küüslauk": products}, []
+    monkeypatch.setattr(fetch, "fetch_all", fake_fetch_all)
+
+    res = catalog.recommend("nd-1", 4, [], ["a"])
+    line = next(l for l in res["baskets"][0]["lines"] if l["key"] == "text:küüslauk")
+
+    assert "küüslauk" in seen
+    assert line["label"] == "Küüslauk" and line["need"] == 60 and not line["extra"]
+    assert line["product"] == "Küüslauk, kg" and line["cost"] == 0.36   # 60 g of loose garlic, not a 100 g net
+    assert [o["product"] for o in line["options"]][-1] == "Küüslaugusool 80g"  # lower tier stays last
+    assert res["recipe"] == {"id": "nd-1", "name": "Küüslaugukartul", "pantry": ["õli"]}

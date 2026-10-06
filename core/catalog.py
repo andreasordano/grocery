@@ -14,10 +14,11 @@ import math
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
 
 import yaml
 
-from core.fetch import _cached_fetch, discount_fields
+from core.fetch import GLOBAL_EXCLUDE, _cached_fetch, discount_fields
 from core.scoring import fold, parse_price
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
@@ -38,6 +39,19 @@ def load_recipes():
 
 def load_rules():
     return load_yaml("rules.yaml")
+
+
+@lru_cache(maxsize=1)
+def load_dishes():
+    """Dishes generated from NutriData (scripts/import_nutridata.py). Ingredients are either
+    `item` (an ingredient rule key) or `text` (a free-text search word), amounts for 2 servings."""
+    return load_yaml("dishes.yaml")
+
+
+def find_recipe(recipe_id, recipes):
+    """A hand-written recipe or a NutriData dish (ids "nd-…"), or None."""
+    pool = recipes["recipes"] + (load_dishes()["dishes"] if recipe_id.startswith("nd-") else [])
+    return next((r for r in pool if r["id"] == recipe_id), None)
 
 
 # ── pack sizes ───────────────────────────────────────────────────────────────
@@ -124,8 +138,6 @@ def _category_ok(categories, wanted):
     return False
 
 
-# Never suitable for a dinner basket, whatever the ingredient: pre-order and bulk listings.
-GLOBAL_EXCLUDE = ["ettetellimisel", "hulgi "]
 
 
 def matches_rule(product, rule):
@@ -262,6 +274,10 @@ def _norm(text):
     return " ".join(text.lower().split())
 
 
+def cap(text):
+    return text[:1].upper() + text[1:]
+
+
 def match_ingredient(text, recipes=None):
     """Ingredient key whose name, key or aliases equal the typed text, else None."""
     recipes = recipes or load_recipes()
@@ -302,21 +318,33 @@ def list_offers(items, stores):
 
 # ── baskets: an optional recipe plus extra items, per store ─────────────────
 
-def free_text_offers(items, stores):
-    """Options per store for typed items with no ingredient rule (best guess first)."""
+def free_text_offers(items, stores, needs=None):
+    """Options per store for items with no ingredient rule (best guess first).
+
+    needs: {item: grams} for dish ingredients. Those are priced for the amount (whole packs, or
+    weight × price for loose goods) and, within a match tier, ordered cheapest for that amount.
+    Other items cost one pack.
+    """
     from core.fetch import fetch_all, spec_for  # deferred: fetch is only needed for free text
 
     if not items:
         return {}
+    needs = needs or {}
     all_products, _ = fetch_all({it: spec_for(it) for it in items}, stores)
     out = {}
     for it in items:
         out[it] = {}
         for store in stores:
-            cands = sorted((p for p in all_products.get(it, []) if p["store"] == store), key=lambda p: p["score"])
-            out[it][store] = [_with_discount({"product": p["name"], "price": p["price"], "cost": p["price"], "packs": 1,
-                                              "how": f"1 × {p['price']:.2f} €", "substitute": False, **_looks(p)}, p)
-                              for p in cands]
+            options = []
+            for p in (p for p in all_products.get(it, []) if p["store"] == store):
+                priced = cost_for(p, needs[it], "g") if it in needs else None
+                cost, packs, how = priced or (p["price"], 1, f"1 × {p['price']:.2f} €")
+                options.append((p.get("relevance", 0), p["score"], _with_discount(
+                    {"product": p["name"], "price": p["price"], "cost": cost, "packs": packs, "how": how,
+                     "substitute": False, **_looks(p)}, p)))
+            by_amount = it in needs
+            options.sort(key=lambda o: (-o[0], o[2]["cost"]) if by_amount else o[1])
+            out[it][store] = [o[2] for o in options]
     return out
 
 
@@ -333,14 +361,20 @@ def _line(key, label, need, unit, offer, options, extra):
 def build_basket(store, recipe, servings, items, prefs, recipes, rules, free):
     lines, missing = [], []
     for ing in recipe["ingredients"] if recipe else []:
-        key = ing["item"]
-        spec = recipes["ingredients"][key]
         need = ing["amount"] * servings / BASE_SERVINGS
-        offer, options = ingredient_offers(key, need, store, recipes, rules, prefs.get(key))
-        if offer:
-            lines.append(_line(key, spec["name"], need, spec["unit"], offer, options, extra=False))
+        if "text" in ing:  # NutriData dish ingredient without a rule: free-text search
+            key, label, unit = "text:" + _norm(ing["text"]), cap(ing["text"]), "g"
+            options = free.get(ing["text"], {}).get(store, [])
+            offer = _pick(options, prefs.get(key), store)
         else:
-            missing.append(spec["name"])
+            key = ing["item"]
+            spec = recipes["ingredients"][key]
+            label, unit = spec["name"], spec["unit"]
+            offer, options = ingredient_offers(key, need, store, recipes, rules, prefs.get(key))
+        if offer:
+            lines.append(_line(key, label, need, unit, offer, options, extra=False))
+        else:
+            missing.append(label)
 
     for item in items:
         key = match_ingredient(item, recipes)
@@ -379,21 +413,24 @@ def recommend(recipe_id, servings, items, stores, prefs=None):
     recipes, rules = load_recipes(), load_rules()
     recipe = None
     if recipe_id:
-        recipe = next((r for r in recipes["recipes"] if r["id"] == recipe_id), None)
+        recipe = find_recipe(recipe_id, recipes)
         if recipe is None:
             raise KeyError(recipe_id)
     items = list(dict.fromkeys(i.strip() for i in items if i and i.strip()))
     prefs = prefs or {}
 
-    keys = [ing["item"] for ing in recipe["ingredients"]] if recipe else []
+    ingredients = recipe["ingredients"] if recipe else []
+    keys = [ing["item"] for ing in ingredients if "item" in ing]
+    # Dish ingredients without a rule, with the grams this many people need.
+    needs = {ing["text"]: ing["amount"] * servings / BASE_SERVINGS for ing in ingredients if "text" in ing}
     matched = {it: match_ingredient(it, recipes) for it in items}
     keys += [k for k in matched.values() if k]
-    unmatched = [it for it, k in matched.items() if not k]
+    free_items = list(dict.fromkeys(list(needs) + [it for it, k in matched.items() if not k]))
 
     # Rule searches and free-text searches run side by side.
     with ThreadPoolExecutor(max_workers=2) as pool:
         warm = pool.submit(prefetch, rules, set(keys), stores)
-        free_job = pool.submit(free_text_offers, unmatched, stores)
+        free_job = pool.submit(free_text_offers, free_items, stores, needs)
         warm.result()
         free = free_job.result()
 

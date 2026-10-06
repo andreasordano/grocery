@@ -96,16 +96,21 @@ h1 {
 .stepper output { min-width: 18px; text-align: center; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
 
 /* dinners: a plain two-column list, not cards */
-.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
+.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px 18px; }
 .dish {
   width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; cursor: pointer;
   border: 0; background: none; padding: 9px 12px 9px 8px; border-radius: 10px;
   font-size: 16px; font-weight: 500; line-height: 1.2; letter-spacing: -0.01em;
   transition: background .2s;
+  min-width: 0; overflow-wrap: anywhere; hyphens: auto;  /* long Estonian compounds: Suvikõrvitsapüreesupp */
 }
 .dish:hover { background: var(--hover); }
 .dish[aria-pressed="true"] { background: var(--ink); color: var(--fog); }
 .dish .e { font-size: 20px; width: 26px; text-align: center; flex: none; }
+
+.cats { margin: 0 0 14px; }
+.chips.cats button { padding: 6px 11px; }
+.more { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 10px; padding: 0 8px; }
 
 /* adding items (dinner extras and the shopping list) */
 .extras { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); max-width: 520px; }
@@ -363,7 +368,11 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 
   const state = {
     mode: "dinner",
-    recipes: [],
+    recipes: [],         // hand-written classics
+    dishes: [],          // NutriData dishes: {id, name, category}
+    categories: [],      // {id, name, emoji}
+    category: store.get("groceries.category", "ideas"),
+    shown: [],           // dinner ids on screen; kept until the category changes or "Show others"
     recipeId: null,
     servings: 2,
     extras: [],          // dinner: anything else for this trip
@@ -422,6 +431,33 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     }
   }
 
+  // ── dinners: hand-written classics plus NutriData dishes by category ──
+  const DISHES_SHOWN = 8;
+  function dinnerById(id) {
+    const d = state.dishes.find(x => x.id === id);
+    return d ? { ...d, emoji: state.categories.find(c => c.id === d.category)?.emoji || "🍽️" } : state.recipes.find(r => r.id === id);
+  }
+  function pool(category) {
+    if (category === "classics") return state.recipes.map(r => r.id);
+    if (category === "ideas") return [...state.recipes, ...state.dishes].map(r => r.id);
+    return state.dishes.filter(d => d.category === category).map(d => d.id);
+  }
+  // A random handful from the category; "Show me others" avoids repeating what was just on screen.
+  function shuffle(avoid = []) {
+    const ids = pool(state.category);
+    if (state.category === "classics") { state.shown = ids; return; }
+    const fresh = ids.filter(id => !avoid.includes(id));
+    const from = fresh.length >= DISHES_SHOWN ? fresh : ids;
+    const picked = [...from].sort(() => Math.random() - 0.5).slice(0, DISHES_SHOWN);
+    // Keep the chosen dinner on screen so its button stays pressed.
+    if (state.recipeId && ids.includes(state.recipeId) && !picked.includes(state.recipeId)) picked[0] = state.recipeId;
+    state.shown = picked;
+  }
+  function shownDinners() {
+    if (!state.shown.length) shuffle();
+    return state.shown.map(dinnerById).filter(Boolean);
+  }
+
   function renderDinner() {
     left.innerHTML = `
       <h1>What's for dinner tonight?</h1>
@@ -432,10 +468,16 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
           <button type="button" data-step="1" aria-label="More people">+</button>
         </span>
       </div>
-      <ul class="dishes">${state.recipes.map(r => `
+      <div class="chips cats" role="group" aria-label="Kind of dinner">${[
+        { id: "ideas", name: "Ideas", emoji: "✨" }, { id: "classics", name: "Classics", emoji: "⭐" }, ...state.categories,
+      ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}"><span aria-hidden="true">${esc(c.emoji)}</span> ${esc(c.name)}</button>`).join("")}</div>
+      <ul class="dishes">${shownDinners().map(r => `
         <li><button type="button" class="dish" data-id="${esc(r.id)}" aria-pressed="${r.id === state.recipeId}">
-          <span class="e" aria-hidden="true">${esc(r.emoji)}</span>${esc(r.name)}</button></li>`).join("")}
+          <span class="e" aria-hidden="true">${esc(r.emoji)}</span><span lang="et">${esc(r.name)}</span></button></li>`).join("")}
       </ul>
+      <div class="more">${state.category === "classics" ? ""
+        : `<button type="button" class="link" id="shuffle">Show me others</button>`}
+        ${shownDinners().some(r => r.id.startsWith("nd-")) ? `<span class="fine">Dishes from NutriData, Tervise Arengu Instituut</span>` : ""}</div>
       <div class="extras">
         <h2>Anything else on the way?</h2>
         <form class="field" id="add" autocomplete="off">
@@ -553,6 +595,21 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       state.recipeId = dish.dataset.id;
       left.querySelectorAll(".dish").forEach(d => d.setAttribute("aria-pressed", d === dish));
       ask({ fresh: true });
+      return;
+    }
+    const cat = e.target.closest("[data-cat]");
+    if (cat) {
+      state.category = cat.dataset.cat;
+      store.set("groceries.category", state.category);
+      state.shown = [];
+      renderDinner();
+      logEvent("dinner_category", { category: state.category });
+      return;
+    }
+    if (e.target.closest("#shuffle")) {
+      shuffle(state.shown);
+      renderDinner();
+      logEvent("dinner_shuffle", { category: state.category });
       return;
     }
     const step = e.target.closest("[data-step]");
@@ -902,7 +959,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     const view = keepView ? state.view : null;
 
     if (fresh || !state.result) {
-      const recipe = state.recipes.find(r => r.id === state.recipeId);
+      const recipe = dinnerById(state.recipeId);
       printing(dinner ? `${recipe.name} for ${state.servings}` : `${items.length} ${items.length === 1 ? "thing" : "things"} on your list`);
     } else {
       feed.classList.add("busy");
@@ -951,7 +1008,8 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     idle("Getting the dinners", "One moment.");
     const named = USER_ID ? Promise.resolve() : askName();
     try {
-      state.recipes = (await api("/recipes")).recipes;
+      Object.assign(state, (({ recipes, dishes, categories }) => ({ recipes, dishes, categories }))(await api("/recipes")));
+      if (!["ideas", "classics", ...state.categories.map(c => c.id)].includes(state.category)) state.category = "ideas";
       await named;
       render();
     } catch {

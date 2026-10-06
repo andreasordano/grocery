@@ -92,9 +92,13 @@ def log_event(req: EventRequest):
 
 @app.get("/recipes")
 def recipes():
-    """Dinner recipes the app can recommend."""
-    data = catalog.load_recipes()
-    return {"recipes": [{"id": r["id"], "name": r["name"], "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]]}
+    """Dinners the app can recommend: the hand-written classics, plus NutriData dishes by category."""
+    data, dishes = catalog.load_recipes(), catalog.load_dishes()
+    return {
+        "recipes": [{"id": r["id"], "name": r["name"], "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]],
+        "categories": dishes["categories"],
+        "dishes": [{"id": d["id"], "name": d["name"], "category": d["category"]} for d in dishes["dishes"]],
+    }
 
 
 @app.post("/basket")
