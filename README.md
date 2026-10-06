@@ -11,7 +11,8 @@ Two missions:
   anything else goes through free-text matching (see below). Suggestions appear while typing.
   Searches Selver, Rimi and Barbora (Barbora stands in for Maxima).
 
-- **Frontend:** one self-contained page (`web/index.html`, plain HTML/CSS/JS), served by the API at `/`
+- **Frontend:** plain HTML, CSS and JavaScript modules in `web/`, with no build step, served by the API at `/`
+  (see [Frontend](#frontend) below)
 - **API:** FastAPI (`api/service.py`) — `POST /basket` (prices a dinner and/or list at every store), `GET /recipes`,
   `/my-dinners`, `/shares`, `POST /events`, `GET /vocab.json` (suggestion words), `GET /health`
 - **Events DB:** Postgres (via `DATABASE_URL`), falling back to SQLite at `logs/events.db`
@@ -33,7 +34,7 @@ docker compose up --build        # add -d to run in the background
 | Postgres | `localhost:5433`, user/password/db: `groceries` |
 
 The source folder is mounted into the containers, so code changes are picked up on restart:
-Python changes need `docker compose restart api`; changes to `web/index.html` or `data/*.yaml` only need a browser refresh.
+Python changes need `docker compose restart api`; changes to `web/` or `data/*.yaml` only need a browser refresh.
 
 Stop with `docker compose down`. Event data lives in the `pgdata` volume and survives restarts;
 `docker compose down -v` **deletes it**.
@@ -229,6 +230,39 @@ curl -s -X POST http://localhost:8000/optimize \
   -H "Content-Type: application/json" \
   -d '{"items":["piim","banaan"],"stores":["rimi","selver","barbora"],"user_id":"maria"}' | jq '.info'
 ```
+
+## Frontend
+
+`web/` is served as plain files (`api/service.py` mounts it at `/`): no bundler, no framework, no npm.
+Browsers revalidate every file on each load, so a deploy shows at once.
+
+```
+web/
+  index.html          the page's structure: top bar, the two halves, the dialogs
+  icon.svg            the sticker logo in miniature
+  vocab.json          suggestion words (generated: see Suggestions while typing)
+  css/
+    tokens.css        brand colours and fonts, light and dark: start here to change the look
+    base.css          element defaults
+    controls.css      buttons, links, pills, text fields, the people sticker
+    layout.css        top bar, the two halves, headlines
+    dinner.css        the Dinner screen and the dinner editor
+    items.css         item lists and suggestions
+    receipt.css       the receipt and what's under it
+    sheet.css         dialogs
+  js/                 ES modules; main.js is the entry point and lists what each module does
+    main.js           start-up and the Dinner / Shopping list switch
+    screens.js        which screen is on the left
+    dinner-screen.js, editor-screen.js, list-screen.js
+    basket.js         asks the stores (POST /basket) and acts on taps on the receipt
+    receipt.js        draws the receipt
+    products.js       choosing another product, saved preferences
+    items.js, suggest.js   adding and changing items, suggestions while typing
+    dinners.js, share.js, state.js, storage.js, identity.js, api.js, dom.js, format.js
+```
+
+The look is the *produce sticker*: rhubarb, butter and blueberry on white, Funnel Display and Funnel Sans,
+and stickers only where something is yours or a deal (the logo, the people count, sale tags, "Going").
 
 ## Tests
 

@@ -1,0 +1,35 @@
+/* Lists of things to buy: the shopping list, a dinner's extras (tags), the editor's list,
+   and suggestions while typing. */
+
+/* suggestions: product words from the store catalogs */
+.suggest {
+  position: absolute; z-index: 15; top: calc(100% + 6px); left: 0; right: 0;
+  list-style: none; margin: 0; padding: 6px; border-radius: 18px;
+  background: var(--sheet); box-shadow: 0 0 0 1.5px var(--ink), 0 18px 36px -20px rgba(28, 31, 74, .5);
+}
+.suggest li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 12px; border-radius: 12px; cursor: pointer; font-weight: 500; }
+.suggest li[aria-selected="true"], .suggest li:hover { background: var(--panel); }
+.suggest .s-shelf { font-size: 12px; color: var(--ink-soft); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+
+/* a dinner's extras: butter tags */
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; list-style: none; padding: 0; }
+.tags li { display: inline-flex; align-items: center; gap: 2px; padding: 4px 4px 4px 12px; border-radius: 999px; background: var(--butter); color: #1c1f4a; font-size: 14px; font-weight: 600; }
+
+/* the shopping list and a dinner's list in the editor */
+.items { list-style: none; margin: 18px 0 24px; padding: 0; max-width: 480px; }
+.items li { display: flex; align-items: center; justify-content: space-between; padding: 10px 0 10px 2px; border-bottom: 1.5px solid var(--line);
+  font: 600 19px/1.2 var(--display); letter-spacing: -0.01em; }
+.items .none { color: var(--ink-soft); font: 400 16px var(--sans); border: 0; }
+
+/* the × that removes an item */
+.tags button, .items li button { border: 0; background: none; cursor: pointer; color: var(--ink-soft); border-radius: 50%; }
+.tags button { width: 24px; height: 24px; font-size: 15px; color: #1c1f4a; }
+.items li button { font-size: 18px; width: 32px; height: 32px; }
+.tags button:hover, .items li button:hover { background: var(--hover); color: var(--ink); }
+
+/* tap an item to change it, e.g. to add an amount ("paprika" → "paprika 600g") */
+.items .it, .tags .it { flex: 1; min-width: 0; text-align: left; border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: text; }
+.items li button.it, .tags button.it { width: auto; height: auto; font-size: inherit; color: inherit; border-radius: 0; }
+.items .it:hover, .tags .it:hover { background: none; text-decoration: underline dotted; text-underline-offset: 4px; }
+.items input.edit, .tags input.edit { flex: 1; min-width: 0; font: inherit; color: inherit; background: var(--hover); border: 0; outline: none;
+  border-radius: 8px; padding: 2px 6px; box-shadow: inset 0 0 0 2px var(--ink); }

@@ -1,0 +1,47 @@
+/* pantryrun's brand: the produce sticker. Estonian garden colours on white;
+   stickers (rhubarb logo, butter pills) only mark what's yours or a deal.
+   Every colour and font the page uses is defined here, for light and dark.
+   Phone layout starts below 900px wide (each stylesheet has its own @media for it). */
+
+:root {
+  --milk: #ffffff;           /* the page */
+  --ink: #1c1f4a;            /* blueberry: text */
+  --ink-soft: #5b5f86;
+  --line: rgba(28, 31, 74, 0.12);
+  --hover: rgba(28, 31, 74, 0.05);
+  --rhubarb: #ff4d6d;        /* logo and the main button */
+  --rhubarb-text: #d6284b;   /* rhubarb dark enough for text on white */
+  --panel: #ffdce3;          /* rhubarb milk: where the answer prints */
+  --butter: #ffd84d;         /* stickers and sale tags */
+  --dill: #17824a;           /* money saved */
+  --sheet: #ffffff;          /* dialogs and suggestion lists */
+  --slot: #1c1f4a;           /* the printer slot the receipt comes out of */
+
+  /* The receipt is paper: it keeps these colours in dark mode too. */
+  --paper: #ffffff;
+  --paper-ink: #1c1f4a;
+  --paper-soft: #5b5f86;
+  --paper-faint: #8c8fae;
+  --paper-hover: #fff0f3;
+  --paper-red: #d6284b;
+
+  --display: "Funnel Display", ui-sans-serif, system-ui, sans-serif;
+  --sans: "Funnel Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, monospace;   /* only on the receipt */
+
+  --ease: cubic-bezier(.3, .7, .2, 1);
+  --pop: cubic-bezier(.3, 1.6, .5, 1);   /* stickers landing */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --milk: #16183a; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
+    --rhubarb-text: #ff7d93; --panel: #2a1d4a; --sheet: #1f2250; --slot: #0b0c24;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --milk: #16183a; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
+  --rhubarb-text: #ff7d93; --panel: #2a1d4a; --sheet: #1f2250; --slot: #0b0c24;
+  color-scheme: dark;
+}

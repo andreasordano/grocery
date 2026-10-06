@@ -30,7 +30,7 @@ that circle yet.** All 245 events in the local database are under one name (`and
 | — | One afternoon checking shelf prices in a physical Selver and Rimi vs the e-shop (~25 items) | ❌ Not done |
 
 ### Built beyond the plan
-- Receipt-style web app (`web/index.html`): Dinner and Shopping list modes, compare stores, tap an item to
+- Receipt-style web app (`web/`: HTML, CSS and JS modules): Dinner and Shopping list modes, compare stores, tap an item to
   pick another product, preferences grounded in real product names, "Edit preferences".
 - Hand-written ingredient rules for **Selver, Rimi and Barbora** (`data/rules.yaml`, 26 ingredients), with
   fallbacks (sauerkraut → praekapsas) and typed-word aliases (`data/recipes.yaml`).

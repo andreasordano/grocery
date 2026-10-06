@@ -1,0 +1,64 @@
+/* Things you press or type into, used across the page: buttons, links, pills, text fields,
+   the people sticker. */
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 999px; padding: 14px 22px; cursor: pointer;
+  font-weight: 700; font-size: 15px; transition: transform .15s, opacity .2s, background .2s;
+}
+.btn:active { transform: scale(.97); }
+.btn.go { background: var(--rhubarb); color: #1c1f4a; }   /* the one main action: "I'll go to Rimi" */
+.btn.go:hover { background: #ff3a5e; }
+.btn.quiet { background: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn.quiet:hover { background: var(--hover); }
+.btn.dark { background: var(--ink); color: var(--milk); }
+.btn.wide { width: 100%; }
+.btn[disabled] { opacity: .35; cursor: default; }
+
+/* a row of buttons sharing the width */
+.actions { display: flex; gap: 8px; }
+.actions .btn { flex: 1; }
+
+.link { border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink); font-size: 14px; font-weight: 500;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 4px; }
+.link:hover { color: var(--rhubarb-text); }
+
+/* pills: kinds of dinner, and words to look for in other stores */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips button { border: 0; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 14px; font-weight: 500;
+  background: none; box-shadow: inset 0 0 0 1.5px var(--line); transition: box-shadow .2s, background .2s; }
+.chips button:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.chips button[aria-pressed="true"] { background: var(--ink); color: var(--milk); box-shadow: none; }
+
+/* a text field with its button: adding items */
+.field { position: relative; display: flex; gap: 8px; max-width: 480px; }
+.field input {
+  flex: 1; min-width: 0; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
+  background: var(--milk); color: var(--ink); font: 16px var(--sans);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+.field input:focus { box-shadow: inset 0 0 0 2px var(--ink); }
+
+select { flex: 1; min-width: 0; padding: 10px 14px; border-radius: 999px; border: 0; background: var(--milk); color: var(--ink);
+  font: 14px var(--sans); box-shadow: inset 0 0 0 1.5px var(--line); }
+
+/* How many people: a butter sticker. In the headline it takes the headline's size. */
+.stepper {
+  display: inline-flex; align-items: center; gap: .1em; vertical-align: .06em;
+  padding: .06em .1em; margin: 0 .04em; border-radius: 999px;
+  background: var(--butter); color: #1c1f4a; transform: rotate(-3deg);
+  font: inherit; letter-spacing: 0;
+}
+.stepper output { min-width: .6em; text-align: center; font-variant-numeric: tabular-nums; line-height: 1; }
+.stepper button { width: max(32px, .46em); height: max(32px, .46em); border: 0; border-radius: 50%; background: #fff; cursor: pointer;
+  font: 700 max(18px, .28em)/1 var(--sans); color: #1c1f4a; display: grid; place-items: center; transition: transform .15s; }
+.stepper button:hover { transform: scale(1.08); }
+.stepper button:active { transform: scale(.94); }
+/* in running text (the dinner editor) it's text-sized */
+.sub .stepper { font: 700 17px var(--sans); padding: 3px; transform: none; gap: 4px; }
+.sub .stepper button { width: 28px; height: 28px; font-size: 16px; }
+
+@media (max-width: 900px) {
+  .chips { gap: 6px; }
+  .chips button { padding: 6px 12px; font-size: 13.5px; }
+}
