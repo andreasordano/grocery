@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: groceries-api
+    name: pantryrun-api
     env: docker
     branch: main
     dockerfilePath: api/Dockerfile

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Groceries</title>
+<title>pantryrun</title>
 <meta name="description" content="Pick tonight's dinner. Get one store and a shopping list.">
 <meta name="theme-color" content="#e3e7e9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#131a20" media="(prefers-color-scheme: dark)">
@@ -313,7 +313,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 <body>
 
 <header class="bar">
-  <div class="brand" aria-label="groceries">groceries<b>.</b></div>
+  <div class="brand" aria-label="pantryrun">pantryrun<b>.</b></div>
   <nav class="switch" aria-label="What you need">
     <span class="pill" aria-hidden="true"></span>
     <button type="button" data-mode="dinner" aria-pressed="true">Dinner</button>
@@ -353,11 +353,15 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 (() => {
   // ── identity & saved preferences ──────────────────────────────────────
   const store = {
-    get(k, fallback) { try { return JSON.parse(localStorage.getItem(k)) ?? fallback; } catch { return fallback; } },
+    // Keys were "groceries.*" before the rename to pantryrun; read those so testers keep their name and prefs.
+    get(k, fallback) {
+      try { return JSON.parse(localStorage.getItem(k) ?? localStorage.getItem(k.replace(/^pantryrun\./, "groceries."))) ?? fallback; }
+      catch { return fallback; }
+    },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
   };
   // Who is using it: ?u= in the link wins, otherwise the name asked for on first visit.
-  let USER_ID = new URLSearchParams(location.search).get("u") || store.get("groceries.name", null);
+  let USER_ID = new URLSearchParams(location.search).get("u") || store.get("pantryrun.name", null);
   const SESSION_ID = (() => {
     try {
       let id = sessionStorage.getItem("sid");
@@ -371,13 +375,13 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     recipes: [],         // hand-written classics
     dishes: [],          // NutriData dishes: {id, name, category}
     categories: [],      // {id, name, emoji}
-    category: store.get("groceries.category", "ideas"),
+    category: store.get("pantryrun.category", "ideas"),
     shown: [],           // dinner ids on screen; kept until the category changes or "Show others"
     recipeId: null,
     servings: 2,
     extras: [],          // dinner: anything else for this trip
     items: [],           // shopping list
-    prefs: store.get("groceries.prefs", {}),  // {key: {words: [], products: {store: name}}}
+    prefs: store.get("pantryrun.prefs", {}),  // {key: {words: [], products: {store: name}}}
     result: null,        // last /basket answer for the current mode
     view: null,          // store whose receipt is showing
     request: 0,
@@ -600,7 +604,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
     const cat = e.target.closest("[data-cat]");
     if (cat) {
       state.category = cat.dataset.cat;
-      store.set("groceries.category", state.category);
+      store.set("pantryrun.category", state.category);
       state.shown = [];
       renderDinner();
       logEvent("dinner_category", { category: state.category });
@@ -803,7 +807,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
   }
 
   function savePrefs(key, change) {
-    store.set("groceries.prefs", state.prefs);
+    store.set("pantryrun.prefs", state.prefs);
     logEvent("preference", { key, change, pref: state.prefs[key] || null });
   }
 
@@ -992,7 +996,7 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
       hello.onclose = () => { if (!USER_ID) hello.showModal(); };  // a second Escape still closes it in Chrome
       $("#helloForm").onsubmit = () => {
         USER_ID = input.value.trim().replace(/\s+/g, " ");
-        store.set("groceries.name", USER_ID);
+        store.set("pantryrun.name", USER_ID);
         logEvent("hello", {});
         resolve();
       };

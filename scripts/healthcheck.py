@@ -53,7 +53,7 @@ def main():
             notes.append(f"`{recipe['id']}` @ {b['store']}: {b['total_price']:.2f} €"
                          + (f" (missing: {', '.join(b['missing'])})" if b["missing"] else ""))
 
-    print("## Groceries health check\n")
+    print("## pantryrun health check\n")
     if problems:
         print("### Needs attention\n")
         print("\n".join(f"- {p}" for p in problems))

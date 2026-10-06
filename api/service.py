@@ -13,7 +13,7 @@ import os
 import time
 
 
-app = FastAPI(title="Groceries Optimizer API")
+app = FastAPI(title="pantryrun API")
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Get default stores from config

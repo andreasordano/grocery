@@ -1,4 +1,4 @@
-# Groceries
+# pantryrun
 
 "Go here. Buy this." — tell the app what you need and it recommends **one store** with a ready basket, plus alternatives.
 Product prices are fetched live from store e-shops (Selver, Barbora, Rimi); there is no local product database.
