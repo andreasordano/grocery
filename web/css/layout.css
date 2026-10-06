@@ -1,0 +1,57 @@
+/* The page: a top bar, then two halves. You choose on the white left;
+   the answer prints on the rhubarb panel on the right. On phones the panel comes below. */
+
+/* ── Top bar ── */
+.bar {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  /* the logo lines up with the content of the left half */
+  padding: max(20px, env(safe-area-inset-top)) 40px 20px max(40px, calc(58vw - 780px));
+}
+/* The logo is a produce sticker: an oval label slapped on slightly crooked. */
+.brand {
+  display: inline-block; padding: 8px 22px 9px; border-radius: 50%;
+  background: var(--rhubarb); color: #fff;
+  font: 800 21px/1 var(--display); letter-spacing: -0.03em;
+  transform: rotate(-5deg);
+  box-shadow: 0 1px 0 rgba(28, 31, 74, .15), 0 6px 14px -8px rgba(214, 40, 75, .7);
+}
+
+/* Dinner / Shopping list: the pill slides to the chosen one */
+.switch { position: relative; display: inline-flex; padding: 4px; border-radius: 999px; background: var(--milk); box-shadow: inset 0 0 0 1.5px var(--ink); }
+.switch button {
+  position: relative; z-index: 1; border: 0; background: none; cursor: pointer;
+  padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 14px; color: var(--ink);
+  transition: color .25s;
+}
+.switch button[aria-pressed="true"] { color: var(--milk); }
+.switch .pill { position: absolute; top: 4px; bottom: 4px; left: 3px; border-radius: 999px; background: var(--ink);
+  transition: transform .35s var(--ease), width .35s var(--ease); }
+
+/* ── The two halves ── */
+main {
+  min-height: 100vh; min-height: 100dvh;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(400px, 42%);
+}
+.pick { padding: 116px 56px 56px 40px; max-width: 820px; width: 100%; justify-self: end; }
+.printer { position: relative; background: var(--panel); padding: 108px 48px 56px; }
+/* slot, receipt and buttons share one centred column; the paper is inset from the slot's ends */
+.printer > * { width: 100%; max-width: 400px; margin-inline: auto; }
+
+/* ── Headlines ── */
+h1 {
+  margin: 0 0 28px; font: 800 clamp(44px, 5.4vw, 76px)/.98 var(--display); letter-spacing: -0.035em;
+}
+h1 .for { white-space: nowrap; }   /* "for 2" stays together */
+.sub { margin: 0 0 20px; color: var(--ink-soft); font-size: 17px; max-width: 34ch; }
+
+@media (max-width: 900px) {
+  .bar { position: sticky; padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+    background: color-mix(in srgb, var(--milk) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .brand { font-size: 18px; padding: 7px 18px 8px; }
+  .switch button { padding: 7px 13px; }
+  main { display: block; min-height: 0; }
+  .pick { padding: 20px 16px 36px; max-width: none; }
+  .printer { padding: 40px 16px 48px; }
+  h1 { font-size: 44px; margin-bottom: 22px; }
+}

@@ -1,0 +1,21 @@
+/* Element defaults: reset, body text, focus, small print, reduced motion. */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100vh; min-height: 100dvh;
+  background: var(--milk); color: var(--ink);
+  font: 400 16px/1.5 var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2.5px solid var(--rhubarb); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+/* small print: sources, notes, "Saved to Mine" */
+.fine { font-size: 12.5px; color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}

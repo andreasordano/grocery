@@ -1,4 +1,4 @@
-"""Browser tests for the web page (web/index.html) against the real API, with fake stores.
+"""Browser tests for the web app (web/: index.html, css/, js/) against the real API, with fake stores.
 
 Needs Playwright (requirements-dev.txt) and a browser:
   pip install -r requirements-dev.txt && python -m playwright install chromium
@@ -7,6 +7,7 @@ PW_CHANNEL=chrome uses an installed Google Chrome instead of Playwright's Chromi
 Skipped when Playwright isn't installed.
 """
 import os
+import re
 import socket
 import threading
 import time
@@ -164,6 +165,53 @@ def test_dinner_screen_fits_a_phone(base_url, browser):
     page = ctx.new_page()
     page.goto(base_url + "/?u=e2e-phone")
     page.click("[data-cat=soup]")
-    widest = page.evaluate("Math.max(...[...document.querySelectorAll('#left *')].map(e => e.getBoundingClientRect().right))")
+    widest = page.evaluate("Math.max(...[...document.querySelectorAll('#pick *')].map(e => e.getBoundingClientRect().right))")
     assert widest <= 390
     ctx.close()
+
+
+def test_page_files_are_served(base_url):
+    """Every stylesheet, script module (following imports from main.js) and the icon is served,
+    with a type the browser accepts and a cache header that makes a deploy show at once."""
+    def get(path):
+        with urllib.request.urlopen(base_url + path, timeout=5) as res:
+            return res.read().decode(), res.headers
+
+    html, headers = get("/")
+    assert headers["Cache-Control"] == "no-cache"
+    files = re.findall(r'(?:href|src)="((?:css|js)/[^"]+|icon\.svg)"', html)
+    assert "js/main.js" in files and "icon.svg" in files and len([f for f in files if f.startswith("css/")]) >= 5
+
+    todo, seen = list(files), set()
+    while todo:
+        path = todo.pop()
+        if path in seen:
+            continue
+        seen.add(path)
+        body, headers = get("/" + path)
+        assert headers["Cache-Control"] == "no-cache", path
+        kind = {"css": "text/css", "js": "javascript", "svg": "image/svg+xml"}[path.rsplit(".", 1)[1]]
+        assert kind in headers["Content-Type"], (path, headers["Content-Type"])
+        if path.endswith(".js"):  # follow imports: every module the page loads must exist
+            todo += ["js/" + m for m in re.findall(r'from "\./([\w-]+\.js)"', body)]
+    assert len([f for f in seen if f.endswith(".js")]) > 10
+
+    _, headers = get("/vocab.json")
+    assert headers["Cache-Control"] == "public, max-age=86400"
+
+
+def test_no_script_errors(base_url, page):
+    errors = []
+    page.on("pageerror", lambda e: errors.append(str(e)))
+    page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+    page.goto(base_url + "/?u=e2e-errors")
+    page.click("[data-cat=classics]")
+    page.locator(".dish").first.click()
+    page.wait_for_function("!document.querySelector('.receipt').textContent.includes('Comparing prices')")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    receipt_lines(page)
+    page.click("[data-mode=dinner]")
+    assert errors == []

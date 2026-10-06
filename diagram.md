@@ -5,7 +5,7 @@ product database. Our own data is the event log, people's dinners and shared lin
 
 ```mermaid
 flowchart TD
-    subgraph WEB["Web page  (web/index.html)"]
+    subgraph WEB["Web page  (web/: index.html, css/, js/)"]
         D["Dinner: classics, NutriData dishes, Mine,<br/>a dinner sent by link"]
         L["Shopping list: items with amounts,<br/>suggestions from /vocab.json"]
         R["Receipt: one store, lines, alternatives,<br/>send this dinner, feedback"]

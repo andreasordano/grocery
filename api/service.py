@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from core import catalog
@@ -192,22 +192,21 @@ def open_share(token: str, user_id: Optional[str] = None):
     return dinner
 
 
-_WEB = os.path.join(os.path.dirname(os.path.dirname(__file__)), "web")
-_INDEX = os.path.join(_WEB, "index.html")
-
-
-@app.get("/", include_in_schema=False)
-def index():
-    """The web app (a single self-contained page)."""
-    return FileResponse(_INDEX, headers={"Cache-Control": "no-cache"})
-
-
-@app.get("/vocab.json", include_in_schema=False)
-def vocab():
-    """Product words for suggestions while typing (built by scripts/build_vocab.py)."""
-    return FileResponse(os.path.join(_WEB, "vocab.json"), headers={"Cache-Control": "public, max-age=86400"})
-
-
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+class _WebFiles(StaticFiles):
+    """The web app: web/index.html at /, and its css/, js/, icon.svg and vocab.json.
+    Browsers check back on every load (a quick 304 when nothing changed), so a deploy shows at once.
+    The suggestion words (built by scripts/build_vocab.py) change rarely, so they are kept a day."""
+
+    async def get_response(self, path, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "public, max-age=86400" if path == "vocab.json" else "no-cache"
+        return response
+
+
+# Last, so every API route above is matched first.
+app.mount("/", _WebFiles(directory=os.path.join(os.path.dirname(os.path.dirname(__file__)), "web"), html=True), name="web")
