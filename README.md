@@ -15,7 +15,8 @@ Two missions:
   (see [Frontend](#frontend) below)
 - **API:** FastAPI (`api/service.py`) — `POST /basket` (prices a dinner and/or list at every store), `GET /recipes`,
   `/my-dinners`, `/shares`, `POST /events`, `GET /vocab.json` (suggestion words), `GET /health`
-- **Events DB:** Postgres (via `DATABASE_URL`), falling back to SQLite at `logs/events.db`
+- **Events DB:** Postgres (via `DATABASE_URL`), falling back to SQLite at `logs/events.db`. Production runs on
+  Supabase (project `tafaiatzpjpvkdoazwiz`, Frankfurt); see [Database](#database)
 
 See `diagram.md` for the architecture.
 
@@ -278,6 +279,24 @@ and on pull requests.
 
 Tests don't call the stores. To check the store integrations and rules against the live sites:
 `python -m scripts.healthcheck`.
+
+## Database
+
+Production uses Supabase as plain Postgres (project `tafaiatzpjpvkdoazwiz`, Frankfurt). Supabase's own web API
+and auth are not used: row-level security is on with no policies, so its public API roles can read nothing,
+and the app connects as the database owner.
+
+- **Connection:** the Render web service's `DATABASE_URL` is the **session pooler** URL
+  (`…pooler.supabase.com:5432`, `?sslmode=require`). Not the direct host (IPv6 only, which Render can't reach)
+  and not the transaction pooler on 6543 (it breaks psycopg's prepared statements).
+- **Schema changes** are SQL files in `supabase/migrations/`, applied with the Supabase CLI:
+  ```bash
+  supabase migration new add_something   # creates supabase/migrations/<timestamp>_add_something.sql
+  supabase db push                        # applies new migrations to the linked project
+  ```
+  The app still runs `CREATE TABLE IF NOT EXISTS` for its tables (harmless there; needed for SQLite and local
+  Docker until everything moves to migrations).
+- **Credentials** stay out of the repo: the Render dashboard holds `DATABASE_URL`.
 
 ## Configuration
 
