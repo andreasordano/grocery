@@ -6,7 +6,7 @@ import { identity } from "./identity.js";
 import { api, logEvent } from "./api.js";
 import { dinnerById } from "./dinners.js";
 import { redraw } from "./screens.js";
-import { idle, printing, failed, showReceipt, reveal } from "./receipt.js";
+import { idle, printing, failed, showReceipt, reveal, answered } from "./receipt.js";
 import { chooseProduct, editPreferences } from "./products.js";
 
 // fresh: a new question, so the receipt prints anew. keepView: stay on the store being looked at.
@@ -26,17 +26,22 @@ export async function ask({ fresh = false, keepView = false } = {}) {
   try {
     const res = await api("/basket", {
       recipe_id: dinner ? state.recipeId : null, servings: state.servings, items,
-      prefs: state.prefs, user_id: identity.userId, session_id: identity.sessionId,
+      prefs: state.prefs, user_id: identity.personId, session_id: identity.sessionId,
     });
     if (req !== state.request) return;
     feed.classList.remove("busy");
-    if (!res.baskets.length || !res.baskets[0].lines.length) {
+    const stores = answered(res);
+    if (!stores.length) {  // every store's search failed
+      failed(() => ask({ fresh: true }));
+      return;
+    }
+    if (!stores[0].lines.length) {
       idle("No store had these", "Try simpler words, like piim or leib.");
       return;
     }
     const animate = fresh || !state.result;
-    state.result = { ...res, id: crypto.randomUUID() };
-    showReceipt(view && res.baskets.some(b => b.store === view) ? view : res.store, animate);
+    state.result = res;
+    showReceipt(view && stores.some(b => b.store === view) ? view : res.store, animate);
     if (animate) reveal();
   } catch {
     if (req === state.request) failed(() => ask({ fresh: true }));
@@ -48,7 +53,7 @@ const askAgain = () => ask({ keepView: true });
 feed.addEventListener("click", e => {
   const store = e.target.closest("[data-store]");
   if (store && store.dataset.store !== state.view) {
-    logEvent("view_store", { store: store.dataset.store, recommended_store: state.result.baskets[0].store, result_id: state.result.id });
+    logEvent("view_store", { store: store.dataset.store, recommended_store: state.result.store, result_id: state.result.result_id });
     showReceipt(store.dataset.store, true);
     return;
   }

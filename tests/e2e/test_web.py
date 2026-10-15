@@ -6,9 +6,11 @@ Needs Playwright (requirements-dev.txt) and a browser:
 PW_CHANNEL=chrome uses an installed Google Chrome instead of Playwright's Chromium.
 Skipped when Playwright isn't installed.
 """
+import json
 import os
 import re
 import socket
+import sqlite3
 import threading
 import time
 import urllib.request
@@ -21,8 +23,11 @@ STORES = {"selver": 2.0, "rimi": 1.5, "barbora": 1.8}  # price level per store: 
 
 
 def fake_fetch(store, query, size=40, refresh=False):
-    """Two products per search, named after the query so free-text matching takes them."""
+    """Two products per search, named after the query so free-text matching takes them.
+    Selver doesn't answer searches for "katki" (broken)."""
     word = query.strip().lower()
+    if store == "selver" and word == "katki":
+        raise RuntimeError("403 Forbidden")
     base = STORES[store]
     return [
         {"store": store, "id": f"{store}-{word}-1", "name": f"{word.capitalize()} Test 500g", "price": base,
@@ -76,18 +81,52 @@ def page(browser):
     ctx.close()
 
 
+def logged(type):
+    """The events of one type, oldest first: (user_id, data)."""
+    rows = sqlite3.connect(os.environ["EVENTS_DB"]).execute(
+        "SELECT user_id, data FROM events WHERE type = ? ORDER BY id", (type,)).fetchall()
+    return [(u, json.loads(d)) for u, d in rows]
+
+
 def receipt_lines(page):
     page.wait_for_selector(".r-line")
     return [t.replace("\n", " | ") for t in page.locator(".r-line").all_inner_texts()]
 
 
-def test_first_visit_asks_for_a_name(base_url, page):
+def test_first_visit_gets_an_anonymous_id_and_logs_a_visit(base_url, page):
     page.goto(base_url + "/")
-    page.locator("#hello").wait_for(state="visible")
-    page.fill("#helloName", "Mari")
-    page.click("#helloForm button[type=submit]")
-    page.locator("#hello").wait_for(state="hidden")
-    assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.name'))") == "Mari"
+    page.wait_for_selector(".dish")
+    assert not page.locator("#hello").is_visible()  # no name asked until a dinner is saved
+    person = page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))")
+    assert re.fullmatch(r"[0-9a-f-]{36}", person)
+
+    page.reload()
+    page.wait_for_selector(".dish")
+    assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == person  # same person next time
+    visits = [d for u, d in logged("visit") if u == person]
+    assert [v["first_visit"] for v in visits] == [True, False]
+    assert visits[0]["from"] == "direct"
+
+
+def test_tester_link_and_old_name_keep_their_id(base_url, browser):
+    ctx = browser.new_context()
+    page = ctx.new_page()
+    page.goto(base_url + "/?u=e2e-tester")
+    page.wait_for_selector(".dish")
+    assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == "e2e-tester"
+    assert [d["from"] for u, d in logged("visit") if u == "e2e-tester"] == ["tester_link"]
+    page.goto(base_url + "/")  # the plain link later: still the same person
+    page.wait_for_selector(".dish")
+    assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == "e2e-tester"
+    ctx.close()
+
+    ctx = browser.new_context()  # someone who typed a name before ids existed
+    page = ctx.new_page()
+    page.add_init_script("localStorage.setItem('pantryrun.name', JSON.stringify('Old Mari'))")
+    page.goto(base_url + "/")
+    page.wait_for_selector(".dish")
+    assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == "Old Mari"
+    ctx.close()
 
 
 def test_shopping_list_with_amounts_prints_one_store(base_url, page):
@@ -135,7 +174,12 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     page.fill("#item", "spagetid 500g, suvikõrvits, 2 tomatipasta")
     page.press("#item", "Enter")
     page.click("#saveDinner")
+    page.locator("#hello").wait_for(state="visible")  # the first dinner asks for a name
+    page.fill("#helloName", "Anna")
+    page.click("#helloForm button[value=save]")
     page.wait_for_selector(".r-line")
+    assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.name'))") == "Anna"
+    assert ("e2e-anna", {"name": "Anna"}) in logged("hello")
     assert "Testi pasta for 2" in page.locator(".receipt").inner_text()
     assert page.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
 
@@ -149,10 +193,46 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     other.wait_for_selector(".sent")
     assert "Testi pasta" in other.locator(".sent").inner_text()
     assert "Testi pasta for 2" in other.locator(".receipt").inner_text()  # priced for the person who opened it
+    assert [d["from"] for u, d in logged("visit") if u == "e2e-ben"] == ["tester_link"]
     other.click("#saveShared")
+    other.click("#helloForm button[value=skip]")  # the name can be skipped
     other.wait_for_selector(".sent >> text=Saved to Mine")
+    assert other.evaluate("JSON.parse(localStorage.getItem('pantryrun.name'))") == ""
     other.click("[data-cat=mine]")
     assert other.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
+
+
+def test_answer_id_comes_from_the_server_and_goes_back_with_feedback(base_url, page):
+    page.goto(base_url + "/?u=e2e-result")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    receipt_lines(page)
+    page.click("[data-store=selver]")
+    page.click("[data-fb=accept]")
+    page.wait_for_selector(".thanks")
+    page.wait_for_timeout(300)  # events are sent without waiting
+
+    basket = [d for u, d in logged("basket") if u == "e2e-result"][-1]
+    assert re.fullmatch(r"[0-9a-f]{32}", basket["result_id"])
+    for type in ("view_store", "accept"):
+        assert [d["result_id"] for u, d in logged(type) if u == "e2e-result"] == [basket["result_id"]], type
+
+
+def test_store_that_didnt_answer_is_named_not_missing(base_url, page):
+    page.goto(base_url + "/?u=e2e-down")
+    page.click("[data-mode=list]")
+    page.fill("#item", "katki")
+    page.press("#item", "Enter")
+    page.click("#find")
+    receipt_lines(page)
+    receipt = page.locator(".receipt").inner_text()
+    assert "Selver didn't answer, prices from Rimi and Barbora" in receipt
+    assert "Not in the e-shop" not in receipt
+    assert [s.split("\n")[0] for s in page.locator(".stores .s").all_inner_texts()] == ["Rimi", "Barbora"]
+    statuses = {b["store"]: b.get("status") for b in [d for u, d in logged("basket") if u == "e2e-down"][-1]["baskets"]}
+    assert statuses == {"rimi": "ok", "barbora": "ok", "selver": "no_answer"}
 
 
 def test_broken_link_says_so(base_url, page):

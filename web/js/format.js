@@ -5,6 +5,12 @@ export const num = new Intl.NumberFormat("et-EE", { minimumFractionDigits: 2, ma
 
 export const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
 
+// ["rimi", "barbora"] → "Rimi and Barbora"
+export const storeNames = stores => {
+  const names = stores.map(cap);
+  return names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
+};
+
 // Everything shown from data goes through esc() before it's put in the page.
 export const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 

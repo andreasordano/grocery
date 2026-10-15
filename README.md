@@ -61,10 +61,17 @@ Give each tester a personal link so repeat usage can be measured per person:
 http://localhost:8000/?u=maria
 ```
 
-Every recommendation is logged as a `basket` event (with the user's preferences). The receipt logs `accept`/`reject`
-(with the store chosen, which may not be the cheapest), `view_store` (comparing stores), `preference`
-(choosing another product or typing preference words) and `wrong_product` — use those to decide which rule to fix.
-Without `?u=` the user is anonymous (only a per-visit session id is stored).
+Without `?u=` each browser gets a random person id on its first visit (kept in localStorage); `?u=` sets the id
+instead, and is remembered, so the plain link later is still the same person. The `user_id` column of events, dinners
+and shares holds this person id. A name is optional: it's asked for when someone saves their first dinner and logged
+as a `hello` event (`{"name": …}`).
+
+Every page load is logged as a `visit` (`from`: `tester_link`, `shared_dinner` or `direct`, plus `first_visit` and
+the referrer). Every recommendation is logged as a `basket` event with a server-made `result_id`, the user's
+preferences, and each store's `status` (`ok`, or `no_answer` when its search failed: that store isn't ranked). The
+receipt logs `accept`/`reject` (with the store chosen, which may not be the cheapest), `view_store` (comparing
+stores), `preference` (choosing another product or typing preference words) and `wrong_product`; all but
+`preference` carry the answer's `result_id`. Use those to decide which rule to fix.
 
 ### Looking at the data
 

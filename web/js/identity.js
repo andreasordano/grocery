@@ -1,10 +1,18 @@
-// Who is using pantryrun: ?u= in the link wins, otherwise the name asked for on the first visit.
-// There are no passwords; the name keeps someone's own dinners and tells us who tried it.
+// Who is using pantryrun. Each browser gets a random person id on its first visit; a tester link (?u=)
+// sets the id instead, and someone who typed a name before ids existed keeps that name as their id,
+// so their saved dinners stay theirs. There are no passwords.
+// The name is optional and only asked for when someone saves their first dinner.
 import { $ } from "./dom.js";
 import { storage } from "./storage.js";
 
+const link = new URLSearchParams(location.search).get("u");
+const known = storage.get("pantryrun.person", null) || storage.get("pantryrun.name", null);
+
 export const identity = {
-  userId: new URLSearchParams(location.search).get("u") || storage.get("pantryrun.name", null),
+  personId: link || known || crypto.randomUUID(),
+  fromTesterLink: !!link,
+  firstVisit: !link && !known,
+  name: storage.get("pantryrun.name", null),  // null: never asked; "": skipped
   sessionId: (() => {
     try {
       let id = sessionStorage.getItem("sid");
@@ -13,19 +21,21 @@ export const identity = {
     } catch { return crypto.randomUUID(); }
   })(),
 };
+storage.set("pantryrun.person", identity.personId);
 
-// The first-visit dialog. A name is required, so it can't be closed without one. Resolves once it's typed.
+// Ask for a name once. Resolves with the name typed, or null when it was skipped or asked before.
 export function askName() {
+  if (identity.name !== null) return Promise.resolve(null);
   const hello = $("#hello"), input = $("#helloName");
   return new Promise(resolve => {
-    hello.oncancel = e => e.preventDefault();
-    hello.onclose = () => { if (!identity.userId) hello.showModal(); };  // a second Escape still closes it in Chrome
-    $("#helloForm").onsubmit = () => {
-      identity.userId = input.value.trim().replace(/\s+/g, " ");
-      storage.set("pantryrun.name", identity.userId);
-      resolve();
+    hello.returnValue = "";
+    hello.onclose = () => {
+      const name = hello.returnValue === "save" ? input.value.trim().replace(/\s+/g, " ") : "";
+      identity.name = name;
+      storage.set("pantryrun.name", name);
+      resolve(name || null);
     };
-    input.oninput = () => input.setCustomValidity(input.value.trim() ? "" : "Please type your name.");
+    input.oninput = () => input.setCustomValidity(input.value.trim() ? "" : "Please type your name, or skip.");
     hello.showModal();
   });
 }

@@ -10,7 +10,7 @@
 //   identity.js, api.js, dom.js, format.js: who is using it, the server, page elements, formatting
 import { $ } from "./dom.js";
 import { state } from "./state.js";
-import { identity, askName } from "./identity.js";
+import { identity } from "./identity.js";
 import { api, logEvent } from "./api.js";
 import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
@@ -42,21 +42,23 @@ modeSwitch.addEventListener("click", e => {
 });
 addEventListener("resize", placePill);
 
-// ── start: the name (first visit only), the dinners, your own dinners, a dinner sent by link ──
+// ── start: the visit, the dinners, your own dinners, a dinner sent by link ──
 async function start() {
   placePill();
   document.fonts?.ready.then(placePill);
   idle("Getting the dinners", "One moment.");
-  const named = identity.userId ? Promise.resolve() : askName().then(() => logEvent("hello", {}));
+  const token = new URLSearchParams(location.search).get("dinner");
+  logEvent("visit", {
+    from: identity.fromTesterLink ? "tester_link" : token ? "shared_dinner" : "direct",
+    dinner_token: token, first_visit: identity.firstVisit, referrer: document.referrer || null,
+  });
   try {
     const { recipes, dishes, categories } = await api("/recipes");
     Object.assign(state, { recipes, dishes, categories });
     if (!["ideas", "classics", "mine", ...categories.map(c => c.id)].includes(state.category)) state.category = "ideas";
-    await named;
-    state.mine = (await api(`/my-dinners?user_id=${encodeURIComponent(identity.userId)}`).catch(() => ({ dinners: [] }))).dinners;
-    const token = new URLSearchParams(location.search).get("dinner");
+    state.mine = (await api(`/my-dinners?user_id=${encodeURIComponent(identity.personId)}`).catch(() => ({ dinners: [] }))).dinners;
     if (token) {
-      state.shared = await api(`/shares/${encodeURIComponent(token)}?user_id=${encodeURIComponent(identity.userId)}`).catch(() => null);
+      state.shared = await api(`/shares/${encodeURIComponent(token)}?user_id=${encodeURIComponent(identity.personId)}`).catch(() => null);
       if (state.shared) state.recipeId = state.shared.id;
     }
     render();

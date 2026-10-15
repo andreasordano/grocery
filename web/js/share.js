@@ -8,7 +8,7 @@ import { identity } from "./identity.js";
 export async function shareDinner(recipe) {
   const note = $("#shareNote");
   try {
-    const { path } = await api("/shares", { recipe_id: recipe.id, user_id: identity.userId });
+    const { path } = await api("/shares", { recipe_id: recipe.id, user_id: identity.personId });
     const url = location.origin + path;
     if (navigator.share && matchMedia("(pointer: coarse)").matches) {
       await navigator.share({ title: recipe.name, text: `${recipe.name}: here's where to shop for it`, url }).catch(() => {});

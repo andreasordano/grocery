@@ -157,11 +157,14 @@ def matches_rule(product, rule):
     return _category_ok(product.get("category"), rule.get("category"))
 
 
-def _safe_fetch(store, query, refresh=False):
+def _safe_fetch(store, query, refresh=False, failed=None):
+    """A store search, or [] when the store didn't answer (the store is then added to `failed`)."""
     try:
         return _cached_fetch(store, query, refresh=True) if refresh else _cached_fetch(store, query)
     except Exception as exc:
         print(f"catalog fetch failed {store}/{query}: {exc}")
+        if failed is not None:
+            failed.add(store)
         return []
 
 
@@ -260,9 +263,10 @@ def best_offer(ingredient_key, need, store, recipes=None, rules=None):
     return ingredient_offers(ingredient_key, need, store, recipes, rules)[0]
 
 
-def prefetch(rules, keys, stores, refresh=False):
+def prefetch(rules, keys, stores, refresh=False, failed=None):
     """Warm the fetch cache with every search these ingredients need, concurrently.
-    refresh=True asks the stores again even when the results are still cached."""
+    refresh=True asks the stores again even when the results are still cached.
+    Stores with a search that failed are added to `failed`."""
     searches = {
         (store, q)
         for key in keys
@@ -271,7 +275,7 @@ def prefetch(rules, keys, stores, refresh=False):
         for q in _queries(rule)
     }
     with ThreadPoolExecutor(max_workers=12) as pool:
-        list(pool.map(lambda sq: _safe_fetch(*sq, refresh=refresh), searches))
+        list(pool.map(lambda sq: _safe_fetch(*sq, refresh=refresh, failed=failed), searches))
 
 
 def warm_cache(stores, refresh=False):
@@ -402,19 +406,21 @@ def recipe_needs(recipe, servings, recipes):
 
 # ── baskets: an optional recipe plus extra items, per store ─────────────────
 
-def free_text_offers(items, stores, needs=None):
+def free_text_offers(items, stores, needs=None, failed=None):
     """Options per store for items with no ingredient rule (best guess first).
 
     needs: {item: grams} for dish ingredients. Those are priced for the amount (whole packs, or
     weight × price for loose goods) and, within a match tier, ordered cheapest for that amount.
-    Other items cost one pack.
+    Other items cost one pack. Stores with a search that failed are added to `failed`.
     """
     from core.fetch import fetch_all, spec_for  # deferred: fetch is only needed for free text
 
     if not items:
         return {}
     needs = needs or {}
-    all_products, _ = fetch_all({it: spec_for(it) for it in items}, stores)
+    all_products, warnings = fetch_all({it: spec_for(it) for it in items}, stores)
+    if failed is not None:
+        failed.update(w.split("/", 1)[0] for w in warnings)  # warnings are "store/item: error"
     out = {}
     for it in items:
         out[it] = {}
@@ -477,6 +483,7 @@ def build_basket(store, needs, prefs, recipes, rules, free):
     total = round(sum(l["cost"] for l in lines), 2)
     return {
         "store": store,
+        "status": "ok",
         "lines": lines,
         "missing": missing,
         "total_price": total,
@@ -487,8 +494,17 @@ def build_basket(store, needs, prefs, recipes, rules, free):
     }
 
 
+def no_answer_basket(store):
+    """A store that didn't answer: nothing is known about what it has, so it isn't ranked."""
+    return {"store": store, "status": "no_answer", "lines": [], "missing": [], "total_price": None,
+            "savings": 0, "card_savings": 0}
+
+
 def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None):
     """Rank stores for a recipe (optional) plus extra items: fewest missing, then cheapest.
+
+    A store with a search that failed didn't answer: its basket has status "no_answer" and comes
+    after the ranked ones, rather than looking like a store that doesn't sell the things.
 
     prefs: {ingredient key or "text:<item>": {"products": {store: name}, "words": [...]}}
     """
@@ -509,20 +525,22 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None):
     free_items = list(dict.fromkeys(n["text"] for n in needs if n.get("text")))
 
     # Rule searches and free-text searches run side by side.
+    failed = set()
     with ThreadPoolExecutor(max_workers=2) as pool:
-        warm = pool.submit(prefetch, rules, keys, stores)
-        free_job = pool.submit(free_text_offers, free_items, stores, amounts)
+        warm = pool.submit(prefetch, rules, keys, stores, failed=failed)
+        free_job = pool.submit(free_text_offers, free_items, stores, amounts, failed=failed)
         warm.result()
         free = free_job.result()
 
-    baskets = [build_basket(s, needs, prefs, recipes, rules, free) for s in stores]
+    baskets = [build_basket(s, needs, prefs, recipes, rules, free) for s in stores if s not in failed]
     baskets.sort(key=lambda b: (len(b["missing"]), b["total_price"]))
+    baskets += [no_answer_basket(s) for s in stores if s in failed]
 
     return {
         "recipe": {"id": recipe["id"], "name": recipe["name"], "pantry": recipe.get("pantry", [])} if recipe else None,
         "servings": servings,
         "items": items,
-        "store": baskets[0]["store"] if baskets else None,
+        "store": baskets[0]["store"] if baskets and baskets[0]["status"] == "ok" else None,
         "baskets": baskets,
     }
 

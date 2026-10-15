@@ -55,12 +55,13 @@
   <form method="dialog" id="helloForm">
     <div class="sh-top">
       <h2 id="helloTitle">What’s your name?</h2>
-      <p>So we know who tried it, and to keep the dinners you save. No password needed.</p>
+      <p>So we know who tried it. Your dinners are kept on this device either way. No password needed.</p>
       <label for="helloName">Name</label>
       <input id="helloName" name="name" autocomplete="given-name" maxlength="40" required>
     </div>
     <div class="sh-bottom">
-      <button class="btn dark" type="submit">Start</button>
+      <button class="btn dark" type="submit" value="save">Save</button>
+      <button class="btn quiet" type="submit" value="skip" formnovalidate>Skip</button>
     </div>
   </form>
 </dialog>

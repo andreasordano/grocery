@@ -10,4 +10,4 @@ export async function api(path, body) {
 
 // Record what someone did, to learn what works. Never gets in the way of the page.
 export const logEvent = (type, data) =>
-  api("/events", { type, data, user_id: identity.userId, session_id: identity.sessionId }).catch(() => {});
+  api("/events", { type, data, user_id: identity.personId, session_id: identity.sessionId }).catch(() => {});

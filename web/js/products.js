@@ -6,7 +6,7 @@ import { num, cap, esc, fold } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
 import { logEvent } from "./api.js";
-import { lineAmount } from "./receipt.js";
+import { lineAmount, answered } from "./receipt.js";
 
 const matches = (product, words) => words.every(w => fold(product).includes(fold(w)));
 
@@ -43,7 +43,7 @@ export function chooseProduct(key, onChange) {
   const b = res.baskets.find(x => x.store === state.view);
   const l = b.lines.find(x => x.key === key);
   const old = state.prefs[key] || {};
-  const others = res.baskets.filter(x => x.store !== b.store)
+  const others = answered(res).filter(x => x.store !== b.store)
     .map(x => ({ store: x.store, line: x.lines.find(y => y.key === key) }));
   let chosen = l.product;
   let words = [...(old.words || [])];
