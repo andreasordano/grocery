@@ -79,6 +79,35 @@ def test_rimi_page_without_products_or_notice_raises(monkeypatch):
 
 # ── selver adapter ───────────────────────────────────────────────────────────
 
+def test_selver_reads_the_minimum_of_loose_goods(monkeypatch):
+    from api import selver_api
+
+    def hit(name, volume, **stock):
+        return {"_source": {"name": name, "product_volume": volume, "price": 1.0, "category": [],
+                            "stock": {"stock_status": 1, "min_sale_qty": 1, "qty_increments": 1,
+                                      "enable_qty_increments": False, **stock}}}
+
+    class Resp:  # stock values as Selver sent them on 16 Oct 2026
+        status_code = 200
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"hits": {"hits": [
+                hit("Suvikõrvits roheline, kg", "kg", min_sale_qty=0.7, qty_increments=0.7, enable_qty_increments=True),
+                hit("Lillkapsas, kg", "kg", min_sale_qty=1.2),
+                hit("Ahjuköögiviljad, HÄRMAVILI, 700 g", "700 g"),
+            ]}}
+
+    monkeypatch.setattr(selver_api.requests, "post", lambda *a, **kw: Resp())
+    courgette, cauliflower, mix = selver_api.search_selver("köögiviljad")
+
+    assert (courgette["unit"], courgette["min_qty"], courgette["qty_step"]) == ("kg", 0.7, 0.7)
+    assert (cauliflower["min_qty"], cauliflower["qty_step"]) == (1.2, None)   # steps not enabled
+    assert (mix["unit"], mix["min_qty"]) == (None, None)                      # a pack: one piece is no minimum weight
+
+
 def test_selver_http_error_raises(monkeypatch):
     import requests
     from api import selver_api
