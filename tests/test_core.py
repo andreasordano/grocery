@@ -36,6 +36,7 @@ RIMI_HTML = """
 <div data-product-code="2" data-gtm-eec-product='{"brand":null,"price":5.25}'>
   <p class="card__name">Maasuitsu kanafilee kg</p>
   <div class="price-tag card__price"><span class="sr-only">20.99 € per kg</span></div>
+  <input type="number" value="0.6" min="0.6" max="100" data-amount="0.6" data-unit="kg">
 </div>
 <div data-product-code="3"><p class="card__name">Piim laktoosivaba</p> Out of stock!</div>
 """
@@ -55,6 +56,7 @@ def test_rimi_parses_shelf_price_and_unit(monkeypatch):
 
     assert (milk["price"], milk["unit"], milk["brand"]) == (1.39, "pcs", "Alma")
     assert (chicken["price"], chicken["unit"]) == (20.99, "kg")  # per kg, not GTM's 0.25 kg price
+    assert (chicken["min_qty"], milk["min_qty"]) == (0.6, None)
     assert oos["price"] is None
 
 
@@ -131,7 +133,7 @@ def test_barbora_reads_embedded_product_list(monkeypatch):
             '<script>window.b_productList = [{"id": "1", "title": "Kanamunad M 10tk", "price": 1.99,'
             ' "units": [{"unit": "tk"}], "comparative_unit": "tk", "status": "active",'
             ' "category_name_full_path": "Piimatooted ja munad/Munad/Kanamunad"},'
-            ' {"id": "2", "title": "Sibul, kg", "price": 0.39, "units": [{"unit": "kg"}],'
+            ' {"id": "2", "title": "Sibul, kg", "price": 0.39, "units": [{"unit": "kg", "min": 0.5, "step": 0.1}],'
             ' "comparative_unit": "kg", "status": "inactive", "category_name_full_path": "Köögiviljad"}];'
             ' window.other = 1;</script>'
         )
@@ -142,6 +144,8 @@ def test_barbora_reads_embedded_product_list(monkeypatch):
     assert (eggs["name"], eggs["price"], eggs["unit"], eggs["in_stock"]) == ("Kanamunad M 10tk", 1.99, "tk", True)
     assert eggs["category"] == ["Piimatooted ja munad", "Munad", "Kanamunad"]
     assert (onion["unit"], onion["in_stock"]) == ("kg", False)
+    assert (onion["min_qty"], onion["qty_step"]) == (0.5, 0.1)
+    assert eggs["min_qty"] is None  # sold by the piece: no minimum weight
 
 
 def test_barbora_page_without_product_list_raises(monkeypatch):

@@ -43,6 +43,10 @@ def search_barbora(query, size=24):
     for item in items[:size]:
         path = item.get("category_name_full_path") or ""
         price, regular, card, deal = _prices(item)
+        # Sold unit ("tk" or "kg" for loose goods); comparative_unit is only the price-comparison unit.
+        # Loose goods come in trays: "min" is the least you can order (0.9 kg) and "step" the steps above it.
+        sold = (item.get("units") or [{}])[0]
+        unit = (sold.get("unit") or "").lower() or None
         products.append({
             "store": "barbora",
             "name": (item.get("title") or "").strip(),
@@ -52,8 +56,9 @@ def search_barbora(query, size=24):
             "deal": deal,
             "retail_price": item.get("retail_price"),
             "brand": item.get("brand_name"),
-            # Sold unit ("tk" or "kg" for loose goods); comparative_unit is only the price-comparison unit.
-            "unit": ((item.get("units") or [{}])[0].get("unit") or "").lower() or None,
+            "unit": unit,
+            "min_qty": sold.get("min") if unit in ("kg", "l") else None,
+            "qty_step": sold.get("step") if unit in ("kg", "l") else None,
             "unit_price": item.get("comparative_unit_price"),
             "id": item.get("id"),
             "category": [c.strip() for c in path.split("/") if c.strip()],

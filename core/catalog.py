@@ -104,10 +104,22 @@ def _convert(amount, from_unit, to_unit, piece_g=None):
     return None
 
 
+def sold_quantity(quantity, min_qty=None, step=None):
+    """The amount of a loose good (kg or l) a store sells you when you want `quantity`: at least its
+    minimum, then whole steps above it. Barbora gives both (a 0.9 kg tray: min 0.9, step 0.9), Rimi
+    only the minimum; without them any amount can be bought."""
+    if min_qty and quantity < min_qty:
+        return min_qty
+    if min_qty and step:
+        return round(min_qty + math.ceil((quantity - min_qty) / step - 1e-9) * step, 3)
+    return quantity
+
+
 def cost_for(product, need, need_unit, piece_g=None):
     """Price to pay for `need` of an ingredient using this product, or None if unknown.
 
-    Returns (cost, packs, description).
+    Returns (cost, packs, description, bought): bought is the grams or ml of a loose good the
+    store sells you when that is more than the need (its minimum or step), else None.
     """
     price = parse_price(product.get("price"))
     if price == float("inf"):
@@ -118,7 +130,9 @@ def cost_for(product, need, need_unit, piece_g=None):
         grams = _convert(need, need_unit, "g", piece_g)
         if grams is None:
             return None
-        return round(price * grams / 1000, 2), None, f"{grams:.0f} g × {price:.2f} €/{unit}"
+        sold = sold_quantity(grams / 1000, product.get("min_qty"), product.get("qty_step")) * 1000
+        bought = sold if sold > grams + 0.5 else None
+        return round(price * sold / 1000, 2), None, f"{sold:.0f} g × {price:.2f} €/{unit}", bought
 
     pack = parse_pack(product.get("name") or "", product.get("volume"))
     if not pack:
@@ -128,7 +142,7 @@ def cost_for(product, need, need_unit, piece_g=None):
     if not needed or size <= 0:
         return None
     packs = max(1, math.ceil(needed / size - 1e-9))
-    return round(packs * price, 2), packs, f"{packs} × {price:.2f} €"
+    return round(packs * price, 2), packs, f"{packs} × {price:.2f} €", None
 
 
 # ── rule matching ────────────────────────────────────────────────────────────
@@ -246,9 +260,9 @@ def ingredient_offers(ingredient_key, need, store, recipes, rules, pref=None):
         for p in find_products(rule, store):
             priced = cost_for(p, need, spec["unit"], spec.get("piece_g"))
             if priced:
-                cost, packs, how = priced
+                cost, packs, how, bought = priced
                 options.append(_with_discount({"product": p["name"], "price": parse_price(p["price"]), "cost": cost,
-                                               "packs": packs, "how": how, "substitute": level > 0,
+                                               "packs": packs, "how": how, "bought": bought, "substitute": level > 0,
                                                **_looks(p)}, p))
         if options:
             options.sort(key=lambda o: o["cost"])
@@ -428,9 +442,9 @@ def free_text_offers(items, stores, needs=None, failed=None):
             options = []
             for p in (p for p in all_products.get(it, []) if p["store"] == store):
                 priced = cost_for(p, needs[it], "g") if it in needs else None
-                cost, packs, how = priced or (p["price"], 1, f"1 × {p['price']:.2f} €")
+                cost, packs, how, bought = priced or (p["price"], 1, f"1 × {p['price']:.2f} €", None)
                 options.append((p.get("relevance", 0), p["score"], _with_discount(
-                    {"product": p["name"], "price": p["price"], "cost": cost, "packs": packs, "how": how,
+                    {"product": p["name"], "price": p["price"], "cost": cost, "packs": packs, "how": how, "bought": bought,
                      "substitute": False, **_looks(p)}, p)))
             by_amount = it in needs
             options.sort(key=lambda o: (-o[0], o[2]["cost"]) if by_amount else o[1])
@@ -443,7 +457,7 @@ def _line(key, label, need, unit, offer, options, extra):
         "key": key, "ingredient": key if not key.startswith("text:") else None,
         "label": label, "need": need, "unit": unit, "extra": extra,
         **offer,
-        "options": [{k: o.get(k) for k in ("product", "cost", "how", "regular_cost", "card_cost", "deal", "image", "shelf")}
+        "options": [{k: o.get(k) for k in ("product", "cost", "how", "bought", "regular_cost", "card_cost", "deal", "image", "shelf")}
                     for o in options[:MAX_OPTIONS]],
     }
 

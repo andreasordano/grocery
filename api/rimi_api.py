@@ -57,6 +57,13 @@ def search_rimi(query, page=0):
         if m:
             deal = f"{m.group(1)} or more: −{m.group(2)}%"
 
+        # Loose goods: the quantity field's minimum is the least Rimi sells (0.6 kg of chicken legs).
+        qty = card.select_one("input[data-unit][min]")
+        try:
+            min_qty = float(qty["min"]) if qty and unit in ("kg", "l") else None
+        except ValueError:
+            min_qty = None
+
         # The card's src is a tiny blurred placeholder (q_1); ask Cloudinary for normal quality.
         img = card.select_one("img")
         image = img.get("src").replace(",q_1,", ",q_auto,") if img and img.get("src") else None
@@ -68,6 +75,7 @@ def search_rimi(query, page=0):
             "regular_price": regular,
             "deal": deal,
             "unit": unit,
+            "min_qty": min_qty,
             "code": card.get("data-product-code"),
             "brand": gtm.get("brand"),
             "category": [gtm["category"]] if gtm.get("category") else [],

@@ -121,6 +121,8 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "shelf": item.get("shelf"),
         "image": item.get("image"),
         "unit": item.get("unit"),      # "kg"/"l" for loose goods (catalog.cost_for)
+        "min_qty": item.get("min_qty"),    # loose goods: the least the store sells, in kg/l
+        "qty_step": item.get("qty_step"),  # and the steps above it
         "volume": item.get("volume"),  # pack size when the name lacks it (Selver)
         "weight_g": weight,
         "volume_ml": volume,
