@@ -13,6 +13,7 @@ from core import fetch
 
 import os
 import time
+import uuid
 
 
 # Stores with ingredient rules in data/rules.yaml (Barbora stands in for Maxima).
@@ -99,6 +100,8 @@ def basket(req: BasketRequest):
     """One store for a dinner (optional) plus extra items, honouring the user's preferences.
 
     Every store's basket is returned (best first), each line with its acceptable alternatives.
+    The answer's result_id is logged with it; the web app sends it back with accept, reject, view_store and
+    wrong_product, so those can be joined to the answer they were about.
     """
     if not req.recipe_id and not any(i.strip() for i in req.items):
         raise HTTPException(status_code=400, detail="Pick a recipe or add at least one item")
@@ -108,9 +111,11 @@ def basket(req: BasketRequest):
                                    user_id=req.user_id)
     except KeyError:
         raise HTTPException(status_code=404, detail=f"Unknown recipe: {req.recipe_id}")
+    result["result_id"] = uuid.uuid4().hex
     events.log_event(
         "basket",
         {
+            "result_id": result["result_id"],
             "mission": "dinner" if req.recipe_id else "list",
             "recipe_id": req.recipe_id,
             "servings": result["servings"],
@@ -120,7 +125,7 @@ def basket(req: BasketRequest):
             "latency_s": round(time.monotonic() - started, 2),
             "recommended_store": result["store"],
             "baskets": [
-                {"store": b["store"], "total_price": b["total_price"], "missing": b["missing"],
+                {"store": b["store"], "status": b["status"], "total_price": b["total_price"], "missing": b["missing"],
                  "chosen": {l["key"]: l["product"] for l in b["lines"]}}
                 for b in result["baskets"]
             ],

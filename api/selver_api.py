@@ -22,12 +22,14 @@ def search_selver(query, size=10):
         "Accept": "application/json",
     }
     r = requests.post(url, json=payload, headers=headers, timeout=15)
-    if r.status_code != 200:
-        print(f"Selver error: {r.status_code}")
-        return []
+    r.raise_for_status()  # e.g. 403 from Cloudflare's bot check: the store didn't answer, not "no products"
+    try:
+        hits = r.json()["hits"]["hits"]
+    except (ValueError, KeyError, TypeError):
+        raise RuntimeError("Selver search answered without a product list")
 
     products = []
-    for h in r.json().get("hits", {}).get("hits", []):
+    for h in hits:
         src = h["_source"]
         volume = (src.get("product_volume") or "").strip()
         price = src.get("final_price") or src.get("price")

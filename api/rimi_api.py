@@ -18,10 +18,16 @@ _MULTIBUY_RE = re.compile(r"(\d+)\s+and more\s*-\s*(\d+)\s*%")
 def search_rimi(query, page=0):
     url = "https://www.rimi.ee/epood/en/search"
     r = requests.get(url, params={"query": query, "currentPage": page}, headers=HEADERS, timeout=15)
+    r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
+    cards = soup.select("[data-product-code]")
+    # A search with no results says "No product found" in an .error-page block; a page with
+    # neither that nor products is a changed page or a bot check, so surface it.
+    if not cards and not soup.select_one(".error-page"):
+        raise RuntimeError("Rimi search page has no products and no 'No product found' notice")
 
     products = []
-    for card in soup.select("[data-product-code]"):
+    for card in cards:
         name_el = card.select_one(".card__name")
         name = name_el.get_text(strip=True) if name_el else None
 

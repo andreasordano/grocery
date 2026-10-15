@@ -4,7 +4,7 @@ import { $, pick } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
-import { identity } from "./identity.js";
+import { identity, askName } from "./identity.js";
 import { api, logEvent } from "./api.js";
 import { shownDinners, shuffle } from "./dinners.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
@@ -111,8 +111,10 @@ function onClick(e) {
 
 async function saveShared() {
   const d = state.shared;
+  const name = await askName();  // first dinner only
+  if (name) logEvent("hello", { name });
   try {
-    const saved = await api("/my-dinners", { user_id: identity.userId, name: d.name, servings: d.servings, items: d.items, from_share: d.token });
+    const saved = await api("/my-dinners", { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, from_share: d.token });
     state.mine = [...state.mine, saved].sort((a, b) => a.name.localeCompare(b.name));
     d.saved = true;
     draw();

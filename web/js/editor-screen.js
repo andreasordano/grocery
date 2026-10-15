@@ -4,7 +4,8 @@ import { $, pick } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
-import { identity } from "./identity.js";
+import { identity, askName } from "./identity.js";
+import { logEvent } from "./api.js";
 import { render } from "./screens.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
 import { idle } from "./receipt.js";
@@ -73,7 +74,9 @@ function onClick(e) {
 
 async function saveDinner() {
   const d = state.editing;
-  const body = { user_id: identity.userId, name: d.name, servings: d.servings, items: d.items };
+  const name = await askName();  // first dinner only
+  if (name) logEvent("hello", { name });
+  const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items };
   try {
     const res = await fetch(d.id ? `/my-dinners/${encodeURIComponent(d.id)}` : "/my-dinners", {
       method: d.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -92,7 +95,7 @@ async function saveDinner() {
 async function deleteDinner() {
   const d = state.editing;
   if (!confirm(`Delete "${d.name}"?`)) return;
-  const res = await fetch(`/my-dinners/${encodeURIComponent(d.id)}?user_id=${encodeURIComponent(identity.userId)}`, { method: "DELETE" });
+  const res = await fetch(`/my-dinners/${encodeURIComponent(d.id)}?user_id=${encodeURIComponent(identity.personId)}`, { method: "DELETE" });
   if (!res.ok && res.status !== 404) { $("#dinnerError").textContent = "Couldn't delete the dinner. Try again."; return; }
   state.mine = state.mine.filter(x => x.id !== d.id);
   if (state.recipeId === d.id) state.recipeId = null;

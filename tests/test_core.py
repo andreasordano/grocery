@@ -41,16 +41,55 @@ RIMI_HTML = """
 """
 
 
-def test_rimi_parses_shelf_price_and_unit(monkeypatch):
-    class Resp:
-        text = RIMI_HTML
+class RimiResp:
+    status_code = 200
+    text = RIMI_HTML
 
-    monkeypatch.setattr(rimi_api.requests, "get", lambda *a, **kw: Resp())
+    def raise_for_status(self):
+        pass
+
+
+def test_rimi_parses_shelf_price_and_unit(monkeypatch):
+    monkeypatch.setattr(rimi_api.requests, "get", lambda *a, **kw: RimiResp())
     milk, chicken, oos = rimi_api.search_rimi("piim")
 
     assert (milk["price"], milk["unit"], milk["brand"]) == (1.39, "pcs", "Alma")
     assert (chicken["price"], chicken["unit"]) == (20.99, "kg")  # per kg, not GTM's 0.25 kg price
     assert oos["price"] is None
+
+
+def test_rimi_search_with_no_results_is_empty(monkeypatch):
+    class Resp(RimiResp):
+        text = '<div class="error-page"><p class="error-page__heading">No product found</p></div>'
+
+    monkeypatch.setattr(rimi_api.requests, "get", lambda *a, **kw: Resp())
+    assert rimi_api.search_rimi("qqzz") == []
+
+
+def test_rimi_page_without_products_or_notice_raises(monkeypatch):
+    class Resp(RimiResp):
+        text = "<html>Just a moment...</html>"
+
+    monkeypatch.setattr(rimi_api.requests, "get", lambda *a, **kw: Resp())
+    with pytest.raises(RuntimeError):
+        rimi_api.search_rimi("piim")
+
+
+# ── selver adapter ───────────────────────────────────────────────────────────
+
+def test_selver_http_error_raises(monkeypatch):
+    import requests
+    from api import selver_api
+
+    class Resp:
+        status_code = 403
+
+        def raise_for_status(self):
+            raise requests.HTTPError("403 Forbidden")
+
+    monkeypatch.setattr(selver_api.requests, "post", lambda *a, **kw: Resp())
+    with pytest.raises(requests.HTTPError):
+        selver_api.search_selver("piim")
 
 
 # ── events ───────────────────────────────────────────────────────────────────
@@ -155,7 +194,7 @@ def test_rimi_parses_regular_price_and_multibuy(monkeypatch):
       <div class="price-tag card__price"><span class="sr-only">1.55 € per pcs.</span></div></div>
     """
 
-    class Resp:
+    class Resp(RimiResp):
         text = html
 
     monkeypatch.setattr(rimi_api.requests, "get", lambda *a, **kw: Resp())

@@ -1,7 +1,7 @@
 // Drawing the receipt: waiting, printing, failed, and the answer for one store,
 // plus what you can do under it (go, not for me, wrong product, send the dinner).
 import { $, feed, after, reduceMotion } from "./dom.js";
-import { euro, num, cap, esc, amount, fold } from "./format.js";
+import { euro, num, cap, esc, amount, fold, storeNames } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
 import { shareDinner } from "./share.js";
@@ -35,6 +35,17 @@ export function failed(retry) {
   print(`<div class="waiting"><strong>The stores didn't answer</strong>Check your connection, then try again.</div>`, false);
   after.innerHTML = `<button class="btn quiet wide" type="button" id="retry">Try again</button>`;
   $("#retry").onclick = () => retry();
+}
+
+// The stores that answered, best first. A store that didn't answer (status "no_answer") isn't ranked:
+// nothing is known about what it sells.
+export const answered = res => res.baskets.filter(b => b.status !== "no_answer");
+
+// "Selver didn't answer, prices from Rimi and Barbora"
+function downNote(res) {
+  const down = res.baskets.filter(b => b.status === "no_answer").map(b => b.store);
+  if (!down.length) return "";
+  return `<div class="r-note r-down">${esc(storeNames(down))} didn't answer, prices from ${esc(storeNames(answered(res).map(b => b.store)))}</div>`;
 }
 
 // What to show next to the item name. Recipe lines say how much the recipe needs ("need 4 tk");
@@ -88,8 +99,9 @@ function prefsNote(b) {
 // The receipt for one store of the current answer (the recommended one unless another was tapped).
 export function showReceipt(storeName, animate) {
   const res = state.result;
-  const best = res.baskets[0];
-  const b = res.baskets.find(x => x.store === storeName) || best;
+  const stores = answered(res);
+  const best = stores[0];
+  const b = stores.find(x => x.store === storeName) || best;
   state.view = b.store;
   const isBest = b.store === best.store;
   const main = b.lines.filter(l => !l.extra), extra = b.lines.filter(l => l.extra);
@@ -106,6 +118,7 @@ export function showReceipt(storeName, animate) {
       <div class="r-what">${esc(what)}</div>
       ${delta ? `<div class="r-delta">${esc(delta)}</div>` : ""}
     </div>
+    ${downNote(res)}
     <hr class="r-rule">
     <ul class="r-items">${main.map(line).join("")}</ul>
     ${res.recipe && extra.length ? `<div class="r-head">Also</div>` : ""}
@@ -118,8 +131,8 @@ export function showReceipt(storeName, animate) {
     ${b.card_savings > 0 ? `<div class="r-card">${euro.format(b.card_savings)} less with a loyalty card</div>` : ""}
     ${pantryNote(res)}
     ${prefsNote(b)}
-    ${res.baskets.length > 1 ? `<hr class="r-rule"><div class="r-head">Compare stores</div>
-      <ul class="stores">${res.baskets.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
+    ${stores.length > 1 ? `<hr class="r-rule"><div class="r-head">Compare stores</div>
+      <ul class="stores">${stores.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
         <span class="s">${esc(cap(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span></button></li>`).join("")}</ul>` : ""}
   `, animate);
 
@@ -138,7 +151,7 @@ export function showReceipt(storeName, animate) {
   if (res.recipe) $("#share").onclick = () => shareDinner(res.recipe);
 
   const feedback = { mission: state.mode, recipe_id: res.recipe?.id ?? null, servings: res.servings, items: res.items,
-                     store: b.store, recommended_store: best.store, total_price: b.total_price, result_id: res.id };
+                     store: b.store, recommended_store: best.store, total_price: b.total_price, result_id: res.result_id };
   after.querySelectorAll("[data-fb]").forEach(btn => btn.onclick = () => {
     const accepted = btn.dataset.fb === "accept";
     logEvent(btn.dataset.fb, feedback);
@@ -151,7 +164,7 @@ export function showReceipt(storeName, animate) {
       <button class="btn quiet" type="button" id="sendReport">Report</button></div>`;
     $("#sendReport").onclick = () => {
       const l = b.lines[+$("#wrongItem").value];
-      logEvent("wrong_product", { store: b.store, key: l.key, ingredient: l.ingredient, product: l.product, mission: state.mode, recipe_id: res.recipe?.id ?? null });
+      logEvent("wrong_product", { store: b.store, key: l.key, ingredient: l.ingredient, product: l.product, mission: state.mode, recipe_id: res.recipe?.id ?? null, result_id: res.result_id });
       $("#report").innerHTML = `<div class="report"><p class="thanks">Reported. We'll fix it.</p></div>`;
     };
   };
