@@ -85,6 +85,8 @@ def word_match(word, query):
     1: it only mentions it: "with/without X" (maapähklivõiga), a hyphen prefix
        (maapähklivõi-proteiinibatoon) or X inside a longer word.
     0: unrelated.
+    A word that is the last part of a typed compound is a near form: "kintsuliha" (Br.kintsuliha)
+    for "kanakintsuliha", since Estonian compounds end in what the thing is.
     """
     parts = word.split("-")
     if len(parts) > 1:
@@ -94,6 +96,8 @@ def word_match(word, query):
     form = _form(word, query)
     if not form and len(query) >= 4:
         form = max((_form(word[i:], query) for i in range(3, len(word) - 2)), default=0)
+    if not form and len(word) >= 5 and query.endswith(word) and len(query) - len(word) >= 3:
+        form = 2
     if form:
         # Estonian comitative/abessive: "maapähklivõiga" = with peanut butter, not peanut butter.
         if word.endswith(("ga", "ta")) and len(word) > len(query) and not query.endswith(("ga", "ta")):
@@ -124,17 +128,35 @@ def _word_matches(words, query):
     return out
 
 
+def _participle(word):
+    """"hautatud", "kuivatatud", "külmutatud": how it was made, not what it is."""
+    return len(word) > 5 and word.endswith(("tud", "dud"))
+
+
 def head_weight(name, rules):
     """1 / position of the first word that is (nearly) the typed thing: "Banaan, kg" → 1,
     "Mahe õun" → 0.5, "Kakao segu: õun, banaan, …" → 0.25. Names of the thing itself
-    tend to say it first; mixes and flavours list it later."""
+    tend to say it first; mixes and flavours list it later. Participles in front don't
+    count ("Hautatud veiseliha" → 1)."""
     includes = [fold(kw) for kw in rules.get("include", []) if kw]
     words = _name_words(name)
     per_query = [_word_matches(words, q) for q in includes]
-    for i in range(len(words)):
+    position = 0
+    for i, w in enumerate(words):
         if any(m[i] >= 2 for m in per_query):
-            return 1 / (i + 1)
+            return 1 / (position + 1)
+        if not _participle(w):
+            position += 1
     return 0.0
+
+
+def shares_stem(name, rules, letters=5):
+    """True if a name word starts like a typed word for at least `letters` letters:
+    "Maapähklikreem" for "maapähklivõi". Store search also returns look-alikes with nothing in
+    common ("Tilsit" for "tilaapia", a lamp for "porru"); those don't."""
+    includes = [fold(kw) for kw in rules.get("include", []) if kw]
+    return any(len(os.path.commonprefix([w, q])) >= min(letters, len(q))
+               for w in _name_words(name) for q in includes)
 
 
 def relevance_score(name, rules):

@@ -77,7 +77,7 @@ PANTRY = {
 RENAME = {
     "mugulsibul": "sibul", "muna": "munad", "kartul": "kartul", "segahakkliha": "hakkliha",
     "seahakkliha": "seahakkliha", "veisehakkliha": "veisehakkliha", "broilerihakkliha": "kanahakkliha",
-    "kalkunihakkliha": "kalkunihakkliha", "peakapsas": "kapsas", "porrulauk": "porru", "suvikõrvits": "suvikõrvits",
+    "kalkunihakkliha": "kalkunihakkliha", "peakapsas": "kapsas", "porrulauk": "porrulauk", "suvikõrvits": "suvikõrvits",
     "odrakruubid": "kruubid", "kaalikas": "kaalikas", "läätsed": "läätsed", "valge kala": "kalafilee",
     "ingverijuur": "ingver", "basiilik": "basiilik", "parmesani juust": "parmesan", "juurseller": "seller",
     "varsseller": "varsseller", "juurpetersell": "juurpetersell", "roheline sibul": "roheline sibul",
@@ -94,7 +94,7 @@ RENAME = {
     "vahukoor": "vahukoor", "toidukoor": "toidukoor", "hapukoor": "hapukoor", "kohupiim": "kohupiim",
     "kodujuust": "kodujuust", "toorjuust": "toorjuust", "jogurt": "jogurt", "herned": "herned",
     "aedoad": "aedoad", "oad": "oad", "kikerherned": "kikerherned", "šampinjonid": "šampinjonid",
-    "tšillipipar": "tšilli", "paprika": "paprika", "peet": "peet", "brokoli": "brokoli", "lillkapsas": "lillkapsas",
+    "tšillipipar": "tšillipipar", "paprika": "paprika", "peet": "peet", "brokoli": "brokoli", "lillkapsas": "lillkapsas",
     "spinat": "spinat", "till": "till", "petersell": "petersell", "koriander": "koriander", "küüslauk": "küüslauk",
     "porgand": "porgand", "lõhe": "lõhefilee", "tursk": "tursafilee", "heik": "heik", "tuunikala": "tuunikala",
     "krevetid": "krevetid", "vikerforell": "forell", "tilaapia": "tilaapia", "veiseliha": "veiseliha",

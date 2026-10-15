@@ -3400,5 +3400,4421 @@
 "volume": "200 ml",
 "in_stock": true
 }
+],
+"barbora|kanakintsuliha": [
+{
+"name": "Br.kintsul.nahata A-klass WELL DONE,500g",
+"price": 3.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001252234",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Br.kintsul.nahata, WELL DONE ABta,500g",
+"price": 4.49,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001361177",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eestimaine br.kintsuliha TALLEGG ABta,kg",
+"price": 11.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001240415",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Broilerikints WELL DONE ABta,500g",
+"price": 2.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001361213",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Broilerikintsuliha kolme juustuga, 400g",
+"price": 3.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001222771",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Br.kintsuliha jogurtimarinaadis,kg",
+"price": 9.59,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001046474",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Br.kintsuliha koduses marin.TALLEGG,400g",
+"price": 4.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001407467",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Br.kintsuliha mustika teriyaki mar.,kg",
+"price": 11.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001370099",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Eestimaine br.kints seljaosaga TALLEGG, kg",
+"price": 5.29,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000000143911",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Suitsukana kintsuliha TALLEGG,kg",
+"price": 15.69,
+"shelf": "Suitsulihatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Suitsulihatooted"
+],
+"id": "000000000000605515",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Broileri kintsuliha karri-keefiri,kg",
+"price": 11.99,
+"shelf": "Sealiha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Sealiha"
+],
+"id": "000000000001397326",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Br.kintsuliha küüsl.ürdim.WELL DONE,400g",
+"price": 3.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001399032",
+"unit": "tk",
+"in_stock": false
+},
+{
+"name": "Br.koivaliha steik kondita TALLEGG,kg",
+"price": 10.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000001419620",
+"unit": "kg",
+"in_stock": false
+}
+],
+"barbora|oil": [
+{
+"name": "Eeterlik õli PHARMA OIL Lemongrass 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001137790",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Tea tree 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000815014",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juuksepalsam LILIEN Olive Oil 350ml",
+"price": 3.59,
+"shelf": "Juuksepalsamid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksepalsamid"
+],
+"id": "000000000001385543",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseõli HASK Macadamia oil 18ml",
+"price": 2.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001353706",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šampoon JUSTK Argan Oil&Quinoa 300ml",
+"price": 8.89,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"id": "000000000001371025",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseseerum RICH Silk Oil 60ml",
+"price": 16.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001053393",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Rosemary 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001137912",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Eucalyptus 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000814869",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Lavender 10ml",
+"price": 5.59,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000814870",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Orange 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001137791",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Pine 10ml",
+"price": 5.59,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000815013",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Grapefruit 10ml",
+"price": 5.99,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000815012",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Spreipalsam GLISS Oil Nutritive 200ml",
+"price": 8.19,
+"shelf": "Juuksepalsamid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksepalsamid"
+],
+"id": "000000000000549812",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Palsam GLISS Oil Nutritive 200ml",
+"price": 5.39,
+"shelf": "Juuksepalsamid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksepalsamid"
+],
+"id": "000000000000549811",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juuksepalsam LILIEN Jojoba Oil 350ml",
+"price": 3.59,
+"shelf": "Juuksepalsamid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksepalsamid"
+],
+"id": "000000000001385528",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šampoon OGX Argan Oil of Morocco 385ml",
+"price": 14.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"id": "000000000000941735",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šampoon GLISS Oil Nutritive 400ml",
+"price": 6.59,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"id": "000000000000672201",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseõli GLISS Daily Oil Elixir 75ml",
+"price": 12.19,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000000798263",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseõli RICH Argan Oil Elixir 70ml",
+"price": 16.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001053398",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šampoon LILIEN Olive Oil 350ml",
+"price": 3.59,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"id": "000000000001385526",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juuksepalsam ZIAJA Olive Oil 200ml",
+"price": 2.99,
+"shelf": "Juuksepalsamid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksepalsamid"
+],
+"id": "000000000001387064",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Palsam GARNIER Botanic Castor Oil 200ml",
+"price": 5.59,
+"shelf": "Juuksepalsamid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksepalsamid"
+],
+"id": "000000000001305951",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šampoon HASK Macadamia oil 355ml",
+"price": 8.69,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"id": "000000000001353714",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šampoon ZIAJA Olive Oil 400ml",
+"price": 3.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"id": "000000000001387047",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juuksemask ZIAJA Olive Oil 200ml",
+"price": 3.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001387063",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šampoon LILIEN Jojoba Oil 350ml",
+"price": 3.59,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"id": "000000000001385534",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kätekreem NIVEA AloeVera&Jojoba Oil 75ml",
+"price": 3.89,
+"shelf": "Kätehooldus",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Kätehooldus"
+],
+"id": "000000000001130504",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseõli ELSEVE Extraordinary Oil 100ml",
+"price": 14.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001376636",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Dušigeel NIVEA Diamond&Argan Oil 500ml",
+"price": 7.25,
+"shelf": "Dušigeelid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Dušigeelid"
+],
+"id": "000000000001322373",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseõli SYOSS Beauty Oil Elixir,100ml",
+"price": 13.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000000818903",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseseerum GLISS Scalp Oil Contr.100ml",
+"price": 17.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001405525",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kätekreem NIVEA niisutav, Olive Oil 75ml",
+"price": 3.89,
+"shelf": "Kätehooldus",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Kätehooldus"
+],
+"id": "000000000001171192",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseõli NURME Argan Oil 100ml",
+"price": 19.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001264349",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Dušigeel NIVEA Lemon&Oil 500ml",
+"price": 7.25,
+"shelf": "Dušigeelid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Dušigeelid"
+],
+"id": "000000000001181485",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Dušigeel FA Cream&Oil Cacao 400ml",
+"price": 5.49,
+"shelf": "Dušigeelid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Dušigeelid"
+],
+"id": "000000000001322186",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juukseõli NURME Castrol Oil 100ml",
+"price": 9.99,
+"shelf": "Maskid, seerumid ja juukseõlid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Maskid, seerumid ja juukseõlid"
+],
+"id": "000000000001264350",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Dušigeel PALMOLIVE Pampering Oil 500ml",
+"price": 6.79,
+"shelf": "Dušigeelid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Dušigeelid"
+],
+"id": "000000000001263968",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Jalakreem GREEN PHARMACY Cedar oil 75ml",
+"price": 2.79,
+"shelf": "Jalahooldus",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Jalahooldus"
+],
+"id": "000000000001389207",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Palsam JUSTK Coconut&Argan Oil 300ml",
+"price": 8.89,
+"shelf": "Juuksepalsamid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksepalsamid"
+],
+"id": "000000000001368536",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Neutrogena® Deep Moisture kehakreem mandliõliga, 400ml",
+"price": 10.39,
+"shelf": "Kehakreemid, kehaõlid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Kehakreemid, kehaõlid"
+],
+"id": "000000000001361443",
+"unit": "tk",
+"in_stock": true
+}
+],
+"barbora|oliiviõli": [
+{
+"name": "Oliiviõli Extra Light KALEW 500ml",
+"price": 8.35,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001314404",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsioliiviõli BORGES 1L",
+"price": 17.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000397163",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsioliiviõli BORGES 250ml",
+"price": 3.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000183259",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ol.õli raf+neitsiol.õl.Light BORGES 1L",
+"price": 16.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001101070",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Extra väärisoliiviõli. KALEW 500ml",
+"price": 8.15,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001314405",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Raf.õl.neitsiol.+ol.õli LightBORGES500ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000183260",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light KALEW 1L",
+"price": 15.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001390389",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsioliiviõli BASSO 500ml",
+"price": 4.59,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000815778",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsioliiviõli BORGES 500ml",
+"price": 10.49,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000183258",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsioliiviõli LA ESPANOLA 750ml",
+"price": 13.49,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000158589",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli EXTRA LINE 1l",
+"price": 6.69,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001342269",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ol.õli raf+neitsiol.õl.Light BORGES250ml",
+"price": 3.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000304941",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsioliiviõli WELL DONE 750ml",
+"price": 10.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001324210",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neit.ol.õli Light WELL DONE 750ml",
+"price": 10.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001324214",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli GOCCIA D'oro 1L",
+"price": 7.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000014471",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsioliiviõli sprei BASSO 200ml",
+"price": 5.49,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001241301",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsioliiviõli BASSO 750ml KL",
+"price": 13.49,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001154798",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsioliiviõli WELL DONE 250ml",
+"price": 4.79,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001324213",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsioliiviõli LA ESPANOLA 250ml",
+"price": 3.89,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001052437",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli OLIVITAL 1L",
+"price": 8.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001396286",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra oliiviõli basi. FILIPPOBERIO250ml",
+"price": 8.59,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001223376",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliiviõli 0.3% NATURALISIMO 500ml",
+"price": 18.49,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001240290",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra oliiviõli küüsl.FILIPPOBERIO250ml",
+"price": 8.59,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001223373",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliiviõli light FILIPPOBERIO 500ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001223372",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekst.neitsioliiviõli SPARTA GROVES 250ml",
+"price": 5.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001399352",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli BASSO 1L MET",
+"price": 9.49,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000812400",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsioliiviõli Light BASSO 500ml",
+"price": 8.29,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001377091",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliiviõli light LA ESPANOLA 500 ml",
+"price": 6.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001041646",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Extra väärisoliiviõli KALEW 1L",
+"price": 15.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001390377",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsiol.õli Bio BASSO 500ml kl",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001376892",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsioliiviõli BASSO 250ml kl",
+"price": 4.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001376883",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eks.neitsiol.õli sprei rosm.MANTOVA200ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001159857",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli LA ESPANOLA 1l klaas",
+"price": 6.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000832387",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekst.neitsioliiviõli SPARTA GROVES 750ml",
+"price": 15.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001399334",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsioliiviõli LA ESPANOLA 500ml",
+"price": 6.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000448909",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Fil-ta Extra neitsioliiviõli BASSO 500ml",
+"price": 7.29,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000845236",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliivõli-palsamiääd.sprei MANTOVA 200ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001393229",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eks.-neitsiol.õl.LA ESPANOLA Spray 200ml",
+"price": 4.69,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000924697",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eks.neitsiol.õli spr.basiil.MANTOVA200ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001256859",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eks.neitsiol.õli spr.trühvl.MANTOVA200ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001385161",
+"unit": "tk",
+"in_stock": true
+}
+],
+"barbora|porrulauk": [
+{
+"name": "Porrulauk, kg",
+"price": 2.39,
+"shelf": "Sibul, küüslauk ja muud vürtsköögiviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Sibul, küüslauk ja muud vürtsköögiviljad"
+],
+"id": "000000000000180989",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Murulauk MEIRA 2.4g",
+"price": 0.95,
+"shelf": "Ürdid ja puhtad maitsed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Ürdid ja puhtad maitsed"
+],
+"id": "000000000000965542",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Murulauk WELL DONE 20g",
+"price": 1.19,
+"shelf": "Rohelised maitsetaimed",
+"category": [
+"Köögiviljad, puuviljad",
+"Ürdid",
+"Rohelised maitsetaimed"
+],
+"id": "000000000001318449",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Porgand pestud pakitud KADARBIKU 500g",
+"price": 1.39,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000000329862",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Praetud pikkpoiss PORMET, 500g",
+"price": 1.99,
+"shelf": "Eelküpsetatud lihatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Eelküpsetatud lihatooted"
+],
+"id": "000000000001043565",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kartul pestud punane Talukartul, 2.5kg",
+"price": 3.59,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000000724796",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Pestud porgand KADARBIKU 1kg",
+"price": 1.99,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000001163659",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Porgand lahtine,kg",
+"price": 0.46,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000000180895",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Porgand 200g valmis söömiseks!",
+"price": 1.59,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000000804832",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eesti punane kartul pestud, kg",
+"price": 0.99,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000000724798",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Kartul küpsetamiseks 1kg",
+"price": 2.99,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000001221193",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Lillkapsas, kg",
+"price": 1.99,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000000181485",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Murulauk GRÜNE FEE",
+"price": 2.35,
+"shelf": "Rohelised maitsetaimed",
+"category": [
+"Köögiviljad, puuviljad",
+"Ürdid",
+"Rohelised maitsetaimed"
+],
+"id": "000000000000489195",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Hakkliharull küüsl., köögiv. PORMET,500g",
+"price": 1.99,
+"shelf": "Eelküpsetatud lihatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Eelküpsetatud lihatooted"
+],
+"id": "000000000001354758",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kartul pestud kollane Talukartul, 2.5kg",
+"price": 3.35,
+"shelf": "Kartulid, porgandid ja kapsad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Kartulid, porgandid ja kapsad"
+],
+"id": "000000000000678553",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Porgandi-peedimahl KADARBIKU, 0.33L",
+"price": 2.39,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"id": "000000000000881109",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Porgandisalat küüslauguga 200g",
+"price": 2.02,
+"shelf": "Salatid",
+"category": [
+"Liha, kala, valmistoit",
+"Kulinaaria",
+"Salatid"
+],
+"id": "000000000001298021",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kapsasalat porgandiga, 750g",
+"price": 3.99,
+"shelf": "Töödeldud köögi - ja juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Töödeldud köögi - ja juurviljad"
+],
+"id": "000000000001342815",
+"unit": "tk",
+"in_stock": false
+}
+],
+"barbora|tilaapia": [
+{
+"name": "Külm.tilapiafileed nahata NOWACO 400g",
+"price": 4.29,
+"shelf": "Külmutatud kalatooted",
+"category": [
+"Külmutatud tooted",
+"Külmutatud liha- ja kalatooted",
+"Külmutatud kalatooted"
+],
+"id": "000000000001008736",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Tilsit 45% WELL DONE 200g",
+"price": 2.49,
+"shelf": "Tükijuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Tükijuustud"
+],
+"id": "000000000001347221",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Võileivamääre FARMI  hapukur.-tilli,150g",
+"price": 1.49,
+"shelf": "Määrdejuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Määrdejuustud"
+],
+"id": "000000000001161528",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Till WELL DONE 7g",
+"price": 0.45,
+"shelf": "Ürdid ja puhtad maitsed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Ürdid ja puhtad maitsed"
+],
+"id": "000000000001411741",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Tilsit WELL DONE viilutatud, 400g",
+"price": 4.29,
+"shelf": "Viilujuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Viilujuustud"
+],
+"id": "000000000001347233",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Tilsit FARM MILK viilutatud, 500g",
+"price": 2.15,
+"shelf": "Viilujuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Viilujuustud"
+],
+"id": "000000000000961675",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Till SANTA MARIA, 7g",
+"price": 0.95,
+"shelf": "Ürdid ja puhtad maitsed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Ürdid ja puhtad maitsed"
+],
+"id": "000000000000014162",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Tilsit 45% WELL DONE 150g viil.",
+"price": 1.99,
+"shelf": "Viilujuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Viilujuustud"
+],
+"id": "000000000001347079",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Till ALVO 30g",
+"price": 1.05,
+"shelf": "Ürdid ja puhtad maitsed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Ürdid ja puhtad maitsed"
+],
+"id": "000000000001268789",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kapsasalat tilliga 200g",
+"price": 0.99,
+"shelf": "Salatid",
+"category": [
+"Liha, kala, valmistoit",
+"Kulinaaria",
+"Salatid"
+],
+"id": "000000000001350893",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kapsasalat tilliga, 400g DIMDINI",
+"price": 1.45,
+"shelf": "Töödeldud köögi - ja juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Töödeldud köögi - ja juurviljad"
+],
+"id": "000000000001299888",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Maitseainepasta Tikka Masala MAGGI 65g",
+"price": 1.19,
+"shelf": "Aasia kastmed ja maitseainesegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Aasia kastmed ja maitseainesegud"
+],
+"id": "000000000001351768",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Juust Tilsit FARM MILK  viilutatud, 150g",
+"price": 1.35,
+"shelf": "Viilujuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud",
+"Viilujuustud"
+],
+"id": "000000000000961674",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tuunikala tük.omas mahlas WELL DONE,185g",
+"price": 2.29,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000001350245",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Br.poolkoivad jogurti-tilli TALLEGG,800g",
+"price": 4.99,
+"shelf": "Linnuliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Linnuliha"
+],
+"id": "000000000000967012",
+"unit": "tk",
+"in_stock": true
+}
+],
+"barbora|tšillipipar": [
+{
+"name": "Tšillipipar punane WELL DONE, 50g",
+"price": 1.99,
+"shelf": "Sibul, küüslauk ja muud vürtsköögiviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Sibul, küüslauk ja muud vürtsköögiviljad"
+],
+"id": "000000000001318518",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tšillipipar mix WELL DONE, 75g",
+"price": 1.99,
+"shelf": "Sibul, küüslauk ja muud vürtsköögiviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Sibul, küüslauk ja muud vürtsköögiviljad"
+],
+"id": "000000000001318526",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tšillipipar veskis SANTA MARIA ,70g",
+"price": 4.65,
+"shelf": "Piprad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Piprad"
+],
+"id": "000000000000477106",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Jahvatatud tšillipipra pasta BUGA'S 160g",
+"price": 2.79,
+"shelf": "Muud kastmed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kastmed",
+"Muud kastmed"
+],
+"id": "000000000000883351",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tšilli pipar punane väike TASTY HOME,50g",
+"price": 2.29,
+"shelf": "Sibul, küüslauk ja muud vürtsköögiviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Sibul, küüslauk ja muud vürtsköögiviljad"
+],
+"id": "000000000000764949",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tšillipipar Jalapeno WELL DONE, 50g",
+"price": 1.49,
+"shelf": "Sibul, küüslauk ja muud vürtsköögiviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Sibul, küüslauk ja muud vürtsköögiviljad"
+],
+"id": "000000000001318532",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tšillipipar SANTA MARIA 34g",
+"price": 2.29,
+"shelf": "Piprad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Piprad"
+],
+"id": "000000000001151359",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Jahvatatud tšillipipar WELL DONE 40g",
+"price": 0.75,
+"shelf": "Piprad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Piprad"
+],
+"id": "000000000001410879",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Purustatud tšillipipar WELL DONE 35g",
+"price": 0.75,
+"shelf": "Piprad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Piprad"
+],
+"id": "000000000001410837",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tšillipipar veskis KOTANYI 34g",
+"price": 2.97,
+"shelf": "Piprad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained",
+"Piprad"
+],
+"id": "000000000000907954",
+"unit": "tk",
+"in_stock": true
+}
+],
+"barbora|veiseliha": [
+{
+"name": "Jahutatud veise koot kondig.WELL DONE,kg",
+"price": 11.99,
+"shelf": "Veis ja muu värske liha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Veis ja muu värske liha"
+],
+"id": "000000000001252739",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Veise välisfilee,kg",
+"price": 14.79,
+"shelf": "Veis ja muu värske liha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Veis ja muu värske liha"
+],
+"id": "000000000000042169",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Veiseliha steik kondita WELL DONE,220g",
+"price": 7.99,
+"shelf": "Veis ja muu värske liha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Veis ja muu värske liha"
+],
+"id": "000000000001344611",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veise välisfilee steik WELL DONE, 240g",
+"price": 8.99,
+"shelf": "Veis ja muu värske liha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Veis ja muu värske liha"
+],
+"id": "000000000001343651",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Hautatud veiseliha MAAILU, 325g",
+"price": 3.75,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000001178085",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veiseliha hautatud MINU, 250g",
+"price": 1.99,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000001312350",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Burgeripihvid veisel.-st WELL DONE, 220g",
+"price": 3.79,
+"shelf": "Hakkliha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Hakkliha"
+],
+"id": "000000000001358059",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Hautatud veiseliha MAAILU, 240g",
+"price": 2.25,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000001333372",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veiseliha omas mahlas RANNAROOTSI, 240g",
+"price": 2.89,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000000609945",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Hautatud veiseliha FRANK POTT, 240g",
+"price": 1.79,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000000140867",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veiseliha omas mahlas RGK,325g",
+"price": 2.29,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000001319640",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kuiv.veiseliha snäkk WELL DONE 40g",
+"price": 2.14,
+"shelf": "Lihasnäkid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihasnäkid"
+],
+"id": "000000000001365987",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kauaküp.veiseliha rebitud WELL DONE,600g",
+"price": 9.99,
+"shelf": "Eelküpsetatud lihatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Eelküpsetatud lihatooted"
+],
+"id": "000000000001312414",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Hautatud veiseliha KODUKÜLA, 250g",
+"price": 2.99,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000001388022",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kiirnuudlid Ramen veise.GLADS tops 105g",
+"price": 2.75,
+"shelf": "Kiirnuudlid ja -supid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kiirtoidud",
+"Kiirnuudlid ja -supid"
+],
+"id": "000000000001395035",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Külmutatud veise supikogu,kg",
+"price": 2.49,
+"shelf": "Külmutatud lihatooted",
+"category": [
+"Külmutatud tooted",
+"Külmutatud liha- ja kalatooted",
+"Külmutatud lihatooted"
+],
+"id": "000000000001327176",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Külm.pelmeenid Sib.Col.veiselihaga,350g",
+"price": 3.75,
+"shelf": "Külmutatud pelmeenid ja vareenikud",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pelmeenid ja vareenikud"
+],
+"id": "000000000001266420",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veise vürtsisink OSKAR, 100g viil",
+"price": 2.85,
+"shelf": "Sink, peekon ja rulaadid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Sink, peekon ja rulaadid"
+],
+"id": "000000000000717291",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veiseliha tagaosa kon-ta WELL DONE,kg",
+"price": 14.99,
+"shelf": "Veis ja muu värske liha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Veis ja muu värske liha"
+],
+"id": "000000000001317591",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Külm.pelmeenid veise,sea&kana UVIC, 400g",
+"price": 3.65,
+"shelf": "Külmutatud pelmeenid ja vareenikud",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pelmeenid ja vareenikud"
+],
+"id": "000000000001255982",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veisel.supp tähekuju.nuudl. PODRAVKA52g",
+"price": 0.95,
+"shelf": "Kiirnuudlid ja -supid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kiirtoidud",
+"Kiirnuudlid ja -supid"
+],
+"id": "000000000001004930",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kassipasteet DR.STERN veiseliha 100g",
+"price": 0.69,
+"shelf": "Kasside konservid ja eined",
+"category": [
+"Puhastustarbed ja lemmikloomatooted",
+"Lemmikloomakaubad",
+"Kasside konservid ja eined"
+],
+"id": "000000000001370106",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Vahustatud kassitoit veiseliha ARDOUR85g",
+"price": 0.45,
+"shelf": "Kasside konservid ja eined",
+"category": [
+"Puhastustarbed ja lemmikloomatooted",
+"Lemmikloomakaubad",
+"Kasside konservid ja eined"
+],
+"id": "000000000001405551",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Täissuitsuvorst veise RANNAROOTSI,240g",
+"price": 3.59,
+"shelf": "Suitsutatud, vinnutatud vorstid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Suitsutatud, vinnutatud vorstid"
+],
+"id": "000000000001107455",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Vinnut.veiseliha Original KARNI,50g",
+"price": 2.09,
+"shelf": "Lihasnäkid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihasnäkid"
+],
+"id": "000000000001338992",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Külm.veisemaks NÕO,kg",
+"price": 4.09,
+"shelf": "Külmutatud lihatooted",
+"category": [
+"Külmutatud tooted",
+"Külmutatud liha- ja kalatooted",
+"Külmutatud lihatooted"
+],
+"id": "000000000001376393",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Kiisueine ONE Senior kana ja veise 4x85g",
+"price": 3.85,
+"shelf": "Kasside konservid ja eined",
+"category": [
+"Puhastustarbed ja lemmikloomatooted",
+"Lemmikloomakaubad",
+"Kasside konservid ja eined"
+],
+"id": "000000000001308446",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kuiv.veiseliha snäkk vürts.WELL DONE 40g",
+"price": 2.14,
+"shelf": "Lihasnäkid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihasnäkid"
+],
+"id": "000000000001365992",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Värskekapsaborš 3 veisel.PÕLTSAMAA 530g",
+"price": 3.79,
+"shelf": "Valmistoidud purgis",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Valmistoidud purgis"
+],
+"id": "000000000000617951",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ukraina borš veise.purav.WELL DONE 480g",
+"price": 2.95,
+"shelf": "Valmistoidud purgis",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Valmistoidud purgis"
+],
+"id": "000000000001409503",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veise abalih.steik kondit.WELL DONE,220g",
+"price": 7.99,
+"shelf": "Veis ja muu värske liha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Veis ja muu värske liha"
+],
+"id": "000000000001344594",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Hautatud veiseliha FARMER GRANT, 250g",
+"price": 4.29,
+"shelf": "Lihakonservid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihakonservid"
+],
+"id": "000000000001388844",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Rassolnik veiselihaga SALVEST 530g",
+"price": 3.69,
+"shelf": "Valmistoidud purgis",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Valmistoidud purgis"
+],
+"id": "000000000000140888",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Veiseliha äkis LINNAMÄE,110g",
+"price": 6.49,
+"shelf": "Muud lihatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Muud lihatooted"
+],
+"id": "000000000001354384",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Koerasööt FRISKIES veise-kana-lamb 4x85g",
+"price": 1.49,
+"shelf": "Koerte konservid ja eined",
+"category": [
+"Puhastustarbed ja lemmikloomatooted",
+"Lemmikloomakaubad",
+"Koerte konservid ja eined"
+],
+"id": "000000000001365177",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kuiv koeratoit LOVETT veiselihaga 3kg",
+"price": 5.09,
+"shelf": "Koerte kuivsööt",
+"category": [
+"Puhastustarbed ja lemmikloomatooted",
+"Lemmikloomakaubad",
+"Koerte kuivsööt"
+],
+"id": "000000000001255229",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kuiv koeratoit LOVETT veiselihaga 10kg",
+"price": 13.99,
+"shelf": "Koerte kuivsööt",
+"category": [
+"Puhastustarbed ja lemmikloomatooted",
+"Lemmikloomakaubad",
+"Koerte kuivsööt"
+],
+"id": "000000000001255231",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Hapukapsaborš veiselihaga SALVEST 530g",
+"price": 3.79,
+"shelf": "Valmistoidud purgis",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Valmistoidud purgis"
+],
+"id": "000000000000140887",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Vinnut.veiseliha Teriyaki KARNI,50g",
+"price": 2.09,
+"shelf": "Lihasnäkid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihasnäkid"
+],
+"id": "000000000001338991",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Vinnut.veiseliha Hot KARNI,50g",
+"price": 2.09,
+"shelf": "Lihasnäkid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Lihasnäkid"
+],
+"id": "000000000001338869",
+"unit": "tk",
+"in_stock": true
+}
+],
+"barbora|õli": [
+{
+"name": "Päevalille õli OILIO 1L",
+"price": 3.45,
+"shelf": "Päevalilleõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Päevalilleõlid"
+],
+"id": "000000000001408855",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ol.õli raf+neitsiol.õl.Light BORGES 1L",
+"price": 16.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001101070",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ol.õli raf+neitsiol.õl.Light BORGES250ml",
+"price": 3.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000304941",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Raf.õl.neitsiol.+ol.õli LightBORGES500ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000183260",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neit.ol.õli Light WELL DONE 750ml",
+"price": 10.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001324214",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Orange 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001137791",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eks.neitsiol.õli spr.basiil.MANTOVA200ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001256859",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eks.neitsiol.õli spr.trühvl.MANTOVA200ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001385161",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Lemongrass 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001137790",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Lavender 10ml",
+"price": 5.59,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000814870",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra neitsiol.õli Bio BASSO 500ml kl",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001376892",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kuumaõhu fritüüri õli spr.MANTOVA 200ml",
+"price": 6.99,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"id": "000000000001384807",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Šprotid õlis KAIJA, 160g",
+"price": 2.29,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000001026713",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli OLIVITAL 1L",
+"price": 8.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001396286",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli NURME Lavendel 10ml",
+"price": 7.49,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001235305",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Ekstra-neitsiol.õli FILIPPO BERIO500ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000000586729",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Heeringafil.sool.maits.OCEAN õlis, 220g",
+"price": 1.39,
+"shelf": "Heeringad ja heeringatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Heeringad ja heeringatooted"
+],
+"id": "000000000000535634",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Heeringafil.sool.tradits.OCEAN õlis,220g",
+"price": 1.35,
+"shelf": "Heeringad ja heeringatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Heeringad ja heeringatooted"
+],
+"id": "000000000000535641",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Päik.kuiv.tomat.õlis WELL DONE PREM.530g",
+"price": 5.99,
+"shelf": "Konserveeritud kurgid ja tomatid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Konserveeritud kurgid ja tomatid"
+],
+"id": "000000000001369952",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Orgaan.MCT kookos.õli BIONATURALIS 250ml",
+"price": 10.15,
+"shelf": "Kookosõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Kookosõlid"
+],
+"id": "000000000001252104",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Õli NURME Sheapähkli 100ml",
+"price": 13.99,
+"shelf": "Kehakreemid, kehaõlid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Kehakreemid, kehaõlid"
+],
+"id": "000000000001337715",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tuunikala purust. õlis KAPTEN GRANT,185g",
+"price": 2.25,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000001339418",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Heeringafil.tükid sibul. õlis VICI 210g",
+"price": 3.09,
+"shelf": "Heeringad ja heeringatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Heeringad ja heeringatooted"
+],
+"id": "000000000001406284",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Raamat Kumb oli enne?",
+"price": 14.99,
+"shelf": "Laste- ja õppekirjandus",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Raamatud",
+"Laste- ja õppekirjandus"
+],
+"id": "000000000001420303",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kehakreem J&L aprik.õli Q10 250ml",
+"price": 8.15,
+"shelf": "Kehakreemid, kehaõlid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Kehakreemid, kehaõlid"
+],
+"id": "000000000001359460",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Avok.õli sprei laimi-roosap.MANTOVA 200ml",
+"price": 9.99,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"id": "000000000001393259",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Tuunikalatükid õlis KAPTEN GRANT,185g",
+"price": 2.69,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000000507733",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Sprotid ōlis RANNAKÜLA, EO, 240g",
+"price": 2.99,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000001054770",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Sprotid õlis KAPTEN GRANT, EO 240g",
+"price": 2.79,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000001020224",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Sprotid õlis OCEAN, 160g",
+"price": 1.75,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000000920434",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Skumbria õlis MARINE ABC, EO 240g",
+"price": 2.59,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000001257144",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Heeringafilee tk. tilliga õlis VICI,210g",
+"price": 3.09,
+"shelf": "Heeringad ja heeringatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Heeringad ja heeringatooted"
+],
+"id": "000000000001352462",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eks.neitsiol.õli sprei rosm.MANTOVA200ml",
+"price": 9.99,
+"shelf": "Oliiviõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Oliiviõlid"
+],
+"id": "000000000001159857",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Pine 10ml",
+"price": 5.59,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000815013",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Rosemary 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001137912",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Tea tree 10ml",
+"price": 4.39,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000815014",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Heeringafilee pun.sibul.õlita VICI, 200g",
+"price": 3.29,
+"shelf": "Heeringad ja heeringatooted",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Heeringad ja heeringatooted"
+],
+"id": "000000000001200861",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli PHARMA OIL Grapefruit 10ml",
+"price": 5.99,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000000815012",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Kulduim tuunikala õlis WELL DONE PREMIUM 190g",
+"price": 5.49,
+"shelf": "Kalakonservid ja marineeritud kalad",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Kalakonservid ja marineeritud kalad"
+],
+"id": "000000000001369024",
+"unit": "tk",
+"in_stock": true
+},
+{
+"name": "Eeterlik õli NURME Teepuu 10ml",
+"price": 7.49,
+"shelf": "Saunatarbed",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Saunatarbed"
+],
+"id": "000000000001235303",
+"unit": "tk",
+"in_stock": true
+}
+],
+"rimi|oil": [
+{
+"name": "Päevalilleõli Rimi Smart 1l",
+"price": 1.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-110"
+],
+"code": "804284",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Rapsiõli Rimi Smart 1l",
+"price": 1.69,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-111"
+],
+"code": "804295",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light Rimi 750ml",
+"price": 9.29,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "803242",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Rapsiõli Kalew 1l",
+"price": 2.79,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-111"
+],
+"code": "1002747",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli Borges 750ml",
+"price": 6.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "147762",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli Rimi 750ml",
+"price": 11.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "803240",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli Rimi Smart 1l",
+"price": 5.79,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "804085",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Rapsiõli Olivia 1l",
+"price": 3.65,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-111"
+],
+"code": "100381",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Rapsiõli Olivia 500ml",
+"price": 1.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-111"
+],
+"code": "105056",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light Borges 750ml",
+"price": 6.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "147764",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kookosõli rafineerimata Rimi Planet 500ml",
+"price": 5.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-106"
+],
+"code": "809932",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Päevalilleõli Olivia 1l",
+"price": 3.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-110"
+],
+"code": "175484",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Päevalilleõli Rimi 1l",
+"price": 3.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-110"
+],
+"code": "801707",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli rafin.-tud Extra Light Borges 500ml",
+"price": 10.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "101347",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light Rimi 1l",
+"price": 9.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "808051",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli Rimi 500ml",
+"price": 9.29,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "803239",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kookosõli Rimi Planet rafineeritud 500ml",
+"price": 4.69,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-106"
+],
+"code": "811910",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light Rimi 500ml",
+"price": 8.19,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "803241",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Avokaadoõli Soilmates 500ml",
+"price": 11.59,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"code": "1022394",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Äädikhape 30% 1l",
+"price": 2.15,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-104"
+],
+"code": "161509",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Rapsiõli Rimi 1l",
+"price": 2.89,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-111"
+],
+"code": "801706",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Küpsetusõli Kalew 1l",
+"price": 3.19,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-111"
+],
+"code": "1002748",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli Rimi 1l",
+"price": 9.89,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "811277",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Küpsetusõli Olivia 1l",
+"price": 2.69,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-111"
+],
+"code": "168703",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Päevalilleõli Kalew 1l",
+"price": 3.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-110"
+],
+"code": "1002758",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli rafineeritud Rimi 750ml",
+"price": 7.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"code": "808158",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Bionatural mahe 750ml",
+"price": 15.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "175954",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Päevalilleõli külmpr. rafineerimata Biona. 1l",
+"price": 8.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-110"
+],
+"code": "7041465",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli rafin.-tud Extra Light Borges 250ml",
+"price": 5.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "108571",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli Rimi rafineeritud 1l",
+"price": 11.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"code": "813004",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Õli viinamarjaseemne Borges 500ml",
+"price": 6.15,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"code": "102297",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Päevalilleõli Natura 1l",
+"price": 5.59,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-110"
+],
+"code": "137483",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliivijääkõli Goccio Doro1l",
+"price": 9.95,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "113370",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli sidr. Selection 250ml",
+"price": 8.69,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "803347",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli bas. Selection 250ml",
+"price": 8.69,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "803346",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli \"Val di Mazara.\" 500ml",
+"price": 18.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "196166",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli Rimi 1l",
+"price": 15.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "808052",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli tradits. Pons 1l",
+"price": 18.19,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "170841",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli Grande Uliveto 1l",
+"price": 18.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "196165",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ekstra väärisoliiviõli Borges 250ml",
+"price": 5.59,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "102328",
+"unit": "pcs",
+"in_stock": true
+}
+],
+"rimi|oliiviõli": [
+{
+"name": "Oliiviõli Extra Light Rimi 750ml",
+"price": 9.29,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "803242",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light Borges 750ml",
+"price": 6.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "147764",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Bionatural mahe 750ml",
+"price": 15.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "175954",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light Rimi 1l",
+"price": 9.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "808051",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra Light Rimi 500ml",
+"price": 8.19,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "803241",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli rafin.-tud Extra Light Borges 500ml",
+"price": 10.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "101347",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Anšoovisefileed oliiviõlis Coargal 75g",
+"price": 2.49,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-21"
+],
+"code": "4011868",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Borges Classic 500ml",
+"price": 9.79,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "102363",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli rafin.-tud Extra Light Borges 250ml",
+"price": 5.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-108"
+],
+"code": "108571",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Gustolu Extra Virgin 750ml",
+"price": 14.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "1016695",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Gustolu Extra Virgin 500ml",
+"price": 11.19,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "1016694",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Gustolu Extra Virgin Grecale 750ml",
+"price": 15.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "1016675",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Oliiviõli Extra light Kalew 500ml",
+"price": 8.59,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-114"
+],
+"code": "1012255",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tuunik.fil. oliiviõl. Selection by Rimi 200g",
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-8"
+],
+"code": "810822",
+"in_stock": false
+},
+{
+"name": "Vööttuunifilee oliivõlis Rimi MSC 240g/168g",
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-8"
+],
+"code": "804901",
+"in_stock": false
+}
+],
+"rimi|porrulauk": [
+{
+"name": "Porrulauk kg",
+"price": 2.39,
+"shelf": "SH-12-1",
+"category": [
+"SH-12-1-6"
+],
+"code": "211259",
+"unit": "kg",
+"in_stock": true
+}
+],
+"rimi|tšillipipar": [
+{
+"name": "Tšillipipar punane 1kl, kg",
+"price": 7.99,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-13"
+],
+"code": "210112",
+"unit": "kg",
+"in_stock": true
+},
+{
+"name": "Tšillipipar Jalapeno 50g",
+"price": 1.49,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-13"
+],
+"code": "980725",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tšillipipar Habanero 50g",
+"price": 1.99,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-13"
+],
+"code": "980723",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tšillipipar Red Hot, helbed Santa Maria 28g",
+"price": 2.39,
+"shelf": "SH-13-12",
+"category": [
+"SH-13-12-75"
+],
+"code": "191183",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tšillipipar Carolina Reaper punane 50g",
+"price": 4.59,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-13"
+],
+"code": "4009177",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tšillipipra mix Cayenne 70g",
+"price": 1.99,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-13"
+],
+"code": "933508",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tšillipipra mix Rawit Bird’s eye 50g",
+"price": 1.99,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-13"
+],
+"code": "980717",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Krõb. koores m.päh. tšillipipraga Rimi 140g",
+"price": 1.95,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-14"
+],
+"code": "1022406",
+"unit": "pcs",
+"in_stock": true
+}
+],
+"rimi|veiseliha": [
+{
+"name": "Puljong veiseliha Maggi 120g",
+"price": 1.69,
+"shelf": "SH-13-8",
+"category": [
+"SH-13-8-43"
+],
+"code": "162882",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Veiseliha hautatud Rimi 250g",
+"price": 1.99,
+"shelf": "SH-8-6",
+"category": [
+"SH-8-6"
+],
+"code": "803381",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Puljong veiseliha Maggi 80g",
+"price": 1.55,
+"shelf": "SH-13-8",
+"category": [
+"SH-13-8-43"
+],
+"code": "1005845",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Püree Põnn köögiv.-veiseliha öko 6k 110g",
+"price": 1.89,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"code": "7103988",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kuivatatud veiseliha Original Karni 50g",
+"price": 2.79,
+"shelf": "SH-8-15",
+"category": [
+"SH-8-15"
+],
+"code": "925984",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kuivatatud veiseliha terav Karni 50g",
+"price": 2.79,
+"shelf": "SH-8-15",
+"category": [
+"SH-8-15"
+],
+"code": "925975",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Veiseliha omas mahlas Rannarootsi 240g",
+"price": 2.85,
+"shelf": "SH-8-6",
+"category": [
+"SH-8-6"
+],
+"code": "266095",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Konserv hautatud veiseliha Koduküla 250g",
+"price": 2.99,
+"shelf": "SH-8-6",
+"category": [
+"SH-8-6"
+],
+"code": "913048",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Veiseliha konserv Sirloin 330g",
+"price": 7.19,
+"shelf": "SH-19-2",
+"category": [
+"SH-19-2"
+],
+"code": "969800",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Koerasööt GranCarno Adult veis-lammas 800g",
+"price": 4.99,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "142750",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Vinnut. veiseliha Teriyaki Jerkey Karni 50g",
+"price": 2.79,
+"shelf": "SH-8-15",
+"category": [
+"SH-8-15"
+],
+"code": "925983",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Koerasööt Grrreat veiseliha tükid 415g",
+"price": 0.75,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "816248",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kassitoit veiseliha,kana,k.vilj. Friskie 800g",
+"price": 3.99,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-3"
+],
+"code": "7316053",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kassitoit veiseliha ja nisu Purina One 1,4kg",
+"price": 6.99,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-3"
+],
+"code": "7316279",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Ko.t. k.,vei.,par. Club 4 Paws Premium 4x85g",
+"price": 2.35,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "7317298",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Pür.sp.,kart.,past,v.liha Rudolfs 6k öko 110g",
+"price": 1.49,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"code": "7241893",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Koeratoit Nutribal. Sel. veis-köögivil.400g",
+"price": 1.75,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "817734",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Hapukapsaborš veiselihaga Salvest 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"code": "100378",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Burgeripihvid veiselihast Americano Rimi 220g",
+"price": 3.89,
+"shelf": "SH-8-2",
+"category": [
+"SH-8-2-6"
+],
+"code": "810117",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Vürtsid BBQ veiselihale Rimi 240g",
+"price": 4.79,
+"shelf": "SH-13-12",
+"category": [
+"SH-13-12-73"
+],
+"code": "815954",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Pelmeenid veiselihaga Viči 400g",
+"price": 3.99,
+"shelf": "SH-4-7",
+"category": [
+"SH-4-7-25"
+],
+"code": "298829",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Öko. köögiviljapür. veise. Salling Oko 190g",
+"price": 0.95,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"code": "7317593",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Värskekapsaborš veiselihaga Põltsamaa 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"code": "133276",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Koeratoit Grrreat veiselih. kons. 1240g",
+"price": 1.49,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "801216",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kassieine Gourmet Suc. Del. veiselihaga 85g",
+"price": 0.99,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"code": "7281034",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Koerasööt veisel. NutriBalance 1,24kg",
+"price": 2.49,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "804590",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Koerte konserv veiselihaga PrimaDog 260g",
+"price": 1.99,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "7217275",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kiirnuudlid veiselihamaitselised Maggi 59,2g",
+"price": 0.79,
+"shelf": "SH-13-8",
+"category": [
+"SH-13-8-39"
+],
+"code": "1000056",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Koerasööt veiselihaga pasteet Salling 300g",
+"price": 1.29,
+"shelf": "SH-7-2",
+"category": [
+"SH-7-2-4"
+],
+"code": "817547",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Turisti hommikueine veiselihast Rimi 250g",
+"price": 2.59,
+"shelf": "SH-8-6",
+"category": [
+"SH-8-6"
+],
+"code": "803380",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Värske kapsa borš veiseliha Salvest 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"code": "100384",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Aedvili pasta veiselihaga Põnn öko 190g",
+"price": 1.99,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"code": "7258543",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kassitoit Purrrfect veiselihaga t.kasv. 1kg",
+"price": 1.59,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-3"
+],
+"code": "816237",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Toortatraroog veiselihaga Põnn öko 190g",
+"price": 2.35,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"code": "7258542",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Mak.-juusturoog veiselih. 7k.+ Põnn öko 130g",
+"price": 2.19,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"code": "7309762",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Köögiviljapr veiselihaga Põnn öko 190g",
+"price": 1.99,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"code": "7258537",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Pannkoogid Rimi veiselihaga 4x90g, 360g",
+"price": 3.99,
+"shelf": "SH-16-3",
+"category": [
+"SH-16-3"
+],
+"code": "813954",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kasside suupiste Dreamies veiselihaga 60g",
+"price": 2.05,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-2"
+],
+"code": "7077560",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "T.sööt kasd. Nutribal. kana-veis-turs 12x100g",
+"price": 4.39,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"code": "816141",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Mahe veiselihapüree kuubikud BabyCool 200g",
+"price": 12.69,
+"shelf": "SH-19-3",
+"category": [
+"SH-19-3"
+],
+"code": "946415",
+"unit": "pcs",
+"in_stock": true
+}
+],
+"rimi|õli": [
+{
+"name": "Päikesekuivatatud tomatid Rimi 280g/180g",
+"price": 2.99,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-63"
+],
+"code": "809489",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Sprotid õlis Rimi 170g/119g",
+"price": 1.95,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "808809",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Soolaheeringafilee õlis Rimi Smart 240g/175g",
+"price": 1.59,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"code": "811810",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Sprotid õlis Rannaküla 240g",
+"price": 2.95,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "905191",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Õli viinamarjaseemne Borges 500ml",
+"price": 6.15,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"code": "102297",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tuunikala õlis Gemoss 185g/130g",
+"price": 2.99,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-8"
+],
+"code": "977770",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Suitsutatud sprotid õlis Rimi 160g/112g",
+"price": 1.89,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "815627",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Purust.tuunik.õlis Northland 425g/298g",
+"price": 3.65,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-8"
+],
+"code": "812666",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Artišokid õlis marineer. Piacelli 280g/151g",
+"price": 4.09,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-55"
+],
+"code": "174466",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Küpsis maapähklivõiga Frank&Oli glut.vaba 50g",
+"price": 1.65,
+"shelf": "SH-13-1",
+"category": [
+"SH-13-1-7"
+],
+"code": "1017710",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Sardiinid õlis Kapten Grant 240g",
+"price": 2.19,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-9"
+],
+"code": "4009902",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Küpsis soolakaramelli Frank&Oli 50g",
+"price": 1.69,
+"shelf": "SH-13-1",
+"category": [
+"SH-13-1-7"
+],
+"code": "1024084",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Lõhe õlis sidruniga Rimi 170g/119g",
+"price": 2.59,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-9"
+],
+"code": "812846",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Suitsutatud sprotid õlis Rimi 100g/70g",
+"price": 1.29,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "815612",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Päik-kuiv. tomatid õlis Citres 290g/168g",
+"price": 4.09,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-63"
+],
+"code": "151828",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Atl. heeringafilee Rimi Smart õlis 1kg",
+"price": 5.79,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"code": "813531",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Makrell õlis Rimi Smart 240g/168g",
+"price": 2.79,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-9"
+],
+"code": "801764",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Tursamaks omas õlis Salling Princip 123g",
+"price": 2.29,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-9"
+],
+"code": "817472",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Sprotid õlis Kapten Grant 240g/156g",
+"price": 2.99,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "946107",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Pehme kookoseküpsis india pähk. Frank&Oli 50g",
+"price": 1.65,
+"shelf": "SH-13-1",
+"category": [
+"SH-13-1-7"
+],
+"code": "1017689",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Sprotid õlis Rannaküla 160g",
+"price": 2.85,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "4011833",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Skumbria õlis Kaija 240g/144g",
+"price": 3.09,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-9"
+],
+"code": "220484",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kõrvitsaõli Rimi Selection 250ml",
+"price": 9.79,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"code": "1009977",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Õli mitmeotstarbeline CarPlan 125ml",
+"price": 4.99,
+"shelf": "SH-15-2",
+"category": [
+"SH-15-2-8"
+],
+"code": "7296460",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Päikesekuivatatud tomatid õlis Sacla 280g",
+"price": 3.29,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-63"
+],
+"code": "1010025",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Vürtsikilu fileed õlis Briis 160g/120g",
+"price": 2.75,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-21"
+],
+"code": "283167",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Sprotid Rannaküla õlis 250g klaas",
+"price": 4.89,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "4003258",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Astelpaju-saialille õli Vipis aeros.50ml",
+"price": 8.99,
+"shelf": "SH-2-12",
+"category": [
+"SH-2-12-75"
+],
+"code": "7211335",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Sprotid õlis EO Kaija 190g",
+"price": 3.49,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-7"
+],
+"code": "930319",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Kreeka pähkli õli 0,25l",
+"price": 9.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"code": "1009990",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Juust õlis maitsetaimedega Akadia 100g",
+"price": 2.05,
+"shelf": "SH-11-3",
+"category": [
+"SH-11-3-10"
+],
+"code": "4010450",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "T.kala tükid õlis Kapten Grant MSC 185g/130g",
+"price": 2.59,
+"shelf": "SH-8-5",
+"category": [
+"SH-8-5-8"
+],
+"code": "4004278",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Heeringafilee tükid till. õlis Viči 210g/130g",
+"price": 2.75,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"code": "993201",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Õli- ja äädikapudel pihustiga Maku 100ml",
+"price": 9.89,
+"shelf": "SH-10-6",
+"category": [
+"SH-10-6-34"
+],
+"code": "7288412",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Soolatud heeringafilee õlis Rimi 240g/192g",
+"price": 2.35,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"code": "803783",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Küpsis pist. ja valg. šok. m.a. Frank&Oli 50g",
+"price": 1.49,
+"shelf": "SH-13-1",
+"category": [
+"SH-13-1-7"
+],
+"code": "1024076",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Heeringafilee tükid sib. õlis Viči 210g/130g",
+"price": 2.75,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"code": "993200",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Brownie šok. ja Ind. päh. m.ai. Frank&Oli 50g",
+"price": 1.49,
+"shelf": "SH-13-1",
+"category": [
+"SH-13-1-7"
+],
+"code": "1024083",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Suitsutat. rannakarbid õlis Rimi ASC 120g/72g",
+"price": 2.35,
+"shelf": "SH-8-3",
+"category": [
+"SH-8-3-4"
+],
+"code": "816344",
+"unit": "pcs",
+"in_stock": true
+},
+{
+"name": "Heeringafilee õlis vähesoolatud Zigmas 240g",
+"price": 2.49,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"code": "4006603",
+"unit": "pcs",
+"in_stock": true
+}
 ]
 }
