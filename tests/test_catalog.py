@@ -20,17 +20,35 @@ def test_parse_pack(name, volume, expected):
 
 
 def test_cost_whole_packs():
-    cost, packs, _ = catalog.cost_for({"name": "Kohupiim 200 g", "price": 0.99}, 400, "g")
-    assert (cost, packs) == (1.98, 2)
+    cost, packs, _, bought = catalog.cost_for({"name": "Kohupiim 200 g", "price": 0.99}, 400, "g")
+    assert (cost, packs, bought) == (1.98, 2, None)
 
 
 def test_cost_loose_by_weight():
-    cost, packs, _ = catalog.cost_for({"name": "Kartul, kg", "price": 0.99, "unit": "kg"}, 800, "g")
-    assert (cost, packs) == (0.79, None)
+    cost, packs, _, bought = catalog.cost_for({"name": "Kartul, kg", "price": 0.99, "unit": "kg"}, 800, "g")
+    assert (cost, packs, bought) == (0.79, None, None)
+
+
+def test_cost_loose_with_a_minimum_is_at_least_the_minimum():
+    legs = {"name": "Eestimaine br.kints seljaosaga TALLEGG, kg", "price": 5.29, "unit": "kg", "min_qty": 0.9, "qty_step": 0.9}
+    cost, _, _, bought = catalog.cost_for(legs, 148, "g")
+    assert (cost, bought) == (4.76, 900)        # one 0.9 kg tray, not 148 g for 0.78
+    cost, _, _, bought = catalog.cost_for(legs, 1000, "g")
+    assert (cost, bought) == (9.52, 1800)       # two trays
+    cost, _, _, bought = catalog.cost_for({**legs, "qty_step": None, "min_qty": 0.6}, 1000, "g")
+    assert (cost, bought) == (5.29, None)       # minimum only (Rimi): above it, the amount needed
+
+
+@pytest.mark.parametrize("quantity, min_qty, step, expected", [
+    (0.148, 0.9, 0.9, 0.9), (0.9, 0.9, 0.9, 0.9), (0.95, 0.9, 0.9, 1.8),
+    (0.3, 0.6, None, 0.6), (0.8, 0.6, None, 0.8), (0.3, None, None, 0.3),
+])
+def test_sold_quantity(quantity, min_qty, step, expected):
+    assert catalog.sold_quantity(quantity, min_qty, step) == expected
 
 
 def test_cost_pieces_sold_per_kg():
-    cost, _, _ = catalog.cost_for({"name": "Sidrun, kg", "price": 2.0, "unit": "kg"}, 1, "pcs", piece_g=120)
+    cost, _, _, _ = catalog.cost_for({"name": "Sidrun, kg", "price": 2.0, "unit": "kg"}, 1, "pcs", piece_g=120)
     assert cost == 0.24
 
 
