@@ -41,6 +41,12 @@ def search_selver(query, size=10):
         # Virtual categories are campaigns and brands ("FB", "Soodushinnaga toidukaubad"); the first real one is the shelf.
         shelf = next((c.get("name") for c in categories if str(c.get("is_virtual")).lower() != "true" and c.get("name")), None)
         thumb = src.get("thumbnail")
+        unit = volume.lower() if volume.lower() in ("kg", "l") else None
+        # Loose goods: the least Selver sells (min_sale_qty, 0.7 kg of courgette) and the steps above it.
+        # Packaged goods only have the default minimum of one piece, so they're left out.
+        stock = src.get("stock") or {}
+        min_qty = stock.get("min_sale_qty") if unit else None
+        step = stock.get("qty_increments") if unit and stock.get("enable_qty_increments") else None
         products.append({
             "store": "selver",
             "name": src.get("name"),
@@ -51,11 +57,13 @@ def search_selver(query, size=10):
             "brand": src.get("product_brand"),
             "volume": volume,
             # Loose goods have product_volume "kg"/"l" and are priced per that unit.
-            "unit": volume.lower() if volume.lower() in ("kg", "l") else None,
+            "unit": unit,
+            "min_qty": float(min_qty) if min_qty else None,
+            "qty_step": float(step) if step else None,
             "category": list(dict.fromkeys(c.get("name") for c in categories if c.get("name"))),
             "shelf": shelf,
             "image": f"https://www.selver.ee/img/200/200/resize{thumb}" if thumb else None,
-            "in_stock": (src.get("stock") or {}).get("stock_status", 1) == 1,
+            "in_stock": stock.get("stock_status", 1) == 1,
         })
     return products
 
