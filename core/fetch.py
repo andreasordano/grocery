@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import re
 from core.cache import TTLCache
-from core.scoring import build_rules, compute_product_score, extract_weight_volume, head_weight, parse_price, relevance_score
+from core.scoring import build_rules, compute_product_score, extract_weight_volume, head_weight, parse_price, relevance_score, shares_stem
 from stores_config import get_fetcher, get_pagination_param
 
 
@@ -127,6 +127,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "weight_g": weight,
         "volume_ml": volume,
         "match": rel,
+        "related": rel >= 1 or shares_stem(name, rules),
         "weight": head_weight(name, rules),
     }
 
@@ -135,17 +136,20 @@ def _shelves(candidates):
     """Shelves the typed thing sits on at this store, as (top shelf, shelves to trust).
 
     Votes come from the best matches available: exact words (õun), else near forms
-    (maapähklivõie), else the store's own top results (it knows maapähklikreem is peanut
-    butter). Votes are weighted by how early the name says the word (see head_weight), so
+    (maapähklivõie), else the store's own top results that are related to the typed word (it
+    knows maapähklikreem is peanut butter; a lamp it returns for "porru" doesn't count). Votes are weighted by how early the name says the word (see head_weight), so
     two "Banaan, kg" outvote three smoothie mixes listing banana. A shelf is trusted if it
-    is the top one or holds at least two matches, so a lone cat litter "roh.tee" or a
-    protein bar doesn't count."""
+    is the top one, or holds at least two matches and either names the thing first on one
+    of them ("Veiseliha steik") or gets half the top shelf's votes ("Ol.õli", "Päevalille õli"
+    on the olive and sunflower oil shelves). Shelves where it only comes later in the names
+    ("Kassitoit veiseliha", "Puljong veiseliha") hold something else made with it, and a lone
+    cat litter "roh.tee" or car "Õli mitmeotstarbeline" doesn't count."""
     for level in (5, 4):
         voters = [p for p in candidates if p["match"] == level and p.get("shelf")]
         if voters:
             break
     else:
-        voters = [{**p, "weight": 1.0} for p in candidates[:8] if p.get("shelf")]
+        voters = [{**p, "weight": 1.0} for p in candidates[:8] if p.get("shelf") and p.get("related")]
     if not voters:
         return None, set()
     weights, counts = Counter(), Counter()
@@ -155,7 +159,9 @@ def _shelves(candidates):
     top = weights.most_common(1)[0][0]
     if counts.most_common(1)[0][1] == 1:  # too few matches to tell outliers apart: trust them all
         return top, set(counts)
-    return top, {top} | {s for s, n in counts.items() if n >= 2}
+    named_first = {p["shelf"] for p in voters if p["match"] >= 4 and p["weight"] == 1.0}
+    return top, {top} | {s for s, n in counts.items()
+                         if n >= 2 and (s in named_first or weights[s] >= weights[top] / 2)}
 
 
 def _tier(product, top, trusted):
