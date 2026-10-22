@@ -11,6 +11,8 @@ from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import os
 import re
+from datetime import datetime, timezone
+from core import price_log
 from core.cache import TTLCache
 from core.scoring import build_rules, compute_product_score, extract_weight_volume, head_weight, parse_price, relevance_score, shares_stem
 from stores_config import get_fetcher, get_pagination_param
@@ -47,14 +49,21 @@ def _cached_fetch(store: str, query: str, size: int = 40, refresh: bool = False)
         return cached
     fetcher = get_fetcher(store)
     param_name = get_pagination_param(store)
-    
+    kind = "refresh" if refresh else "search"
+    started = datetime.now(timezone.utc)
+
     # Call fetcher with correct parameter
     # - Rimi uses 'page' (pagination offset, always 0 for first page)
     # - Others use 'size' (number of results to return)
-    if param_name == "page":
-        data = fetcher(query, page=0)
-    else:
-        data = fetcher(query, **{param_name: size})
+    try:
+        if param_name == "page":
+            data = fetcher(query, page=0)
+        else:
+            data = fetcher(query, **{param_name: size})
+    except Exception as exc:
+        price_log.record(store, query, kind, started, error=exc)
+        raise
+    price_log.record(store, query, kind, started, products=data)
 
     # Don't cache empty results: they are often a transient store error, and
     # caching them would hide the product for the whole TTL.

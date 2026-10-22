@@ -224,6 +224,32 @@ and sent with each request:
 {"makaronid": {"label": "Makaronid", "words": ["spagetid"], "products": {"barbora": "Spagetid Nr 7 PRESTO 400g"}}}
 ```
 
+## Price log
+
+Every fresh store search (a cache miss, the cache warm-up, the health check) is saved, append-only, by
+`core/price_log.py`. Price history can't be filled in later, so this runs from day one, with no extra scraping:
+
+- `collection_runs`: one row per search with its real outcome (`ok`, `empty`, `blocked` for 401/403/429,
+  `http_error`, `timeout`, `parse_error`), so a missing product can be told apart from a store that didn't answer.
+- `retailer_products`: one row per store product (Selver sku, Barbora id, Rimi code) with name, brand, EAN
+  (Selver only), pack size from our own parser, category, first and last seen. The `product_id`/`match_*`
+  columns are for matching across stores later and are never set by the log.
+- `price_observations`: price, regular/card price, offer, unit price, availability and search rank. A product
+  gets a row on its first sighting each day (Estonian time) and again whenever price, offer or availability changes.
+
+Writes happen on one background thread, so answers never wait for the database, and a failing write is printed,
+never raised. It needs Postgres (`DATABASE_URL`); `PRICE_LOG=0` turns it off. The tables come from
+`supabase/migrations/20261022215556_price_log.sql`; on local Postgres the app creates them from the same file.
+
+```sql
+-- Runs per store and outcome, last 24 h
+SELECT retailer, status, count(*), sum(n_products) FROM collection_runs
+WHERE started_at > now() - interval '1 day' GROUP BY 1, 2 ORDER BY 1, 2;
+```
+
+The writer tests in `tests/test_price_log.py` need a Postgres: set `TEST_DATABASE_URL` (they use a throwaway
+schema), e.g. `postgresql://groceries:groceries@localhost:5433/groceries` with docker compose running.
+
 ## API examples
 
 ```bash
@@ -315,5 +341,6 @@ and the app connects as the database owner.
 | `PER_STORE_LIMIT` | API | `12` candidates per item per store |
 | `CACHE_WARMUP` | API | `1`: fetch every ingredient rule's searches at startup and before they expire; `0` turns it off |
 | `FETCH_WORKERS` | API | `12` parallel store requests |
+| `PRICE_LOG` | API | `1`: save every fresh store search to the price log (Postgres only); `0` turns it off |
 
 Keep secrets out of the repo; set env vars in your deployment platform.
