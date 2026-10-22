@@ -14,7 +14,8 @@ def search_selver(query, size=10):
         },
         "size": size,
         "_source": ["name", "final_price", "price", "original_price", "special_to_date",
-                    "sku", "product_brand", "product_volume", "category", "stock", "thumbnail"]
+                    "sku", "product_brand", "product_volume", "category", "stock", "thumbnail",
+                    "product_main_ean"]
     }
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -54,6 +55,7 @@ def search_selver(query, size=10):
             "regular_price": float(regular) if on_sale else None,
             "deal_until": (src.get("special_to_date") or "")[:10] or None if on_sale else None,
             "sku": src.get("sku"),
+            "ean": src.get("product_main_ean") or None,  # only Selver exposes EANs: the anchor for matching stores
             "brand": src.get("product_brand"),
             "volume": volume,
             # Loose goods have product_volume "kg"/"l" and are priced per that unit.
