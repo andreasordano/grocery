@@ -19,7 +19,7 @@ import requests
 
 from core.scoring import extract_weight_volume, parse_price
 
-MIGRATION = Path(__file__).resolve().parent.parent / "supabase" / "migrations" / "20261022000000_price_log.sql"
+MIGRATION = Path(__file__).resolve().parent.parent / "supabase" / "migrations" / "20261022215556_price_log.sql"
 
 _queue = queue.Queue(maxsize=1000)
 _start_lock = threading.Lock()

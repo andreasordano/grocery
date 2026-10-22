@@ -239,7 +239,7 @@ Every fresh store search (a cache miss, the cache warm-up, the health check) is 
 
 Writes happen on one background thread, so answers never wait for the database, and a failing write is printed,
 never raised. It needs Postgres (`DATABASE_URL`); `PRICE_LOG=0` turns it off. The tables come from
-`supabase/migrations/20261022000000_price_log.sql`; on local Postgres the app creates them from the same file.
+`supabase/migrations/20261022215556_price_log.sql`; on local Postgres the app creates them from the same file.
 
 ```sql
 -- Runs per store and outcome, last 24 h
