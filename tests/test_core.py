@@ -158,21 +158,35 @@ def test_barbora_reads_embedded_product_list(monkeypatch):
         def raise_for_status(self):
             pass
 
-        text = (
-            '<script>window.b_productList = [{"id": "1", "title": "Kanamunad M 10tk", "price": 1.99,'
-            ' "units": [{"unit": "tk"}], "comparative_unit": "tk", "status": "active",'
-            ' "category_name_full_path": "Piimatooted ja munad/Munad/Kanamunad"},'
-            ' {"id": "2", "title": "Sibul, kg", "price": 0.39, "units": [{"unit": "kg", "min": 0.5, "step": 0.1}],'
-            ' "comparative_unit": "kg", "status": "inactive", "category_name_full_path": "Köögiviljad"}];'
-            ' window.other = 1;</script>'
-        )
+        # Shape of the Remix search page since Oct 2026: categories in the main layout's data,
+        # products ("inventories") in the search route's data, linked by categoryShortId.
+        tree = [{"shortId": "A", "name": "", "names": [{"language": "et", "name": "Piimatooted ja munad"}],
+                 "children": [{"shortId": "B", "name": "", "names": [{"language": "et", "name": "Munad"}],
+                               "children": [{"shortId": "C", "name": "Kanamunad", "children": []}]}]},
+                {"shortId": "V", "name": "Köögiviljad", "children": []}]
+        inventories = [
+            {"id": "1", "title": "Kanamunad M 10tk", "price": 1.79, "brand": "MUNAKOOK", "categoryShortId": "C",
+             "unit": {"type": "units", "min": 1, "step": 1}, "comparativeUnit": {"type": "tk", "price": 0.18},
+             "status": "active", "promotion": {"oldPrice": 1.99, "loyaltyCardRequired": False,
+                                               "validTo": "2026-10-26T00:00:00Z"}},
+            {"id": "2", "title": "Sibul, kg", "price": 0.39, "categoryShortId": "V",
+             "unit": {"type": "kg", "min": 0.5, "step": 0.1}, "status": "outOfStock", "promotion": None},
+        ]
+        context = {"state": {"loaderData": {
+            "routes/($lang)._._main_layout": {"dehydratedState": {"queries": [{"state": {"data": {"categories": tree}}}]}},
+            "routes/($lang)._._main_layout.search": {"dehydratedState": {"queries": [
+                {"state": {"data": {"inventories": inventories, "count": 2}}}]}},
+        }}}
+        text = f"<script>window.__remixContext = {json.dumps(context)};</script>"
 
     monkeypatch.setattr(barbora_api.requests, "get", lambda *a, **kw: Resp())
     eggs, onion = barbora_api.search_barbora("munad")
 
-    assert (eggs["name"], eggs["price"], eggs["unit"], eggs["in_stock"]) == ("Kanamunad M 10tk", 1.99, "tk", True)
+    assert (eggs["name"], eggs["price"], eggs["unit"], eggs["in_stock"]) == ("Kanamunad M 10tk", 1.79, "tk", True)
+    assert (eggs["regular_price"], eggs["deal_until"], eggs["unit_price"]) == (1.99, "2026-10-26", 0.18)
     assert eggs["category"] == ["Piimatooted ja munad", "Munad", "Kanamunad"]
-    assert (onion["unit"], onion["in_stock"]) == ("kg", False)
+    assert eggs["shelf"] == "Kanamunad" and eggs["brand"] == "MUNAKOOK"
+    assert (onion["unit"], onion["in_stock"], onion["category"]) == ("kg", False, ["Köögiviljad"])
     assert (onion["min_qty"], onion["qty_step"]) == (0.5, 0.1)
     assert eggs["min_qty"] is None  # sold by the piece: no minimum weight
 
