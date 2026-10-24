@@ -46,9 +46,15 @@ app = FastAPI(title="pantryrun API", lifespan=lifespan)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 
+class DinnerRef(BaseModel):
+    id: str
+    servings: int = 2
+
+
 class BasketRequest(BaseModel):
     recipe_id: Optional[str] = None
     servings: int = 2
+    recipes: List[DinnerRef] = []  # several dinners in one trip; recipe_id is one
     items: List[str] = []
     # {ingredient key or "text:<item>": {"products": {store: name}, "words": [...]}}
     prefs: Dict[str, Any] = {}
@@ -103,21 +109,27 @@ def basket(req: BasketRequest):
     The answer's result_id is logged with it; the web app sends it back with accept, reject, view_store and
     wrong_product, so those can be joined to the answer they were about.
     """
-    if not req.recipe_id and not any(i.strip() for i in req.items):
+    if not req.recipe_id and not req.recipes and not any(i.strip() for i in req.items):
         raise HTTPException(status_code=400, detail="Pick a recipe or add at least one item")
+    if len(req.recipes) > catalog.MAX_DINNERS:
+        raise HTTPException(status_code=400, detail=f"At most {catalog.MAX_DINNERS} dinners in one trip")
+    people = lambda n: max(1, min(n, 12))
+    dinners = [{"id": d.id, "servings": people(d.servings)} for d in req.recipes]
     started = time.monotonic()
     try:
-        result = catalog.recommend(req.recipe_id, max(1, min(req.servings, 12)), req.items, req.stores, req.prefs,
-                                   user_id=req.user_id)
-    except KeyError:
-        raise HTTPException(status_code=404, detail=f"Unknown recipe: {req.recipe_id}")
+        result = catalog.recommend(req.recipe_id, people(req.servings), req.items, req.stores, req.prefs,
+                                   user_id=req.user_id, dinners=dinners)
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=f"Unknown recipe: {e.args[0]}")
     result["result_id"] = uuid.uuid4().hex
     events.log_event(
         "basket",
         {
             "result_id": result["result_id"],
-            "mission": "dinner" if req.recipe_id else "list",
-            "recipe_id": req.recipe_id,
+            "mission": "dinners" if len(result["dinners"]) > 1 else "dinner" if result["dinners"] else "list",
+            "recipe_id": result["recipe"]["id"] if result["recipe"] else None,
+            "recipe_ids": [d["id"] for d in result["dinners"]],
+            "dinner_count": len(result["dinners"]),
             "servings": result["servings"],
             "items": result["items"],
             "prefs": req.prefs,

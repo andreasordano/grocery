@@ -9,6 +9,7 @@ import { logEvent } from "./api.js";
 import { render } from "./screens.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
 import { idle } from "./receipt.js";
+import { add, unpick } from "./dinners.js";
 
 export function open() {
   draw();
@@ -85,7 +86,7 @@ async function saveDinner() {
     state.mine = [...state.mine.filter(x => x.id !== saved.id), saved].sort((a, b) => a.name.localeCompare(b.name));
     state.editing = null;
     state.category = "mine"; storage.set("pantryrun.category", "mine"); state.shown = [];
-    state.recipeId = saved.id;  // picked straight away, so it's priced
+    add(saved.id);  // picked straight away, so it's priced
     render();
   } catch {
     $("#dinnerError").textContent = "Couldn't reach pantryrun. Check your connection, then try again.";
@@ -98,7 +99,7 @@ async function deleteDinner() {
   const res = await fetch(`/my-dinners/${encodeURIComponent(d.id)}?user_id=${encodeURIComponent(identity.personId)}`, { method: "DELETE" });
   if (!res.ok && res.status !== 404) { $("#dinnerError").textContent = "Couldn't delete the dinner. Try again."; return; }
   state.mine = state.mine.filter(x => x.id !== d.id);
-  if (state.recipeId === d.id) state.recipeId = null;
+  unpick(d.id);
   state.editing = null; state.shown = [];
   render();
 }

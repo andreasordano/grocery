@@ -13,6 +13,7 @@ import socket
 import sqlite3
 import threading
 import time
+import urllib.error
 import urllib.request
 
 import pytest
@@ -319,3 +320,32 @@ def test_a_products_photo_opens_a_quick_look_with_its_store_page(base_url, page)
     page.click("#pkChoose")  # from the quick look to the products to choose from
     page.locator("#sheet").wait_for(state="visible")
     assert not page.locator("#peek").evaluate("p => p.matches(':popover-open')")
+
+
+def test_several_dinners_price_as_one_trip(base_url, page):
+    for name, items in (("Testi pasta", ["spagetid 500g", "suvikõrvits 300g"]), ("Testi salat", ["suvikõrvits 200g"])):
+        body = json.dumps({"user_id": "e2e-trip", "name": name, "servings": 2, "items": items}).encode()
+        urllib.request.urlopen(urllib.request.Request(base_url + "/my-dinners", body, {"Content-Type": "application/json"}))
+    page.goto(base_url + "/?u=e2e-trip&trip=1")
+    page.click("[data-cat=mine]")
+    page.click(".dish >> text=Testi pasta")
+    page.click(".dish >> text=Testi salat")
+    page.wait_for_function("document.querySelector('.r-what')?.textContent.startsWith('2 dinners')")
+    assert [t.split("\n")[0] for t in page.locator(".trip li").all_inner_texts()] == ["Testi pasta", "Testi salat"]
+    # what both dinners need is one line, added up: 300 g + 200 g of courgette
+    lines = receipt_lines(page)
+    assert any(l.startswith("suvikõrvits need 500 g") and "for Testi pasta, Testi salat" in l for l in lines)
+    basket = [d for u, d in logged("basket") if u == "e2e-trip"][-1]
+    assert basket["mission"] == "dinners" and basket["dinner_count"] == 2
+
+    page.click("[data-unpick] >> nth=1")  # take the salad out: back to one dinner
+    page.wait_for_function("document.querySelector('.r-what')?.textContent.startsWith('Testi pasta')")
+    assert page.locator(".dish[aria-pressed=true]").count() == 1
+
+
+def test_too_many_dinners_in_one_trip_is_refused(base_url):
+    body = json.dumps({"recipes": [{"id": f"d{i}"} for i in range(6)]}).encode()
+    req = urllib.request.Request(base_url + "/basket", body, {"Content-Type": "application/json"})
+    with pytest.raises(urllib.error.HTTPError) as e:
+        urllib.request.urlopen(req)
+    assert e.value.code == 400

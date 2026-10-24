@@ -4,29 +4,33 @@ import { feed } from "./dom.js";
 import { state } from "./state.js";
 import { identity } from "./identity.js";
 import { api, logEvent } from "./api.js";
-import { dinnerById } from "./dinners.js";
+import { dinnerById, picked } from "./dinners.js";
 import { redraw } from "./screens.js";
 import { idle, printing, failed, showReceipt, reveal, answered } from "./receipt.js";
 import { chooseProduct, editPreferences } from "./products.js";
 import { bindPeek } from "./peek.js";
 
 // fresh: a new question, so the receipt prints anew. keepView: stay on the store being looked at.
-export async function ask({ fresh = false, keepView = false } = {}) {
+// scroll: on phones, scroll down to the receipt (not while dinners are still being added to a trip).
+export async function ask({ fresh = false, keepView = false, scroll = !state.trip } = {}) {
   const dinner = state.mode === "dinner";
   const items = dinner ? state.extras : state.items;
-  if (dinner ? !state.recipeId : !items.length) return;
+  const ids = dinner ? picked() : [];
+  if (dinner ? !ids.length : !items.length) return;
   const req = ++state.request;
   const view = keepView ? state.view : null;
 
   if (fresh || !state.result) {
-    printing(dinner ? `${dinnerById(state.recipeId).name} for ${state.servings}`
+    printing(scroll, ids.length > 1 ? `${ids.length} dinners for ${state.servings}`
+           : dinner ? `${dinnerById(ids[0]).name} for ${state.servings}`
                     : `${items.length} ${items.length === 1 ? "thing" : "things"} on your list`);
   } else {
     feed.classList.add("busy");  // same question with a change: keep the receipt, dimmed
   }
   try {
     const res = await api("/basket", {
-      recipe_id: dinner ? state.recipeId : null, servings: state.servings, items,
+      recipe_id: ids.length === 1 ? ids[0] : null, servings: state.servings, items,
+      recipes: ids.length > 1 ? ids.map(id => ({ id, servings: state.servings })) : [],
       prefs: state.prefs, user_id: identity.personId, session_id: identity.sessionId,
     });
     if (req !== state.request) return;
@@ -43,7 +47,7 @@ export async function ask({ fresh = false, keepView = false } = {}) {
     const animate = fresh || !state.result;
     state.result = res;
     showReceipt(view && stores.some(b => b.store === view) ? view : res.store, animate);
-    if (animate) reveal();
+    if (animate && scroll) reveal();
   } catch {
     if (req === state.request) failed(() => ask({ fresh: true }));
   }
@@ -63,7 +67,8 @@ feed.addEventListener("click", e => {
   const pantry = e.target.closest("[data-pantry]");
   if (pantry) {
     state.extras.push(pantry.dataset.pantry);
-    logEvent("add_pantry", { item: pantry.dataset.pantry, recipe_id: state.result?.recipe?.id ?? null });
+    logEvent("add_pantry", { item: pantry.dataset.pantry, recipe_id: state.result?.recipe?.id ?? null,
+                             recipe_ids: state.result?.dinners?.map(d => d.id) ?? [] });
     redraw();
     ask();
     return;

@@ -3,6 +3,35 @@
 import { state } from "./state.js";
 
 const SHOWN = 6;  // dinners on screen at once
+export const MAX_TRIP = 5;  // dinners in one trip (the server's limit too)
+
+// The dinners being priced: the picked one, or with trips on, every dinner in the trip.
+export const picked = () => state.trip ? state.tripIds : state.recipeId ? [state.recipeId] : [];
+
+const synced = () => { state.recipeId = state.tripIds.at(-1) ?? null; };
+
+// Pick a dinner: with trips on it joins the trip. False when the trip is full.
+export function add(id) {
+  if (!state.trip) { state.recipeId = id; return true; }
+  if (!state.tripIds.includes(id)) {
+    if (state.tripIds.length >= MAX_TRIP) return false;
+    state.tripIds = [...state.tripIds, id];
+  }
+  synced();
+  return true;
+}
+
+export function unpick(id) {
+  if (!state.trip) { if (state.recipeId === id) state.recipeId = null; return; }
+  state.tripIds = state.tripIds.filter(x => x !== id);
+  synced();
+}
+
+// A tap on a dinner: pick it; with trips on, a dinner already in the trip comes out of it.
+export function choose(id) {
+  if (state.trip && state.tripIds.includes(id)) { unpick(id); return true; }
+  return add(id);
+}
 
 export function dinnerById(id) {
   const d = state.dishes.find(x => x.id === id);
@@ -24,10 +53,11 @@ export function shuffle(avoid = []) {
   if (state.category === "classics" || state.category === "mine") { state.shown = ids; return; }
   const fresh = ids.filter(id => !avoid.includes(id));
   const from = fresh.length >= SHOWN ? fresh : ids;
-  const picked = [...from].sort(() => Math.random() - 0.5).slice(0, SHOWN);
-  // Keep the chosen dinner on screen so its button stays pressed.
-  if (state.recipeId && ids.includes(state.recipeId) && !picked.includes(state.recipeId)) picked[0] = state.recipeId;
-  state.shown = picked;
+  const shown = [...from].sort(() => Math.random() - 0.5).slice(0, SHOWN);
+  // Keep the chosen dinners on screen so their buttons stay pressed.
+  const keep = picked().filter(id => ids.includes(id) && !shown.includes(id));
+  keep.forEach((id, i) => { shown[i] = id; });
+  state.shown = shown;
 }
 
 export function shownDinners() {

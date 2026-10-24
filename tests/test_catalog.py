@@ -138,6 +138,38 @@ def test_recommend_scales_servings(fake_store):
     assert lines["kartul"]["cost"] == 1.6 and lines["munad"]["packs"] == 1  # 8 eggs fit in one 10-pack
 
 
+def test_several_dinners_add_up_an_ingredient_before_buying_packs(fake_store, monkeypatch):
+    omlett = {"id": "omlett", "name": "Omlett", "ingredients": [{"item": "munad", "amount": 6}],
+              "pantry": ["sool", "õli"]}
+    monkeypatch.setattr(catalog, "load_recipes", lambda: {**RECIPES, "recipes": RECIPES["recipes"] + [omlett]})
+    res = catalog.recommend(None, 2, [], ["a"], dinners=[{"id": "test", "servings": 2}, {"id": "omlett", "servings": 2}])
+
+    lines = {l["ingredient"]: l for l in res["baskets"][0]["lines"]}
+    # 4 + 6 eggs fit in one 10-pack; priced one dinner at a time, they'd be two packs
+    assert lines["munad"]["need"] == 10 and lines["munad"]["packs"] == 1
+    assert lines["munad"]["for"] == ["Test", "Omlett"] and lines["kartul"]["for"] == ["Test"]
+    assert res["recipe"] is None and [d["name"] for d in res["dinners"]] == ["Test", "Omlett"]
+    assert res["pantry"] == ["sool", "õli"]
+
+
+def test_one_dinner_in_a_list_is_the_same_as_recipe_id(fake_store):
+    one = catalog.recommend(None, 2, [], ["a"], dinners=[{"id": "test", "servings": 4}])
+    assert one["recipe"]["id"] == "test" and one["baskets"][0]["total_price"] == catalog.recommend_dinner("test", 4, ["a"])["baskets"][0]["total_price"]
+    assert all(l["for"] is None for l in one["baskets"][0]["lines"])  # no "for" with one dinner
+
+
+def test_merge_needs_free_text_by_weight_and_by_packs():
+    merged = catalog.merge_needs([
+        ("A", [{"label": "Brokoli", "text": "brokoli", "amount": 200, "unit": "g"}]),
+        ("B", [{"label": "Brokoli", "text": "brokoli", "amount": 150, "unit": "g"},
+               {"label": "kohv", "text": "kohv", "packs": 1}]),
+        ("C", [{"label": "kohv", "text": "kohv", "amount": 100, "unit": "g"}]),
+    ])
+    by = {n["text"]: n for n in merged}
+    assert by["brokoli"]["amount"] == 350 and by["brokoli"]["for"] == ["A", "B"]
+    assert by["kohv"]["packs"] == 2 and by["kohv"]["amount"] is None  # the weighed one counts as a pack
+
+
 def test_unknown_recipe(fake_store):
     with pytest.raises(KeyError):
         catalog.recommend_dinner("nope", 2, ["a"])
