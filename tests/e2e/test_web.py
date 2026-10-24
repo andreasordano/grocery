@@ -368,3 +368,30 @@ def test_own_dinner_has_a_recipe_card_with_how_to_cook_it(base_url, page):
     assert page.locator(".rc-ing li").all_inner_texts() == ["suvikõrvits\n400 g"]
     assert page.locator(".rc-method li").all_inner_texts() == ["Tükelda.", "Keeda 20 min."]
     assert page.get_attribute(".rc-link", "href") == "https://nami-nami.ee/retseptid/1"
+
+
+def test_hover_card_stays_while_the_mouse_goes_to_its_buttons(base_url, browser):
+    page = browser.new_context(viewport={"width": 1440, "height": 900}).new_page()
+    page.goto(base_url + "/?u=e2e-hover")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv, tee, leib")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.wait_for_selector("button.r-photo")
+    # the receipt prints out of the slot; a line sliding under a still mouse isn't hovered
+    page.wait_for_function("document.querySelector('.receipt').getAnimations().every(a => a.playState === 'finished')")
+    first = page.locator(".r-items li").first.bounding_box()
+    page.mouse.move(first["x"] + first["width"] / 2, first["y"] + first["height"] / 2, steps=5)
+    page.wait_for_selector("#peek:popover-open")
+    label = page.locator(".pk-for").inner_text()
+    target = page.locator("#pkChoose").bounding_box()
+    # the way there crosses the paper's edge and, when the card is lower, the other lines
+    for steps in (15, 60):
+        page.mouse.move(target["x"] + 5, target["y"] + 5, steps=steps)
+        page.mouse.move(first["x"] + first["width"] / 2, first["y"] + first["height"] / 2, steps=5)
+    page.mouse.move(target["x"] + 5, target["y"] + 5, steps=30)
+    page.wait_for_timeout(600)
+    assert page.locator(".pk-for").inner_text() == label and page.locator("#pkChoose").bounding_box() == target
+    page.mouse.click(target["x"] + 5, target["y"] + 5)
+    page.locator("#sheet").wait_for(state="visible")
+    page.context.close()
