@@ -419,6 +419,29 @@ def recipe_needs(recipe, servings, recipes):
     return out
 
 
+def merge_needs(per_dinner):
+    """Several dinners' needs as one list, the same ingredient added up before it becomes packs:
+    300 g and 400 g of mince buy 700 g, not two 500 g packs. per_dinner: [(dinner name, needs)].
+    Each need says which dinners it's `for`. A free-text item asked by weight in one dinner and by
+    packs in another counts the weighed one as a pack."""
+    merged = {}
+    for name, needs in per_dinner:
+        for n in needs:
+            key = n.get("rule") or "text:" + _norm(n["text"])
+            have = merged.get(key)
+            if have is None:
+                merged[key] = {**n, "for": [name]}
+                continue
+            if name not in have["for"]:
+                have["for"].append(name)
+            if have.get("packs") or n.get("packs"):
+                have["packs"] = (have.get("packs") or 1) + (n.get("packs") or 1)
+                have["amount"] = have["unit"] = None
+            else:
+                have["amount"] += n["amount"]
+    return list(merged.values())
+
+
 # ── baskets: an optional recipe plus extra items, per store ─────────────────
 
 def free_text_offers(items, stores, needs=None, failed=None):
@@ -491,7 +514,7 @@ def build_basket(store, needs, prefs, recipes, rules, free):
             offer = _pick(options, prefs.get(key), store)
         if offer:
             line = _line(key, n["label"], need, unit, offer, options, extra=n["extra"])
-            lines.append({**line, "asked": n.get("asked")})
+            lines.append({**line, "asked": n.get("asked"), "for": n.get("for")})
         else:
             missing.append(n["label"])
 
@@ -515,8 +538,14 @@ def no_answer_basket(store):
             "savings": 0, "card_savings": 0}
 
 
-def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None):
+MAX_DINNERS = 5  # dinners in one trip
+
+
+def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinners=None):
     """Rank stores for a recipe (optional) plus extra items: fewest missing, then cheapest.
+
+    dinners: several dinners for one trip, [{"id", "servings"}], priced together (merge_needs);
+    recipe_id with servings is the same as a list of one.
 
     A store with a search that failed didn't answer: its basket has status "no_answer" and comes
     after the ranked ones, rather than looking like a store that doesn't sell the things.
@@ -524,15 +553,24 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None):
     prefs: {ingredient key or "text:<item>": {"products": {store: name}, "words": [...]}}
     """
     recipes, rules = load_recipes(), load_rules()
-    recipe = None
-    if recipe_id:
-        recipe = find_recipe(recipe_id, recipes, user_id)
+    if not dinners:
+        dinners = [{"id": recipe_id, "servings": servings}] if recipe_id else []
+    dinners = list({d["id"]: d for d in dinners}.values())[:MAX_DINNERS]  # each dinner once
+    picked = []
+    for d in dinners:
+        recipe = find_recipe(d["id"], recipes, user_id)
         if recipe is None:
-            raise KeyError(recipe_id)
+            raise KeyError(d["id"])
+        picked.append((recipe, d.get("servings") or servings))
     items = list(dict.fromkeys(i.strip() for i in items if i and i.strip()))
     prefs = prefs or {}
 
-    needs = [{**n, "extra": False} for n in (recipe_needs(recipe, servings, recipes) if recipe else [])]
+    if len(picked) == 1:
+        recipe, people = picked[0]
+        dinner_needs = recipe_needs(recipe, people, recipes)
+    else:
+        dinner_needs = merge_needs([(r["name"], recipe_needs(r, people, recipes)) for r, people in picked])
+    needs = [{**n, "extra": False} for n in dinner_needs]
     needs += [{**to_need(it, recipes), "extra": True} for it in items]
     keys = {n["rule"] for n in needs if n.get("rule")}
     # Free-text searches; those with an amount are priced for it (grams or ml).
@@ -551,8 +589,12 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None):
     baskets.sort(key=lambda b: (len(b["missing"]), b["total_price"]))
     baskets += [no_answer_basket(s) for s in stores if s in failed]
 
+    about = [{"id": r["id"], "name": r["name"], "servings": people, "pantry": r.get("pantry", [])} for r, people in picked]
     return {
-        "recipe": {"id": recipe["id"], "name": recipe["name"], "pantry": recipe.get("pantry", [])} if recipe else None,
+        # One dinner: `recipe` as before. Several: `recipe` is None and `dinners` lists them.
+        "recipe": {k: about[0][k] for k in ("id", "name", "pantry")} if len(about) == 1 else None,
+        "dinners": about,
+        "pantry": list(dict.fromkeys(p for d in about for p in d["pantry"])),
         "servings": servings,
         "items": items,
         "store": baskets[0]["store"] if baskets and baskets[0]["status"] == "ok" else None,

@@ -14,6 +14,7 @@ import { identity } from "./identity.js";
 import { api, logEvent } from "./api.js";
 import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
+import { add } from "./dinners.js";
 import * as dinnerScreen from "./dinner-screen.js";
 import * as editorScreen from "./editor-screen.js";
 import * as listScreen from "./list-screen.js";
@@ -59,7 +60,7 @@ async function start() {
     state.mine = (await api(`/my-dinners?user_id=${encodeURIComponent(identity.personId)}`).catch(() => ({ dinners: [] }))).dinners;
     if (token) {
       state.shared = await api(`/shares/${encodeURIComponent(token)}?user_id=${encodeURIComponent(identity.personId)}`).catch(() => null);
-      if (state.shared) state.recipeId = state.shared.id;
+      if (state.shared) add(state.shared.id);
     }
     render();
     if (token && !state.shared) idle("This link doesn't lead to a dinner", "It may be mistyped. Pick a dinner here instead.");
