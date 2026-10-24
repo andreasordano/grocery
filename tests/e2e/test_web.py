@@ -20,6 +20,7 @@ import pytest
 sync_api = pytest.importorskip("playwright.sync_api")
 
 STORES = {"selver": 2.0, "rimi": 1.5, "barbora": 1.8}  # price level per store: Rimi is cheapest
+PHOTO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'/%3E"
 
 
 def fake_fetch(store, query, size=40, refresh=False):
@@ -31,7 +32,8 @@ def fake_fetch(store, query, size=40, refresh=False):
     base = STORES[store]
     return [
         {"store": store, "id": f"{store}-{word}-1", "name": f"{word.capitalize()} Test 500g", "price": base,
-         "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True},
+         "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True,
+         "image": PHOTO, "url": f"https://{store}.example/p/{word}-1"},
         {"store": store, "id": f"{store}-{word}-2", "name": f"{word.capitalize()}, kg", "price": base * 3, "unit": "kg",
          "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True},
     ]
@@ -295,3 +297,25 @@ def test_no_script_errors(base_url, page):
     receipt_lines(page)
     page.click("[data-mode=dinner]")
     assert errors == []
+
+
+def test_a_products_photo_opens_a_quick_look_with_its_store_page(base_url, page):
+    page.goto(base_url + "/?u=e2e-peek")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.wait_for_selector("button.r-photo")
+    page.click("button.r-photo")
+    page.wait_for_selector("#peek:popover-open")
+    assert not page.locator("#sheet").is_visible()  # the photo isn't a tap on the line
+    assert "Kohv Test 500g" in page.locator("#peek").inner_text()
+    assert page.get_attribute("#pkOpen", "href") == "https://rimi.example/p/kohv-1"
+    page.evaluate("document.querySelector('#pkOpen').addEventListener('click', e => e.preventDefault())")
+    page.click("#pkOpen")
+    time.sleep(0.3)  # the event is sent in the background
+    assert [d["product"] for u, d in logged("open_product") if u == "e2e-peek"] == ["Kohv Test 500g"]
+
+    page.click("#pkChoose")  # from the quick look to the products to choose from
+    page.locator("#sheet").wait_for(state="visible")
+    assert not page.locator("#peek").evaluate("p => p.matches(':popover-open')")

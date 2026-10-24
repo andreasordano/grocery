@@ -66,6 +66,7 @@ def search_barbora(query, size=24):
             "category": path,
             "shelf": path[-1] if path else None,
             "image": item.get("image"),
+            "url": f"https://barbora.ee/p/{item['url']}" if item.get("url") else None,
             "in_stock": item.get("status") == "active",
         })
     return products

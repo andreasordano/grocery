@@ -97,6 +97,7 @@ def product_row(item):
         "pack_unit": qty_unit,
         "sold_by": sold_by,
         "category_path": " > ".join(item.get("category") or []) or None,
+        "url": item.get("url"),
         "image_url": item.get("image"),
     }
 
@@ -205,9 +206,9 @@ def write(conn, store, query, kind, started_at, finished_at, products, error):
         if pairs:
             cur.executemany(
                 """INSERT INTO retailer_products AS rp (retailer, retailer_product_id, name, brand, ean, pack_qty,
-                       pack_unit, sold_by, category_path, image_url, first_seen_at, last_seen_at)
+                       pack_unit, sold_by, category_path, url, image_url, first_seen_at, last_seen_at)
                    VALUES (%(retailer)s, %(retailer_product_id)s, %(name)s, %(brand)s, %(ean)s, %(pack_qty)s,
-                       %(pack_unit)s, %(sold_by)s, %(category_path)s, %(image_url)s, %(seen)s, %(seen)s)
+                       %(pack_unit)s, %(sold_by)s, %(category_path)s, %(url)s, %(image_url)s, %(seen)s, %(seen)s)
                    ON CONFLICT (retailer, retailer_product_id) DO UPDATE SET
                        name = EXCLUDED.name,
                        brand = COALESCE(EXCLUDED.brand, rp.brand),
@@ -216,6 +217,7 @@ def write(conn, store, query, kind, started_at, finished_at, products, error):
                        pack_unit = EXCLUDED.pack_unit,
                        sold_by = EXCLUDED.sold_by,
                        category_path = COALESCE(EXCLUDED.category_path, rp.category_path),
+                       url = COALESCE(EXCLUDED.url, rp.url),
                        image_url = COALESCE(EXCLUDED.image_url, rp.image_url),
                        last_seen_at = GREATEST(rp.last_seen_at, EXCLUDED.last_seen_at)""",
                 [{**p, "retailer": store, "seen": finished_at} for p, _ in pairs],

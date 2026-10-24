@@ -70,8 +70,9 @@ Every page load is logged as a `visit` (`from`: `tester_link`, `shared_dinner` o
 the referrer). Every recommendation is logged as a `basket` event with a server-made `result_id`, the user's
 preferences, and each store's `status` (`ok`, or `no_answer` when its search failed: that store isn't ranked). The
 receipt logs `accept`/`reject` (with the store chosen, which may not be the cheapest), `view_store` (comparing
-stores), `preference` (choosing another product or typing preference words) and `wrong_product`; all but
-`preference` carry the answer's `result_id`. Use those to decide which rule to fix.
+stores), `preference` (choosing another product or typing preference words), `wrong_product`, `quick_view`
+(tapping a product's photo) and `open_product` (opening a product in the store's e-shop, `from` the quick view or
+the chooser); all but `preference` carry the answer's `result_id`. Use those to decide which rule to fix.
 
 ### Looking at the data
 

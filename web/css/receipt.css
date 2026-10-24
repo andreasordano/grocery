@@ -55,6 +55,14 @@
 .r-off { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; background: var(--butter); color: var(--paper-ink); }
 /* "swap", "your pick" */
 .r-tag { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font-size: 10px; font-weight: 400; color: var(--paper-red); }
+/* With photos: a small one before each line, printed in grey like the rest of the paper.
+   Pointing at it brings back its colour; tapping it opens the quick view (peek.css). */
+.r-items.photos li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 4px; align-items: start; padding-left: 6px; }
+.r-photo { width: 30px; height: 30px; margin-top: 4px; padding: 0; border: 0; border-radius: 6px; background: var(--paper); overflow: hidden; display: grid; place-items: center; }
+button.r-photo { cursor: zoom-in; }
+.r-photo img { max-width: 100%; max-height: 100%; object-fit: contain; filter: grayscale(1) contrast(1.05); mix-blend-mode: multiply; transition: filter .2s; }
+.r-items li:hover .r-photo img, .r-photo:focus-visible img { filter: none; }
+.r-photo:focus-visible { outline: 2px solid var(--paper-red); outline-offset: 1px; }
 .r-hint { margin-top: 8px; font-size: 11px; }
 .r-missing { margin-top: 10px; color: var(--paper-red); }
 

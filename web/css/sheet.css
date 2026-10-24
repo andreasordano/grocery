@@ -37,6 +37,8 @@ dialog form { display: flex; flex-direction: column; max-height: inherit; }
 .opts .thumb { flex: none; width: 44px; height: 44px; border-radius: 10px; background: #fff; overflow: hidden; display: grid; place-items: center; }
 .opts .thumb img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .opts .o-shelf { display: block; font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
+.opts .o-shelf a { color: inherit; text-underline-offset: 2px; }
+.opts .o-shelf a:hover { color: var(--rhubarb-text); }
 
 /* what to look for at the other stores */
 .cross { padding: 16px 24px 6px; border-bottom: 1.5px solid var(--line); }
