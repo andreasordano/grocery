@@ -565,11 +565,8 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     items = list(dict.fromkeys(i.strip() for i in items if i and i.strip()))
     prefs = prefs or {}
 
-    if len(picked) == 1:
-        recipe, people = picked[0]
-        dinner_needs = recipe_needs(recipe, people, recipes)
-    else:
-        dinner_needs = merge_needs([(r["name"], recipe_needs(r, people, recipes)) for r, people in picked])
+    each = [recipe_needs(r, people, recipes) for r, people in picked]
+    dinner_needs = each[0] if len(each) == 1 else merge_needs([(r["name"], n) for (r, _), n in zip(picked, each)])
     needs = [{**n, "extra": False} for n in dinner_needs]
     needs += [{**to_need(it, recipes), "extra": True} for it in items]
     keys = {n["rule"] for n in needs if n.get("rule")}
@@ -589,7 +586,11 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     baskets.sort(key=lambda b: (len(b["missing"]), b["total_price"]))
     baskets += [no_answer_basket(s) for s in stores if s in failed]
 
-    about = [{"id": r["id"], "name": r["name"], "servings": people, "pantry": r.get("pantry", [])} for r, people in picked]
+    # Each dinner as a recipe card: its ingredients for this many people, and how to cook it when known.
+    about = [{"id": r["id"], "name": r["name"], "servings": people, "pantry": r.get("pantry", []),
+              "ingredients": [{k: n.get(k) for k in ("label", "amount", "unit", "packs", "asked")} for n in needs],
+              "method": r.get("method"), "link": r.get("link")}
+             for (r, people), needs in zip(picked, each)]
     return {
         # One dinner: `recipe` as before. Several: `recipe` is None and `dinners` lists them.
         "recipe": {k: about[0][k] for k in ("id", "name", "pantry")} if len(about) == 1 else None,

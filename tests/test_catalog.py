@@ -390,6 +390,34 @@ def sqlite_db(tmp_path, monkeypatch):
     monkeypatch.setenv("EVENTS_DB", str(tmp_path / "app.db"))
 
 
+def test_my_dinner_keeps_how_to_cook_it_and_its_link_also_when_sent(sqlite_db):
+    from core import my_dinners
+    d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], method="  1. Keeda.\n2. Söö.  ", link="https://nami-nami.ee/r/1")
+    assert d["method"] == "1. Keeda.\n2. Söö." and my_dinners.get("anna", d["id"])["link"] == "https://nami-nami.ee/r/1"
+    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], method="", link="")["method"] is None  # cleared
+    with pytest.raises(ValueError):
+        my_dinners.save("anna", "Pasta", 2, ["makaronid"], link="javascript:alert(1)")
+    token = my_dinners.share("anna", d["id"], "Pasta", 2, ["makaronid"], method="Keeda.", link="https://x.ee/r")
+    sent = my_dinners.shared(token)
+    assert (sent["method"], sent["link"]) == ("Keeda.", "https://x.ee/r")
+
+
+def test_old_local_database_gets_the_new_columns(sqlite_db, tmp_path):
+    import sqlite3
+    from core import my_dinners
+    old = sqlite3.connect(tmp_path / "app.db")
+    old.execute("CREATE TABLE my_dinners (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, name TEXT NOT NULL,"
+                " servings INTEGER NOT NULL, items TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL)")
+    old.commit(); old.close()
+    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], method="Keeda.")["method"] == "Keeda."
+
+
+def test_the_answer_has_a_recipe_card_for_each_dinner(fake_store):
+    card = catalog.recommend_dinner("test", 4, ["a"])["dinners"][0]
+    assert card["servings"] == 4 and card["method"] is None
+    assert [(i["label"], i["amount"]) for i in card["ingredients"]] == [("Kartul", 1600), ("Kanamunad", 8)]
+
+
 def test_my_dinners_belong_to_their_owner(sqlite_db):
     from core import my_dinners
     d = my_dinners.save("anna", "  Pühapäeva   pasta ", 4, ["makaronid 500g", "hakkliha 400 g", "makaronid 500g"])

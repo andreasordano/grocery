@@ -349,3 +349,22 @@ def test_too_many_dinners_in_one_trip_is_refused(base_url):
     with pytest.raises(urllib.error.HTTPError) as e:
         urllib.request.urlopen(req)
     assert e.value.code == 400
+
+
+def test_own_dinner_has_a_recipe_card_with_how_to_cook_it(base_url, page):
+    page.goto(base_url + "/?u=e2e-cook")
+    page.click("[data-cat=mine]")
+    page.click("#newDinner")
+    page.fill("#dname", "Testi supp")
+    page.fill("#item", "suvikõrvits 400g")
+    page.press("#item", "Enter")
+    page.fill("#dmethod", "1. Tükelda.\n2. Keeda 20 min.")
+    page.fill("#dlink", "https://nami-nami.ee/retseptid/1")
+    page.click("#saveDinner")
+    page.click("#helloForm button[value=skip]")
+    page.wait_for_selector(".rc")
+    if not page.evaluate("document.querySelector('.rc').open"):  # folded on narrow screens
+        page.click(".rc summary")
+    assert page.locator(".rc-ing li").all_inner_texts() == ["suvikõrvits\n400 g"]
+    assert page.locator(".rc-method li").all_inner_texts() == ["Tükelda.", "Keeda 20 min."]
+    assert page.get_attribute(".rc-link", "href") == "https://nami-nami.ee/retseptid/1"
