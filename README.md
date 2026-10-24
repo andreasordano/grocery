@@ -72,7 +72,8 @@ preferences, and each store's `status` (`ok`, or `no_answer` when its search fai
 receipt logs `accept`/`reject` (with the store chosen, which may not be the cheapest), `view_store` (comparing
 stores), `preference` (choosing another product or typing preference words), `wrong_product`, `quick_view`
 (tapping a product's photo) and `open_product` (opening a product in the store's e-shop, `from` the quick view or
-the chooser) and `recipe_open` (unfolding a recipe card); all but `preference` carry the answer's `result_id`. Use those to decide which rule to fix.
+the chooser), `recipe_open` (unfolding a recipe card) and `recipe_import` (reading a recipe link: the site,
+how many items, or why it failed); all but `preference` carry the answer's `result_id`. Use those to decide which rule to fix.
 
 ### Looking at the data
 

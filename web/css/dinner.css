@@ -63,6 +63,15 @@
 .editor .name { width: 100%; max-width: 480px; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
   background: var(--milk); color: var(--ink); font: 600 19px var(--display); box-shadow: inset 0 0 0 1.5px var(--line); }
 .editor .name:focus { box-shadow: inset 0 0 0 2px var(--ink); }
+/* starting from a recipe page: one line above the form */
+.from-link { margin: -6px 0 22px; padding: 16px 18px; border-radius: 22px; background: var(--panel); max-width: 520px; }
+.from-link label { margin-bottom: 8px; }
+.from-link .field input { background: var(--milk); }
+.from-link .fine:empty { display: none; }
+.from-link .fine { margin: 10px 0 0; }
+.d-photo { display: flex; align-items: center; gap: 14px; margin: 0 0 20px; }
+.d-photo img { width: 96px; height: 72px; object-fit: cover; border-radius: 14px; background: #fff; }
+.more .btns { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .editor h2 label { display: inline; margin: 0; font: inherit; }
 .editor .method { display: block; width: 100%; max-width: 480px; padding: 13px 18px; border-radius: 22px; border: 0; outline: none; resize: vertical;
   background: var(--milk); color: var(--ink); font: 15px/1.5 var(--sans); box-shadow: inset 0 0 0 1.5px var(--line); }

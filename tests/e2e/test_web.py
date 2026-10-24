@@ -395,3 +395,32 @@ def test_hover_card_stays_while_the_mouse_goes_to_its_buttons(base_url, browser)
     page.mouse.click(target["x"] + 5, target["y"] + 5)
     page.locator("#sheet").wait_for(state="visible")
     page.context.close()
+
+
+def test_dinner_from_a_recipe_link(base_url, page, monkeypatch):
+    from core import recipe_import
+    page_html = """<html><head><script type="application/ld+json">{"@type": "Recipe", "name": "Testi kotletid",
+      "recipeYield": "4", "image": "https://cdn.example/kotletid.jpg",
+      "recipeIngredient": ["600 g Spagetid", "2 spl Tomatipasta", "Vesi"]}</script></head></html>"""
+    monkeypatch.setattr(recipe_import, "fetch", lambda url: (url, page_html))
+    page.goto(base_url + "/?u=e2e-import")
+    page.click("[data-cat=mine]")
+    page.click("#fromLinkDinner")
+    page.fill("#dlinkImport", "rimi.ee/retseptid/testi-kotletid/1")  # as copied, without https://
+    page.click("#readLink")
+    page.wait_for_selector("#linkNote:text('Found 2 things')")
+    assert page.input_value("#dname") == "Testi kotletid" and page.text_content("#dservings") == "4"
+    assert page.locator(".items .it").all_inner_texts() == ["600 g spagetid", "tomatipasta"]
+    page.click("#saveDinner")
+    page.click("#helloForm button[value=skip]")
+    page.wait_for_selector(".rc")
+    assert page.locator(".rc-photo img").count() == 1
+    assert page.text_content(".rc-link").startswith("Full recipe on rimi.ee")
+    assert page.locator("[data-write]").count() == 0  # the method is on the page it links to
+    assert [d for u, d in logged("recipe_import") if u == "e2e-import"][0]["items"] == 2
+
+    page.click("#newDinner")
+    monkeypatch.setattr(recipe_import, "fetch", lambda url: (url, "<title>Security check required</title>"))
+    page.fill("#dlinkImport", "https://nami-nami.ee/retseptid/1")
+    page.click("#readLink")
+    page.wait_for_selector("#linkNote:text(\"doesn't let pantryrun read\")")

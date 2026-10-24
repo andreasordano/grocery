@@ -54,13 +54,14 @@ export function draw() {
       { id: "ideas", name: "Ideas" }, { id: "classics", name: "Classics" }, { id: "mine", name: "Mine" }, ...state.categories,
     ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}">${esc(c.name)}</button>`).join("")}</div>
     ${state.category === "mine" && !state.mine.length ? `<p class="empty">Write down a dinner you cook often. Type what you
-      buy for it once, with amounts if you like, and pantryrun finds the store each time.</p>` : ""}
+      buy for it once, with amounts if you like, or start from a recipe you found online. pantryrun finds the store each time.</p>` : ""}
     <ul class="dishes">${dinners.map(r => `
       <li${r.id.startsWith("my-") ? ` class="mine"` : ""}><button type="button" class="dish" data-id="${esc(r.id)}" aria-pressed="${chosen.includes(r.id)}">
         <span lang="et">${esc(r.name)}</span></button>${r.id.startsWith("my-")
         ? `<button type="button" class="link" data-edit-dinner="${esc(r.id)}" aria-label="Edit ${esc(r.name)}">Edit</button>` : ""}</li>`).join("")}
     </ul>
-    <div class="more">${state.category === "mine" ? `<button type="button" class="btn quiet" id="newDinner">New dinner</button>`
+    <div class="more">${state.category === "mine" ? `<span class="btns"><button type="button" class="btn quiet" id="newDinner">New dinner</button>
+      <button type="button" class="link" id="fromLinkDinner">From a recipe link</button></span>`
       : state.category === "classics" ? ""
       : `<button type="button" class="link" id="shuffle">Show me others</button>`}
       ${dinners.some(r => r.id.startsWith("nd-")) ? `<span class="fine">Dishes from NutriData, Tervise Arengu Instituut</span>` : ""}</div>
@@ -136,6 +137,7 @@ function onClick(e) {
   const editOwn = e.target.closest("[data-edit-dinner]");
   if (editOwn) { editDinner(editOwn.dataset.editDinner); return; }
   if (e.target.closest("#newDinner")) { editDinner(null); return; }
+  if (e.target.closest("#fromLinkDinner")) { editDinner(null, { fromLink: true }); return; }
   if (e.target.closest("#openExtras")) { state.extrasOpen = true; draw(); $("#item").focus(); return; }
   if (e.target.closest("#saveShared")) { saveShared(); return; }
   if (e.target.closest("#dropShared")) dropShared();
@@ -147,7 +149,7 @@ async function saveShared() {
   if (name) logEvent("hello", { name });
   try {
     const saved = await api("/my-dinners", { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items,
-                                             method: d.method, link: d.link, from_share: d.token });
+                                             method: d.method, link: d.link, image: d.image, from_share: d.token });
     state.mine = [...state.mine, saved].sort((a, b) => a.name.localeCompare(b.name));
     d.saved = true;
     draw();

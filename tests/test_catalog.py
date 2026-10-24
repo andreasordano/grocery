@@ -402,6 +402,25 @@ def test_my_dinner_keeps_how_to_cook_it_and_its_link_also_when_sent(sqlite_db):
     assert (sent["method"], sent["link"]) == ("Keeda.", "https://x.ee/r")
 
 
+def test_dinner_keeps_its_photo_and_a_bad_photo_is_dropped(sqlite_db):
+    from core import my_dinners
+    d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], image="https://cdn.example/p.jpg")
+    assert my_dinners.get("anna", d["id"])["image"] == "https://cdn.example/p.jpg"
+    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], image="javascript:x")["image"] is None
+
+
+def test_without_the_image_column_dinners_save_without_their_photo(monkeypatch):
+    from core import my_dinners
+
+    class NoImageColumn:  # Postgres before the image migration
+        def execute(self, sql, *a):
+            return type("R", (), {"fetchone": lambda self: (0,)})()
+    monkeypatch.setitem(my_dinners._image_column, "there", False)
+    monkeypatch.setitem(my_dinners._image_column, "checked", 0.0)
+    assert my_dinners._notes(NoImageColumn(), postgres=True) == ("method", "link")
+    assert my_dinners._notes(NoImageColumn(), postgres=False) == ("method", "link", "image")
+
+
 def test_old_local_database_gets_the_new_columns(sqlite_db, tmp_path):
     import sqlite3
     from core import my_dinners

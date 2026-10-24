@@ -8,6 +8,11 @@
 .rc summary::after { content: "+"; grid-row: 1 / 3; grid-column: 2; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%;
   background: var(--butter); color: #1c1f4a; font: 800 16px/1 var(--sans); transition: transform .25s var(--ease); }
 .rc[open] summary::after { transform: rotate(45deg); }
+/* a photo from the recipe page the dinner was made from: a banner across the card's top */
+.rc.has-photo summary { padding-top: 0; }
+.rc-photo { grid-column: 1 / -1; margin: -4px -20px 12px; height: 170px; overflow: hidden; border-radius: 22px 22px 0 0; background: #fff; }
+.rc-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rc.has-photo summary::after { grid-row: 2 / 4; }
 .rc-name { font: 700 19px/1.2 var(--display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .rc-sub { font-size: 13px; color: var(--ink-soft); }
 
