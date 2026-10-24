@@ -11,7 +11,9 @@ import { chooseProduct } from "./products.js";
 const peek = $("#peek");
 const canHover = matchMedia("(hover: hover) and (pointer: fine)");
 const phone = matchMedia("(max-width: 900px)");
-const OPEN_DELAY = 350, CLOSE_DELAY = 200;  // ms: moving the mouse down the receipt shouldn't flash it
+// ms. Moving the mouse down the receipt shouldn't flash the card, and the way from a line to the
+// card's buttons crosses other lines: the card only follows a line the mouse rests on.
+const OPEN_DELAY = 350, SWITCH_DELAY = 300, CLOSE_DELAY = 400;
 
 let shownKey = null, closedKey = null, closedAt = 0;
 let openTimer, closeTimer;
@@ -51,8 +53,8 @@ export function logOpen(l, from) {
 function place(anchor) {
   peek.style.left = peek.style.top = "";
   if (phone.matches) return;  // CSS puts it at the bottom of the screen
-  const a = anchor.getBoundingClientRect(), paper = feed.getBoundingClientRect();
-  const w = peek.offsetWidth, h = peek.offsetHeight, gap = 14;
+  const a = anchor.getBoundingClientRect(), paper = (feed.firstElementChild || feed).getBoundingClientRect();
+  const w = peek.offsetWidth, h = peek.offsetHeight, gap = 10;
   let left = paper.left - w - gap, top = a.top + a.height / 2 - h / 2;
   if (left < gap) { left = a.left; top = a.bottom + 6; }
   peek.style.left = `${Math.max(gap, Math.min(left, innerWidth - w - gap))}px`;
@@ -106,11 +108,13 @@ export function bindPeek(changed) {
     if (!row) return;
     clearTimeout(closeTimer);
     clearTimeout(openTimer);
-    openTimer = setTimeout(() => open(row), shownKey ? 0 : OPEN_DELAY);  // already looking: follow the mouse
+    if (shownKey === row.dataset.key) return;  // back on the line the card is about
+    openTimer = setTimeout(() => open(row), shownKey ? SWITCH_DELAY : OPEN_DELAY);
   });
   const leave = e => {
     if (!canHover.matches || peek.contains(e.relatedTarget) || e.relatedTarget?.closest?.(".r-items [data-key]")) return;
     clearTimeout(openTimer);
+    clearTimeout(closeTimer);  // leaving the line, then the paper, mustn't leave a timer nothing can cancel
     closeTimer = setTimeout(close, CLOSE_DELAY);
   };
   feed.addEventListener("mouseout", leave);
