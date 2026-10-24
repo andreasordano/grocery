@@ -31,14 +31,15 @@ function link(url) {
 
 function card(d, open) {
   const own = d.id.startsWith("my-");
-  return `<details class="rc"${open ? " open" : ""} data-recipe="${esc(d.id)}">
-    <summary><span class="rc-name" lang="et">${esc(d.name)}</span>
+  const photo = d.image && /^https?:/.test(d.image);
+  return `<details class="rc${photo ? " has-photo" : ""}"${open ? " open" : ""} data-recipe="${esc(d.id)}">
+    <summary>${photo ? `<span class="rc-photo"><img src="${esc(d.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>` : ""}<span class="rc-name" lang="et">${esc(d.name)}</span>
       <span class="rc-sub">Recipe for ${d.servings} · ${d.ingredients.length} ${d.ingredients.length === 1 ? "ingredient" : "ingredients"}</span></summary>
     <ul class="rc-ing">${d.ingredients.map(i => `<li><span lang="et">${esc(i.label)}</span><span>${esc(howMuch(i))}</span></li>`).join("")}</ul>
     ${d.pantry.length ? `<p class="rc-pantry">From home: <span lang="et">${esc(d.pantry.join(", "))}</span></p>` : ""}
     ${d.method ? `<div class="rc-method"><h4>How to cook it</h4>${method(d.method)}</div>` : ""}
     ${d.link ? link(d.link) : ""}
-    ${own && !d.method ? `<button type="button" class="link" data-write="${esc(d.id)}">Write down how you cook it</button>` : ""}
+    ${own && !d.method && !d.link ? `<button type="button" class="link" data-write="${esc(d.id)}">Write down how you cook it</button>` : ""}
     ${d.id.startsWith("nd-") ? `<p class="fine">Amounts from NutriData, Tervise Arengu Instituut. It has no method.</p>` : ""}
   </details>`;
 }

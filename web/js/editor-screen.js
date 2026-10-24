@@ -21,6 +21,16 @@ export function draw() {
   pick.innerHTML = `
     <div class="editor">
       <h1>${d.id ? "Edit dinner" : "New dinner"}</h1>
+      <form class="from-link" id="fromLink" autocomplete="off">
+        <label for="dlinkImport">${d.id ? "Fill it in again from a recipe page" : "Start from a recipe you found online"}</label>
+        <div class="field">
+          <input id="dlinkImport" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Paste a link, e.g. rimi.ee/retseptid/…" enterkeyhint="go">
+          <button class="btn quiet" type="submit" id="readLink">Read it</button>
+        </div>
+        <p class="fine" id="linkNote" role="status"></p>
+      </form>
+      ${d.image ? `<div class="d-photo"><img src="${esc(d.image)}" alt="" referrerpolicy="no-referrer">
+        <button type="button" class="link" id="dropPhoto">Remove photo</button></div>` : ""}
       <div class="sub">For
         <span class="stepper" role="group" aria-label="Number of people the amounts are for">
           <button type="button" data-dstep="-1" aria-label="Fewer people">−</button>
@@ -55,17 +65,18 @@ export function draw() {
   $("#dname").addEventListener("input", e => { d.name = e.target.value; });
   $("#dmethod").addEventListener("input", e => { d.method = e.target.value; });
   $("#dlink").addEventListener("input", e => { d.link = e.target.value; });
+  $("#fromLink").onsubmit = e => { e.preventDefault(); readLink(); };
   bindAdd(d.items, draw);
   pick.onclick = onClick;
 }
 
-// Open the editor for one of your dinners, or for a new one (id null).
-export function editDinner(id) {
+// Open the editor for one of your dinners, or for a new one (id null), ready for a recipe link.
+export function editDinner(id, { fromLink = false } = {}) {
   const m = id && state.mine.find(x => x.id === id);
-  state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items], method: m.method || "", link: m.link || "" }
-                    : { id: null, name: "", servings: state.servings, items: [], method: "", link: "" };
+  state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items], method: m.method || "", link: m.link || "", image: m.image || "" }
+                    : { id: null, name: "", servings: state.servings, items: [], method: "", link: "", image: "" };
   render();
-  $(m ? "#item" : "#dname").focus();
+  $(m ? "#item" : fromLink ? "#dlinkImport" : "#dname").focus();
 }
 
 function onClick(e) {
@@ -77,15 +88,45 @@ function onClick(e) {
   }
   if (itemClick(e, state.editing.items, draw)) return;
   if (e.target.closest("#saveDinner")) { saveDinner(); return; }
+  if (e.target.closest("#dropPhoto")) { state.editing.image = ""; draw(); return; }
   if (e.target.closest("#cancelDinner")) { state.editing = null; render(); return; }
   if (e.target.closest("#deleteDinner")) deleteDinner();
+}
+
+// A recipe page read into the dinner: its name, servings, what to buy, photo and link (core/recipe_import.py).
+// What's already typed stays; the page's items are added after it.
+async function readLink() {
+  const d = state.editing, url = $("#dlinkImport").value.trim(), note = $("#linkNote");
+  if (!url) return;
+  note.textContent = "Reading the page…";
+  $("#readLink").disabled = true;
+  try {
+    const res = await fetch("/recipe-import", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url, user_id: identity.personId }) });
+    const found = await res.json();
+    if (!res.ok) { note.textContent = found.detail || "Couldn't read that page."; $("#readLink").disabled = false; return; }
+    if (!d.name.trim()) d.name = found.name;
+    d.servings = found.servings;
+    d.items = [...new Set([...d.items, ...found.items])];
+    d.link = found.link;
+    d.image = found.image || d.image;
+    const site = new URL(found.link).hostname.replace(/^www\./, "");
+    draw();
+    $("#linkNote").textContent = found.items.length
+      ? `Found ${found.items.length} things to buy on ${site}. Check them, then save. The method stays on ${site}: the dinner links to it.`
+      : `${site} doesn't list its ingredients in a way pantryrun can read. Type what you buy for it below.`;
+  } catch {
+    note.textContent = "Couldn't reach pantryrun. Check your connection, then try again.";
+    $("#readLink").disabled = false;
+  }
 }
 
 async function saveDinner() {
   const d = state.editing;
   const name = await askName();  // first dinner only
   if (name) logEvent("hello", { name });
-  const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, method: d.method, link: d.link };
+  const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, method: d.method, link: d.link,
+                 image: d.image };
   try {
     const res = await fetch(d.id ? `/my-dinners/${encodeURIComponent(d.id)}` : "/my-dinners", {
       method: d.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

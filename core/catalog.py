@@ -589,7 +589,7 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     # Each dinner as a recipe card: its ingredients for this many people, and how to cook it when known.
     about = [{"id": r["id"], "name": r["name"], "servings": people, "pantry": r.get("pantry", []),
               "ingredients": [{k: n.get(k) for k in ("label", "amount", "unit", "packs", "asked")} for n in needs],
-              "method": r.get("method"), "link": r.get("link")}
+              "method": r.get("method"), "link": r.get("link"), "image": r.get("image")}
              for (r, people), needs in zip(picked, each)]
     return {
         # One dinner: `recipe` as before. Several: `recipe` is None and `dinners` lists them.

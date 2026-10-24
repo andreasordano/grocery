@@ -10,10 +10,12 @@ from core import catalog
 from core import my_dinners
 from core import events
 from core import fetch
+from core import recipe_import
 
 import os
 import time
 import uuid
+from urllib.parse import urlparse
 
 
 # Stores with ingredient rules in data/rules.yaml (Barbora stands in for Maxima).
@@ -70,11 +72,17 @@ class MyDinnerRequest(BaseModel):
     items: List[str]
     method: Optional[str] = None  # how to cook it
     link: Optional[str] = None    # a recipe page
+    image: Optional[str] = None   # its photo (from a recipe link)
     from_share: Optional[str] = None  # link token, when saved from a dinner someone sent
 
 
 class ShareRequest(BaseModel):
     recipe_id: str
+    user_id: Optional[str] = None
+
+
+class RecipeImportRequest(BaseModel):
+    url: str
     user_id: Optional[str] = None
 
 
@@ -160,7 +168,8 @@ def _save_my_dinner(req: MyDinnerRequest, dinner_id: Optional[str] = None):
     if not req.user_id.strip():
         raise HTTPException(status_code=400, detail="Missing user")
     try:
-        dinner = my_dinners.save(req.user_id, req.name, req.servings, req.items, dinner_id, req.method, req.link)
+        dinner = my_dinners.save(req.user_id, req.name, req.servings, req.items, dinner_id, req.method, req.link,
+                                 req.image)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     if dinner is None:
@@ -189,6 +198,20 @@ def delete_my_dinner(dinner_id: str, user_id: str):
     return {"deleted": dinner_id}
 
 
+@app.post("/recipe-import")
+def import_recipe(req: RecipeImportRequest):
+    """A recipe page read into a dinner to check and save: name, servings, what to buy, photo, link.
+    Nothing is saved here; the method stays on the page (the dinner keeps the link)."""
+    try:
+        found = recipe_import.import_recipe(req.url[:1000])
+    except recipe_import.PageError as exc:
+        events.log_event("recipe_import", {"ok": False, "reason": str(exc)}, user_id=req.user_id)
+        raise HTTPException(status_code=422, detail=str(exc))
+    events.log_event("recipe_import", {"ok": True, "host": urlparse(found["link"]).hostname, "items": len(found["items"]),
+                                       "partial": found["partial"], "image": bool(found["image"])}, user_id=req.user_id)
+    return found
+
+
 @app.post("/shares")
 def create_share(req: ShareRequest):
     """A link to send a dinner to someone: a snapshot of it, priced for whoever opens it."""
@@ -198,7 +221,7 @@ def create_share(req: ShareRequest):
         raise HTTPException(status_code=404, detail="No such dinner")
     token = my_dinners.share(req.user_id, req.recipe_id, recipe["name"], recipe.get("servings", catalog.BASE_SERVINGS),
                              catalog.recipe_as_items(recipe, recipes), recipe.get("pantry", []),
-                             recipe.get("method"), recipe.get("link"))
+                             recipe.get("method"), recipe.get("link"), recipe.get("image"))
     events.log_event("share_created", {"token": token, "recipe_id": req.recipe_id}, user_id=req.user_id)
     return {"token": token, "path": f"/?dinner={token}"}
 
