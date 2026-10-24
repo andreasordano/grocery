@@ -2,7 +2,7 @@
 // and the items themselves (tap one to change it, × to remove it).
 // Each screen passes its own list and what to do after it changes.
 import { $ } from "./dom.js";
-import { esc, splitItems } from "./format.js";
+import { esc, splitItems, ITEM_SEP } from "./format.js";
 import { logEvent } from "./api.js";
 import { state } from "./state.js";
 import { loadVocab, suggest, splitQty } from "./suggest.js";
@@ -42,14 +42,14 @@ export function bindAdd(list, onChange) {
     active < 0 ? input.removeAttribute("aria-activedescendant") : input.setAttribute("aria-activedescendant", `sg${active}`);
   }
   function pick(i) {
-    const parts = input.value.split(",");
+    const parts = input.value.split(ITEM_SEP);
     const typed = parts.pop().trim();
     const { lead, trail } = splitQty(typed);  // keep "600g" in "600g pap" → "600g paprika"
     add([...parts, lead + shown[i].w + trail].join(","), "suggestion", typed);
   }
 
   input.addEventListener("focus", loadVocab, { once: true });
-  input.addEventListener("input", () => show(suggest(splitQty(input.value.split(",").pop().trim()).name)));
+  input.addEventListener("input", () => show(suggest(splitQty(input.value.split(ITEM_SEP).pop().trim()).name)));
   input.addEventListener("keydown", e => {
     if (box.hidden) return;
     if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); move(e.key === "ArrowDown" ? 1 : -1); }

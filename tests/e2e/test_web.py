@@ -135,9 +135,10 @@ def test_tester_link_and_old_name_keep_their_id(base_url, browser):
 def test_shopping_list_with_amounts_prints_one_store(base_url, page):
     page.goto(base_url + "/?u=e2e-list")
     page.click("[data-mode=list]")
-    page.fill("#item", "kohv, suvikõrvits 600g")
+    page.fill("#item", "kohv, suvikõrvits 600g, kartul 1,2 kg")
     page.press("#item", "Enter")
-    assert page.locator(".items .it").all_inner_texts() == ["kohv", "suvikõrvits 600g"]
+    # a comma between digits is a decimal, not a new item
+    assert page.locator(".items .it").all_inner_texts() == ["kohv", "suvikõrvits 600g", "kartul 1,2 kg"]
     page.click("#find")
     lines = receipt_lines(page)
     assert "Rimi" in page.locator(".receipt").inner_text()      # cheapest store
@@ -424,3 +425,33 @@ def test_dinner_from_a_recipe_link(base_url, page, monkeypatch):
     page.fill("#dlinkImport", "https://nami-nami.ee/retseptid/1")
     page.click("#readLink")
     page.wait_for_selector("#linkNote:text(\"doesn't let pantryrun read\")")
+
+
+def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, browser):
+    def receipt(page):
+        page.goto(base_url + "/?u=e2e-cart")
+        page.click("[data-mode=list]")
+        page.fill("#item", "kohv, kartul 1,2 kg")
+        page.press("#item", "Enter")
+        page.click("#find")
+        page.wait_for_selector("#sendCart")
+
+    page = browser.new_context().new_page()
+    receipt(page)  # without the extension: would you use it?
+    assert page.text_content("#sendCart").endswith("Send this to the Rimi cart")
+    page.click("#sendCart")
+    page.click("[data-cart-answer=yes]")
+    page.wait_for_selector("#cart:has-text('Thanks')")
+    assert [d["wants"] for u, d in logged("cart_interest") if u == "e2e-cart"] == [True]
+    page.context.close()
+
+    page = browser.new_context().new_page()  # with it: the basket goes to the extension
+    page.add_init_script("""document.documentElement.dataset.pantryrunCart = 'rimi';
+      addEventListener('message', e => { if (e.data?.type === 'fill-cart') window.sentBasket = e.data; });""")
+    receipt(page)
+    page.click("#sendCart")
+    page.wait_for_function("window.sentBasket")
+    basket = page.evaluate("window.sentBasket")
+    assert basket["store"] == "rimi" and {i["id"]: i["qty"] for i in basket["items"]} == {"rimi-kohv-1": 1, "rimi-kartul-2": 1.2}
+    assert "Opening Rimi" in page.text_content("#cart")
+    page.context.close()

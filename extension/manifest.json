@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "pantryrun: fill my Rimi cart",
+  "version": "0.1.0",
+  "description": "Puts the basket pantryrun found into your Rimi e-shop cart, in your own browser. Your Rimi login never leaves it.",
+  "permissions": ["storage"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://grocery-j3en.onrender.com/*", "http://localhost:8000/*", "http://127.0.0.1:8000/*"],
+      "js": ["pantryrun.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.rimi.ee/epood/*"],
+      "js": ["rimi.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
