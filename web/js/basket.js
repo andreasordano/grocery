@@ -8,6 +8,7 @@ import { dinnerById } from "./dinners.js";
 import { redraw } from "./screens.js";
 import { idle, printing, failed, showReceipt, reveal, answered } from "./receipt.js";
 import { chooseProduct, editPreferences } from "./products.js";
+import { bindPeek } from "./peek.js";
 
 // fresh: a new question, so the receipt prints anew. keepView: stay on the store being looked at.
 export async function ask({ fresh = false, keepView = false } = {}) {
@@ -49,6 +50,7 @@ export async function ask({ fresh = false, keepView = false } = {}) {
 }
 
 const askAgain = () => ask({ keepView: true });
+bindPeek(askAgain);
 
 feed.addEventListener("click", e => {
   const store = e.target.closest("[data-store]");

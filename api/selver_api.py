@@ -15,7 +15,7 @@ def search_selver(query, size=10):
         "size": size,
         "_source": ["name", "final_price", "price", "original_price", "special_to_date",
                     "sku", "product_brand", "product_volume", "category", "stock", "thumbnail",
-                    "product_main_ean"]
+                    "product_main_ean", "url_key"]
     }
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -65,6 +65,7 @@ def search_selver(query, size=10):
             "category": list(dict.fromkeys(c.get("name") for c in categories if c.get("name"))),
             "shelf": shelf,
             "image": f"https://www.selver.ee/img/200/200/resize{thumb}" if thumb else None,
+            "url": f"https://www.selver.ee/{src['url_key']}" if src.get("url_key") else None,
             "in_stock": stock.get("stock_status", 1) == 1,
         })
     return products

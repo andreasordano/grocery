@@ -1,6 +1,8 @@
 import requests
 import json
 import re
+from urllib.parse import urljoin
+
 from bs4 import BeautifulSoup
 
 HEADERS = {
@@ -68,6 +70,8 @@ def search_rimi(query, page=0):
         img = card.select_one("img")
         image = img.get("src").replace(",q_1,", ",q_auto,") if img and img.get("src") else None
 
+        link = card.select_one("a[href]")
+
         products.append({
             "store": "rimi",
             "name": name,
@@ -83,6 +87,7 @@ def search_rimi(query, page=0):
             # flavoured ones); Rimi's cards don't name the shelf.
             "shelf": "-".join(gtm["category"].split("-")[:3]) if gtm.get("category") else None,
             "image": image,
+            "url": urljoin("https://www.rimi.ee", link["href"]) if link else None,
             "in_stock": price is not None,
         })
 

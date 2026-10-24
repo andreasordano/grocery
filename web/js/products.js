@@ -7,6 +7,7 @@ import { state } from "./state.js";
 import { storage } from "./storage.js";
 import { logEvent } from "./api.js";
 import { lineAmount, answered } from "./receipt.js";
+import { logOpen } from "./peek.js";
 
 const matches = (product, words) => words.every(w => fold(product).includes(fold(w)));
 
@@ -77,7 +78,8 @@ export function chooseProduct(key, onChange) {
     <ul class="opts">${l.options.map((o, i) => `
       <li><label><input type="radio" name="opt" value="${i}" ${o.product === chosen ? "checked autofocus" : ""}>
         <span class="o">${photos ? `<span class="thumb">${o.image ? `<img src="${esc(o.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}</span>` : ""}
-          <span>${esc(o.product)}${o.deal ? ` <span class="fine">${esc(o.deal)}</span>` : ""}${o.shelf ? `<span class="o-shelf">${esc(o.shelf.toLowerCase())}</span>` : ""}</span></span>
+          <span>${esc(o.product)}${o.deal ? ` <span class="fine">${esc(o.deal)}</span>` : ""}${o.shelf || o.url ? `<span class="o-shelf">${esc((o.shelf || "").toLowerCase())}${o.shelf && o.url ? " · " : ""}${o.url
+            ? `<a href="${esc(o.url)}" target="_blank" rel="noopener" data-open="${i}" aria-label="${esc(o.product)} in the ${esc(cap(b.store))} e-shop">e-shop <span aria-hidden="true">↗</span></a>` : ""}</span>` : ""}</span></span>
         <span class="pc">${o.regular_cost && o.regular_cost > o.cost ? `<s>${num.format(o.regular_cost)}</s>` : ""}${num.format(o.cost)}</span></label></li>`).join("")}
     </ul>
     <div id="cross">${cross()}</div>
@@ -96,6 +98,8 @@ export function chooseProduct(key, onChange) {
     $("#cross", sheetForm).innerHTML = cross();
   };
   sheetForm.onclick = e => {
+    const link = e.target.closest("[data-open]");
+    if (link) { logOpen({ key, product: l.options[+link.dataset.open].product }, "chooser"); return; }
     const chip = e.target.closest("[data-word]");
     if (!chip) return;
     const w = chip.dataset.word;

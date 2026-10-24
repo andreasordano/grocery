@@ -1,0 +1,32 @@
+/* The quick view: a product's photo, name, price and its page in the e-shop (js/peek.js).
+   A card beside the receipt on wide screens; on phones it sits at the bottom of the screen. */
+
+#peek {
+  position: fixed; inset: auto; margin: 0; width: 280px; padding: 0; border: 0; border-radius: 22px; overflow: hidden;
+  background: var(--sheet); color: var(--ink); font: 14px/1.4 var(--sans);
+  box-shadow: 0 24px 50px -20px rgba(28, 31, 74, .55), 0 0 0 1.5px var(--line);
+}
+#peek:popover-open { animation: peek .22s var(--ease); }
+@keyframes peek { from { transform: translateY(6px) scale(.98); opacity: 0; } }
+
+/* the photo on white, whatever the theme: product shots have white backgrounds */
+.pk-photo { height: 170px; background: #fff; display: grid; place-items: center; padding: 14px; }
+.pk-photo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+.pk-body { padding: 14px 18px 16px; }
+.pk-for { margin: 0 0 4px; font-size: 12.5px; color: var(--ink-soft); }
+.pk-name { margin: 0; font: 700 17px/1.2 var(--display); letter-spacing: -0.01em; overflow-wrap: anywhere; }
+.pk-shelf { margin: 2px 0 0; font-size: 12.5px; color: var(--ink-soft); }
+.pk-price { margin: 10px 0 0; display: flex; align-items: baseline; gap: 8px; font: 800 26px/1 var(--display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.pk-price s { font: 400 14px var(--sans); color: var(--ink-soft); }
+.pk-price .r-off { align-self: center; margin: 0; }
+.pk-how { margin: 4px 0 0; font-size: 12.5px; color: var(--ink-soft); }
+.pk-actions { margin-top: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.pk-actions .btn { padding: 10px 16px; font-size: 14px; text-decoration: none; }
+.pk-actions > :only-child { margin-left: auto; }
+
+@media (max-width: 900px) {
+  #peek { inset: auto 16px max(16px, env(safe-area-inset-bottom)); width: auto; max-width: 460px; margin-inline: auto; }
+  .pk-photo { height: 150px; }
+}
+@media (prefers-reduced-motion: reduce) { #peek:popover-open { animation: none; } }

@@ -65,7 +65,8 @@ const percentOff = (regular, cost) => Math.round((1 - cost / regular) * 100);
 // left out when it only repeats the item ("banaan · banaan").
 const shelfNote = l => l.shelf && !fold(l.shelf).includes(fold(l.label).slice(0, 4)) ? l.shelf.toLowerCase() : "";
 
-function line(l) {
+// photos: the store has photos for this receipt, so every line keeps a photo's place (lined up).
+function line(l, photos) {
   const tag = l.substitute ? "swap" : (l.pinned || l.preferred) ? "your pick" : "";
   const amt = lineAmount(l);
   const onSale = l.regular_cost && l.regular_cost > l.cost;
@@ -75,7 +76,10 @@ function line(l) {
     l.card_cost && l.card_cost < l.cost ? `${num.format(l.card_cost)} with a loyalty card` : "",
     l.deal || "",
   ].filter(Boolean);
-  return `<li><button type="button" class="r-line" data-key="${esc(l.key)}" aria-label="Choose another ${esc(l.label)}">
+  const photo = !photos ? "" : l.image
+    ? `<button type="button" class="r-photo" aria-label="Look at ${esc(l.product)}"><img src="${esc(l.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"></button>`
+    : `<span class="r-photo" aria-hidden="true"></span>`;
+  return `<li data-key="${esc(l.key)}">${photo}<button type="button" class="r-line" data-key="${esc(l.key)}" aria-label="Choose another ${esc(l.label)}">
     <span class="n">${esc(l.label)}${amt ? ` <span class="amt">${esc(amt)}</span>` : ""}${off}${tag ? `<span class="r-tag">${tag}</span>` : ""}</span>
     <span class="c">${onSale ? `<s>${num.format(l.regular_cost)}</s>` : ""}${num.format(l.cost)}</span>
     <span class="p">${esc(l.product)}${shelfNote(l) ? `<span class="shelf"> · ${esc(shelfNote(l))}</span>` : ""}</span>
@@ -106,6 +110,8 @@ export function showReceipt(storeName, animate) {
   state.view = b.store;
   const isBest = b.store === best.store;
   const main = b.lines.filter(l => !l.extra), extra = b.lines.filter(l => l.extra);
+  const photos = b.lines.some(l => l.image);
+  const items = lines => `<ul class="r-items${photos ? " photos" : ""}">${lines.map(l => line(l, photos)).join("")}</ul>`;
   const delta = !isBest && (b.missing.length > best.missing.length
     ? `${cap(best.store)} has more of your list`
     : `${euro.format(b.total_price - best.total_price)} more than ${cap(best.store)}`);
@@ -121,11 +127,11 @@ export function showReceipt(storeName, animate) {
     </div>
     ${downNote(res)}
     <hr class="r-rule">
-    <ul class="r-items">${main.map(line).join("")}</ul>
+    ${items(main)}
     ${res.recipe && extra.length ? `<div class="r-head">Also</div>` : ""}
-    ${extra.length ? `<ul class="r-items">${extra.map(line).join("")}</ul>` : ""}
+    ${extra.length ? items(extra) : ""}
     ${b.missing.length ? `<div class="r-missing">Not in the e-shop: ${b.missing.map(esc).join(", ")}</div>` : ""}
-    <div class="r-hint">Tap an item to choose another.</div>
+    <div class="r-hint">${photos ? "Tap a photo for a closer look, an item to choose another." : "Tap an item to choose another."}</div>
     <hr class="r-rule">
     <div class="r-total"><span>Total</span><span>${euro.format(b.total_price)}</span></div>
     ${b.savings > 0 ? `<div class="r-save"><span>You save</span><span>${euro.format(b.savings)}</span></div>` : ""}

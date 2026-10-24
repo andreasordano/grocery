@@ -216,10 +216,11 @@ def _with_discount(option, product):
 
 
 def _looks(product):
-    """What helps a person recognise a product: its photo and the store shelf it sits on.
-    Rimi only gives shelf codes (SH-19-5), which mean nothing to a person, so those are left out."""
+    """What helps a person recognise a product: its photo, the store shelf it sits on and its page
+    in the e-shop. Rimi only gives shelf codes (SH-19-5), which mean nothing to a person, so those are left out."""
     shelf = product.get("shelf")
-    return {"image": product.get("image"), "shelf": None if not shelf or re.match(r"SH-\d", shelf) else shelf}
+    return {"image": product.get("image"), "shelf": None if not shelf or re.match(r"SH-\d", shelf) else shelf,
+            "url": product.get("url")}
 
 
 MAX_OPTIONS = 100  # alternatives per line; the web app also previews preferences against them
@@ -457,7 +458,7 @@ def _line(key, label, need, unit, offer, options, extra):
         "key": key, "ingredient": key if not key.startswith("text:") else None,
         "label": label, "need": need, "unit": unit, "extra": extra,
         **offer,
-        "options": [{k: o.get(k) for k in ("product", "cost", "how", "bought", "regular_cost", "card_cost", "deal", "image", "shelf")}
+        "options": [{k: o.get(k) for k in ("product", "cost", "how", "bought", "regular_cost", "card_cost", "deal", "image", "shelf", "url")}
                     for o in options[:MAX_OPTIONS]],
     }
 
