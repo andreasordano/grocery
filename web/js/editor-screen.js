@@ -39,6 +39,12 @@ export function draw() {
         <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")
         : `<li class="none">Nothing to buy yet.</li>`}
       </ul>
+      <h2><label for="dmethod">How you cook it</label></h2>
+      <p class="fine">Optional. It shows on the recipe card next to the shopping list, and goes along when you send the dinner.</p>
+      <textarea id="dmethod" class="method" rows="5" maxlength="4000" placeholder="1. Fry the mince with the onion.&#10;2. Add the sour cream and simmer for 10 minutes.">${esc(d.method)}</textarea>
+      <h2><label for="dlink">Recipe link</label></h2>
+      <p class="fine">Optional. A page with the full recipe.</p>
+      <input id="dlink" class="name" type="url" inputmode="url" maxlength="500" value="${esc(d.link)}" placeholder="https://nami-nami.ee/retseptid/…" autocomplete="off">
       <div class="actions">
         <button class="btn dark" id="saveDinner" type="button">Save dinner</button>
         <button class="btn quiet" id="cancelDinner" type="button">Cancel</button>
@@ -47,6 +53,8 @@ export function draw() {
       <p class="error" id="dinnerError" role="alert"></p>
     </div>`;
   $("#dname").addEventListener("input", e => { d.name = e.target.value; });
+  $("#dmethod").addEventListener("input", e => { d.method = e.target.value; });
+  $("#dlink").addEventListener("input", e => { d.link = e.target.value; });
   bindAdd(d.items, draw);
   pick.onclick = onClick;
 }
@@ -54,8 +62,8 @@ export function draw() {
 // Open the editor for one of your dinners, or for a new one (id null).
 export function editDinner(id) {
   const m = id && state.mine.find(x => x.id === id);
-  state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items] }
-                    : { id: null, name: "", servings: state.servings, items: [] };
+  state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items], method: m.method || "", link: m.link || "" }
+                    : { id: null, name: "", servings: state.servings, items: [], method: "", link: "" };
   render();
   $(m ? "#item" : "#dname").focus();
 }
@@ -77,7 +85,7 @@ async function saveDinner() {
   const d = state.editing;
   const name = await askName();  // first dinner only
   if (name) logEvent("hello", { name });
-  const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items };
+  const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, method: d.method, link: d.link };
   try {
     const res = await fetch(d.id ? `/my-dinners/${encodeURIComponent(d.id)}` : "/my-dinners", {
       method: d.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

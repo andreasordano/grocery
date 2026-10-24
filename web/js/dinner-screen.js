@@ -146,7 +146,8 @@ async function saveShared() {
   const name = await askName();  // first dinner only
   if (name) logEvent("hello", { name });
   try {
-    const saved = await api("/my-dinners", { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, from_share: d.token });
+    const saved = await api("/my-dinners", { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items,
+                                             method: d.method, link: d.link, from_share: d.token });
     state.mine = [...state.mine, saved].sort((a, b) => a.name.localeCompare(b.name));
     d.saved = true;
     draw();

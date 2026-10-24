@@ -1,10 +1,11 @@
 # =============================================================================
 # MY DINNERS  (people's own recipes, and dinners shared by link)
-# my_dinners(id, user_id, name, servings, items JSON, created, updated).
-# shares(token, user_id, recipe_id, name, servings, items JSON, pantry JSON, created):
+# my_dinners(id, user_id, name, servings, items JSON, method, link, created, updated).
+# shares(token, user_id, recipe_id, name, servings, items JSON, pantry JSON, method, link, created):
 # a snapshot of a dinner someone sent; anyone with the link can open it.
 # Items are typed lines with optional quantities ("paprika 600g", "2 piim"), priced
 # like a shopping list and scaled from `servings` to the number of people cooking.
+# `method` (how to cook it) and `link` (a recipe page) are optional, written by the person.
 # Owners are the name in the personal link (?u=…); there are no passwords, so the
 # links given to testers should be unique. Same database as the event log:
 # Postgres when DATABASE_URL is set, otherwise the local SQLite file at EVENTS_DB.
@@ -12,11 +13,13 @@
 
 import json
 import os
+import re
 import secrets
 import sqlite3
 from datetime import datetime, timezone
 
 MAX_ITEMS = 60
+MAX_METHOD = 4000  # characters of "how to cook it"
 
 _SQLITE_SCHEMA = """
 CREATE TABLE IF NOT EXISTS my_dinners (
@@ -25,6 +28,8 @@ CREATE TABLE IF NOT EXISTS my_dinners (
     name TEXT NOT NULL,
     servings INTEGER NOT NULL,
     items TEXT NOT NULL,
+    method TEXT,
+    link TEXT,
     created TEXT NOT NULL,
     updated TEXT NOT NULL
 )
@@ -39,6 +44,8 @@ CREATE TABLE IF NOT EXISTS shares (
     servings INTEGER NOT NULL,
     items TEXT NOT NULL,
     pantry TEXT NOT NULL,
+    method TEXT,
+    link TEXT,
     created TEXT NOT NULL
 )
 """
@@ -53,6 +60,8 @@ CREATE TABLE IF NOT EXISTS my_dinners (
     name TEXT NOT NULL,
     servings INTEGER NOT NULL,
     items JSONB NOT NULL,
+    method TEXT,
+    link TEXT,
     created TIMESTAMPTZ NOT NULL,
     updated TIMESTAMPTZ NOT NULL
 )
@@ -71,12 +80,21 @@ def _connect():
         conn, schemas, ph = sqlite3.connect(path), (_SQLITE_SCHEMA, _SQLITE_SHARES), "?"
     for schema in schemas:
         conn.execute(schema)
+    if not url:  # local files made before method and link existed (Postgres: supabase/migrations)
+        for table in ("my_dinners", "shares"):
+            have = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
+            for column in ("method", "link"):
+                if column not in have:
+                    conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} TEXT")
     return conn, ph
+
+
+_COLUMNS = "id, name, servings, items, method, link"
 
 
 def _row(r):
     items = r[3] if isinstance(r[3], list) else json.loads(r[3])
-    return {"id": f"my-{r[0]}", "name": r[1], "servings": r[2], "items": items}
+    return {"id": f"my-{r[0]}", "name": r[1], "servings": r[2], "items": items, "method": r[4], "link": r[5]}
 
 
 def _num(dinner_id):
@@ -84,6 +102,15 @@ def _num(dinner_id):
         return int(str(dinner_id).removeprefix("my-"))
     except ValueError:
         return None
+
+
+def clean_notes(method, link):
+    """Validated (method, link): either may be None. ValueError with a message for the person."""
+    method = (method or "").strip()[:MAX_METHOD] or None
+    link = (link or "").strip() or None
+    if link and not re.match(r"https?://[^\s/]+\.[^\s]+$", link):
+        raise ValueError("The recipe link should be a web address, like https://nami-nami.ee/…")
+    return method, link[:500] if link else None
 
 
 def clean(name, servings, items):
@@ -102,7 +129,7 @@ def clean(name, servings, items):
 def list_for(user_id):
     conn, ph = _connect()
     try:
-        rows = conn.execute(f"SELECT id, name, servings, items FROM my_dinners WHERE user_id = {ph} ORDER BY name",
+        rows = conn.execute(f"SELECT {_COLUMNS} FROM my_dinners WHERE user_id = {ph} ORDER BY name",
                             (user_id,)).fetchall()
         return [_row(r) for r in rows]
     finally:
@@ -116,35 +143,36 @@ def get(user_id, dinner_id):
         return None
     conn, ph = _connect()
     try:
-        r = conn.execute(f"SELECT id, name, servings, items FROM my_dinners WHERE id = {ph} AND user_id = {ph}",
+        r = conn.execute(f"SELECT {_COLUMNS} FROM my_dinners WHERE id = {ph} AND user_id = {ph}",
                          (num, user_id)).fetchone()
         return _row(r) if r else None
     finally:
         conn.close()
 
 
-def save(user_id, name, servings, items, dinner_id=None):
+def save(user_id, name, servings, items, dinner_id=None, method=None, link=None):
     """Create a dinner, or update one this person owns. Returns it, or None if not theirs."""
     name, servings, items = clean(name, servings, items)
+    method, link = clean_notes(method, link)
     now = datetime.now(timezone.utc).isoformat()
     conn, ph = _connect()
     try:
         if dinner_id is None:
             cur = conn.execute(
-                f"INSERT INTO my_dinners (user_id, name, servings, items, created, updated) "
-                f"VALUES ({ph}, {ph}, {ph}, {ph}, {ph}, {ph}) RETURNING id",
-                (user_id, name, servings, json.dumps(items, ensure_ascii=False), now, now))
+                f"INSERT INTO my_dinners (user_id, name, servings, items, method, link, created, updated) "
+                f"VALUES ({ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}) RETURNING id",
+                (user_id, name, servings, json.dumps(items, ensure_ascii=False), method, link, now, now))
             num = cur.fetchone()[0]
         else:
             num = _num(dinner_id)
             cur = conn.execute(
-                f"UPDATE my_dinners SET name = {ph}, servings = {ph}, items = {ph}, updated = {ph} "
-                f"WHERE id = {ph} AND user_id = {ph}",
-                (name, servings, json.dumps(items, ensure_ascii=False), now, num, user_id))
+                f"UPDATE my_dinners SET name = {ph}, servings = {ph}, items = {ph}, method = {ph}, link = {ph}, "
+                f"updated = {ph} WHERE id = {ph} AND user_id = {ph}",
+                (name, servings, json.dumps(items, ensure_ascii=False), method, link, now, num, user_id))
             if cur.rowcount == 0:
                 return None
         conn.commit()
-        return {"id": f"my-{num}", "name": name, "servings": servings, "items": items}
+        return {"id": f"my-{num}", "name": name, "servings": servings, "items": items, "method": method, "link": link}
     finally:
         conn.close()
 
@@ -160,17 +188,18 @@ def delete(user_id, dinner_id):
         conn.close()
 
 
-def share(user_id, recipe_id, name, servings, items, pantry=()):
+def share(user_id, recipe_id, name, servings, items, pantry=(), method=None, link=None):
     """Store a snapshot of a dinner and return its link token. Later edits don't change what was sent."""
     name, servings, items = clean(name, servings, items)
+    method, link = clean_notes(method, link)
     token = secrets.token_urlsafe(6)  # 8 characters, ~48 bits: not guessable
     conn, ph = _connect()
     try:
         conn.execute(
-            f"INSERT INTO shares (token, user_id, recipe_id, name, servings, items, pantry, created) "
-            f"VALUES ({ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph})",
+            f"INSERT INTO shares (token, user_id, recipe_id, name, servings, items, pantry, method, link, created) "
+            f"VALUES ({ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph}, {ph})",
             (token, user_id, recipe_id, name, servings, json.dumps(items, ensure_ascii=False),
-             json.dumps(list(pantry), ensure_ascii=False), datetime.now(timezone.utc).isoformat()))
+             json.dumps(list(pantry), ensure_ascii=False), method, link, datetime.now(timezone.utc).isoformat()))
         conn.commit()
         return token
     finally:
@@ -181,14 +210,15 @@ def shared(token):
     """The dinner behind a link, or None."""
     conn, ph = _connect()
     try:
-        r = conn.execute(f"SELECT token, name, servings, items, pantry FROM shares WHERE token = {ph}",
+        r = conn.execute(f"SELECT token, name, servings, items, pantry, method, link FROM shares WHERE token = {ph}",
                          (token,)).fetchone()
     finally:
         conn.close()
     if not r:
         return None
     load = lambda v: v if isinstance(v, list) else json.loads(v)
-    return {"id": f"sh-{r[0]}", "token": r[0], "name": r[1], "servings": r[2], "items": load(r[3]), "pantry": load(r[4])}
+    return {"id": f"sh-{r[0]}", "token": r[0], "name": r[1], "servings": r[2], "items": load(r[3]), "pantry": load(r[4]),
+            "method": r[5], "link": r[6]}
 
 
 def as_recipe(dinner):
@@ -196,4 +226,5 @@ def as_recipe(dinner):
     if dinner is None:
         return None
     return {"id": dinner["id"], "name": dinner["name"], "servings": dinner["servings"],
-            "ingredients": dinner["items"], "pantry": dinner.get("pantry", [])}
+            "ingredients": dinner["items"], "pantry": dinner.get("pantry", []),
+            "method": dinner.get("method"), "link": dinner.get("link")}

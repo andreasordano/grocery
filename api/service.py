@@ -68,6 +68,8 @@ class MyDinnerRequest(BaseModel):
     name: str
     servings: int = 2
     items: List[str]
+    method: Optional[str] = None  # how to cook it
+    link: Optional[str] = None    # a recipe page
     from_share: Optional[str] = None  # link token, when saved from a dinner someone sent
 
 
@@ -158,12 +160,13 @@ def _save_my_dinner(req: MyDinnerRequest, dinner_id: Optional[str] = None):
     if not req.user_id.strip():
         raise HTTPException(status_code=400, detail="Missing user")
     try:
-        dinner = my_dinners.save(req.user_id, req.name, req.servings, req.items, dinner_id)
+        dinner = my_dinners.save(req.user_id, req.name, req.servings, req.items, dinner_id, req.method, req.link)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     if dinner is None:
         raise HTTPException(status_code=404, detail="No such dinner")
     events.log_event("my_dinner_saved", {"id": dinner["id"], "new": dinner_id is None, "items": len(dinner["items"]),
+                                         "method": bool(dinner["method"]), "link": bool(dinner["link"]),
                                          "from_share": req.from_share}, user_id=req.user_id)
     return dinner
 
@@ -194,7 +197,8 @@ def create_share(req: ShareRequest):
     if recipe is None:
         raise HTTPException(status_code=404, detail="No such dinner")
     token = my_dinners.share(req.user_id, req.recipe_id, recipe["name"], recipe.get("servings", catalog.BASE_SERVINGS),
-                             catalog.recipe_as_items(recipe, recipes), recipe.get("pantry", []))
+                             catalog.recipe_as_items(recipe, recipes), recipe.get("pantry", []),
+                             recipe.get("method"), recipe.get("link"))
     events.log_event("share_created", {"token": token, "recipe_id": req.recipe_id}, user_id=req.user_id)
     return {"token": token, "path": f"/?dinner={token}"}
 

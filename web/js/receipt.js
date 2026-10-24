@@ -5,6 +5,7 @@ import { euro, num, cap, esc, amount, fold, storeNames } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
 import { shareDinner } from "./share.js";
+import { recipeCards } from "./recipe.js";
 
 function print(html, animate) {
   feed.innerHTML = `<div class="receipt">${html}</div>`;
@@ -156,6 +157,7 @@ export function showReceipt(storeName, animate) {
       <span class="fine">E-shop prices. In store they can differ a little.</span>
     </div>
     <div id="report"></div>
+    ${recipeCards(res)}
     ${res.recipe ? `<div class="share"><button class="btn quiet" type="button" id="share">Send this dinner to someone</button>
       <span class="fine" id="shareNote" role="status"></span></div>` : ""}`;
   if (res.recipe) $("#share").onclick = () => shareDinner(res.recipe);
