@@ -233,6 +233,16 @@ def delete_my_dinner(dinner_id: str, user_id: str):
     return {"deleted": dinner_id}
 
 
+@app.get("/recipes/{recipe_id}/card")
+def recipe_card(recipe_id: str, servings: int = 2, user_id: Optional[str] = None):
+    """A dinner's recipe card for its own page: ingredients for this many people, method, link, photo.
+    No store is asked, so it's instant."""
+    found = catalog.recipe_card(recipe_id, max(1, min(servings, 12)), user_id)
+    if found is None:
+        raise HTTPException(status_code=404, detail="No such dinner")
+    return found
+
+
 @app.get("/recipes/{recipe_id}/copy")
 def copy_recipe(recipe_id: str, user_id: Optional[str] = None):
     """Any dinner (a classic, a NutriData dish, one sent by link) as typed items, to change and save as one's own

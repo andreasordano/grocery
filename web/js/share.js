@@ -1,12 +1,10 @@
 // Sending a dinner by link. Whoever opens the link gets the dinner priced at their own stores.
-import { $ } from "./dom.js";
 import { esc } from "./format.js";
 import { api } from "./api.js";
 import { identity } from "./identity.js";
 
-// On phones the share sheet opens; elsewhere the link is copied.
-export async function shareDinner(recipe) {
-  const note = $("#shareNote");
+// On phones the share sheet opens; elsewhere the link is copied. note: where to say what happened.
+export async function shareDinner(recipe, note) {
   try {
     const { path } = await api("/shares", { recipe_id: recipe.id, user_id: identity.personId });
     const url = location.origin + path;

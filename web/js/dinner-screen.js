@@ -1,5 +1,7 @@
 // The Dinner screen: how many people, kinds of dinner, a handful of dinners to pick from,
 // anything else for the trip, a dinner someone sent by link, and a weekly plan from the newsletter.
+// Tapping a dinner opens its own page (what's in it, how to cook it); "Add to this trip" puts it in the trip.
+// Under the trip: each dinner's recipe card and the weekly plan sign-up (recipe.js).
 import { $, pick } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
@@ -11,6 +13,8 @@ import { bindAdd, itemButton, itemClick } from "./items.js";
 import { ask } from "./basket.js";
 import { idle, reveal } from "./receipt.js";
 import { editDinner } from "./editor-screen.js";
+import { recipeBody, recipeActions, hasPhoto, tripPanel } from "./recipe.js";
+import { bindNewsletterBox } from "./newsletter.js";
 
 const pickADinner = () => idle("Pick a dinner", "Your store and shopping list print here. Pick more dinners for one trip.");
 
@@ -26,7 +30,7 @@ function tripStrip() {
   const n = ids.length;
   return `<div class="trip">
     <p><b>This trip:</b> ${n} ${n === 1 ? "dinner" : "dinners"}<span class="fine">${n < MAX_TRIP
-      ? " · Tap another dinner to add it." : ` · ${MAX_TRIP} is the most for one trip.`}</span></p>
+      ? " · Add another one below." : ` · ${MAX_TRIP} is the most for one trip.`}</span></p>
     <ul>${ids.map(id => `<li><span lang="et">${esc(dinnerById(id)?.name ?? "")}</span>${featured(id)
       ? `<span class="featured">Featured</span>` : ""}<button type="button" data-unpick="${esc(id)}"
       aria-label="Take ${esc(dinnerById(id)?.name ?? "")} out of the trip">×</button></li>`).join("")}</ul>
@@ -38,16 +42,65 @@ function tripStrip() {
 // The plan's featured dinner: an unpaid pick from a store's or brand's recipes, always labelled.
 const featured = id => state.plan?.dinners.some(d => d.id === id && d.featured);
 
-export function draw() {
-  const dinners = shownDinners();
-  const chosen = picked(), several = chosen.length > 1;
-  pick.innerHTML = `
-    <h1>${several ? "Dinners" : "Dinner"} <span class="for">for <span class="stepper" role="group" aria-label="Number of people">
+const stepper = () => `<span class="stepper" role="group" aria-label="Number of people">
         <button type="button" data-step="-1" aria-label="Fewer people">−</button>
         <output id="servings">${state.servings}</output>
         <button type="button" data-step="1" aria-label="More people">+</button>
-      </span></span> ${several ? "this week" : "tonight"}</h1>
+      </span>`;
+
+// A dinner's own page: its photo, what goes in for this many people, how to cook it, and adding it to the trip.
+function drawDetail() {
+  const v = state.viewing, d = v.card, name = d?.name ?? dinnerById(v.id)?.name ?? "";
+  const inTrip = picked().includes(v.id), n = d?.ingredients.length ?? 0;
+  pick.innerHTML = `
+    <article class="dinner-page">
+      <button type="button" class="link back" id="backToList"><span aria-hidden="true">←</span> All dinners</button>
+      ${d && hasPhoto(d) ? `<div class="dp-photo"><img src="${esc(d.image)}" alt="" referrerpolicy="no-referrer"></div>` : ""}
+      <h1 class="dp-name" lang="et">${esc(name)}</h1>
+      <p class="dp-sub">For ${stepper()} ${state.servings === 1 ? "person" : "people"}${d ? ` · ${n} ${n === 1 ? "ingredient" : "ingredients"}` : ""}</p>
+      <div class="dp-add">${inTrip
+        ? `<span class="in-trip">In this trip</span><button type="button" class="link" id="takeOut">Take it out</button>`
+        : `<button type="button" class="btn dark" id="addToTrip">Add to this trip</button>`}
+        <span class="fine" id="tripFull" role="status"></span></div>
+      ${d ? `<div class="dp-recipe">${recipeBody(d)}</div>${recipeActions(d)}`
+        : v.failed ? `<p class="fine">Couldn't get the recipe. <button type="button" class="link" id="retryCard">Try again</button></p>`
+        : `<p class="fine">Getting the recipe…</p>`}
+    </article>`;
+  pick.onclick = onClick;
+}
+
+async function loadCard() {
+  const v = state.viewing;
+  try {
+    const card = await api(`/recipes/${encodeURIComponent(v.id)}/card?servings=${state.servings}&user_id=${encodeURIComponent(identity.personId)}`);
+    if (state.viewing === v) { v.card = card; v.failed = false; draw(); }
+  } catch {
+    if (state.viewing === v) { v.failed = true; draw(); }
+  }
+}
+
+function openDinner(id) {
+  state.viewing = { id, card: null };
+  draw();
+  scrollTo({ top: 0 });
+  logEvent("dinner_view", { id });
+  loadCard();
+}
+
+function backToList() {
+  state.viewing = null;
+  draw();
+  scrollTo({ top: 0 });
+}
+
+export function draw() {
+  if (state.viewing) { drawDetail(); return; }
+  const dinners = shownDinners();
+  const chosen = picked(), several = chosen.length > 1;
+  pick.innerHTML = `
+    <h1>${several ? "Dinners" : "Dinner"} <span class="for">for ${stepper()}</span> ${several ? "this week" : "tonight"}</h1>
     ${tripStrip()}
+    <div id="tripPanel">${tripPanel()}</div>
     ${state.shared ? `<div class="sent">
       <p><span class="what">A dinner sent to you</span><span class="name" lang="et">${esc(state.shared.name)}</span></p>
       <span class="btns">${state.shared.saved ? `<span class="fine">Saved to Mine</span>`
@@ -58,6 +111,7 @@ export function draw() {
       <p><span class="what">This week's plan</span><span class="name">${esc(state.plan.title)}</span></p>
       <span class="btns"><button type="button" class="x" id="dropPlan" aria-label="Close the plan">×</button></span>
     </div>` : ""}
+    ${chosen.length ? `<h2 class="more-dinners">Add another dinner</h2>` : ""}
     <div class="chips cats" role="group" aria-label="Kind of dinner">${[
       { id: "ideas", name: "Ideas" }, { id: "classics", name: "Classics" }, { id: "mine", name: "Mine" }, ...state.categories,
     ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}">${esc(c.name)}</button>`).join("")}</div>
@@ -84,6 +138,7 @@ export function draw() {
       : `<button type="button" class="open-extras" id="openExtras"><span aria-hidden="true">+</span>Anything else on the way?</button>`}
     </div>`;
   if (state.extrasOpen || state.extras.length) bindAdd(state.extras, extrasChanged);
+  bindNewsletterBox();
   pick.onclick = onClick;
 }
 
@@ -97,10 +152,23 @@ let stepTimer;
 
 function onClick(e) {
   const dish = e.target.closest(".dish");
-  if (dish) {
-    if (!choose(dish.dataset.id)) return;  // the trip is full: the strip above says so
-    draw();
+  if (dish) { openDinner(dish.dataset.id); return; }
+  if (e.target.closest("#backToList")) { backToList(); return; }
+  if (e.target.closest("#retryCard")) { state.viewing.failed = false; draw(); loadCard(); return; }
+  if (e.target.closest("#addToTrip")) {
+    if (!choose(state.viewing.id)) {  // the trip is full
+      $("#tripFull").textContent = `${MAX_TRIP} dinners is the most for one trip. Take one out first.`;
+      return;
+    }
     logEvent("trip_change", { dinners: picked().length });
+    backToList();
+    ask({ fresh: true });
+    return;
+  }
+  if (e.target.closest("#takeOut")) {
+    unpick(state.viewing.id);
+    logEvent("trip_change", { dinners: picked().length });
+    draw();
     picked().length ? ask({ fresh: true }) : pickADinner();
     return;
   }
@@ -138,7 +206,10 @@ function onClick(e) {
     state.servings = Math.min(8, Math.max(1, state.servings + +step.dataset.step));
     $("#servings").textContent = state.servings;
     clearTimeout(stepTimer);
-    if (state.recipeId) stepTimer = setTimeout(ask, 350);  // wait for the last tap
+    stepTimer = setTimeout(() => {  // wait for the last tap
+      if (state.viewing) loadCard();
+      if (state.recipeId) ask();
+    }, 350);
     return;
   }
   if (itemClick(e, state.extras, extrasChanged)) return;

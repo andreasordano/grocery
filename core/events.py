@@ -37,6 +37,7 @@ EVENT_TYPES = {
     "quick_view": "tapping a product's photo",
     "open_product": "opening a product in the store's e-shop (from: quick_view, chooser, cart)",
     "recipe_open": "unfolding a recipe card",
+    "dinner_view": "a dinner's own page opened from the list (id)",
     # choosing dinners and items
     "dinner_category": "picking a kind of dinner",
     "dinner_shuffle": "\"Show me others\"",

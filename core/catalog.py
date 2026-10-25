@@ -601,10 +601,7 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     baskets += [no_answer_basket(s) for s in stores if s in failed]
 
     # Each dinner as a recipe card: its ingredients for this many people, and how to cook it when known.
-    about = [{"id": r["id"], "name": r["name"], "servings": people, "pantry": r.get("pantry", []),
-              "ingredients": [{k: n.get(k) for k in ("label", "amount", "unit", "packs", "asked")} for n in needs],
-              "method": r.get("method"), "link": r.get("link"), "image": r.get("image")}
-             for (r, people), needs in zip(picked, each)]
+    about = [card(r, people, needs) for (r, people), needs in zip(picked, each)]
     return {
         # One dinner: `recipe` as before. Several: `recipe` is None and `dinners` lists them.
         "recipe": {k: about[0][k] for k in ("id", "name", "pantry")} if len(about) == 1 else None,
@@ -615,6 +612,22 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
         "store": baskets[0]["store"] if baskets and baskets[0]["status"] == "ok" else None,
         "baskets": baskets,
     }
+
+
+def card(recipe, servings, needs):
+    """A dinner as its recipe card shows it: ingredients for this many people, and how to cook it when known."""
+    return {"id": recipe["id"], "name": recipe["name"], "servings": servings, "pantry": recipe.get("pantry", []),
+            "ingredients": [{k: n.get(k) for k in ("label", "amount", "unit", "packs", "asked")} for n in needs],
+            "method": recipe.get("method"), "link": recipe.get("link"), "image": recipe.get("image")}
+
+
+def recipe_card(recipe_id, servings, user_id=None):
+    """One dinner's recipe card, without asking any store: for the dinner's own page. None if unknown."""
+    recipes = load_recipes()
+    recipe = find_recipe(recipe_id, recipes, user_id)
+    if recipe is None:
+        return None
+    return card(recipe, servings, recipe_needs(recipe, servings, recipes))
 
 
 def recommend_dinner(recipe_id, servings, stores):

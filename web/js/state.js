@@ -12,6 +12,7 @@ export const state = {
   editing: null,       // the dinner being written: {id or null, name, servings, items}
   shared: null,        // a dinner someone sent by link: {id "sh-…", token, name, servings, items, saved}
   plan: null,          // a weekly plan from the newsletter (?plan=): {token, title, dinners: [{id, featured, …}]}
+  viewing: null,       // the dinner whose own page is open: {id, card (its recipe, once loaded), failed}
   recipeId: null,      // the dinner picked last
   tripIds: [],         // the dinners in this trip, in the order picked (dinners.js)
   servings: 2,

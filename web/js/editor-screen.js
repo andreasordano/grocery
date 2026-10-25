@@ -148,6 +148,7 @@ async function saveDinner() {
     if (!res.ok) { $("#dinnerError").textContent = saved.detail || "Couldn't save the dinner. Try again."; return; }
     state.mine = [...state.mine.filter(x => x.id !== saved.id), saved].sort((a, b) => a.name.localeCompare(b.name));
     state.editing = null;
+    state.viewing = null;  // back to the list, with the saved dinner in the trip
     state.category = "mine"; storage.set("pantryrun.category", "mine"); state.shown = [];
     add(saved.id);  // picked straight away, so it's priced
     render();

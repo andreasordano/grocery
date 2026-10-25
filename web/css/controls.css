@@ -54,9 +54,9 @@ select { flex: 1; min-width: 0; padding: 10px 14px; border-radius: 999px; border
   font: 700 max(18px, .28em)/1 var(--sans); color: #1c1f4a; display: grid; place-items: center; transition: transform .15s; }
 .stepper button:hover { transform: scale(1.08); }
 .stepper button:active { transform: scale(.94); }
-/* in running text (the dinner editor) it's text-sized */
-.sub .stepper { font: 700 17px var(--sans); padding: 3px; transform: none; gap: 4px; }
-.sub .stepper button { width: 28px; height: 28px; font-size: 16px; }
+/* in running text (the dinner editor, a dinner's own page) it's text-sized */
+.sub .stepper, .dp-sub .stepper { font: 700 17px var(--sans); padding: 3px; transform: none; gap: 4px; }
+.sub .stepper button, .dp-sub .stepper button { width: 28px; height: 28px; font-size: 16px; }
 
 @media (max-width: 900px) {
   .chips { gap: 6px; }

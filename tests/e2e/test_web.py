@@ -218,8 +218,8 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     assert "Testi pasta for 2" in page.locator(".receipt").inner_text()
     assert page.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
 
-    page.click("#share")
-    page.wait_for_function("document.querySelector('#shareNote').textContent.length > 0")
+    page.click(".rc [data-share]")  # the recipe card, on the left under the trip
+    page.wait_for_function("document.querySelector('.rc .share-note').textContent.length > 0")
     link = page.evaluate("navigator.clipboard.readText()")
     assert "/?dinner=" in link
 
@@ -319,7 +319,9 @@ def test_no_script_errors(base_url, page):
     page.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
     page.goto(base_url + "/?u=e2e-errors")
     page.click("[data-cat=classics]")
-    page.locator(".dish").first.click()
+    page.locator(".dish").first.click()  # its own page
+    page.wait_for_selector(".dp-recipe")
+    page.click("#addToTrip")
     page.wait_for_function("!document.querySelector('.receipt').textContent.includes('Comparing prices')")
     page.click("[data-mode=list]")
     page.fill("#item", "kohv")
@@ -357,8 +359,9 @@ def test_several_dinners_price_as_one_trip(base_url, page):
         urllib.request.urlopen(urllib.request.Request(base_url + "/my-dinners", body, {"Content-Type": "application/json"}))
     page.goto(base_url + "/?u=e2e-trip")
     page.click("[data-cat=mine]")
-    page.click(".dish >> text=Testi pasta")
-    page.click(".dish >> text=Testi salat")
+    for name in ("Testi pasta", "Testi salat"):
+        page.click(f".dish >> text={name}")
+        page.click("#addToTrip")
     page.wait_for_function("document.querySelector('.r-what')?.textContent.startsWith('2 dinners')")
     assert [t.split("\n")[0] for t in page.locator(".trip li").all_inner_texts()] == ["Testi pasta", "Testi salat"]
     # what both dinners need is one line, added up: 300 g + 200 g of courgette
@@ -641,3 +644,26 @@ def test_delivery_is_asked_once_and_logged(base_url, page):
     page.click("#find")
     receipt_lines(page)
     assert page.locator("#after [data-delivery]").count() == 0  # nor the next receipt
+
+
+def test_tapping_a_dinner_shows_its_page_and_adds_only_on_request(base_url, page):
+    body = json.dumps({"user_id": "e2e-look", "name": "Testi hautis", "servings": 2, "items": ["suvikõrvits 400g", "koor"],
+                       "method": "Hauta 30 min."}).encode()
+    urllib.request.urlopen(urllib.request.Request(base_url + "/my-dinners", body, {"Content-Type": "application/json"}))
+    page.goto(base_url + "/?u=e2e-look")
+    page.click("[data-cat=mine]")
+    page.click(".dish >> text=Testi hautis")
+    page.wait_for_selector(".dp-recipe")
+    assert page.text_content(".dp-name") == "Testi hautis"
+    assert page.locator(".dp-recipe .rc-ing li").count() == 2 and "Hauta 30 min." in page.text_content(".dp-recipe")
+    assert page.locator(".trip").count() == 0  # looking doesn't add it
+    assert [d["id"] for u, d in logged("dinner_view", "e2e-look", wait=1) if u == "e2e-look"][0].startswith("my-")
+
+    page.click("#backToList")
+    page.wait_for_selector(".dishes")
+    page.click(".dish >> text=Testi hautis")
+    page.click("#addToTrip")
+    page.wait_for_selector(".trip li:has-text('Testi hautis')")
+    receipt_lines(page)
+    page.wait_for_selector("#tripPanel .rc")  # its recipe card, on the left under the trip
+    assert page.locator("#after .rc").count() == 0 and page.locator("#tripPanel #newsletter").count() == 1

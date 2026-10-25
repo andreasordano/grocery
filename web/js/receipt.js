@@ -5,8 +5,7 @@ import { euro, num, esc, amount, fold, storeNames, shopName } from "./format.js"
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
 import { identity, askUsualStore } from "./identity.js";
-import { shareDinner } from "./share.js";
-import { recipeCards } from "./recipe.js";
+import { refreshTripPanel } from "./recipe.js";
 import { cartButton } from "./cart.js";
 import { newsletterBox, bindNewsletterBox } from "./newsletter.js";
 
@@ -165,12 +164,9 @@ export function showReceipt(storeName, animate) {
       <button class="link" type="button" id="changeUsual">${["selver", "rimi", "maxima", "other"].includes(identity.usualStore) ? "Change" : "Tell us"}</button></p>
     <div id="report"></div>
     ${cartButton(b)}
-    ${recipeCards(res)}
-    ${res.recipe ? `<div class="share"><button class="btn quiet" type="button" id="share">Send this dinner to someone</button>
-      <span class="fine" id="shareNote" role="status"></span></div>` : ""}
-    ${newsletterBox()}`;
-  if (res.recipe) $("#share").onclick = () => shareDinner(res.recipe);
-  bindNewsletterBox();
+    ${state.mode === "list" ? newsletterBox() : ""}`;
+  // Dinners: their recipes and the weekly plan sign-up go on the left, under the trip.
+  if (state.mode === "list") bindNewsletterBox(); else refreshTripPanel();
 
   const feedback = { usual_store: identity.usualStore === "skip" ? null : identity.usualStore ?? null, mission: dinners.length > 1 ? "dinners" : state.mode, recipe_id: res.recipe?.id ?? null,
                      recipe_ids: dinners.map(d => d.id), servings: res.servings, items: res.items,
