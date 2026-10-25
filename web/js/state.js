@@ -1,10 +1,6 @@
 // Everything the page keeps track of while it's open. Screens change it, then redraw.
 import { storage } from "./storage.js";
 
-// Several dinners in one trip, while it's tried out: ?trip=1 turns it on (and is remembered), ?trip=0 off.
-const tripFlag = new URLSearchParams(location.search).get("trip");
-if (tripFlag !== null) storage.set("pantryrun.trip", tripFlag === "1");
-
 export const state = {
   mode: "dinner",      // "dinner" or "list": the switch in the top bar
   recipes: [],         // hand-written classics
@@ -15,9 +11,8 @@ export const state = {
   mine: [],            // this person's own dinners: {id, name, servings, items}
   editing: null,       // the dinner being written: {id or null, name, servings, items}
   shared: null,        // a dinner someone sent by link: {id "sh-…", token, name, servings, items, saved}
-  recipeId: null,      // the picked dinner (with trips: the one picked last)
-  trip: storage.get("pantryrun.trip", false),  // several dinners in one trip (dinners.js)
-  tripIds: [],         // with trips: the dinners in this trip, in the order picked
+  recipeId: null,      // the dinner picked last
+  tripIds: [],         // the dinners in this trip, in the order picked (dinners.js)
   servings: 2,
   extras: [],          // dinner: anything else for this trip
   extrasOpen: false,   // the field for those is folded away until asked for

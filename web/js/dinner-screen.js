@@ -4,7 +4,7 @@ import { $, pick } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
-import { identity, askName } from "./identity.js";
+import { identity } from "./identity.js";
 import { api, logEvent } from "./api.js";
 import { shownDinners, shuffle, dinnerById, picked, choose, unpick, MAX_TRIP } from "./dinners.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
@@ -12,17 +12,17 @@ import { ask } from "./basket.js";
 import { idle, reveal } from "./receipt.js";
 import { editDinner } from "./editor-screen.js";
 
-const pickADinner = () => idle(state.trip ? "Pick your dinners" : "Pick a dinner", "Your store and shopping list print here.");
+const pickADinner = () => idle("Pick a dinner", "Your store and shopping list print here. Pick more dinners for one trip.");
 
 export function open() {
   draw();
   state.recipeId ? ask({ fresh: true }) : pickADinner();
 }
 
-// With trips on: the dinners in this trip, each with a way to take it out.
+// The dinners in this trip, each with a way to take it out.
 function tripStrip() {
   const ids = picked();
-  if (!state.trip || !ids.length) return "";
+  if (!ids.length) return "";
   const n = ids.length;
   return `<div class="trip">
     <p><b>This trip:</b> ${n} ${n === 1 ? "dinner" : "dinners"}<span class="fine">${n < MAX_TRIP
@@ -36,13 +36,13 @@ function tripStrip() {
 
 export function draw() {
   const dinners = shownDinners();
-  const chosen = picked();
+  const chosen = picked(), several = chosen.length > 1;
   pick.innerHTML = `
-    <h1>${state.trip ? "Dinners" : "Dinner"} <span class="for">for <span class="stepper" role="group" aria-label="Number of people">
+    <h1>${several ? "Dinners" : "Dinner"} <span class="for">for <span class="stepper" role="group" aria-label="Number of people">
         <button type="button" data-step="-1" aria-label="Fewer people">−</button>
         <output id="servings">${state.servings}</output>
         <button type="button" data-step="1" aria-label="More people">+</button>
-      </span></span> ${state.trip ? "this week" : "tonight"}</h1>
+      </span></span> ${several ? "this week" : "tonight"}</h1>
     ${tripStrip()}
     ${state.shared ? `<div class="sent">
       <p><span class="what">A dinner sent to you</span><span class="name" lang="et">${esc(state.shared.name)}</span></p>
@@ -91,8 +91,8 @@ function onClick(e) {
   const dish = e.target.closest(".dish");
   if (dish) {
     if (!choose(dish.dataset.id)) return;  // the trip is full: the strip above says so
-    if (state.trip) { draw(); logEvent("trip_change", { dinners: picked().length }); }
-    else pick.querySelectorAll(".dish").forEach(d => d.setAttribute("aria-pressed", d === dish));
+    draw();
+    logEvent("trip_change", { dinners: picked().length });
     picked().length ? ask({ fresh: true }) : pickADinner();
     return;
   }
@@ -145,8 +145,6 @@ function onClick(e) {
 
 async function saveShared() {
   const d = state.shared;
-  const name = await askName();  // first dinner only
-  if (name) logEvent("hello", { name });
   try {
     const saved = await api("/my-dinners", { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items,
                                              method: d.method, link: d.link, image: d.image, from_share: d.token });

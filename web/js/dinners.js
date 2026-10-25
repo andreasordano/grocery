@@ -5,14 +5,13 @@ import { state } from "./state.js";
 const SHOWN = 6;  // dinners on screen at once
 export const MAX_TRIP = 5;  // dinners in one trip (the server's limit too)
 
-// The dinners being priced: the picked one, or with trips on, every dinner in the trip.
-export const picked = () => state.trip ? state.tripIds : state.recipeId ? [state.recipeId] : [];
+// The dinners being priced: every dinner in this trip.
+export const picked = () => state.tripIds;
 
 const synced = () => { state.recipeId = state.tripIds.at(-1) ?? null; };
 
-// Pick a dinner: with trips on it joins the trip. False when the trip is full.
+// Pick a dinner: it joins the trip. False when the trip is full.
 export function add(id) {
-  if (!state.trip) { state.recipeId = id; return true; }
   if (!state.tripIds.includes(id)) {
     if (state.tripIds.length >= MAX_TRIP) return false;
     state.tripIds = [...state.tripIds, id];
@@ -22,14 +21,13 @@ export function add(id) {
 }
 
 export function unpick(id) {
-  if (!state.trip) { if (state.recipeId === id) state.recipeId = null; return; }
   state.tripIds = state.tripIds.filter(x => x !== id);
   synced();
 }
 
-// A tap on a dinner: pick it; with trips on, a dinner already in the trip comes out of it.
+// A tap on a dinner: pick it; a dinner already in the trip comes out of it.
 export function choose(id) {
-  if (state.trip && state.tripIds.includes(id)) { unpick(id); return true; }
+  if (state.tripIds.includes(id)) { unpick(id); return true; }
   return add(id);
 }
 

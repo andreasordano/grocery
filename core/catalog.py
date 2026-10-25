@@ -145,6 +145,16 @@ def cost_for(product, need, need_unit, piece_g=None):
     return round(packs * price, 2), packs, f"{packs} × {price:.2f} €", None
 
 
+def cart_qty(product, need, need_unit, packs, piece_g=None):
+    """What to put in the e-shop's cart for what cost_for priced: packs, or kg (l) of a loose good."""
+    if packs:
+        return packs
+    grams = _convert(need, need_unit, "g", piece_g) if need is not None else None
+    if (product.get("unit") or "").lower() in ("kg", "l") and grams:
+        return sold_quantity(grams / 1000, product.get("min_qty"), product.get("qty_step"))
+    return None
+
+
 # ── rule matching ────────────────────────────────────────────────────────────
 
 def _category_ok(categories, wanted):
@@ -220,7 +230,9 @@ def _looks(product):
     in the e-shop. Rimi only gives shelf codes (SH-19-5), which mean nothing to a person, so those are left out."""
     shelf = product.get("shelf")
     return {"image": product.get("image"), "shelf": None if not shelf or re.match(r"SH-\d", shelf) else shelf,
-            "url": product.get("url")}
+            "url": product.get("url"),
+            # the store's own id (Rimi product code, Barbora id, Selver sku): what its cart takes
+            "store_id": product.get("store_id") or product.get("code") or product.get("id") or product.get("sku")}
 
 
 MAX_OPTIONS = 100  # alternatives per line; the web app also previews preferences against them
@@ -264,6 +276,7 @@ def ingredient_offers(ingredient_key, need, store, recipes, rules, pref=None):
                 cost, packs, how, bought = priced
                 options.append(_with_discount({"product": p["name"], "price": parse_price(p["price"]), "cost": cost,
                                                "packs": packs, "how": how, "bought": bought, "substitute": level > 0,
+                                               "cart_qty": cart_qty(p, need, spec["unit"], packs, spec.get("piece_g")),
                                                **_looks(p)}, p))
         if options:
             options.sort(key=lambda o: o["cost"])
@@ -469,7 +482,8 @@ def free_text_offers(items, stores, needs=None, failed=None):
                 cost, packs, how, bought = priced or (p["price"], 1, f"1 × {p['price']:.2f} €", None)
                 options.append((p.get("relevance", 0), p["score"], _with_discount(
                     {"product": p["name"], "price": p["price"], "cost": cost, "packs": packs, "how": how, "bought": bought,
-                     "substitute": False, **_looks(p)}, p)))
+                     "substitute": False, "cart_qty": cart_qty(p, needs[it], "g", packs) if it in needs else packs,
+                     **_looks(p)}, p)))
             by_amount = it in needs
             options.sort(key=lambda o: (-o[0], o[2]["cost"]) if by_amount else o[1])
             out[it][store] = [o[2] for o in options]
@@ -481,7 +495,7 @@ def _line(key, label, need, unit, offer, options, extra):
         "key": key, "ingredient": key if not key.startswith("text:") else None,
         "label": label, "need": need, "unit": unit, "extra": extra,
         **offer,
-        "options": [{k: o.get(k) for k in ("product", "cost", "how", "bought", "regular_cost", "card_cost", "deal", "image", "shelf", "url")}
+        "options": [{k: o.get(k) for k in ("product", "cost", "how", "bought", "regular_cost", "card_cost", "deal", "image", "shelf", "url", "store_id", "cart_qty")}
                     for o in options[:MAX_OPTIONS]],
     }
 
@@ -492,7 +506,7 @@ def _times(option, n):
         return option
     mul = lambda v: round(v * n, 2) if v is not None else None
     return {**option, "cost": mul(option["cost"]), "regular_cost": mul(option.get("regular_cost")),
-            "card_cost": mul(option.get("card_cost")), "packs": n, "how": f"{n:g} × {option['price']:.2f} €"}
+            "card_cost": mul(option.get("card_cost")), "packs": n, "cart_qty": n, "how": f"{n:g} × {option['price']:.2f} €"}
 
 
 def build_basket(store, needs, prefs, recipes, rules, free):

@@ -52,6 +52,14 @@ def test_cost_pieces_sold_per_kg():
     assert cost == 0.24
 
 
+def test_cart_quantity_is_what_was_priced():
+    loose = {"name": "Kartul, kg", "price": 0.99, "unit": "kg", "min_qty": 1.5}
+    assert catalog.cart_qty(loose, 1200, "g", None) == 1.5          # the least the store sells
+    assert catalog.cart_qty({"name": "Kartul, kg", "unit": "kg"}, 800, "g", None) == 0.8
+    assert catalog.cart_qty({"name": "Kohupiim 200 g"}, 400, "g", 2) == 2  # packs
+    assert catalog.cart_qty({"name": "Sidrun, kg", "unit": "kg"}, 2, "pcs", None, piece_g=120) == 0.24
+
+
 def test_cost_unknown_size_is_skipped():
     assert catalog.cost_for({"name": "Roheline sibul potis", "price": 1.99}, 100, "g") is None
 

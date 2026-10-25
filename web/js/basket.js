@@ -11,8 +11,9 @@ import { chooseProduct, editPreferences } from "./products.js";
 import { bindPeek } from "./peek.js";
 
 // fresh: a new question, so the receipt prints anew. keepView: stay on the store being looked at.
-// scroll: on phones, scroll down to the receipt (not while dinners are still being added to a trip).
-export async function ask({ fresh = false, keepView = false, scroll = !state.trip } = {}) {
+// scroll: on phones, scroll down to the receipt. Not for dinners: more may be added to the trip, and
+// the trip's "See where to shop" button scrolls there.
+export async function ask({ fresh = false, keepView = false, scroll = state.mode === "list" } = {}) {
   const dinner = state.mode === "dinner";
   const items = dinner ? state.extras : state.items;
   const ids = dinner ? picked() : [];

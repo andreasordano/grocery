@@ -130,6 +130,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "shelf": item.get("shelf"),
         "image": item.get("image"),
         "url": item.get("url"),        # the product's page in the e-shop
+        "store_id": item.get("code") or item.get("id") or item.get("sku"),  # what the store's cart takes
         "unit": item.get("unit"),      # "kg"/"l" for loose goods (catalog.cost_for)
         "min_qty": item.get("min_qty"),    # loose goods: the least the store sells, in kg/l
         "qty_step": item.get("qty_step"),  # and the steps above it

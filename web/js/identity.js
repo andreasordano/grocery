@@ -1,18 +1,21 @@
 // Who is using pantryrun. Each browser gets a random person id on its first visit; a tester link (?u=)
 // sets the id instead, and someone who typed a name before ids existed keeps that name as their id,
 // so their saved dinners stay theirs. There are no passwords.
-// The name is optional and only asked for when someone saves their first dinner.
+// The name is asked for on the first visit and can't be skipped: it tells us who did what. People who
+// came with a tester link aren't asked; the link says who they are.
 import { $ } from "./dom.js";
 import { storage } from "./storage.js";
 
 const link = new URLSearchParams(location.search).get("u");
+if (link) storage.set("pantryrun.tester", true);
 const known = storage.get("pantryrun.person", null) || storage.get("pantryrun.name", null);
 
 export const identity = {
   personId: link || known || crypto.randomUUID(),
   fromTesterLink: !!link,
+  tester: !!link || storage.get("pantryrun.tester", false),  // ever came with a tester link
   firstVisit: !link && !known,
-  name: storage.get("pantryrun.name", null),  // null: never asked; "": skipped
+  name: storage.get("pantryrun.name", null),  // null: never asked; "": skipped (when it could be)
   sessionId: (() => {
     try {
       let id = sessionStorage.getItem("sid");
@@ -23,19 +26,21 @@ export const identity = {
 };
 storage.set("pantryrun.person", identity.personId);
 
-// Ask for a name once. Resolves with the name typed, or null when it was skipped or asked before.
+// Ask for the name, once. Resolves with the name typed, or null when it's known (or a tester link).
+// The dialog can't be closed without a name.
 export function askName() {
-  if (identity.name !== null) return Promise.resolve(null);
+  if (identity.name || identity.tester) return Promise.resolve(null);
   const hello = $("#hello"), input = $("#helloName");
   return new Promise(resolve => {
-    hello.returnValue = "";
+    hello.oncancel = e => e.preventDefault();  // Escape
     hello.onclose = () => {
-      const name = hello.returnValue === "save" ? input.value.trim().replace(/\s+/g, " ") : "";
+      const name = input.value.trim().replace(/\s+/g, " ");
+      if (!name) { hello.showModal(); return; }  // a second Escape still closes it in Chrome
       identity.name = name;
       storage.set("pantryrun.name", name);
-      resolve(name || null);
+      resolve(name);
     };
-    input.oninput = () => input.setCustomValidity(input.value.trim() ? "" : "Please type your name, or skip.");
+    input.oninput = () => input.setCustomValidity(input.value.trim() ? "" : "Please type your name.");
     hello.showModal();
   });
 }
