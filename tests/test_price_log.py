@@ -10,13 +10,13 @@ from core import fetch, price_log
 
 
 SELVER_MILK = {"store": "selver", "name": "Piim 2,5%, 1 L", "price": 1.19, "regular_price": 1.49,
-               "deal_until": "2026-10-26", "sku": "T000123", "ean": 4740125000016, "brand": "Alma",
+               "deal_until": "2026-10-26", "store_id": "T000123", "ean": 4740125000016, "brand": "Alma",
                "volume": "1 l", "unit": None, "category": ["Piimatooted", "Piim"], "in_stock": True}
 BARBORA_CHEESE = {"store": "barbora", "name": "Juust Eesti 400 g", "price": 4.29, "card_price": 3.49,
-                  "id": "998877", "unit": "tk", "category": ["Piimatooted", "Juust"], "in_stock": True}
-RIMI_APPLES = {"store": "rimi", "name": "Õunad Gala", "price": 2.49, "unit": "kg", "code": "123456",
+                  "store_id": "998877", "unit": "tk", "category": ["Piimatooted", "Juust"], "in_stock": True}
+RIMI_APPLES = {"store": "rimi", "name": "Õunad Gala", "price": 2.49, "unit": "kg", "store_id": "123456",
                "category": ["SH-1-2"], "in_stock": True}
-RIMI_SOLD_OUT = {"store": "rimi", "name": "Munad 10 tk", "price": None, "code": "777", "in_stock": False}
+RIMI_SOLD_OUT = {"store": "rimi", "name": "Munad 10 tk", "price": None, "store_id": "777", "in_stock": False}
 
 
 # ── rows from adapter output ────────────────────────────────────────────────
@@ -54,7 +54,7 @@ def test_sold_out_product_is_observed_without_price():
 
 
 def test_rows_skip_products_without_id_and_keep_first_rank():
-    nameless = {"name": "", "sku": "X1", "price": 1}
+    nameless = {"name": "", "store_id": "X1", "price": 1}
     pairs = price_log.rows([SELVER_MILK, nameless, {**SELVER_MILK, "price": 0.99}, {"name": "No id", "price": 2}])
     assert [(p["retailer_product_id"], o["search_rank"], o["price"]) for p, o in pairs] == [("T000123", 1, 1.19)]
 
@@ -94,14 +94,13 @@ def test_classify_http_errors(code, status):
 def recorded(monkeypatch):
     calls = []
     monkeypatch.setattr(price_log, "record", lambda *a, **kw: calls.append((a, kw)))
-    monkeypatch.setattr(fetch, "get_pagination_param", lambda store: "size")
     fetch._CACHE.clear()
     yield calls
     fetch._CACHE.clear()
 
 
 def test_fresh_fetch_is_recorded_and_cache_hit_is_not(recorded, monkeypatch):
-    monkeypatch.setattr(fetch, "get_fetcher", lambda store: lambda q, **kw: [SELVER_MILK])
+    monkeypatch.setattr(fetch, "connector", lambda store: lambda q, **kw: [SELVER_MILK])
     fetch._cached_fetch("selver", "piim")
     fetch._cached_fetch("selver", "piim")
     fetch._cached_fetch("selver", "piim", refresh=True)
@@ -112,7 +111,7 @@ def test_fresh_fetch_is_recorded_and_cache_hit_is_not(recorded, monkeypatch):
 def test_failed_fetch_is_recorded_and_still_raises(recorded, monkeypatch):
     def blocked(q, **kw):
         raise RuntimeError("blocked")
-    monkeypatch.setattr(fetch, "get_fetcher", lambda store: blocked)
+    monkeypatch.setattr(fetch, "connector", lambda store: blocked)
     with pytest.raises(RuntimeError):
         fetch._cached_fetch("selver", "piim")
     assert isinstance(recorded[0][1]["error"], RuntimeError)

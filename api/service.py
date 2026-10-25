@@ -17,6 +17,7 @@ from core import fetch
 from core import mailerlite
 from core import plans
 from core import recipe_import
+from stores_config import dinner_stores, public as stores_public
 
 import io
 import os
@@ -26,8 +27,8 @@ import zipfile
 from urllib.parse import urlparse
 
 
-# Stores with ingredient rules in data/rules.yaml (Barbora stands in for Maxima).
-DINNER_STORES = ["selver", "rimi", "barbora"]
+# Stores with ingredient rules in data/rules.yaml (stores_config.py).
+DINNER_STORES = dinner_stores()
 
 
 def _keep_cache_warm():
@@ -132,9 +133,11 @@ def log_event(req: EventRequest):
 
 @app.get("/recipes")
 def recipes():
-    """Dinners the app can recommend: the hand-written classics, plus NutriData dishes by category."""
+    """Dinners the app can recommend: the hand-written classics, plus NutriData dishes by category; and the
+    stores, as the page names them (stores_config.py)."""
     data, dishes = catalog.load_recipes(), catalog.load_dishes()
     return {
+        **stores_public(),
         "recipes": [{"id": r["id"], "name": r["name"], "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]],
         "categories": dishes["categories"],
         "dishes": [{"id": d["id"], "name": d["name"], "category": d["category"]} for d in dishes["dishes"]],

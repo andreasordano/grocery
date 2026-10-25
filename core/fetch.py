@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, timezone
 from core import db, price_log
 from core.cache import TTLCache
 from core.scoring import head_weight, pack_size, parse_price, relevance_score, score, shares_stem
-from stores_config import get_fetcher, get_max_concurrency, get_pagination_param
+from stores_config import connector, max_concurrency
 
 
 # Never suitable for a basket, whatever the item: pre-order and bulk listings.
@@ -39,7 +39,7 @@ _limits = {}  # store → semaphore: at most max_concurrency requests at once (s
 def _limit(store):
     with _lock:
         if store not in _limits:
-            _limits[store] = threading.BoundedSemaphore(get_max_concurrency(store))
+            _limits[store] = threading.BoundedSemaphore(max_concurrency(store))
         return _limits[store]
 
 
@@ -88,25 +88,19 @@ def load_saved_searches():
     except Exception as exc:  # e.g. before the table's migration
         print(f"saved searches not loaded: {exc}")
         return 0
+    loaded = 0
     for retailer, query, fetched_at, products in rows:
-        _CACHE.set((retailer, query, SIZE), products, at=fetched_at.timestamp())
-    return len(rows)
+        if products and "store_id" in products[0]:  # answers saved before the connector contract are left out
+            _CACHE.set((retailer, query, SIZE), products, at=fetched_at.timestamp())
+            loaded += 1
+    return loaded
 
 
 def _ask_store(store, query, size, kind):
     """One request to a store's connector, logged in the price log (and saved for restarts) either way."""
-    fetcher = get_fetcher(store)
-    param_name = get_pagination_param(store)
     started = datetime.now(timezone.utc)
-
-    # Call fetcher with correct parameter
-    # - Rimi uses 'page' (pagination offset, always 0 for first page)
-    # - Others use 'size' (number of results to return)
     try:
-        if param_name == "page":
-            data = fetcher(query, page=0)
-        else:
-            data = fetcher(query, **{param_name: size})
+        data = connector(store)(query, limit=size)
     except Exception as exc:
         price_log.record(store, query, kind, started, error=exc)
         raise
@@ -170,7 +164,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "shelf": item.get("shelf"),
         "image": item.get("image"),
         "url": item.get("url"),        # the product's page in the e-shop
-        "store_id": item.get("code") or item.get("id") or item.get("sku"),  # what the store's cart takes
+        "store_id": item.get("store_id"),  # what the store's cart takes
         "unit": item.get("unit"),      # "kg"/"l" for loose goods (catalog.cost_for)
         "min_qty": item.get("min_qty"),    # loose goods: the least the store sells, in kg/l
         "qty_step": item.get("qty_step"),  # and the steps above it
@@ -293,7 +287,7 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
             raw = []
 
         for item in raw:
-            remote_id = item.get("id") or item.get("sku") or item.get("code") or item.get("name")
+            remote_id = item.get("store_id") or item.get("name")
             if not remote_id:
                 continue
             dedup_key = f"{store}:{str(remote_id).lower()}"

@@ -12,6 +12,7 @@ import { $ } from "./dom.js";
 import { state } from "./state.js";
 import { identity, askName, askUsualStore } from "./identity.js";
 import { api, logEvent } from "./api.js";
+import { setStores } from "./format.js";
 import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
 import { add } from "./dinners.js";
@@ -57,17 +58,21 @@ async function start() {
   logEvent("visit", {
     from, dinner_token: token, plan: planToken, first_visit: identity.firstVisit, referrer: document.referrer || null,
   });
+  // the dinners, and the stores as the server names them (needed by the usual-store question and receipts)
+  const loaded = api("/recipes").then(data => { setStores(data); return data; });
   // first visit: who's this, where do they usually shop, and would they like the weekly plan?
   askName()
     .then(name => { if (name) logEvent("hello", { name }); })
+    .then(() => loaded.catch(() => null))
     .then(askUsualStore)
     .then(store => { if (store !== undefined) logEvent("usual_store", { store, changed: false }); })
     .then(() => { if (tagged !== "newsletter") return offerNewsletter(); });  // once per browser
   try {
-    const { recipes, dishes, categories } = await api("/recipes");
+    const mine = api(`/my-dinners?user_id=${encodeURIComponent(identity.personId)}`).catch(() => ({ dinners: [] }));  // at the same time
+    const { recipes, dishes, categories } = await loaded;
     Object.assign(state, { recipes, dishes, categories });
     if (!["ideas", "classics", "mine", ...categories.map(c => c.id)].includes(state.category)) state.category = "ideas";
-    state.mine = (await api(`/my-dinners?user_id=${encodeURIComponent(identity.personId)}`).catch(() => ({ dinners: [] }))).dinners;
+    state.mine = (await mine).dinners;
     if (token) {
       state.shared = await api(`/shares/${encodeURIComponent(token)}?user_id=${encodeURIComponent(identity.personId)}`).catch(() => null);
       if (state.shared) add(state.shared.id);

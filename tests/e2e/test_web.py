@@ -35,10 +35,10 @@ def fake_fetch(store, query, size=40, refresh=False):
         raise RuntimeError("403 Forbidden")
     base = STORES[store]
     return [
-        {"store": store, "id": f"{store}-{word}-1", "name": f"{word.capitalize()} Test 500g", "price": base,
+        {"store": store, "store_id": f"{store}-{word}-1", "name": f"{word.capitalize()} Test 500g", "price": base,
          "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True,
          "image": PHOTO, "url": f"https://{store}.example/p/{word}-1"},
-        {"store": store, "id": f"{store}-{word}-2", "name": f"{word.capitalize()}, kg", "price": base * 3, "unit": "kg",
+        {"store": store, "store_id": f"{store}-{word}-2", "name": f"{word.capitalize()}, kg", "price": base * 3, "unit": "kg",
          "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True},
     ]
 

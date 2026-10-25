@@ -5,13 +5,20 @@ export const num = new Intl.NumberFormat("et-EE", { minimumFractionDigits: 2, ma
 
 export const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
 
-// The store you walk into. Barbora is Maxima's e-shop: its prices stand for a Maxima store,
-// so "Go to Maxima", while links and the cart still say Barbora.
-export const shopName = store => store === "barbora" ? "Maxima" : cap(store);
+// The stores, as the server lists them (stores_config.py, sent with /recipes): set once at start-up.
+let known = { stores: {}, chains: {} };
+export const setStores = ({ stores, chains }) => { known = { stores: stores ?? {}, chains: chains ?? {} }; };
+
+// The store you walk into: the chain its prices stand for. Barbora is Maxima's e-shop, so "Go to Maxima".
+export const shopName = store => known.stores[store]?.shown_as ?? cap(store);
+// The e-shop itself, for links, the cart and products: "Barbora".
+export const eshopName = store => known.stores[store]?.name ?? cap(store);
+// The chains people shop at ({maxima: "Maxima", …}): "Where do you usually shop?"
+export const chains = () => known.chains;
 
 // ["rimi", "barbora"] → "Rimi and Barbora"
 export const storeNames = stores => {
-  const names = stores.map(cap);
+  const names = stores.map(eshopName);
   return names.length < 2 ? names.join("") : `${names.slice(0, -1).join(", ")} and ${names.at(-1)}`;
 };
 

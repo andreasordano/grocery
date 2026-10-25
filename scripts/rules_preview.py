@@ -14,8 +14,9 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core import catalog  # noqa: E402
+from stores_config import dinner_stores  # noqa: E402
 
-STORES = ["selver", "rimi", "barbora"]
+STORES = dinner_stores()  # the stores with ingredient rules (stores_config.py)
 
 
 def typical_need(recipes, key):

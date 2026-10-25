@@ -4,6 +4,7 @@ import pytest
 
 from api import rimi_api
 from conftest import rows
+from test_stores import assert_product_contract
 from core import catalog, db, events, fetch
 
 
@@ -13,7 +14,7 @@ def test_fetch_all_is_ordered_and_isolates_failures(monkeypatch):
     def fake_fetch(store, query, size=40):
         if store == "broken":
             raise RuntimeError("down")
-        return [{"id": f"{store}-{query}", "name": f"{query} 1 kg", "price": 1.0}]
+        return [{"store_id": f"{store}-{query}", "name": f"{query} 1 kg", "price": 1.0}]
 
     monkeypatch.setattr(fetch, "_cached_fetch", fake_fetch)
     grocery_list = {it: {"search_term": it, "include": [it]} for it in ["riis", "sibul"]}
@@ -52,7 +53,9 @@ class RimiResp:
 
 def test_rimi_parses_shelf_price_and_unit(monkeypatch):
     monkeypatch.setattr(rimi_api.requests, "get", lambda *a, **kw: RimiResp())
-    milk, chicken, oos = rimi_api.search_rimi("piim")
+    found = rimi_api.search_rimi("piim")
+    assert_product_contract(found, "rimi")
+    milk, chicken, oos = found
 
     assert (milk["price"], milk["unit"], milk["brand"]) == (1.39, "pcs", "Alma")
     assert (chicken["price"], chicken["unit"]) == (20.99, "kg")  # per kg, not GTM's 0.25 kg price
@@ -83,7 +86,7 @@ def test_selver_reads_the_minimum_of_loose_goods(monkeypatch):
     from api import selver_api
 
     def hit(name, volume, **stock):
-        return {"_source": {"name": name, "product_volume": volume, "price": 1.0, "category": [],
+        return {"_source": {"name": name, "sku": f"T{len(name)}", "product_volume": volume, "price": 1.0, "category": [],
                             "stock": {"stock_status": 1, "min_sale_qty": 1, "qty_increments": 1,
                                       "enable_qty_increments": False, **stock}}}
 
@@ -101,7 +104,9 @@ def test_selver_reads_the_minimum_of_loose_goods(monkeypatch):
             ]}}
 
     monkeypatch.setattr(selver_api.requests, "post", lambda *a, **kw: Resp())
-    courgette, cauliflower, mix = selver_api.search_selver("köögiviljad")
+    found = selver_api.search_selver("köögiviljad")
+    assert_product_contract(found, "selver")
+    courgette, cauliflower, mix = found
 
     assert (courgette["unit"], courgette["min_qty"], courgette["qty_step"]) == ("kg", 0.7, 0.7)
     assert (cauliflower["min_qty"], cauliflower["qty_step"]) == (1.2, None)   # steps not enabled
@@ -206,7 +211,9 @@ def test_barbora_reads_embedded_product_list(monkeypatch):
         text = f"<script>window.__remixContext = {json.dumps(context)};</script>"
 
     monkeypatch.setattr(barbora_api.requests, "get", lambda *a, **kw: Resp())
-    eggs, onion = barbora_api.search_barbora("munad")
+    found = barbora_api.search_barbora("munad")
+    assert_product_contract(found, "barbora")
+    eggs, onion = found
 
     assert (eggs["name"], eggs["price"], eggs["unit"], eggs["in_stock"]) == ("Kanamunad M 10tk", 1.79, "tk", True)
     assert (eggs["regular_price"], eggs["deal_until"], eggs["unit_price"]) == (1.99, "2026-10-26", 0.18)
@@ -235,8 +242,7 @@ def test_barbora_page_without_product_list_raises(monkeypatch):
 
 def test_empty_results_are_not_cached(monkeypatch):
     calls = []
-    monkeypatch.setattr(fetch, "get_fetcher", lambda store: lambda q, **kw: calls.append(q) or [])
-    monkeypatch.setattr(fetch, "get_pagination_param", lambda store: "size")
+    monkeypatch.setattr(fetch, "connector", lambda store: lambda q, **kw: calls.append(q) or [])
     fetch._cached_fetch("teststore", "uncached-query")
     fetch._cached_fetch("teststore", "uncached-query")
     assert len(calls) == 2

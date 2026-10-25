@@ -11,13 +11,14 @@ import re
 _RESERVED = re.compile(r'([+\-=&|><!(){}\[\]^"~*?:\\/])')
 
 
-def search_selver(query, size=10):
+def search_selver(query, limit=40):
+    """Selver's search, through its Vue Storefront catalog API: products in the shape of stores_config.PRODUCT_FIELDS."""
     url = "https://www.selver.ee/api/catalog/vue_storefront_catalog_et/product/_search"
     payload = {
         "query": {
             "query_string": {"query": _RESERVED.sub(r"\\\1", query)}
         },
-        "size": size,
+        "size": limit,
         "_source": ["name", "final_price", "price", "original_price", "special_to_date",
                     "sku", "product_brand", "product_volume", "category", "stock", "thumbnail",
                     "product_main_ean", "url_key"]
@@ -59,7 +60,7 @@ def search_selver(query, size=10):
             "price": price,
             "regular_price": float(regular) if on_sale else None,
             "deal_until": (src.get("special_to_date") or "")[:10] or None if on_sale else None,
-            "sku": src.get("sku"),
+            "store_id": src.get("sku"),
             "ean": src.get("product_main_ean") or None,  # only Selver exposes EANs: the anchor for matching stores
             "brand": src.get("product_brand"),
             "volume": volume,

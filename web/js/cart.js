@@ -5,7 +5,7 @@
 // Also a fake door for delivery (WEB-39): would people rather have the list delivered by Wolt or Bolt?
 // Neither takes a list from other apps yet; the answers measure demand before asking them (PROD-18).
 import { $, after, sheet, sheetForm } from "./dom.js";
-import { cap, esc, num } from "./format.js";
+import { cap, esc, num, eshopName } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
 import { storage } from "./storage.js";
@@ -20,7 +20,7 @@ const cartItems = b => b.lines.filter(l => l.store_id && l.cart_qty)
 const qtyLabel = l => l.packs ? `${l.packs} ×` : l.cart_qty ? `${num.format(l.cart_qty)} kg` : "";
 
 export const cartButton = b => `<div class="cart" id="cart">
-  <button type="button" class="link" id="sendCart" data-store="${esc(b.store)}">Shopping online? Send this to the ${esc(cap(b.store))} cart</button>
+  <button type="button" class="link" id="sendCart" data-store="${esc(b.store)}">Shopping online? Send this to the ${esc(eshopName(b.store))} cart</button>
 </div>${deliveryAsk("receipt")}`;
 
 // ── "Get it delivered instead?" Asked once per person, under the receipt or in the sheet, whichever comes first.
@@ -74,7 +74,7 @@ function ways(b, data) {
   const linked = b.lines.filter(l => l.url);
   sheetForm.innerHTML = `
     <div class="sh-top">
-      <h2 id="sheetTitle">Shopping online at ${esc(cap(b.store))}?</h2>
+      <h2 id="sheetTitle">Shopping online at ${esc(eshopName(b.store))}?</h2>
       <p>Stores don't let other sites fill their cart yet, so pantryrun can't do it on its own. Here's what works today.</p>
     </div>
     <div class="cart-ways">
@@ -85,7 +85,7 @@ function ways(b, data) {
           : `<p class="fine">This store gave no product pages for these.</p>`}</section>
       <section><h3>Fill the cart in one go</h3>${extensionWay(b.store)}</section>
       <section id="cartAsk"><h3>One tap, also on your phone</h3>
-        <p class="fine">That needs ${esc(cap(b.store))} to work with pantryrun. Would you use it?</p>
+        <p class="fine">That needs ${esc(eshopName(b.store))} to work with pantryrun. Would you use it?</p>
         <span class="btns"><button type="button" class="btn quiet" data-cart-answer="yes">Yes, I'd use it</button>
           <button type="button" class="link" data-cart-answer="no">Not really</button></span></section>
       ${deliveryAsk("sheet")}

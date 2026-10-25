@@ -132,6 +132,21 @@ python -m scripts.import_nutridata --cache /tmp/nutridata --report
 
 **Licence:** NutriData publishes no explicit reuse terms. Confirm with TAI before a public launch.
 
+## Stores
+
+`stores_config.py` is the one place that lists the stores: name, the chain a store's prices stand for
+(Barbora → Maxima), its connector, how many requests it takes at once, and whether it prices dinners. The API,
+the page (store names come with `GET /recipes`), the newsletter and the scripts all read it from there.
+
+Every connector is `search(query, limit)` in `api/<store>_api.py` and returns products with the fields of
+`stores_config.PRODUCT_FIELDS` (the store's own id is always `store_id`). `core/fetch.py` is the only caller: it
+caches answers (and keeps them across restarts in `search_cache`), sends one request when several people ask the
+same search, and caps each store's requests at once.
+
+**Adding a store:** a connector plus a saved answer for its test, one entry in `STORES`, then for dinners its
+rules in `data/rules.yaml` (`python -m scripts.rules_preview`), `prices_dinners: True` and a health-check run.
+`tests/test_stores.py` checks the contract and that every dinner store has a rule for every ingredient.
+
 ## Recipes and ingredient rules
 
 - `data/recipes.yaml` — dinners, ingredient amounts for 2 people, pantry items (not priced), and per ingredient

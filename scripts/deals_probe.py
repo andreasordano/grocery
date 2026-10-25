@@ -28,8 +28,9 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core import catalog  # noqa: E402
 from core.fetch import _cached_fetch  # noqa: E402
 from core.scoring import fold  # noqa: E402
+from stores_config import dinner_stores  # noqa: E402
 
-STORES = ["selver", "rimi", "barbora"]
+STORES = dinner_stores()  # the stores with ingredient rules (stores_config.py)
 PROTEIN_RULES = {"hakkliha", "broileri_koivad", "kanafilee", "sealiha", "lohefilee", "keeduvorst"}
 PROTEIN_WORDS = ("veise", "sea", "kana", "broiler", "kala", "forell", "lõhe", "tursk", "heik", "räim",
                  "kilu", "sink", "peekon", "vorst", "viiner", "kalkun", "part", "krevet", "tuunikala",

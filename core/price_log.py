@@ -65,7 +65,7 @@ def _num(value):
 
 
 def product_id(item):
-    pid = item.get("sku") or item.get("id") or item.get("code")
+    pid = item.get("store_id")
     return str(pid) if pid else None
 
 

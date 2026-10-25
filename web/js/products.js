@@ -2,7 +2,7 @@
 // the product to use at this store, and words to look for at the others ("Alma", "2,5%").
 // Both open in the sheet dialog; onChange runs when the preferences changed, to price again.
 import { $, sheet, sheetForm } from "./dom.js";
-import { num, cap, esc, fold } from "./format.js";
+import { num, cap, esc, fold, eshopName } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
 import { logEvent } from "./api.js";
@@ -56,12 +56,12 @@ export function chooseProduct(key, onChange) {
     if (!differs) return `<div class="cross"><p class="fine">The other stores keep their cheapest ${esc(l.label.toLowerCase())}.</p></div>`;
     const suggestions = [...new Set([...words, ...nameWords(chosen, l.label)])];
     const rows = others.map(o => {
-      if (!o.line) return `<li><b>${esc(cap(o.store))}:</b> doesn't sell it</li>`;
-      if (!words.length) return `<li><b>${esc(cap(o.store))}:</b> keeps the cheapest, ${esc(o.line.options[0].product)}</li>`;
+      if (!o.line) return `<li><b>${esc(eshopName(o.store))}:</b> doesn't sell it</li>`;
+      if (!words.length) return `<li><b>${esc(eshopName(o.store))}:</b> keeps the cheapest, ${esc(o.line.options[0].product)}</li>`;
       const hit = o.line.options.find(x => matches(x.product, words));
       return hit
-        ? `<li><b>${esc(cap(o.store))}:</b> ${esc(hit.product)}, ${num.format(hit.cost)} €</li>`
-        : `<li><b>${esc(cap(o.store))}:</b> nothing matches, so the cheapest stays</li>`;
+        ? `<li><b>${esc(eshopName(o.store))}:</b> ${esc(hit.product)}, ${num.format(hit.cost)} €</li>`
+        : `<li><b>${esc(eshopName(o.store))}:</b> nothing matches, so the cheapest stays</li>`;
     }).join("");
     return `<div class="cross">
       <h3>At the other stores, look for</h3>
@@ -73,13 +73,13 @@ export function chooseProduct(key, onChange) {
   sheetForm.innerHTML = `
     <div class="sh-top">
       <h2 id="sheetTitle">${esc(l.label)}</h2>
-      <p>${esc(cap(lineAmount(l) ? lineAmount(l) + " at " : "At "))}${esc(cap(b.store))}. Pick the one you want.</p>
+      <p>${esc(cap(lineAmount(l) ? lineAmount(l) + " at " : "At "))}${esc(eshopName(b.store))}. Pick the one you want.</p>
     </div>
     <ul class="opts">${l.options.map((o, i) => `
       <li><label><input type="radio" name="opt" value="${i}" ${o.product === chosen ? "checked autofocus" : ""}>
         <span class="o">${photos ? `<span class="thumb">${o.image ? `<img src="${esc(o.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : ""}</span>` : ""}
           <span>${esc(o.product)}${o.deal ? ` <span class="fine">${esc(o.deal)}</span>` : ""}${o.shelf || o.url ? `<span class="o-shelf">${esc((o.shelf || "").toLowerCase())}${o.shelf && o.url ? " · " : ""}${o.url
-            ? `<a href="${esc(o.url)}" target="_blank" rel="noopener" data-open="${i}" aria-label="${esc(o.product)} in the ${esc(cap(b.store))} e-shop">e-shop <span aria-hidden="true">↗</span></a>` : ""}</span>` : ""}</span></span>
+            ? `<a href="${esc(o.url)}" target="_blank" rel="noopener" data-open="${i}" aria-label="${esc(o.product)} in the ${esc(eshopName(b.store))} e-shop">e-shop <span aria-hidden="true">↗</span></a>` : ""}</span>` : ""}</span></span>
         <span class="pc">${o.regular_cost && o.regular_cost > o.cost ? `<s>${num.format(o.regular_cost)}</s>` : ""}${num.format(o.cost)}</span></label></li>`).join("")}
     </ul>
     <div id="cross">${cross()}</div>
