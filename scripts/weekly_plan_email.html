@@ -1,0 +1,62 @@
+<!doctype html>
+<!-- The weekly plan email (WEB-37). scripts/weekly_plan.py fills in the @@…@@ parts and writes the edition,
+     to paste into a MailerLite campaign with the Custom HTML editor. Email clients ignore stylesheets,
+     so styles are inline and the layout is tables. Colours: the produce-sticker brand (web/css/tokens.css).
+     {$unsubscribe} and {$pantryrun_id} are MailerLite merge tags, filled in per subscriber. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>@@TITLE@@</title>
+</head>
+<body style="margin:0; padding:0; background:#ffffff;">
+<div style="display:none; max-height:0; overflow:hidden;">@@PREHEADER@@</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffffff;">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px; font-family:'Funnel Sans', -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; color:#1c1f4a;">
+
+  <!-- the logo sticker -->
+  <tr><td style="padding:0 0 20px;">
+    <span style="display:inline-block; padding:7px 18px 8px; border-radius:50%; background:#ff4d6d; color:#ffffff; font-weight:800; font-size:19px; letter-spacing:-0.5px;">pantryrun</span>
+  </td></tr>
+
+  <tr><td style="padding:0 0 6px; font-size:34px; line-height:1.05; font-weight:800; letter-spacing:-1px;">@@TITLE@@</td></tr>
+  <tr><td style="padding:0 0 22px; font-size:16px; color:#5b5f86;">@@SUMMARY@@</td></tr>
+
+  <!-- the main button: every click is a measured visit -->
+  <tr><td style="padding:0 0 28px;">
+    <a href="@@PLAN_LINK@@" style="display:inline-block; padding:15px 28px; border-radius:999px; background:#ff4d6d; color:#1c1f4a; font-weight:700; font-size:17px; text-decoration:none;">Open this week's plan</a>
+  </td></tr>
+
+  @@DINNERS@@
+
+  <!-- the shopping list, like the receipt in the app -->
+  <tr><td style="padding:8px 0 28px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ffdce3; border-radius:22px;">
+      <tr><td style="padding:20px 22px 6px; font-size:13px; color:#5b5f86;">One shop for all of it</td></tr>
+      <tr><td style="padding:0 22px 12px; font-size:24px; font-weight:800; letter-spacing:-0.5px;">@@STORE@@</td></tr>
+      <tr><td style="padding:0 22px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="font-size:14px;">
+          @@LINES@@
+          <tr><td style="padding:12px 0 4px; border-top:2px solid #1c1f4a; font-weight:800; font-size:17px;">Total</td>
+              <td align="right" style="padding:12px 0 4px; border-top:2px solid #1c1f4a; font-weight:800; font-size:17px; white-space:nowrap;">@@TOTAL@@</td></tr>
+        </table>
+      </td></tr>
+      <tr><td style="padding:4px 22px 20px; font-size:13px; color:#5b5f86;">@@ELSEWHERE@@</td></tr>
+    </table>
+  </td></tr>
+
+  <tr><td style="padding:0 0 10px; font-size:13px; color:#5b5f86;">
+    Prices are the stores' e-shop prices on @@DATE@@. The plan link shows today's, for as many people as you cook for.
+  </td></tr>
+  <tr><td style="padding:0 0 10px; font-size:13px; color:#5b5f86;">
+    You get this because you signed up in pantryrun. <a href="{$unsubscribe}" style="color:#5b5f86;">Unsubscribe</a> ·
+    <a href="@@BASE@@/privacy.html" style="color:#5b5f86;">How pantryrun uses your data</a>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>

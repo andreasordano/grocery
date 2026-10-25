@@ -7,11 +7,12 @@ Each week, with production's DATABASE_URL and the MAILERLITE_* settings in the e
        weekly group: no reminders in a tester's first week (PROD-5).
   2. python -m scripts.weekly_plan build --title "Week 46" --dinners nd-1318,kana-riis,nd-831357 \\
          --featured-url https://www.rimi.ee/retseptid/... [--servings 2]
-       Saves the plan, prices it at every store and prints the edition: the plan link, each dinner with its
-       photo, recipe link and "Did you cook it?" links, the shopping list and the cheapest store.
+       Saves the plan, prices it at every store, prints a summary and writes the email (logs/edition-<plan>.html,
+       from scripts/weekly_plan_email.html): the plan link, each dinner with its photo, recipe link and
+       "Did you cook it?" links, the shopping list and the cheapest store.
        --featured <id> instead of --featured-url when the featured dinner is already in pantryrun.
-  3. In MailerLite: duplicate last week's campaign, paste the edition in, send a test to yourself, then send
-     it to the weekly group.
+  3. In MailerLite: new campaign to the weekly group → Custom HTML editor → paste the file, send a test to
+     yourself, then send.
   4. python -m scripts.weekly_plan sent --plan <token>
        Logs the edition as a reminder (table nudges) for everyone in the weekly group, so the metrics can
        tell prompted visits from unprompted ones (metrics.return_7d).
@@ -21,6 +22,7 @@ same person on any device. Check it in the test email before sending.
 """
 
 import argparse
+import html
 import os
 import sys
 from datetime import datetime, timedelta, timezone
@@ -35,6 +37,7 @@ BASE_URL = "https://grocery-j3en.onrender.com"
 PERSON = "{$" + mailerlite.ID_FIELD + "}"  # MailerLite fills in each subscriber's pantryrun id
 FIRST_WEEK = timedelta(days=7)
 SHOP = {"barbora": "Maxima (Barbora's prices)", "selver": "Selver", "rimi": "Rimi"}
+EMAIL = os.path.join(os.path.dirname(os.path.abspath(__file__)), "weekly_plan_email.html")
 
 
 def _postgres():
@@ -90,6 +93,61 @@ def edition(title, token, result, base):
     return "\n".join(out)
 
 
+def euro(v):
+    return f"{v:.2f} €".replace(".", ",")
+
+
+def _dinner_html(d, base, token):
+    e = html.escape
+    cooked = links(base, token, d["id"])
+    sticker = ('<span style="display:inline-block; margin-left:8px; padding:2px 9px; border-radius:999px; background:#ffd84d; '
+               'color:#1c1f4a; font-size:11px; font-weight:700; letter-spacing:.5px; vertical-align:middle;">FEATURED</span>'
+               if d.get("featured") else "")
+    photo = (f'<tr><td style="padding:0 0 12px;"><img src="{e(d["image"])}" alt="" width="560" '
+             f'style="display:block; width:100%; max-width:560px; height:auto; border-radius:18px;"></td></tr>' if d.get("image") else "")
+    recipe = (f'<a href="{e(d["link"])}" style="color:#d6284b; font-weight:700;">The recipe</a> · ' if d.get("link") else "")
+    return f"""<tr><td style="padding:0 0 26px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+      {photo}
+      <tr><td style="font-size:21px; font-weight:700; line-height:1.2;" lang="et">{e(d["name"])}{sticker}</td></tr>
+      <tr><td style="padding:6px 0 0; font-size:14px; color:#5b5f86;">{recipe}Did you cook it?
+        <a href="{e(cooked["yes"])}" style="color:#1c1f4a; font-weight:700;">Yes</a> ·
+        <a href="{e(cooked["no"])}" style="color:#1c1f4a;">Not this time</a></td></tr>
+    </table>
+  </td></tr>"""
+
+
+def edition_html(title, token, result, base, date):
+    """The edition as an email, from scripts/weekly_plan_email.html."""
+    e = html.escape
+    best = result["baskets"][0]
+    others = [b for b in result["baskets"][1:] if b["status"] == "ok"]
+    n = len(result["dinners"])
+    lines = "".join(
+        f'<tr><td style="padding:7px 0; border-top:1px solid rgba(28,31,74,.12);"><b>{e(l["label"])}</b><br>'
+        f'<span style="color:#5b5f86; font-size:13px;">{e(l["product"])}</span></td>'
+        f'<td align="right" style="padding:7px 0; border-top:1px solid rgba(28,31,74,.12); white-space:nowrap;">{euro(l["cost"])}</td></tr>'
+        for l in best["lines"])
+    elsewhere = " · ".join(f"{SHOP.get(b['store'], b['store'])} {euro(b['total_price'])}" for b in others)
+    parts = {
+        "TITLE": e(title),
+        "PREHEADER": e(f"{n} dinners for {result['servings']}, one shop at {SHOP.get(best['store'], best['store'])}: {euro(best['total_price'])}"),
+        "SUMMARY": e(f"{n} dinners for {result['servings']}, one shop, {euro(best['total_price'])} in total."),
+        "PLAN_LINK": e(links(base, token)),
+        "DINNERS": "".join(_dinner_html(d, base, token) for d in result["dinners"]),
+        "STORE": e(SHOP.get(best["store"], best["store"])),
+        "LINES": lines,
+        "TOTAL": euro(best["total_price"]),
+        "ELSEWHERE": e("Elsewhere: " + elsewhere) if elsewhere else "",
+        "DATE": e(date),
+        "BASE": e(base),
+    }
+    out = open(EMAIL, encoding="utf-8").read()
+    for key, value in parts.items():
+        out = out.replace(f"@@{key}@@", value)
+    return out
+
+
 def build(args):
     ids = [d.strip() for d in args.dinners.split(",") if d.strip()]
     featured = args.featured or (featured_from_link(args.featured_url, args.servings) if args.featured_url else None)
@@ -105,9 +163,16 @@ def build(args):
     for d in result["dinners"]:
         d["featured"] = d["id"] == featured
     token = plans.create(args.title, ids, featured)
+    base = args.base_url.rstrip("/")
     print(f"Plan saved: {token}\n")
-    print(edition(args.title, token, result, args.base_url.rstrip("/")))
-    print(f"\nAfter sending: python -m scripts.weekly_plan sent --plan {token}")
+    print(edition(args.title, token, result, base))
+    if result["baskets"][0]["status"] == "ok":
+        path = os.path.join("logs", f"edition-{token}.html")
+        os.makedirs("logs", exist_ok=True)
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(edition_html(args.title, token, result, base, datetime.now().strftime("%-d %B %Y")))
+        print(f"\nThe email: {path} (paste it into MailerLite's Custom HTML editor)")
+    print(f"After sending: python -m scripts.weekly_plan sent --plan {token}")
 
 
 def first_seen(conn, person_ids):

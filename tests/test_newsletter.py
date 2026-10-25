@@ -1,6 +1,7 @@
 """The weekly plan newsletter (WEB-37): plans, sign-up, "Did you cook it?", MailerLite calls and the weekly script."""
 
 import json
+import re
 import sqlite3
 from datetime import datetime, timedelta, timezone
 
@@ -160,3 +161,18 @@ def test_edition_has_tagged_links_the_featured_label_and_the_list():
     assert "FEATURED (label it \"Featured\"): Kõrvitsasupp" in text
     assert "/cooked?plan=T0K&dinner=sh-x&u={$pantryrun_id}&answer=yes" in text
     assert "SHOPPING LIST at Rimi, for 2 people:" in text and "Total: 9.50 €" in text and "Selver 10.20 €" in text
+
+
+def test_edition_email_fills_every_part_and_keeps_the_merge_tags():
+    result = {"servings": 2, "dinners": [{"id": "kanasupp", "name": "Kanasupp", "image": None, "link": None, "featured": False},
+                                         {"id": "sh-x", "name": "Kõrvitsasupp <3", "image": "https://img/1.jpg",
+                                          "link": "https://rimi.ee/r/1", "featured": True}],
+              "baskets": [{"store": "barbora", "status": "ok", "total_price": 9.5, "missing": [],
+                           "lines": [{"label": "Kana", "product": "Kanafilee 500g", "cost": 5.0}]},
+                          {"store": "selver", "status": "ok", "total_price": 10.2, "missing": [], "lines": []}]}
+    email = weekly_plan.edition_html("Week 46", "T0K", result, "https://pantryrun.example", "25 October 2026")
+    assert not re.search(r"@@[A-Z_]+@@", email)  # every part filled in
+    assert 'href="https://pantryrun.example/?plan=T0K&amp;from=newsletter&amp;u={$pantryrun_id}"' in email
+    assert email.count(">FEATURED</span>") == 1 and "Kõrvitsasupp &lt;3" in email
+    assert "Maxima (Barbora&#x27;s prices)" in email and "9,50 €" in email and "Elsewhere: Selver 10,20 €" in email
+    assert 'href="{$unsubscribe}"' in email and "answer=yes" in email
