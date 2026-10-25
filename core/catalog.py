@@ -194,7 +194,7 @@ def find_products(rule, store):
     seen, found = set(), []
     for q in _queries(rule):
         for p in _safe_fetch(store, q):
-            key = p.get("id") or p.get("sku") or p.get("code") or p.get("name")
+            key = p.get("store_id") or p.get("name")
             if key in seen:
                 continue
             seen.add(key)
@@ -228,8 +228,7 @@ def _looks(product):
     shelf = product.get("shelf")
     return {"image": product.get("image"), "shelf": None if not shelf or re.match(r"SH-\d", shelf) else shelf,
             "url": product.get("url"),
-            # the store's own id (Rimi product code, Barbora id, Selver sku): what its cart takes
-            "store_id": product.get("store_id") or product.get("code") or product.get("id") or product.get("sku")}
+            "store_id": product.get("store_id")}  # the store's own id: what its cart takes
 
 
 MAX_OPTIONS = 100  # alternatives per line; the web app also previews preferences against them

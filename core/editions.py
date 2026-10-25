@@ -16,10 +16,16 @@ from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
 from core import catalog, db, mailerlite, my_dinners, plans, recipe_import
+from stores_config import STORES, dinner_stores, display_name
 
-DINNER_STORES = ["selver", "rimi", "barbora"]
 PERSON = "{$" + mailerlite.ID_FIELD + "}"  # MailerLite fills in each subscriber's pantryrun id
-SHOP = {"barbora": "Maxima (Barbora's prices)", "selver": "Selver", "rimi": "Rimi"}
+
+
+def shop(store):
+    """The store as the email names it: the chain, and whose prices when it's another e-shop's
+    ("Maxima (Barbora's prices)")."""
+    name, eshop = display_name(store), STORES.get(store, {}).get("name", store)
+    return name if name == eshop else f"{name} ({eshop}'s prices)"
 EMAIL = os.path.join(os.path.dirname(os.path.abspath(__file__)), "weekly_plan_email.html")
 FIRST_WEEK = timedelta(days=7)  # no reminders in a tester's first week (PROD-5)
 
@@ -60,7 +66,7 @@ def edition(title, token, result, base):
                 f"   recipe: {d.get('link') or '(the plan link: pantryrun shows what to buy)'}",
                 f"   Did you cook it?  yes: {links(base, token, d['id'])['yes']}",
                 f"                     no:  {links(base, token, d['id'])['no']}", ""]
-    out += [f"SHOPPING LIST at {SHOP.get(best['store'], best['store'])}, for {result['servings']} people:"]
+    out += [f"SHOPPING LIST at {shop(best['store'])}, for {result['servings']} people:"]
     out += [f"   {l['label']}: {l['product']}  {l['cost']:.2f} €" for l in best["lines"]]
     out += [f"   Total: {best['total_price']:.2f} €"]
     others = elsewhere(result["baskets"][1:])
@@ -78,7 +84,7 @@ def euro(v):
 
 def elsewhere(baskets, money=lambda v: f"{v:.2f} €"):
     """The other stores' totals; a store missing items says how many, as in the app, since it looks cheaper."""
-    return ", ".join(f"{SHOP.get(b['store'], b['store'])} {money(b['total_price'])}"
+    return ", ".join(f"{shop(b['store'])} {money(b['total_price'])}"
                      + (f" ({len(b['missing'])} missing)" if b["missing"] else "")
                      for b in baskets if b["status"] == "ok")
 
@@ -116,11 +122,11 @@ def edition_html(title, token, result, base, date):
         for l in best["lines"])
     parts = {
         "TITLE": e(title),
-        "PREHEADER": e(f"{n} dinners for {result['servings']}, one shop at {SHOP.get(best['store'], best['store'])}: {euro(best['total_price'])}"),
+        "PREHEADER": e(f"{n} dinners for {result['servings']}, one shop at {shop(best['store'])}: {euro(best['total_price'])}"),
         "SUMMARY": e(f"{n} dinners for {result['servings']}, one shop, {euro(best['total_price'])} in total."),
         "PLAN_LINK": e(links(base, token)),
         "DINNERS": "".join(_dinner_html(d, base, token) for d in result["dinners"]),
-        "STORE": e(SHOP.get(best["store"], best["store"])),
+        "STORE": e(shop(best["store"])),
         "LINES": lines,
         "TOTAL": euro(best["total_price"]),
         "ELSEWHERE": e("Elsewhere: " + others) if others else "",
@@ -146,16 +152,16 @@ def make(title, dinners, featured=None, featured_url=None, servings=2, base="htt
         featured = featured_from_link(featured_url, servings)
     if featured and featured not in ids:
         ids.append(featured)
-    result = catalog.recommend(None, servings, [], DINNER_STORES, dinners=[{"id": d, "servings": servings} for d in ids])
+    result = catalog.recommend(None, servings, [], dinner_stores(), dinners=[{"id": d, "servings": servings} for d in ids])
     silent = [b["store"] for b in result["baskets"] if b["status"] == "no_answer"]
     if silent:
-        raise EditionError(f"{', '.join(SHOP.get(s, s) for s in silent)} didn't answer, so the cheapest store can't be "
+        raise EditionError(f"{', '.join(shop(s) for s in silent)} didn't answer, so the cheapest store can't be "
                            "trusted. Try again in a few minutes.")
     if not result["store"]:
         raise EditionError("No store could price this plan. Check the dinners.")
     missing = result["baskets"][0]["missing"]
     if missing:
-        raise EditionError(f"No store has everything: even {SHOP.get(result['store'], result['store'])} lacks "
+        raise EditionError(f"No store has everything: even {shop(result['store'])} lacks "
                            f"{', '.join(missing)}. Swap the dinner that needs it.")
     for d in result["dinners"]:
         d["featured"] = d["id"] == featured

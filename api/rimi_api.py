@@ -17,9 +17,11 @@ _NUMBER_RE = re.compile(r"(\d+[.,]\d+)")
 _MULTIBUY_RE = re.compile(r"(\d+)\s+and more\s*-\s*(\d+)\s*%")
 
 
-def search_rimi(query, page=0):
+def search_rimi(query, limit=40):
+    """Rimi's search page, read as HTML (its first page, about 40 products: limit can't ask for more or fewer):
+    products in the shape of stores_config.PRODUCT_FIELDS."""
     url = "https://www.rimi.ee/epood/en/search"
-    r = requests.get(url, params={"query": query, "currentPage": page}, headers=HEADERS, timeout=15)
+    r = requests.get(url, params={"query": query, "currentPage": 0}, headers=HEADERS, timeout=15)
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
     cards = soup.select("[data-product-code]")
@@ -80,7 +82,7 @@ def search_rimi(query, page=0):
             "deal": deal,
             "unit": unit,
             "min_qty": min_qty,
-            "code": card.get("data-product-code"),
+            "store_id": card.get("data-product-code"),
             "brand": gtm.get("brand"),
             "category": [gtm["category"]] if gtm.get("category") else [],
             # Category code cut to three levels (SH-11-2-5 → SH-11-2: all yoghurts, not just

@@ -1,7 +1,7 @@
 // Drawing the receipt: waiting, printing, failed, and the answer for one store,
 // plus what you can do under it (go, not for me, wrong product, send the dinner).
 import { $, feed, after, reduceMotion } from "./dom.js";
-import { euro, num, esc, amount, fold, storeNames, shopName } from "./format.js";
+import { euro, num, esc, amount, fold, storeNames, shopName, eshopName, chains } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
 import { identity, askUsualStore } from "./identity.js";
@@ -128,7 +128,8 @@ export function showReceipt(storeName, animate) {
     <div class="r-center">
       <div class="r-go">${isBest ? "Go to" : "At"}</div>
       <h2 class="r-store">${esc(shopName(b.store))}</h2>
-      ${b.store === "barbora" ? `<div class="r-what">Prices from Barbora, Maxima's e-shop</div>` : ""}
+      ${eshopName(b.store) !== shopName(b.store)
+        ? `<div class="r-what">Prices from ${esc(eshopName(b.store))}, ${esc(shopName(b.store))}'s e-shop</div>` : ""}
       <div class="r-what">${esc(what)}</div>
       ${delta ? `<div class="r-delta">${esc(delta)}</div>` : ""}
     </div>
@@ -159,9 +160,9 @@ export function showReceipt(storeName, animate) {
       <button class="link" type="button" id="wrong">Wrong product?</button>
       <span class="fine">E-shop prices. In store they can differ a little.</span>
     </div>
-    <p class="fine usual-note">${["selver", "rimi", "maxima"].includes(identity.usualStore)
-      ? `You usually shop at ${esc(shopName(identity.usualStore === "maxima" ? "barbora" : identity.usualStore))}.` : "Where do you usually shop?"}
-      <button class="link" type="button" id="changeUsual">${["selver", "rimi", "maxima", "other"].includes(identity.usualStore) ? "Change" : "Tell us"}</button></p>
+    <p class="fine usual-note">${chains()[identity.usualStore]
+      ? `You usually shop at ${esc(chains()[identity.usualStore])}.` : "Where do you usually shop?"}
+      <button class="link" type="button" id="changeUsual">${chains()[identity.usualStore] || identity.usualStore === "other" ? "Change" : "Tell us"}</button></p>
     <div id="report"></div>
     ${cartButton(b)}
     ${state.mode === "list" ? newsletterBox() : ""}`;

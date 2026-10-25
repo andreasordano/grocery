@@ -16,7 +16,7 @@ def store(monkeypatch):
     calls, busy, peak = [], [0], [0]
     lock = threading.Lock()
 
-    def search(query, size=40):
+    def search(query, limit=40):
         with lock:
             calls.append(query)
             busy[0] += 1
@@ -24,11 +24,10 @@ def store(monkeypatch):
         time.sleep(0.05)
         with lock:
             busy[0] -= 1
-        return [{"store": "fake", "id": query, "name": f"{query} 500g", "price": 1.0}]
+        return [{"store": "fake", "store_id": query, "name": f"{query} 500g", "price": 1.0}]
 
-    monkeypatch.setattr(fetch, "get_fetcher", lambda s: search)
-    monkeypatch.setattr(fetch, "get_pagination_param", lambda s: "size")
-    monkeypatch.setattr(fetch, "get_max_concurrency", lambda s: 2)
+    monkeypatch.setattr(fetch, "connector", lambda s: search)
+    monkeypatch.setattr(fetch, "max_concurrency", lambda s: 2)
     monkeypatch.setattr(fetch, "_limits", {})
     monkeypatch.setattr(price_log, "enabled", lambda: False)
     fetch._CACHE.clear()
@@ -57,14 +56,14 @@ def test_each_store_gets_at_most_its_limit_of_requests_at_once(store):
 
 def test_a_restart_starts_with_the_saved_answers(store, pg):
     now = datetime.now(timezone.utc)
-    price_log.save_search("fake", " Piim ", "search", now, now, [{"id": "1", "name": "Piim 1 l", "price": 1.19}], None)
-    price_log.save_search("fake", "piim", "refresh", now, now, [{"id": "2", "name": "Piim 2 l", "price": 2.0}], None)  # newer wins
-    price_log.save_search("fake", "vana", "search", now - timedelta(days=2), now - timedelta(days=2), [{"id": "3"}], None)
+    price_log.save_search("fake", " Piim ", "search", now, now, [{"store_id": "1", "name": "Piim 1 l", "price": 1.19}], None)
+    price_log.save_search("fake", "piim", "refresh", now, now, [{"store_id": "2", "name": "Piim 2 l", "price": 2.0}], None)  # newer wins
+    price_log.save_search("fake", "vana", "search", now - timedelta(days=2), now - timedelta(days=2), [{"store_id": "3"}], None)
     price_log.save_search("fake", "tühi", "search", now, now, [], None)  # empty answers aren't kept
     assert rows("SELECT retailer, query FROM search_cache ORDER BY query") == [("fake", "piim"), ("fake", "vana")]
 
     assert fetch.load_saved_searches() == 1  # the two-day-old one is past the cache's lifetime
-    assert fetch._cached_fetch("fake", "piim") == [{"id": "2", "name": "Piim 2 l", "price": 2.0}]
+    assert fetch._cached_fetch("fake", "piim") == [{"store_id": "2", "name": "Piim 2 l", "price": 2.0}]
     assert store["calls"] == []  # answered from the saved search
 
 

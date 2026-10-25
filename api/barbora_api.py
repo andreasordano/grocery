@@ -1,6 +1,5 @@
 import requests
 import json
-import threading
 import time
 
 
@@ -14,13 +13,13 @@ import time
 
 _MARKER = "window.__remixContext = "
 
-# Barbora answers parallel requests with a page that has no product list (throttling),
-# so send one at a time and retry a short while later.
-_CONCURRENCY = threading.Semaphore(1)
+# Barbora answers parallel requests with a page that has no product list (throttling): core/fetch.py sends it
+# one request at a time (max_concurrency in stores_config), and a page without the list is retried a little later.
 _RETRY_DELAYS = (1.0, 2.5)
 
 
-def search_barbora(query, size=24):
+def search_barbora(query, limit=40):
+    """Barbora's search page, from the product list it embeds: products in the shape of stores_config.PRODUCT_FIELDS."""
     url = "https://barbora.ee/search"
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -28,8 +27,7 @@ def search_barbora(query, size=24):
     }
     for delay in (0,) + _RETRY_DELAYS:
         time.sleep(delay)
-        with _CONCURRENCY:
-            r = requests.get(url, params={"q": query}, headers=headers, timeout=15)
+        r = requests.get(url, params={"q": query}, headers=headers, timeout=15)
         r.raise_for_status()
         found = _page_data(r.text)
         if found:
@@ -41,7 +39,7 @@ def search_barbora(query, size=24):
     items, paths = found
 
     products = []
-    for item in items[:size]:
+    for item in items[:limit]:
         path = paths.get(item.get("categoryShortId")) or []
         price, regular, card, deal = _prices(item)
         promo = item.get("promotion") or {}
@@ -62,7 +60,7 @@ def search_barbora(query, size=24):
             "min_qty": sold.get("min") if unit in ("kg", "l") else None,
             "qty_step": sold.get("step") if unit in ("kg", "l") else None,
             "unit_price": (item.get("comparativeUnit") or {}).get("price"),
-            "id": item.get("id"),
+            "store_id": item.get("id"),
             "category": path,
             "shelf": path[-1] if path else None,
             "image": item.get("image"),

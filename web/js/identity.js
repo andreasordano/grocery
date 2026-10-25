@@ -4,6 +4,7 @@
 // The name is asked for on the first visit and can't be skipped: it tells us who did what. People who
 // came with a tester link aren't asked; the link says who they are.
 import { $ } from "./dom.js";
+import { chains, esc } from "./format.js";
 import { storage } from "./storage.js";
 
 const link = new URLSearchParams(location.search).get("u");
@@ -46,15 +47,16 @@ export function askName() {
   });
 }
 
-// Where someone usually shops (selver, rimi, maxima, other), asked once with one tap. Resolves with the
-// answer (null for Skip), or undefined when it was asked before.
+// Where someone usually shops (a chain from stores_config.py, or other), asked once with one tap. Resolves with
+// the answer (null for Skip), or undefined when it was asked before.
 export function askUsualStore() {
   if (identity.usualStore !== undefined) return Promise.resolve(undefined);
-  const usual = $("#usual");
+  const usual = $("#usual"), choices = [...Object.keys(chains()), "other"];
+  $("#usualChoices").innerHTML = choices.map(c => `<button type="submit" value="${esc(c)}">${esc(chains()[c] ?? "Other")}</button>`).join("");
   return new Promise(resolve => {
     usual.returnValue = "";
     usual.onclose = () => {
-      const store = ["selver", "rimi", "maxima", "other"].includes(usual.returnValue) ? usual.returnValue : null;
+      const store = choices.includes(usual.returnValue) ? usual.returnValue : null;
       setUsualStore(store ?? "skip");  // kept as "skip": a stored null reads back as never asked
       resolve(store);
     };

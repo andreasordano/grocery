@@ -14,17 +14,17 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core import catalog  # noqa: E402
-from stores_config import get_store_names  # noqa: E402
+from stores_config import dinner_stores, stores  # noqa: E402
 
 CANARY_QUERY = "piim"
-DINNER_STORES = ["selver", "rimi", "barbora"]
+DINNER_STORES = dinner_stores()
 SANE_TOTAL = (1.0, 40.0)  # € for one recipe, 2 people
 
 
 def main():
     problems, notes = [], []
 
-    for store in get_store_names():
+    for store in stores():
         try:
             n = len(catalog._cached_fetch(store, CANARY_QUERY))
         except Exception as exc:

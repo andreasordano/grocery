@@ -110,9 +110,9 @@ def test_shares_stem():
 def test_store_search_noise_is_not_picked(stores, monkeypatch):
     """When nothing in the answer is the thing, the store's look-alikes don't decide the shelf:
     Selver answered "porru" with a lamp and "tilaapia" with a board game."""
-    noise = [{"id": "1", "name": "LED-lamp PAR16 35 DIM 3,4W GU10, OSRAM, 1 tk", "price": 6.99, "shelf": "Lambid"},
-             {"id": "2", "name": "LED-lamp GU10 4W, OSRAM, 1 tk", "price": 4.99, "shelf": "Lambid"},
-             {"id": "3", "name": 'Lauamäng "Kogu pere Reaalsuskontroll", DADA FUN, 1 tk', "price": 19.9, "shelf": "Mängud"}]
+    noise = [{"store_id": "1", "name": "LED-lamp PAR16 35 DIM 3,4W GU10, OSRAM, 1 tk", "price": 6.99, "shelf": "Lambid"},
+             {"store_id": "2", "name": "LED-lamp GU10 4W, OSRAM, 1 tk", "price": 4.99, "shelf": "Lambid"},
+             {"store_id": "3", "name": 'Lauamäng "Kogu pere Reaalsuskontroll", DADA FUN, 1 tk', "price": 19.9, "shelf": "Mängud"}]
     monkeypatch.setattr(fetch, "_cached_fetch", lambda store, query, size=40: noise)
     assert picks("porru", "selver") == []
     assert picks("tilaapia", "selver") == []
@@ -154,8 +154,8 @@ def test_oil_is_cooking_oil(stores):
 
 
 def test_out_of_stock_products_are_never_options(monkeypatch):
-    stock = [{"store": "rimi", "id": "1", "name": "Kohv Paulig 500g", "price": 5.0, "in_stock": False},
-             {"store": "rimi", "id": "2", "name": "Kohv Löfbergs 500g", "price": 6.0, "in_stock": True}]
+    stock = [{"store": "rimi", "store_id": "1", "name": "Kohv Paulig 500g", "price": 5.0, "in_stock": False},
+             {"store": "rimi", "store_id": "2", "name": "Kohv Löfbergs 500g", "price": 6.0, "in_stock": True}]
     monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q: stock)
     products, _ = fetch.fetch_all({"kohv": fetch.spec_for("kohv")}, ["rimi"])
     assert [p["name"] for p in products["kohv"]] == ["Kohv Löfbergs 500g"]
