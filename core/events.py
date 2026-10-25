@@ -55,6 +55,8 @@ EVENT_TYPES = {
     "cart_interest": "the answer to \"would you use one tap?\" (wants)",
     "cart_send": "a basket sent to the Rimi extension",
     "extension_download": "the Rimi extension downloaded",
+    "delivery_interest": "\"Get it delivered instead?\", asked once per person (service: wolt, bolt or none; "
+                         "where: receipt or sheet)",
     # the weekly plan newsletter (WEB-37)
     "newsletter_offer": "the answer to the sign-up offered after the first-visit questions (answer: later, signed_up)",
     "newsletter_signup": "an email sent to MailerLite for the weekly plan (ok, where); the address isn't logged",

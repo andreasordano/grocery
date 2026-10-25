@@ -616,3 +616,28 @@ def test_make_it_yours_copies_a_dinner_into_mine(base_url, page):
     assert [d["from"] for u, d in logged("dinner_copy", "e2e-copier", wait=1) if u == "e2e-copier"] == ["sh-" + share["token"]]
     saved = [d for u, d in logged("my_dinner_saved", "e2e-copier", wait=1) if u == "e2e-copier"]
     assert saved[-1]["from_dinner"] == "sh-" + share["token"] and saved[-1]["items"] == 3
+
+
+def test_delivery_is_asked_once_and_logged(base_url, page):
+    page.add_init_script("if (!sessionStorage.getItem('dl')) { localStorage.removeItem('pantryrun.delivery'); sessionStorage.setItem('dl', 1); }")
+    page.goto(base_url + "/?u=e2e-delivery")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    receipt_lines(page)
+    page.click("#after [data-delivery=wolt]")
+    page.wait_for_selector("#after .delivery-ask >> text=Every yes helps us ask Wolt and Bolt")
+    [(user, data)] = [(u, d) for u, d in logged("delivery_interest", "e2e-delivery", wait=1) if u == "e2e-delivery"]
+    assert (data["service"], data["where"], data["store"]) == ("wolt", "receipt", "rimi") and data["result_id"]
+
+    page.click("#sendCart")  # the sheet doesn't ask again
+    page.wait_for_selector("#cartAsk")
+    assert page.locator("#sheet [data-delivery]").count() == 0
+    page.reload()
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    receipt_lines(page)
+    assert page.locator("#after [data-delivery]").count() == 0  # nor the next receipt
