@@ -1,7 +1,7 @@
 import threading
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -12,9 +12,11 @@ from core import events
 from core import fetch
 from core import recipe_import
 
+import io
 import os
 import time
 import uuid
+import zipfile
 from urllib.parse import urlparse
 
 
@@ -239,6 +241,20 @@ def open_share(token: str, user_id: Optional[str] = None):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+_EXTENSION = os.path.join(os.path.dirname(os.path.dirname(__file__)), "extension")
+
+
+@app.get("/extension.zip")
+def extension_zip():
+    """pantryrun's Rimi cart extension (extension/), zipped to load unpacked in Chrome or Edge."""
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
+        for name in sorted(os.listdir(_EXTENSION)):
+            z.write(os.path.join(_EXTENSION, name), f"pantryrun-rimi/{name}")
+    return Response(buf.getvalue(), media_type="application/zip",
+                    headers={"Content-Disposition": 'attachment; filename="pantryrun-rimi-extension.zip"'})
 
 
 class _WebFiles(StaticFiles):

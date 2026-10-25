@@ -440,11 +440,14 @@ def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, bro
         page.wait_for_selector("#sendCart")
 
     page = browser.new_context().new_page()
-    receipt(page)  # without the extension: would you use it?
+    receipt(page)  # without the extension: the ways that work today, and would you use one tap?
     assert page.text_content("#sendCart").endswith("Send this to the Rimi cart")
     page.click("#sendCart")
+    page.locator("#sheet").wait_for(state="visible")
+    assert page.locator(".cart-links a").count() == 2  # each product's page
+    assert page.get_attribute("#getExtension", "href") == "/extension.zip"
     page.click("[data-cart-answer=yes]")
-    page.wait_for_selector("#cart:has-text('Thanks')")
+    page.wait_for_selector("#cartAsk:has-text('Thanks')")
     assert [d["wants"] for u, d in logged("cart_interest") if u == "e2e-cart"] == [True]
     page.context.close()
 
@@ -459,3 +462,9 @@ def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, bro
     assert basket["store"] == "rimi" and {i["id"]: i["qty"] for i in basket["items"]} == {"rimi-kohv-1": 1, "rimi-suvikõrvits-1": 3}  # 3 × 500 g beat 1.2 kg loose
     assert "Opening Rimi" in page.text_content("#cart")
     page.context.close()
+
+
+def test_the_extension_can_be_downloaded(base_url):
+    import io, zipfile
+    names = zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(base_url + "/extension.zip").read())).namelist()
+    assert "pantryrun-rimi/manifest.json" in names and "pantryrun-rimi/rimi.js" in names
