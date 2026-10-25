@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from fastapi import HTTPException
 
-from core import events, mailerlite, my_dinners, plans
+from core import editions, events, mailerlite, my_dinners, plans
 from scripts import weekly_plan
 
 
@@ -156,7 +156,7 @@ def test_edition_has_tagged_links_the_featured_label_and_the_list():
                            "lines": [{"label": "Kana", "product": "Kanafilee 500g", "cost": 5.0},
                                      {"label": "Kõrvits", "product": "Kõrvits kg", "cost": 4.5}]},
                           {"store": "selver", "status": "ok", "total_price": 10.2, "missing": [], "lines": []}]}
-    text = weekly_plan.edition("Week 46", "T0K", result, "https://pantryrun.example")
+    text = editions.edition("Week 46", "T0K", result, "https://pantryrun.example")
     assert "https://pantryrun.example/?plan=T0K&from=newsletter&u={$pantryrun_id}" in text
     assert "FEATURED (label it \"Featured\"): Kõrvitsasupp" in text
     assert "/cooked?plan=T0K&dinner=sh-x&u={$pantryrun_id}&answer=yes" in text
@@ -171,9 +171,68 @@ def test_edition_email_fills_every_part_and_keeps_the_merge_tags():
                            "lines": [{"label": "Kana", "product": "Kanafilee 500g", "cost": 5.0}]},
                           {"store": "selver", "status": "ok", "total_price": 10.2, "missing": [], "lines": []},
                           {"store": "rimi", "status": "ok", "total_price": 4.1, "missing": ["kana", "riis"], "lines": []}]}
-    email = weekly_plan.edition_html("Week 46", "T0K", result, "https://pantryrun.example", "25 October 2026")
+    email = editions.edition_html("Week 46", "T0K", result, "https://pantryrun.example", "25 October 2026")
     assert not re.search(r"@@[A-Z_]+@@", email)  # every part filled in
     assert 'href="https://pantryrun.example/?plan=T0K&amp;from=newsletter&amp;u={$pantryrun_id}"' in email
     assert email.count(">FEATURED</span>") == 1 and "Kõrvitsasupp &lt;3" in email
     assert "Maxima (Barbora&#x27;s prices)" in email and "9,50 €" in email and "Elsewhere: Selver 10,20 €, Rimi 4,10 € (2 missing)" in email
     assert 'href="{$unsubscribe}"' in email and "answer=yes" in email
+
+
+# ── making an edition on the server ──────────────────────────────────────────
+
+def priced(statuses):
+    """What catalog.recommend answers, with each store's status: {store: "ok" | "no_answer"}."""
+    def recommend(recipe_id, servings, items, stores, dinners=None, **kw):
+        baskets = [{"store": s, "status": st, "total_price": 10.0 + i if st == "ok" else None, "missing": [],
+                    "lines": [{"label": "Kana", "product": "Kana 500g", "cost": 5.0}] if st == "ok" else []}
+                   for i, (s, st) in enumerate(statuses.items())]
+        ok = [b for b in baskets if b["status"] == "ok"]
+        return {"servings": servings, "dinners": [{"id": d["id"], "name": d["id"], "image": None, "link": None} for d in dinners],
+                "store": ok[0]["store"] if ok else None, "baskets": ok + [b for b in baskets if b["status"] != "ok"]}
+    return recommend
+
+
+def test_edition_is_refused_when_a_store_didnt_answer(db, monkeypatch):
+    monkeypatch.setattr(editions.catalog, "recommend", priced({"rimi": "ok", "barbora": "ok", "selver": "no_answer"}))
+    with pytest.raises(editions.EditionError, match="Selver didn't answer"):
+        editions.make("Week 46", ["kanasupp", "pasta_hakklihaga"])
+    assert not sqlite3.connect(db).execute("SELECT name FROM sqlite_master WHERE name = 'plans'").fetchall()  # nothing saved
+
+
+def test_edition_saves_the_plan_with_the_featured_dinner(db, monkeypatch):
+    monkeypatch.setattr(editions.catalog, "recommend", priced({"selver": "ok", "rimi": "ok", "barbora": "ok"}))
+    made = editions.make("Week 46", ["kanasupp"], featured="pasta_hakklihaga", base="https://pantryrun.example/")
+    assert plans.get(made["token"])["dinners"] == ["kanasupp", "pasta_hakklihaga"]
+    assert plans.get(made["token"])["featured"] == "pasta_hakklihaga"
+    assert f"?plan={made['token']}&amp;from=newsletter" in made["html"] and "SHOPPING LIST at Selver" in made["text"]
+    with pytest.raises(editions.EditionError, match="Unknown dinners: nope"):
+        editions.make("x", ["nope"])
+
+
+def test_editions_endpoint_needs_the_owners_token(api, db, monkeypatch):
+    monkeypatch.setattr(editions.catalog, "recommend", priced({"selver": "ok", "rimi": "ok", "barbora": "ok"}))
+    req = api.EditionRequest(title="Week 46", dinners=["kanasupp"])
+    assert status(lambda: api.make_edition(req, authorization="Bearer x")) == 503  # not set on the server
+    monkeypatch.setenv("EDITION_TOKEN", "s3cret")
+    assert status(lambda: api.make_edition(req, authorization="Bearer wrong")) == 401
+    assert status(lambda: api.make_edition(req, authorization=None)) == 401
+    assert "token" in api.make_edition(req, authorization="Bearer s3cret")
+
+
+def test_build_asks_the_live_site_and_writes_the_email(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("EDITION_TOKEN", "s3cret")
+    sent = {}
+
+    class Resp:
+        status_code, content = 200, b"x"
+        def json(self):
+            return {"token": "T0K", "text": "SUMMARY", "html": "<html>email</html>"}
+    monkeypatch.setattr(weekly_plan.requests, "post", lambda url, **kw: sent.update(url=url, **kw) or Resp())
+    weekly_plan.main(["build", "--title", "Week 46", "--dinners", "kanasupp,nd-1318", "--base-url", "https://site.example/"])
+    assert sent["url"] == "https://site.example/editions"
+    assert sent["headers"] == {"Authorization": "Bearer s3cret"}
+    assert sent["json"]["dinners"] == ["kanasupp", "nd-1318"]
+    assert (tmp_path / "logs" / "edition-T0K.html").read_text() == "<html>email</html>"
+    assert "sent --plan T0K" in capsys.readouterr().out

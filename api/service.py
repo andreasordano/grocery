@@ -1,13 +1,16 @@
 import threading
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException, Response
+import hmac
+
+from fastapi import FastAPI, Header, HTTPException, Response
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from core import catalog
+from core import editions
 from core import my_dinners
 from core import events
 from core import fetch
@@ -98,6 +101,14 @@ class NewsletterRequest(BaseModel):
     user_id: Optional[str] = None
     name: Optional[str] = None
     where: Optional[str] = None  # where in the app: first_visit or receipt
+
+
+class EditionRequest(BaseModel):
+    title: str
+    dinners: List[str]
+    featured: Optional[str] = None
+    featured_url: Optional[str] = None
+    servings: int = 2
 
 
 class EventRequest(BaseModel):
@@ -296,6 +307,21 @@ def open_plan(token: str, user_id: Optional[str] = None, came_from: Optional[str
             dinners.append({"id": rid, "featured": rid == plan["featured"]})
     events.log_event("plan_opened", {"plan": token, "from": came_from}, user_id=user_id)
     return {"token": plan["token"], "title": plan["title"], "dinners": dinners}
+
+
+@app.post("/editions")
+def make_edition(req: EditionRequest, authorization: Optional[str] = Header(None)):
+    """A weekly plan edition, priced here (stores answer this server), for scripts/weekly_plan.py build.
+    Only for the owner: needs EDITION_TOKEN, because each one searches every store."""
+    secret = os.environ.get("EDITION_TOKEN")
+    if not secret:
+        raise HTTPException(status_code=503, detail="EDITION_TOKEN isn't set on the server")
+    if not hmac.compare_digest(authorization or "", f"Bearer {secret}"):
+        raise HTTPException(status_code=401, detail="Wrong EDITION_TOKEN")
+    try:
+        return editions.make(req.title, req.dinners, req.featured, req.featured_url, max(1, min(req.servings, 12)))
+    except editions.EditionError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
 
 
 @app.get("/cooked")
