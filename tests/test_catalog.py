@@ -1,6 +1,7 @@
 import pytest
 
 from core import catalog
+from core.scoring import pack_size
 
 
 # ── pack sizes and costs ─────────────────────────────────────────────────────
@@ -14,9 +15,14 @@ from core import catalog
     ("Peremunad M18, EGGO", None, (18, "pcs")),
     ("Kurk Marineeritud Salvest 675g/385g", None, (675, "g")),
     ("Roheline sibul potis", None, None),
+    ("Jogurt Alma 4x125g", None, (500, "g")),        # multipacks count whole (WEB-26)
+    ("Õlu A. Le Coq 6x0,5l", None, (3000, "ml")),
+    ("Kohvioad 250 g + 50 g", None, (300, "g")),     # bonus pack
+    ("Banaan, kg", "kg", None),                      # loose: no pack size
+    ("Sidrunid 4 pcs", None, (4, "pcs")),
 ])
-def test_parse_pack(name, volume, expected):
-    assert catalog.parse_pack(name, volume) == expected
+def test_pack_size(name, volume, expected):
+    assert pack_size(name, volume) == expected
 
 
 def test_cost_whole_packs():

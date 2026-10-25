@@ -19,13 +19,11 @@ from functools import lru_cache
 import yaml
 
 from core.fetch import GLOBAL_EXCLUDE, _cached_fetch, discount_fields
-from core.scoring import fold, parse_price
+from core.scoring import fold, pack_size, parse_price
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data")
 BASE_SERVINGS = 2
 
-_SIZE_RE = re.compile(r"(?:(\d+)\s*[x×]\s*)?(\d+(?:[.,]\d+)?)\s*(kg|g|ml|cl|l|tk)\b")
-_EGG_RE = re.compile(r"\b[SMLX]{1,2}(\d{1,2})\b")  # egg packs like "M10", "L6", "XL10"
 
 
 def load_yaml(name):
@@ -60,34 +58,6 @@ def find_recipe(recipe_id, recipes, user_id=None):
 
 
 # ── pack sizes ───────────────────────────────────────────────────────────────
-
-def parse_pack(name, volume=None):
-    """Return (amount, base_unit) for a packaged product, base_unit in g/ml/pcs, or None."""
-    for text in (volume, name):
-        if not text:
-            continue
-        t = text.lower()
-        m = _SIZE_RE.search(t)
-        if m:
-            count = int(m.group(1)) if m.group(1) else 1
-            value = float(m.group(2).replace(",", ".")) * count
-            unit = m.group(3)
-            if unit == "kg":
-                return value * 1000, "g"
-            if unit == "g":
-                return value, "g"
-            if unit == "l":
-                return value * 1000, "ml"
-            if unit == "cl":
-                return value * 10, "ml"
-            if unit == "ml":
-                return value, "ml"
-            return value, "pcs"
-        m = _EGG_RE.search(text)
-        if m:
-            return float(m.group(1)), "pcs"
-    return None
-
 
 def _convert(amount, from_unit, to_unit, piece_g=None):
     """Convert between g/ml/pcs. g and ml are treated as equal (density ~1)."""
@@ -134,7 +104,7 @@ def cost_for(product, need, need_unit, piece_g=None):
         bought = sold if sold > grams + 0.5 else None
         return round(price * sold / 1000, 2), None, f"{sold:.0f} g × {price:.2f} €/{unit}", bought
 
-    pack = parse_pack(product.get("name") or "", product.get("volume"))
+    pack = pack_size(product.get("name") or "", product.get("volume"))
     if not pack:
         return None
     size, pack_unit = pack

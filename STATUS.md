@@ -10,7 +10,9 @@ Plans, tasks, decisions and notes live in Atlassian, not in this file:
   [DATA](https://pantryrun.atlassian.net/jira/software/projects/DATA) (metrics and price data),
   [PROD](https://pantryrun.atlassian.net/jira/software/projects/PROD) (validation and business)
 
-Live at https://grocery-j3en.onrender.com (Render web service `groceries-api`, deploys `main`; database on Supabase, project `tafaiatzpjpvkdoazwiz`, Frankfurt).
+Live at https://grocery-j3en.onrender.com (Render web service `groceries-api`, Python runtime, deploys `main` by
+itself after every push; settings live in the Render dashboard, not in the repo; database on Supabase, project
+`tafaiatzpjpvkdoazwiz`, Frankfurt). GitHub's checks (tests, secret scan) run on every push but don't deploy.
 
 ## Picking it up again
 ```bash

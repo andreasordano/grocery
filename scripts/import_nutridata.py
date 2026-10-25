@@ -28,7 +28,6 @@ import yaml
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core import catalog  # noqa: E402
-from core.scoring import fold  # noqa: E402
 
 API = "https://tka.nutridata.ee/api-foods"
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

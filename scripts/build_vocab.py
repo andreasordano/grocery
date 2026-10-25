@@ -12,7 +12,6 @@ Re-run every month or two; an outdated list does no harm.
 
 import json
 import os
-import re
 import sys
 from collections import Counter, defaultdict
 

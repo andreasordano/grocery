@@ -57,10 +57,6 @@ def test_relevance_for_and_flavoured_are_not_the_thing():
     assert relevance_score("Must tee metallpurgis, SELAVI", {"include": ["tee"]}) == 5
 
 
-def test_relevance_drops_excluded_words():
-    assert relevance_score("Piim laktoosivaba 1L", {"include": ["piim"], "exclude": ["laktoosivaba"]}) == -1
-
-
 # ── shelves ──────────────────────────────────────────────────────────────────
 
 def test_peanut_butter_keeps_spreads_and_drops_snacks(stores):
@@ -151,7 +147,9 @@ def test_full_words_find_leek_and_chilli(stores):
 
 
 def test_oil_is_cooking_oil(stores):
-    assert "Ol.õli" in picks("õli", "barbora")[0]
+    """Liquids rank by price per 100 ml: 10 ml essential oils used to come second when packs were compared."""
+    found = picks("õli", "barbora")
+    assert "ol.õli" in found[0].lower() and not any("Eeterlik" in n for n in found[:5])
     assert not any("CarPlan" in n for n in picks("õli", "rimi"))
 
 

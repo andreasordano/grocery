@@ -9,7 +9,6 @@
 
 import os
 import queue
-import re
 import threading
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -17,7 +16,7 @@ from pathlib import Path
 
 import requests
 
-from core.scoring import extract_weight_volume, parse_price
+from core.scoring import pack_size, parse_price
 
 MIGRATION = Path(__file__).resolve().parent.parent / "supabase" / "migrations" / "20261022215556_price_log.sql"
 
@@ -25,7 +24,6 @@ _queue = queue.Queue(maxsize=1000)
 _start_lock = threading.Lock()
 _started = False
 
-_PIECES_RE = re.compile(r"(\d+)\s*(?:tk|pcs)\b", re.IGNORECASE)
 
 
 def enabled():
@@ -72,14 +70,8 @@ def pack(item):
     unit = (item.get("unit") or "").lower()
     if unit in ("kg", "l"):
         return unit, None, None
-    name = item.get("name") or ""
-    weight, volume = extract_weight_volume(name, [item.get("volume")])
-    if weight:
-        return "pack", weight, "g"
-    if volume:
-        return "pack", volume, "ml"
-    m = _PIECES_RE.search(name)
-    return ("pack", int(m.group(1)), "pcs") if m else ("pack", None, None)
+    size = pack_size(item.get("name") or "", item.get("volume"))
+    return ("pack", *size) if size else ("pack", None, None)
 
 
 def product_row(item):
