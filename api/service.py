@@ -2,6 +2,7 @@ import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -10,6 +11,8 @@ from core import catalog
 from core import my_dinners
 from core import events
 from core import fetch
+from core import mailerlite
+from core import plans
 from core import recipe_import
 
 import io
@@ -87,6 +90,14 @@ class ShareRequest(BaseModel):
 class RecipeImportRequest(BaseModel):
     url: str
     user_id: Optional[str] = None
+
+
+class NewsletterRequest(BaseModel):
+    email: str
+    consent: bool = False
+    user_id: Optional[str] = None
+    name: Optional[str] = None
+    where: Optional[str] = None  # where in the app: first_visit or receipt
 
 
 class EventRequest(BaseModel):
@@ -245,6 +256,54 @@ def open_share(token: str, user_id: Optional[str] = None):
         raise HTTPException(status_code=404, detail="This link doesn't lead to a dinner")
     events.log_event("share_opened", {"token": token}, user_id=user_id)
     return dinner
+
+
+@app.post("/newsletter")
+def newsletter_signup(req: NewsletterRequest):
+    """Sign-up for next week's plan by email. The address goes to MailerLite only, which asks the person to confirm."""
+    email = req.email.strip()
+    if not mailerlite.EMAIL.match(email) or len(email) > 200:
+        raise HTTPException(status_code=400, detail="That doesn't look like an email address.")
+    if not req.consent:
+        raise HTTPException(status_code=400, detail="Tick the box to say we may email you.")
+    if not req.user_id or not mailerlite.configured():
+        raise HTTPException(status_code=503, detail="Sign-up isn't open yet. Try again in a few days.")
+    where = req.where if req.where in ("first_visit", "receipt") else None
+    try:
+        mailerlite.subscribe(email, req.user_id, (req.name or "").strip()[:40] or None)
+    except mailerlite.MailerLiteError as exc:
+        print(f"newsletter sign-up failed: {exc}")
+        events.log_event("newsletter_signup", {"ok": False, "where": where}, user_id=req.user_id, name=req.name)
+        raise HTTPException(status_code=502, detail="Couldn't sign you up just now. Try again later.")
+    events.log_event("newsletter_signup", {"ok": True, "where": where}, user_id=req.user_id, name=req.name)
+    return {"ok": True}
+
+
+@app.get("/plans/{token}")
+def open_plan(token: str, user_id: Optional[str] = None, came_from: Optional[str] = None):
+    """A weekly plan's dinners, to load as one trip. Dinners sent by link come whole (the app doesn't know
+    them); the others are ids from /recipes. A dinner that no longer exists is left out."""
+    plan = plans.get(token)
+    if plan is None:
+        raise HTTPException(status_code=404, detail="This link doesn't lead to a plan")
+    recipes, dinners = catalog.load_recipes(), []
+    for rid in plan["dinners"]:
+        if rid.startswith("sh-"):
+            shared = my_dinners.shared(rid[3:])
+            if shared:
+                dinners.append({**shared, "featured": rid == plan["featured"]})
+        elif catalog.find_recipe(rid, recipes):
+            dinners.append({"id": rid, "featured": rid == plan["featured"]})
+    events.log_event("plan_opened", {"plan": token, "from": came_from}, user_id=user_id)
+    return {"token": plan["token"], "title": plan["title"], "dinners": dinners}
+
+
+@app.get("/cooked")
+def cooked(plan: str, dinner: str, answer: str = "yes", u: Optional[str] = None):
+    """The one-tap "Did you cook it?" links in a newsletter edition: log the answer, then say thanks."""
+    if answer in ("yes", "no"):
+        events.log_event("cooked", {"plan": plan[:20], "dinner": dinner[:40], "answer": answer}, user_id=u)
+    return RedirectResponse("/thanks.html", status_code=303)
 
 
 @app.get("/health")

@@ -1,5 +1,5 @@
 // The Dinner screen: how many people, kinds of dinner, a handful of dinners to pick from,
-// anything else for the trip, and a dinner someone sent by link.
+// anything else for the trip, a dinner someone sent by link, and a weekly plan from the newsletter.
 import { $, pick } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
@@ -27,12 +27,16 @@ function tripStrip() {
   return `<div class="trip">
     <p><b>This trip:</b> ${n} ${n === 1 ? "dinner" : "dinners"}<span class="fine">${n < MAX_TRIP
       ? " · Tap another dinner to add it." : ` · ${MAX_TRIP} is the most for one trip.`}</span></p>
-    <ul>${ids.map(id => `<li><span lang="et">${esc(dinnerById(id)?.name ?? "")}</span><button type="button" data-unpick="${esc(id)}"
+    <ul>${ids.map(id => `<li><span lang="et">${esc(dinnerById(id)?.name ?? "")}</span>${featured(id)
+      ? `<span class="featured">Featured</span>` : ""}<button type="button" data-unpick="${esc(id)}"
       aria-label="Take ${esc(dinnerById(id)?.name ?? "")} out of the trip">×</button></li>`).join("")}</ul>
     ${n > 1 ? `<button type="button" class="link" id="clearTrip">Clear</button>` : ""}
     <button type="button" class="btn dark see" id="seeStore">See where to shop <span aria-hidden="true">↓</span></button>
   </div>`;
 }
+
+// The plan's featured dinner: an unpaid pick from a store's or brand's recipes, always labelled.
+const featured = id => state.plan?.dinners.some(d => d.id === id && d.featured);
 
 export function draw() {
   const dinners = shownDinners();
@@ -49,6 +53,10 @@ export function draw() {
       <span class="btns">${state.shared.saved ? `<span class="fine">Saved to Mine</span>`
         : `<button type="button" class="btn quiet" id="saveShared">Save to my dinners</button>`}
         <button type="button" class="x" id="dropShared" aria-label="Close">×</button></span>
+    </div>` : ""}
+    ${state.plan ? `<div class="sent">
+      <p><span class="what">This week's plan</span><span class="name">${esc(state.plan.title)}</span></p>
+      <span class="btns"><button type="button" class="x" id="dropPlan" aria-label="Close the plan">×</button></span>
     </div>` : ""}
     <div class="chips cats" role="group" aria-label="Kind of dinner">${[
       { id: "ideas", name: "Ideas" }, { id: "classics", name: "Classics" }, { id: "mine", name: "Mine" }, ...state.categories,
@@ -141,6 +149,7 @@ function onClick(e) {
   if (e.target.closest("#openExtras")) { state.extrasOpen = true; draw(); $("#item").focus(); return; }
   if (e.target.closest("#saveShared")) { saveShared(); return; }
   if (e.target.closest("#dropShared")) dropShared();
+  if (e.target.closest("#dropPlan")) dropPlan();
 }
 
 async function saveShared() {
@@ -154,6 +163,15 @@ async function saveShared() {
   } catch {
     $("#saveShared").textContent = "Couldn't save. Try again";
   }
+}
+
+// Close the weekly plan: its dinners leave the trip, and the address forgets it.
+function dropPlan() {
+  state.plan.dinners.forEach(d => unpick(d.id));
+  state.plan = null;
+  picked().length ? ask({ fresh: true }) : pickADinner();
+  history.replaceState(null, "", location.pathname + location.search.replace(/[?&](plan|from)=[^&]*/g, "").replace(/^&/, "?"));
+  draw();
 }
 
 // Close the sent dinner, and take it out of the address so a reload doesn't bring it back.
