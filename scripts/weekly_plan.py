@@ -84,9 +84,9 @@ def edition(title, token, result, base):
     out += [f"SHOPPING LIST at {SHOP.get(best['store'], best['store'])}, for {result['servings']} people:"]
     out += [f"   {l['label']}: {l['product']}  {l['cost']:.2f} €" for l in best["lines"]]
     out += [f"   Total: {best['total_price']:.2f} €"]
-    others = [b for b in result["baskets"][1:] if b["status"] == "ok"]
+    others = elsewhere(result["baskets"][1:])
     if others:
-        out += ["   Elsewhere: " + ", ".join(f"{SHOP.get(b['store'], b['store'])} {b['total_price']:.2f} €" for b in others)]
+        out += ["   Elsewhere: " + others]
     if best["missing"]:
         out += ["   Not in the e-shop: " + ", ".join(best["missing"])]
     out += ["", "Prices are e-shop prices on the day this was written; the plan link shows today's."]
@@ -95,6 +95,13 @@ def edition(title, token, result, base):
 
 def euro(v):
     return f"{v:.2f} €".replace(".", ",")
+
+
+def elsewhere(baskets, money=lambda v: f"{v:.2f} €"):
+    """The other stores' totals; a store missing items says how many, as in the app, since it looks cheaper."""
+    return ", ".join(f"{SHOP.get(b['store'], b['store'])} {money(b['total_price'])}"
+                     + (f" ({len(b['missing'])} missing)" if b["missing"] else "")
+                     for b in baskets if b["status"] == "ok")
 
 
 def _dinner_html(d, base, token):
@@ -121,14 +128,13 @@ def edition_html(title, token, result, base, date):
     """The edition as an email, from scripts/weekly_plan_email.html."""
     e = html.escape
     best = result["baskets"][0]
-    others = [b for b in result["baskets"][1:] if b["status"] == "ok"]
+    others = elsewhere(result["baskets"][1:], euro)
     n = len(result["dinners"])
     lines = "".join(
         f'<tr><td style="padding:7px 0; border-top:1px solid rgba(28,31,74,.12);"><b>{e(l["label"])}</b><br>'
         f'<span style="color:#5b5f86; font-size:13px;">{e(l["product"])}</span></td>'
         f'<td align="right" style="padding:7px 0; border-top:1px solid rgba(28,31,74,.12); white-space:nowrap;">{euro(l["cost"])}</td></tr>'
         for l in best["lines"])
-    elsewhere = " · ".join(f"{SHOP.get(b['store'], b['store'])} {euro(b['total_price'])}" for b in others)
     parts = {
         "TITLE": e(title),
         "PREHEADER": e(f"{n} dinners for {result['servings']}, one shop at {SHOP.get(best['store'], best['store'])}: {euro(best['total_price'])}"),
@@ -138,7 +144,7 @@ def edition_html(title, token, result, base, date):
         "STORE": e(SHOP.get(best["store"], best["store"])),
         "LINES": lines,
         "TOTAL": euro(best["total_price"]),
-        "ELSEWHERE": e("Elsewhere: " + elsewhere) if elsewhere else "",
+        "ELSEWHERE": e("Elsewhere: " + others) if others else "",
         "DATE": e(date),
         "BASE": e(base),
     }

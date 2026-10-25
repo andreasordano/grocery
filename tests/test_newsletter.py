@@ -169,10 +169,11 @@ def test_edition_email_fills_every_part_and_keeps_the_merge_tags():
                                           "link": "https://rimi.ee/r/1", "featured": True}],
               "baskets": [{"store": "barbora", "status": "ok", "total_price": 9.5, "missing": [],
                            "lines": [{"label": "Kana", "product": "Kanafilee 500g", "cost": 5.0}]},
-                          {"store": "selver", "status": "ok", "total_price": 10.2, "missing": [], "lines": []}]}
+                          {"store": "selver", "status": "ok", "total_price": 10.2, "missing": [], "lines": []},
+                          {"store": "rimi", "status": "ok", "total_price": 4.1, "missing": ["kana", "riis"], "lines": []}]}
     email = weekly_plan.edition_html("Week 46", "T0K", result, "https://pantryrun.example", "25 October 2026")
     assert not re.search(r"@@[A-Z_]+@@", email)  # every part filled in
     assert 'href="https://pantryrun.example/?plan=T0K&amp;from=newsletter&amp;u={$pantryrun_id}"' in email
     assert email.count(">FEATURED</span>") == 1 and "Kõrvitsasupp &lt;3" in email
-    assert "Maxima (Barbora&#x27;s prices)" in email and "9,50 €" in email and "Elsewhere: Selver 10,20 €" in email
+    assert "Maxima (Barbora&#x27;s prices)" in email and "9,50 €" in email and "Elsewhere: Selver 10,20 €, Rimi 4,10 € (2 missing)" in email
     assert 'href="{$unsubscribe}"' in email and "answer=yes" in email
