@@ -112,6 +112,8 @@ button.r-photo { cursor: zoom-in; }
 .thanks { margin: 0; font: 700 18px var(--display); }
 .small { margin-top: 14px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
 .report { margin-top: 12px; display: flex; gap: 8px; }
+.usual-note { margin: 10px 0 0; }
+.usual-note .link { font-size: 12.5px; }
 /* shopping online: send the basket to the store's cart (js/cart.js) */
 .cart { margin-top: 14px; }
 .cart .fine { margin: 0; }

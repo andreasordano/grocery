@@ -4,6 +4,7 @@ import { $, feed, after, reduceMotion } from "./dom.js";
 import { euro, num, esc, amount, fold, storeNames, shopName } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
+import { identity, askUsualStore } from "./identity.js";
 import { shareDinner } from "./share.js";
 import { recipeCards } from "./recipe.js";
 import { cartButton } from "./cart.js";
@@ -158,6 +159,9 @@ export function showReceipt(storeName, animate) {
       <button class="link" type="button" id="wrong">Wrong product?</button>
       <span class="fine">E-shop prices. In store they can differ a little.</span>
     </div>
+    <p class="fine usual-note">${["selver", "rimi", "maxima"].includes(identity.usualStore)
+      ? `You usually shop at ${esc(shopName(identity.usualStore === "maxima" ? "barbora" : identity.usualStore))}.` : "Where do you usually shop?"}
+      <button class="link" type="button" id="changeUsual">${["selver", "rimi", "maxima", "other"].includes(identity.usualStore) ? "Change" : "Tell us"}</button></p>
     <div id="report"></div>
     ${cartButton(b)}
     ${recipeCards(res)}
@@ -165,7 +169,7 @@ export function showReceipt(storeName, animate) {
       <span class="fine" id="shareNote" role="status"></span></div>` : ""}`;
   if (res.recipe) $("#share").onclick = () => shareDinner(res.recipe);
 
-  const feedback = { mission: dinners.length > 1 ? "dinners" : state.mode, recipe_id: res.recipe?.id ?? null,
+  const feedback = { usual_store: identity.usualStore === "skip" ? null : identity.usualStore ?? null, mission: dinners.length > 1 ? "dinners" : state.mode, recipe_id: res.recipe?.id ?? null,
                      recipe_ids: dinners.map(d => d.id), servings: res.servings, items: res.items,
                      store: b.store, recommended_store: best.store, total_price: b.total_price, result_id: res.result_id };
   after.querySelectorAll("[data-fb]").forEach(btn => btn.onclick = () => {
@@ -174,6 +178,13 @@ export function showReceipt(storeName, animate) {
     $("#fb").innerHTML = `<p class="thanks">${accepted ? "Have a good trip." : "Thanks. We'll use that to improve."}</p>`;
     if (accepted) feed.firstElementChild.insertAdjacentHTML("beforeend", `<div class="stamp">Going</div>`);
   });
+  $("#changeUsual").onclick = () => {
+    identity.usualStore = undefined;  // ask again
+    askUsualStore().then(store => {
+      logEvent("usual_store", { store, changed: true });
+      showReceipt(state.view, false);
+    });
+  };
   $("#wrong").onclick = () => {
     $("#report").innerHTML = `<div class="report">
       <select id="wrongItem" aria-label="Which product is wrong">${b.lines.map((l, i) => `<option value="${i}">${esc(l.label)}: ${esc(l.product)}</option>`).join("")}</select>

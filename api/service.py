@@ -65,6 +65,7 @@ class BasketRequest(BaseModel):
     stores: List[str] = DINNER_STORES
     user_id: Optional[str] = None
     session_id: Optional[str] = None
+    name: Optional[str] = None  # only to tell internal people apart; not stored
 
 
 class MyDinnerRequest(BaseModel):
@@ -93,12 +94,13 @@ class EventRequest(BaseModel):
     data: Dict[str, Any] = {}
     user_id: Optional[str] = None
     session_id: Optional[str] = None
+    name: Optional[str] = None  # only to tell internal people apart; not stored
 
 
 @app.post("/events")
 def log_event(req: EventRequest):
     """Record a user action from the web app (e.g. accepted/rejected a recommendation)."""
-    ok = events.log_event(req.type, req.data, user_id=req.user_id, session_id=req.session_id)
+    ok = events.log_event(req.type, req.data, user_id=req.user_id, session_id=req.session_id, name=req.name)
     return {"logged": ok}
 
 
@@ -162,6 +164,7 @@ def basket(req: BasketRequest):
         },
         user_id=req.user_id,
         session_id=req.session_id,
+        name=req.name,
     )
     return result
 

@@ -38,6 +38,10 @@ main {
 /* slot, receipt and buttons share one centred column; the paper is inset from the slot's ends */
 .printer > * { width: 100%; max-width: 400px; margin-inline: auto; }
 
+/* the privacy link, quietly at the bottom of the page */
+.foot { padding: 16px 40px 24px; text-align: center; font-size: 13px; }
+.foot a { color: var(--ink-soft); text-underline-offset: 3px; }
+
 /* ── Headlines ── */
 h1 {
   margin: 0 0 28px; font: 800 clamp(44px, 5.4vw, 76px)/.98 var(--display); letter-spacing: -0.035em;

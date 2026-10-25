@@ -53,17 +53,36 @@
   </section>
 </main>
 
+<footer class="foot"><a href="privacy.html">Privacy</a></footer>
+
 <dialog id="hello" aria-labelledby="helloTitle">
   <form method="dialog" id="helloForm">
     <div class="sh-top">
       <h2 id="helloTitle">What’s your name?</h2>
-      <p>So we know who tried it and what to improve. No password needed.</p>
+      <p>So we know who tried it and what to improve. No password needed. <a href="privacy.html">How pantryrun uses your data</a></p>
       <label for="helloName">Name</label>
       <input id="helloName" name="name" autocomplete="given-name" maxlength="40" required>
     </div>
     <div class="sh-bottom">
       <button class="btn dark" type="submit" value="save">Start</button>
     </div>
+  </form>
+</dialog>
+
+<!-- Where someone usually shops, asked once after the name (js/identity.js). -->
+<dialog id="usual" aria-labelledby="usualTitle">
+  <form method="dialog" id="usualForm">
+    <div class="sh-top">
+      <h2 id="usualTitle">Where do you usually shop?</h2>
+      <p>One tap. It shows whether pantryrun sends you somewhere new.</p>
+      <div class="chips usual-chips">
+        <button type="submit" value="selver">Selver</button>
+        <button type="submit" value="rimi">Rimi</button>
+        <button type="submit" value="maxima">Maxima</button>
+        <button type="submit" value="other">Other</button>
+      </div>
+    </div>
+    <div class="sh-bottom"><button class="link" type="submit" value="skip">Skip</button></div>
   </form>
 </dialog>
 

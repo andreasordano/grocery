@@ -16,6 +16,7 @@ export const identity = {
   tester: !!link || storage.get("pantryrun.tester", false),  // ever came with a tester link
   firstVisit: !link && !known,
   name: storage.get("pantryrun.name", null),  // null: never asked; "": skipped (when it could be)
+  usualStore: storage.get("pantryrun.usualStore", undefined),  // selver/rimi/maxima/other, "skip", or undefined: never asked
   sessionId: (() => {
     try {
       let id = sessionStorage.getItem("sid");
@@ -43,4 +44,25 @@ export function askName() {
     input.oninput = () => input.setCustomValidity(input.value.trim() ? "" : "Please type your name.");
     hello.showModal();
   });
+}
+
+// Where someone usually shops (selver, rimi, maxima, other), asked once with one tap. Resolves with the
+// answer (null for Skip), or undefined when it was asked before.
+export function askUsualStore() {
+  if (identity.usualStore !== undefined) return Promise.resolve(undefined);
+  const usual = $("#usual");
+  return new Promise(resolve => {
+    usual.returnValue = "";
+    usual.onclose = () => {
+      const store = ["selver", "rimi", "maxima", "other"].includes(usual.returnValue) ? usual.returnValue : null;
+      setUsualStore(store ?? "skip");  // kept as "skip": a stored null reads back as never asked
+      resolve(store);
+    };
+    usual.showModal();
+  });
+}
+
+export function setUsualStore(store) {
+  identity.usualStore = store;
+  storage.set("pantryrun.usualStore", store);
 }
