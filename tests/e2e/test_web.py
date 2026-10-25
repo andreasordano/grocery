@@ -468,3 +468,14 @@ def test_the_extension_can_be_downloaded(base_url):
     import io, zipfile
     names = zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(base_url + "/extension.zip").read())).namelist()
     assert "pantryrun-rimi/manifest.json" in names and "pantryrun-rimi/rimi.js" in names
+
+
+def test_basket_refuses_huge_lists_and_ignores_unknown_stores(base_url):
+    def post(body):
+        req = urllib.request.Request(base_url + "/basket", json.dumps(body).encode(), {"Content-Type": "application/json"})
+        return json.loads(urllib.request.urlopen(req).read())
+    with pytest.raises(urllib.error.HTTPError) as e:
+        post({"items": [f"asi {i}" for i in range(61)]})
+    assert e.value.code == 400
+    res = post({"items": ["kohv"], "stores": ["rimi", "rimi", "evil.example"]})
+    assert [b["store"] for b in res["baskets"]] == ["rimi"]  # each known store once, the rest dropped

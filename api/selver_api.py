@@ -1,16 +1,22 @@
 import requests
 import json
+import re
 
 
 # ========================
 # SELVER (Vue Storefront)
 # ========================
 
+# Characters Elasticsearch's query_string reads as syntax: "sai/leib" or "tomat (kirss" would make Selver
+# answer HTTP 500 (shown as "not sold at Selver") unless they're escaped.
+_RESERVED = re.compile(r'([+\-=&|><!(){}\[\]^"~*?:\\/])')
+
+
 def search_selver(query, size=10):
     url = "https://www.selver.ee/api/catalog/vue_storefront_catalog_et/product/_search"
     payload = {
         "query": {
-            "query_string": {"query": query}
+            "query_string": {"query": _RESERVED.sub(r"\\\1", query)}
         },
         "size": size,
         "_source": ["name", "final_price", "price", "original_price", "special_to_date",

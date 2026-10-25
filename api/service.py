@@ -125,11 +125,17 @@ def basket(req: BasketRequest):
         raise HTTPException(status_code=400, detail="Pick a recipe or add at least one item")
     if len(req.recipes) > catalog.MAX_DINNERS:
         raise HTTPException(status_code=400, detail=f"At most {catalog.MAX_DINNERS} dinners in one trip")
+    # One request can't make the server search the stores thousands of times (a store could block it).
+    if len([i for i in req.items if i.strip()]) > my_dinners.MAX_ITEMS:
+        raise HTTPException(status_code=400, detail=f"At most {my_dinners.MAX_ITEMS} items in one list")
+    stores = [s for s in dict.fromkeys(req.stores) if s in DINNER_STORES]  # known stores, each once
+    if not stores:
+        raise HTTPException(status_code=400, detail="No known store")
     people = lambda n: max(1, min(n, 12))
     dinners = [{"id": d.id, "servings": people(d.servings)} for d in req.recipes]
     started = time.monotonic()
     try:
-        result = catalog.recommend(req.recipe_id, people(req.servings), req.items, req.stores, req.prefs,
+        result = catalog.recommend(req.recipe_id, people(req.servings), req.items, stores, req.prefs,
                                    user_id=req.user_id, dinners=dinners)
     except KeyError as e:
         raise HTTPException(status_code=404, detail=f"Unknown recipe: {e.args[0]}")
@@ -145,7 +151,7 @@ def basket(req: BasketRequest):
             "servings": result["servings"],
             "items": result["items"],
             "prefs": req.prefs,
-            "stores": req.stores,
+            "stores": stores,
             "latency_s": round(time.monotonic() - started, 2),
             "recommended_store": result["store"],
             "baskets": [

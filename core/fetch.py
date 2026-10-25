@@ -88,6 +88,8 @@ def discount_fields(item: dict) -> dict:
 
 
 def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict):
+    if item.get("in_stock") is False:  # the store says it's out of stock: never recommend it
+        return None
     name = item.get("name") or ""
     price = parse_price(item.get("price") or item.get("retail_price"))
     if price == float("inf"):
