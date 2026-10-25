@@ -25,6 +25,8 @@ services:
       FETCH_CACHE_TTL: "21600"      # seconds
       FETCH_CACHE_MAX: "512"
       PER_STORE_LIMIT: "12"
+    # the app never creates tables: apply supabase/migrations first (scripts/migrate.py)
+    command: sh -c "python -m scripts.migrate && uvicorn api.service:app --host 0.0.0.0 --port 8000"
     depends_on:
       db:
         condition: service_healthy

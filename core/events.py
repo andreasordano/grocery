@@ -1,20 +1,22 @@
 # =============================================================================
 # EVENTS  (validation data)
 # Append-only log of what users do: requests, recommendations, accept/reject.
-# One table: events(id, ts, user_id, session_id, type, data JSON).
-# Uses Postgres when DATABASE_URL is set (needed on hosts with ephemeral disks,
-# e.g. Render), otherwise a local SQLite file at EVENTS_DB.
-# Logging must never break a user request, so failures are swallowed.
+# One table: events(id, ts, user_id, session_id, type, data JSON), in Postgres (core/db.py).
+# log_event only queues the event; a background writer stores them in batches, so a request never
+# waits for the database. Logging must never break a user request, so failures are swallowed.
 # Every event's data also says `country`, `app_version` (git commit) and `internal`
 # (the founder or Claude: leave those out of every metric).
 # =============================================================================
 
 import json
 import os
-import sqlite3
+import queue
 import subprocess
 import threading
+import time
 from datetime import datetime, timezone
+
+from core import db
 
 COUNTRY = "EE"
 
@@ -87,69 +89,62 @@ def is_internal(user_id=None, name=None):
     uid = (user_id or "").strip().lower()
     return uid == "andrea" or uid.startswith(("claude", "internal-")) or (name or "").strip().lower() == "andrea"
 
-_lock = threading.Lock()
-_initialized = False
-
-_SQLITE_SCHEMA = """
-CREATE TABLE IF NOT EXISTS events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ts TEXT NOT NULL,
-    user_id TEXT,
-    session_id TEXT,
-    type TEXT NOT NULL,
-    data TEXT
-)
-"""
-
-_POSTGRES_SCHEMA = """
-CREATE TABLE IF NOT EXISTS events (
-    id BIGSERIAL PRIMARY KEY,
-    ts TIMESTAMPTZ NOT NULL,
-    user_id TEXT,
-    session_id TEXT,
-    type TEXT NOT NULL,
-    data JSONB
-)
-"""
-
-
-def _connect():
-    url = os.environ.get("DATABASE_URL")
-    if url:
-        import psycopg  # only needed when Postgres is configured
-        return psycopg.connect(url), _POSTGRES_SCHEMA, ("%s::timestamptz", "%s", "%s", "%s", "%s::jsonb")
-    path = os.environ.get("EVENTS_DB", "logs/events.db")
-    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-    return sqlite3.connect(path), _SQLITE_SCHEMA, ("?",) * 5
+_queue = queue.Queue(maxsize=10000)
+_started = False
+_start_lock = threading.Lock()
+BATCH = 100  # events per insert
 
 
 def log_event(type: str, data: dict | None = None, user_id: str | None = None, session_id: str | None = None,
               name: str | None = None):
-    """Append one event. Returns True on success, False if logging failed.
+    """Queue one event for the background writer. True if queued; never raises, never waits.
     name: the person's name, only to tell whether they're internal; it isn't stored."""
     data = {**(data or {}), "country": COUNTRY, "app_version": APP_VERSION, "internal": is_internal(user_id, name)}
-    global _initialized
+    if not db.configured():
+        return False
     try:
-        with _lock:
-            conn, schema, placeholders = _connect()
-            try:
-                if not _initialized:
-                    conn.execute(schema)
-                    _initialized = True
-                conn.execute(
-                    f"INSERT INTO events (ts, user_id, session_id, type, data) VALUES ({', '.join(placeholders)})",
-                    (
-                        datetime.now(timezone.utc).isoformat(),
-                        user_id,
-                        session_id,
-                        type,
-                        json.dumps(data, ensure_ascii=False, default=str),
-                    ),
-                )
-                conn.commit()
-            finally:
-                conn.close()
+        row = (datetime.now(timezone.utc), user_id, session_id, type, json.dumps(data, ensure_ascii=False, default=str))
+        _ensure_writer()
+        _queue.put_nowait(row)
         return True
-    except Exception as exc:
+    except Exception as exc:  # a full queue (the database has been down a long while), or data that won't serialise
         print(f"event logging failed ({type}): {exc}")
         return False
+
+
+def flush(timeout=10.0):
+    """Wait until every queued event is written (tests, shutdown). False if it took longer than timeout."""
+    deadline = time.monotonic() + timeout
+    while _queue.unfinished_tasks:
+        if time.monotonic() > deadline:
+            return False
+        time.sleep(0.02)
+    return True
+
+
+def _ensure_writer():
+    global _started
+    if _started:
+        return
+    with _start_lock:
+        if not _started:
+            threading.Thread(target=_writer, name="events", daemon=True).start()
+            _started = True
+
+
+def _writer():
+    while True:
+        rows = [_queue.get()]
+        while len(rows) < BATCH:
+            try:
+                rows.append(_queue.get_nowait())
+            except queue.Empty:
+                break
+        try:
+            with db.connection() as conn, conn.cursor() as cur:
+                cur.executemany("INSERT INTO events (ts, user_id, session_id, type, data) VALUES (%s, %s, %s, %s, %s::jsonb)", rows)
+        except Exception as exc:
+            print(f"event logging failed ({len(rows)} events): {exc}")
+        finally:
+            for _ in rows:
+                _queue.task_done()

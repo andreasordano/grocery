@@ -4,7 +4,7 @@
 # retailer_products, and a price observation is added when it's the product's first
 # sighting that day (Estonian time) or its price, offer or availability changed.
 # Writes happen on one background thread, so a user's answer never waits for them,
-# and failures are printed, never raised. Postgres only (DATABASE_URL); PRICE_LOG=0 turns it off.
+# and failures are printed, never raised. Postgres (core/db.py); PRICE_LOG=0 turns it off.
 # =============================================================================
 
 import os
@@ -16,9 +16,10 @@ from pathlib import Path
 
 import requests
 
+from core import db
 from core.scoring import pack_size, parse_price
 
-MIGRATION = Path(__file__).resolve().parent.parent / "supabase" / "migrations" / "20261022215556_price_log.sql"
+MIGRATION = Path(__file__).resolve().parent.parent / "supabase" / "migrations" / "20261022215556_price_log.sql"  # tests
 
 _queue = queue.Queue(maxsize=1000)
 _start_lock = threading.Lock()
@@ -27,7 +28,7 @@ _started = False
 
 
 def enabled():
-    return bool(os.environ.get("DATABASE_URL")) and os.environ.get("PRICE_LOG", "1") == "1"
+    return db.configured() and os.environ.get("PRICE_LOG", "1") == "1"
 
 
 def record(store, query, kind, started_at, products=None, error=None):
@@ -155,31 +156,14 @@ def _ensure_writer():
             _started = True
 
 
-def _connect():
-    import psycopg  # only needed when Postgres is configured
-    conn = psycopg.connect(os.environ["DATABASE_URL"])
-    # Production gets the tables from the Supabase migration; local Postgres gets them here.
-    if conn.execute("SELECT to_regclass('price_observations')").fetchone()[0] is None:
-        conn.execute(MIGRATION.read_text())
-    conn.commit()
-    return conn
-
-
 def _writer():
-    conn = None
     while True:
         job = _queue.get()
         try:
-            if conn is None or conn.closed:
-                conn = _connect()
-            write(conn, *job)
+            with db.connection() as conn:
+                write(conn, *job)
         except Exception as exc:
             print(f"price log write failed ({job[0]}/{job[1]}): {exc}")
-            try:
-                conn.close()
-            except Exception:
-                pass
-            conn = None
 
 
 def write(conn, store, query, kind, started_at, finished_at, products, error):

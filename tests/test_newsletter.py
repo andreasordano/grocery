@@ -2,25 +2,21 @@
 
 import json
 import re
-import sqlite3
 from datetime import datetime, timedelta, timezone
 
 import pytest
 from fastapi import HTTPException
 
+from conftest import rows
 from core import editions, events, mailerlite, my_dinners, plans
 from scripts import weekly_plan
 
 
 @pytest.fixture
-def db(tmp_path, monkeypatch):
-    path = tmp_path / "app.db"
-    monkeypatch.delenv("DATABASE_URL", raising=False)
-    monkeypatch.setenv("EVENTS_DB", str(path))
-    monkeypatch.setattr(events, "_initialized", False)
+def db(pg, monkeypatch):
+    """The test database, and MailerLite not set up."""
     for key in ("MAILERLITE_API_KEY", "MAILERLITE_GROUP_NEW", "MAILERLITE_GROUP_WEEKLY"):
         monkeypatch.delenv(key, raising=False)
-    return path
 
 
 @pytest.fixture
@@ -57,7 +53,7 @@ def mailer(monkeypatch):
 
 def logged(db, type_):
     return [(u, json.loads(d)) for u, d in
-            sqlite3.connect(db).execute("SELECT user_id, data FROM events WHERE type = ?", (type_,)).fetchall()]
+            rows("SELECT user_id, data::text FROM events WHERE type = %s ORDER BY id", (type_,))]
 
 
 # ── plans ────────────────────────────────────────────────────────────────────
@@ -111,7 +107,7 @@ def test_signup_goes_to_mailerlite_unconfirmed_and_the_address_isnt_logged(api, 
     assert kw["headers"]["Authorization"] == "Bearer key"
     [(user, data)] = logged(db, "newsletter_signup")
     assert user == "u-1" and data["ok"] is True and data["where"] == "receipt"
-    assert "example.ee" not in sqlite3.connect(db).execute("SELECT group_concat(data) FROM events").fetchone()[0]
+    assert "example.ee" not in rows("SELECT string_agg(data::text, ',') FROM events")[0][0]
 
 
 def test_signup_says_so_when_mailerlite_fails(api, db, mailer, monkeypatch):
@@ -134,7 +130,7 @@ def test_promote_lets_in_only_people_past_their_first_week(db, mailer, monkeypat
     now = datetime.now(timezone.utc)
     events.log_event("visit", {}, user_id="old")
     events.log_event("visit", {}, user_id="new")
-    sqlite3.connect(db).execute("UPDATE events SET ts = ? WHERE user_id = 'old'", ((now - timedelta(days=8)).isoformat(),)).connection.commit()
+    rows("UPDATE events SET ts = %s WHERE user_id = 'old' RETURNING id", (now - timedelta(days=8),))
     waiting = [{"id": "s1", "created_at": "2026-01-01 10:00:00", "fields": {"pantryrun_id": "old"}},
                {"id": "s2", "created_at": "2026-01-01 10:00:00", "fields": {"pantryrun_id": "new"}},  # visited 0 days ago
                {"id": "s3", "created_at": (now - timedelta(days=2)).strftime("%Y-%m-%d %H:%M:%S"), "fields": {}},
@@ -151,8 +147,7 @@ def test_record_sent_logs_a_reminder_for_each_reader(db, mailer, monkeypatch):
     monkeypatch.setattr(mailerlite, "group_subscribers",
                         lambda g: [{"id": "1", "fields": {"pantryrun_id": "anna"}}, {"id": "2", "fields": {}}] if g == "g-weekly" else [])
     assert editions.record_sent(token) == {"logged": 1}
-    rows = sqlite3.connect(db).execute("SELECT user_id, channel, note FROM nudges").fetchall()
-    assert rows == [("anna", "newsletter", f"plan {token}")]
+    assert rows("SELECT user_id, channel, note FROM nudges") == [("anna", "newsletter", f"plan {token}")]
     with pytest.raises(editions.EditionError, match="No plan nope"):
         editions.record_sent("nope")
 
@@ -229,7 +224,7 @@ def test_edition_is_refused_when_a_store_didnt_answer(db, monkeypatch):
     monkeypatch.setattr(editions.catalog, "recommend", priced({"rimi": "ok", "barbora": "ok", "selver": "no_answer"}))
     with pytest.raises(editions.EditionError, match="Selver didn't answer"):
         editions.make("Week 46", ["kanasupp", "pasta_hakklihaga"])
-    assert not sqlite3.connect(db).execute("SELECT name FROM sqlite_master WHERE name = 'plans'").fetchall()  # nothing saved
+    assert rows("SELECT count(*) FROM plans") == [(0,)]  # nothing saved
 
 
 def test_edition_is_refused_when_even_the_best_store_lacks_something(db, monkeypatch):

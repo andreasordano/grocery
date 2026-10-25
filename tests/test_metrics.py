@@ -62,7 +62,8 @@ def pg():
     conn = psycopg.connect(url)
     conn.execute(f"CREATE SCHEMA {schema}")
     conn.execute(f"SET search_path TO {schema}")
-    conn.execute(events._POSTGRES_SCHEMA)
+    conn.execute("CREATE TABLE events (id BIGSERIAL PRIMARY KEY, ts TIMESTAMPTZ NOT NULL, user_id TEXT, session_id TEXT, "
+                 "type TEXT NOT NULL, data JSONB)")  # as in the first migration
     for days, user, type_, data in STORY:
         at = DAY0 + timedelta(days=days, minutes=len(conn.execute("SELECT 1 FROM events").fetchall()))
         conn.execute("INSERT INTO events (ts, user_id, type, data) VALUES (%s, %s, %s, %s::jsonb)",

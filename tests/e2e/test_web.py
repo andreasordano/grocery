@@ -10,13 +10,16 @@ import json
 import os
 import re
 import socket
-import sqlite3
 import threading
 import time
 import urllib.error
 import urllib.request
 
+import psycopg
 import pytest
+
+from conftest import TABLES, rows
+from core import db
 
 sync_api = pytest.importorskip("playwright.sync_api")
 
@@ -41,10 +44,12 @@ def fake_fetch(store, query, size=40, refresh=False):
 
 
 @pytest.fixture(scope="module")  # the fake stores end with this module, so other tests see the real ones
-def base_url(tmp_path_factory):
+def base_url(test_database_url):
     mp = pytest.MonkeyPatch()
-    mp.delenv("DATABASE_URL", raising=False)
-    mp.setenv("EVENTS_DB", str(tmp_path_factory.mktemp("db") / "app.db"))
+    mp.setenv("DATABASE_URL", test_database_url)  # empty tables, then the app's own pool (conftest.py)
+    with psycopg.connect(test_database_url) as conn:
+        conn.execute(f"TRUNCATE {TABLES} RESTART IDENTITY CASCADE")
+    db.reset()
     mp.setenv("CACHE_WARMUP", "0")
     from core import catalog, fetch
     mp.setattr(fetch, "_cached_fetch", fake_fetch)
@@ -104,9 +109,7 @@ def logged(type, user=None, wait=0):
     """The events of one type, oldest first: (user_id, data). With a user and wait=n, waits up to 3 s
     until that person has n of them: the page sends events in the background."""
     for _ in range(60 if wait else 1):
-        rows = sqlite3.connect(os.environ["EVENTS_DB"]).execute(
-            "SELECT user_id, data FROM events WHERE type = ? ORDER BY id", (type,)).fetchall()
-        found = [(u, json.loads(d)) for u, d in rows]
+        found = list(rows("SELECT user_id, data FROM events WHERE type = %s ORDER BY id", (type,)))
         if sum(u == user for u, _ in found) >= wait:
             return found
         time.sleep(0.05)

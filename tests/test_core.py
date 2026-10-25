@@ -1,10 +1,10 @@
 import json
-import sqlite3
 
 import pytest
 
 from api import rimi_api
-from core import catalog, events, fetch
+from conftest import rows
+from core import catalog, db, events, fetch
 
 
 # ── fetch ────────────────────────────────────────────────────────────────────
@@ -125,22 +125,18 @@ def test_selver_http_error_raises(monkeypatch):
 
 # ── events ───────────────────────────────────────────────────────────────────
 
-@pytest.fixture
-def sqlite_events(tmp_path, monkeypatch):
-    path = tmp_path / "events.db"
-    monkeypatch.delenv("DATABASE_URL", raising=False)
-    monkeypatch.setenv("EVENTS_DB", str(path))
-    monkeypatch.setattr(events, "_initialized", False)
-    return path
-
-
-def test_log_event_writes_row(sqlite_events):
+def test_log_event_writes_row(pg):
     assert events.log_event("accept", {"store": "rimi", "price": 8.6}, user_id="u1", session_id="s1")
 
-    row = sqlite3.connect(sqlite_events).execute("SELECT user_id, session_id, type, data FROM events").fetchone()
+    [row] = rows("SELECT user_id, session_id, type, data FROM events")
     assert row[:3] == ("u1", "s1", "accept")
-    assert json.loads(row[3]) == {"store": "rimi", "price": 8.6, "country": "EE", "app_version": events.APP_VERSION,
-                                  "internal": False}
+    assert row[3] == {"store": "rimi", "price": 8.6, "country": "EE", "app_version": events.APP_VERSION, "internal": False}
+
+
+def test_events_are_written_in_the_background_in_batches(pg):
+    for i in range(250):
+        events.log_event("visit", {"i": i}, user_id="u1")
+    assert rows("SELECT count(*), count(DISTINCT data->>'i') FROM events") == [(250, 250)]
 
 
 @pytest.mark.parametrize("user_id, name, internal", [
@@ -149,11 +145,11 @@ def test_log_event_writes_row(sqlite_events):
     ("claude-check", None, True), ("internal-claude-check", None, True),
     ("3f1c…uuid", "Mari", False), ("mari", None, False), ("andreas", None, False),
 ])
-def test_internal_people_are_flagged_and_the_name_isnt_stored(sqlite_events, user_id, name, internal):
+def test_internal_people_are_flagged_and_the_name_isnt_stored(pg, user_id, name, internal):
     events.log_event("visit", {}, user_id=user_id, name=name)
-    data = sqlite3.connect(sqlite_events).execute("SELECT data FROM events").fetchone()[0]
-    assert json.loads(data)["internal"] is internal
-    assert (name or "zz").strip() not in data or name is None
+    [(data,)] = rows("SELECT data FROM events")
+    assert data["internal"] is internal
+    assert name is None or name.strip() not in str(data)
 
 
 def test_every_event_the_code_logs_is_listed():
@@ -166,9 +162,15 @@ def test_every_event_the_code_logs_is_listed():
     assert {"usual_store", "delete_request"} <= set(events.EVENT_TYPES)
 
 
-def test_log_event_never_raises(monkeypatch):
-    monkeypatch.setenv("DATABASE_URL", "postgresql://nobody@127.0.0.1:1/none")
-    assert events.log_event("optimize", {}) is False
+def test_log_event_never_raises(pg, monkeypatch, capsys):
+    def down():
+        raise RuntimeError("database down")
+    monkeypatch.setattr(db, "connection", down)
+    assert events.log_event("visit", {}) is True  # queued: the request goes on
+    assert events.flush()
+    assert "event logging failed (1 events): database down" in capsys.readouterr().out
+    monkeypatch.delenv("DATABASE_URL")
+    assert events.log_event("visit", {}) is False  # no database at all
 
 
 # ── barbora parser ───────────────────────────────────────────────────────────
@@ -276,7 +278,7 @@ def test_rimi_parses_regular_price_and_multibuy(monkeypatch):
 
 # ── "Make it yours" (WEB-38) ─────────────────────────────────────────────────
 
-def test_any_dinner_can_be_copied_as_typed_items(sqlite_events):
+def test_any_dinner_can_be_copied_as_typed_items(pg):
     from fastapi import HTTPException
     from api import service
     classic = service.copy_recipe("kanasupp")
