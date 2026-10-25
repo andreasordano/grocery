@@ -14,18 +14,21 @@ STORES_CONFIG = {
         "module": "api.selver_api",
         "function": "search_selver",
         "pagination_param": "size",
+        "max_concurrency": 4,   # store requests at once, from this server (core/fetch.py)
     },
     "barbora": {
         "name": "Barbora",
         "module": "api.barbora_api",
         "function": "search_barbora",
         "pagination_param": "size",
+        "max_concurrency": 2,   # Barbora answers one request at a time
     },
     "rimi": {
         "name": "Rimi",
         "module": "api.rimi_api",
         "function": "search_rimi",
         "pagination_param": "page",
+        "max_concurrency": 4,
     },
 }
 
@@ -79,3 +82,8 @@ def get_pagination_param(store_name):
     if store_name not in STORES_CONFIG:
         raise ValueError(f"Unknown store: {store_name}")
     return STORES_CONFIG[store_name].get("pagination_param", "size")
+
+
+def get_max_concurrency(store_name):
+    """How many requests this server sends the store at once."""
+    return STORES_CONFIG.get(store_name, {}).get("max_concurrency", 4)

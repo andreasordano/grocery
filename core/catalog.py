@@ -13,8 +13,8 @@
 import math
 import os
 import re
+import threading
 from concurrent.futures import ThreadPoolExecutor
-from functools import lru_cache
 
 import yaml
 
@@ -26,9 +26,23 @@ BASE_SERVINGS = 2
 
 
 
+_loaded = {}  # file name → (modified time, parsed data)
+_load_lock = threading.Lock()
+
+
 def load_yaml(name):
-    with open(os.path.join(DATA_DIR, name), encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    """A data file, parsed once and again only when the file changes (parsing rules.yaml takes ~25 ms).
+    The data is shared: treat it as read-only."""
+    path = os.path.join(DATA_DIR, name)
+    mtime = os.path.getmtime(path)
+    with _load_lock:
+        hit = _loaded.get(name)
+        if hit and hit[0] == mtime:
+            return hit[1]
+        with open(path, encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        _loaded[name] = (mtime, data)
+        return data
 
 
 def load_recipes():
@@ -39,11 +53,23 @@ def load_rules():
     return load_yaml("rules.yaml")
 
 
-@lru_cache(maxsize=1)
 def load_dishes():
     """Dishes generated from NutriData (scripts/import_nutridata.py). Ingredients are either
     `item` (an ingredient rule key) or `text` (a free-text search word), amounts for 2 servings."""
     return load_yaml("dishes.yaml")
+
+
+def _index(data, build, _cache={}):
+    """build(data), computed once per loaded data object (it changes only when its file does)."""
+    key = (id(data), build.__name__)
+    hit = _cache.get(key)
+    if hit is None or hit[0] is not data:
+        hit = _cache[key] = (data, build(data))
+    return hit[1]
+
+
+def _by_id(collection):
+    return {r["id"]: r for r in collection}
 
 
 def find_recipe(recipe_id, recipes, user_id=None):
@@ -53,8 +79,9 @@ def find_recipe(recipe_id, recipes, user_id=None):
         if recipe_id.startswith("sh-"):  # shared by link: anyone with it may open it
             return my_dinners.as_recipe(my_dinners.shared(recipe_id[3:]))
         return my_dinners.as_recipe(my_dinners.get(user_id, recipe_id))
-    pool = recipes["recipes"] + (load_dishes()["dishes"] if recipe_id.startswith("nd-") else [])
-    return next((r for r in pool if r["id"] == recipe_id), None)
+    if recipe_id.startswith("nd-"):
+        return _index(load_dishes()["dishes"], _by_id).get(recipe_id)
+    return _index(recipes["recipes"], _by_id).get(recipe_id)
 
 
 # ── pack sizes ───────────────────────────────────────────────────────────────
@@ -293,15 +320,19 @@ def cap(text):
     return text[:1].upper() + text[1:]
 
 
+def _names(ingredients):
+    """Typed form → ingredient key, for each ingredient's key, name and aliases (the first ingredient wins)."""
+    index = {}
+    for key, spec in ingredients.items():
+        for n in [key.replace("_", " "), spec["name"], *spec.get("aliases", [])]:
+            index.setdefault(_norm(n), key)
+    return index
+
+
 def match_ingredient(text, recipes=None):
     """Ingredient key whose name, key or aliases equal the typed text, else None."""
     recipes = recipes or load_recipes()
-    t = _norm(text)
-    for key, spec in recipes["ingredients"].items():
-        names = {key.replace("_", " "), spec["name"]} | set(spec.get("aliases", []))
-        if t in {_norm(n) for n in names}:
-            return key
-    return None
+    return _index(recipes["ingredients"], _names).get(_norm(text))
 
 
 def list_amount(key, recipes):

@@ -8,36 +8,95 @@
 # =============================================================================
 
 from collections import Counter, defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 import os
 import re
-from datetime import datetime, timezone
-from core import price_log
+import threading
+from datetime import datetime, timedelta, timezone
+from core import db, price_log
 from core.cache import TTLCache
 from core.scoring import head_weight, pack_size, parse_price, relevance_score, score, shares_stem
-from stores_config import get_fetcher, get_pagination_param
+from stores_config import get_fetcher, get_max_concurrency, get_pagination_param
 
 
 # Never suitable for a basket, whatever the item: pre-order and bulk listings.
 GLOBAL_EXCLUDE = ["ettetellimisel", "hulgi "]
 
 
-# Cache store search responses to keep API usage and latency low.
+# Cache store search responses to keep API usage and latency low. About 130 rule searches and 600 free-text
+# ones (the NutriData dishes' words) per store set: 2048 keeps them all.
 _CACHE = TTLCache(
     ttl_seconds=int(os.environ.get("FETCH_CACHE_TTL", 6 * 3600)),
-    maxsize=int(os.environ.get("FETCH_CACHE_MAX", 512)),
+    maxsize=int(os.environ.get("FETCH_CACHE_MAX", 2048)),
 )
+SIZE = 40  # products per search
+
+_inflight = {}  # cache key → Future of the store request already on its way
+_lock = threading.Lock()
+_limits = {}  # store → semaphore: at most max_concurrency requests at once (stores_config)
 
 
-def _cached_fetch(store: str, query: str, size: int = 40, refresh: bool = False):
-    """Store search results, cached for FETCH_CACHE_TTL. refresh=True asks the store again (cache warm-up)."""
+def _limit(store):
+    with _lock:
+        if store not in _limits:
+            _limits[store] = threading.BoundedSemaphore(get_max_concurrency(store))
+        return _limits[store]
+
+
+def _cached_fetch(store: str, query: str, size: int = SIZE, refresh: bool = False):
+    """Store search results, cached for FETCH_CACHE_TTL. refresh=True asks the store again (cache warm-up).
+    The same search asked by several people at once goes to the store once; each store gets at most its
+    max_concurrency requests at a time, however many answers are being priced."""
     key = (store, query.strip().lower(), size)
     cached = None if refresh else _CACHE.get(key)
     if cached is not None:
         return cached
+    with _lock:
+        pending = _inflight.get(key)
+        if pending is None:
+            pending = _inflight[key] = Future()
+            mine = True
+        else:
+            mine = False
+    if not mine:
+        return pending.result()  # someone else's request for the same search: share its answer (or error)
+    try:
+        with _limit(store):
+            data = _ask_store(store, query, size, "refresh" if refresh else "search")
+        # Don't cache empty results: they are often a transient store error, and
+        # caching them would hide the product for the whole TTL.
+        if data:
+            _CACHE.set(key, data)
+        pending.set_result(data)
+        return data
+    except Exception as exc:
+        pending.set_exception(exc)
+        raise
+    finally:
+        with _lock:
+            _inflight.pop(key, None)
+
+
+def load_saved_searches():
+    """Fill the cache with the store answers saved in the database that are still fresh (search_cache, written
+    by the price log), so a restart doesn't ask every store again. Returns how many were loaded."""
+    if not db.configured():
+        return 0
+    since = datetime.now(timezone.utc) - timedelta(seconds=_CACHE.ttl)
+    try:
+        rows = db.query("SELECT retailer, query, fetched_at, products FROM search_cache WHERE fetched_at > %s", (since,))
+    except Exception as exc:  # e.g. before the table's migration
+        print(f"saved searches not loaded: {exc}")
+        return 0
+    for retailer, query, fetched_at, products in rows:
+        _CACHE.set((retailer, query, SIZE), products, at=fetched_at.timestamp())
+    return len(rows)
+
+
+def _ask_store(store, query, size, kind):
+    """One request to a store's connector, logged in the price log (and saved for restarts) either way."""
     fetcher = get_fetcher(store)
     param_name = get_pagination_param(store)
-    kind = "refresh" if refresh else "search"
     started = datetime.now(timezone.utc)
 
     # Call fetcher with correct parameter
@@ -52,11 +111,6 @@ def _cached_fetch(store: str, query: str, size: int = 40, refresh: bool = False)
         price_log.record(store, query, kind, started, error=exc)
         raise
     price_log.record(store, query, kind, started, products=data)
-
-    # Don't cache empty results: they are often a transient store error, and
-    # caching them would hide the product for the whole TTL.
-    if data:
-        _CACHE.set(key, data)
     return data
 
 

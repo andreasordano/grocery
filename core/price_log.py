@@ -5,6 +5,7 @@
 # sighting that day (Estonian time) or its price, offer or availability changed.
 # Writes happen on one background thread, so a user's answer never waits for them,
 # and failures are printed, never raised. Postgres (core/db.py); PRICE_LOG=0 turns it off.
+# The same writer keeps each search's latest answer in search_cache, so a restart starts with a warm cache.
 # =============================================================================
 
 import os
@@ -15,6 +16,8 @@ from decimal import Decimal
 from pathlib import Path
 
 import requests
+
+from psycopg.types.json import Jsonb
 
 from core import db
 from core.scoring import pack_size, parse_price
@@ -164,6 +167,28 @@ def _writer():
                 write(conn, *job)
         except Exception as exc:
             print(f"price log write failed ({job[0]}/{job[1]}): {exc}")
+        save_search(*job)
+
+
+_save_failed = False
+
+
+def save_search(store, query, kind, started_at, finished_at, products, error):
+    """Keep a successful answer for restarts (search_cache, read by fetch.load_saved_searches): the latest per
+    store and query, as the cache keeps it. Its own transaction, so a problem here never loses the price log."""
+    global _save_failed
+    if error is not None or not products:
+        return
+    try:
+        with db.connection() as conn:
+            conn.execute("INSERT INTO search_cache (retailer, query, fetched_at, products) VALUES (%s, %s, %s, %s) "
+                         "ON CONFLICT (retailer, query) DO UPDATE SET fetched_at = EXCLUDED.fetched_at, products = EXCLUDED.products",
+                         (store, query.strip().lower(), finished_at, Jsonb(products)))
+        _save_failed = False
+    except Exception as exc:
+        if not _save_failed:  # once, not for every search (e.g. before the table's migration)
+            print(f"saving searches for restarts failed: {exc}")
+        _save_failed = True
 
 
 def write(conn, store, query, kind, started_at, finished_at, products, error):

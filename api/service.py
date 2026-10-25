@@ -31,8 +31,10 @@ DINNER_STORES = ["selver", "rimi", "barbora"]
 
 
 def _keep_cache_warm():
-    """Fetch every ingredient rule's searches at startup, then again before the cache expires
-    (about 120 store requests each time). Set CACHE_WARMUP=0 to turn it off."""
+    """Load the store answers saved before the restart, then fetch every ingredient rule's searches that
+    aren't fresh, and all of them again before the cache expires (about 130 store requests each time).
+    Set CACHE_WARMUP=0 to turn it off."""
+    print(f"loaded {fetch.load_saved_searches()} saved store searches")
     refresh = False
     while True:
         started = time.monotonic()
