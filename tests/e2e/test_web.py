@@ -99,11 +99,17 @@ def page(browser):
     ctx.close()
 
 
-def logged(type):
-    """The events of one type, oldest first: (user_id, data)."""
-    rows = sqlite3.connect(os.environ["EVENTS_DB"]).execute(
-        "SELECT user_id, data FROM events WHERE type = ? ORDER BY id", (type,)).fetchall()
-    return [(u, json.loads(d)) for u, d in rows]
+def logged(type, user=None, wait=0):
+    """The events of one type, oldest first: (user_id, data). With a user and wait=n, waits up to 3 s
+    until that person has n of them: the page sends events in the background."""
+    for _ in range(60 if wait else 1):
+        rows = sqlite3.connect(os.environ["EVENTS_DB"]).execute(
+            "SELECT user_id, data FROM events WHERE type = ? ORDER BY id", (type,)).fetchall()
+        found = [(u, json.loads(d)) for u, d in rows]
+        if sum(u == user for u, _ in found) >= wait:
+            return found
+        time.sleep(0.05)
+    return found
 
 
 def receipt_lines(page):
@@ -124,12 +130,8 @@ def test_first_visit_gets_an_anonymous_id_asks_the_name_and_logs_a_visit(base_ur
     page.wait_for_selector(".dish")
     person = page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))")
     assert re.fullmatch(r"[0-9a-f-]{36}", person)
-    for _ in range(50):  # the event is sent in the background
-        if logged("hello"):
-            break
-        time.sleep(0.05)
-    assert [d["name"] for u, d in logged("hello") if u == person] == ["Mari Maasikas"]
-    usual = [d for u, d in logged("usual_store") if u == person]
+    assert [d["name"] for u, d in logged("hello", person, wait=1) if u == person] == ["Mari Maasikas"]
+    usual = [d for u, d in logged("usual_store", person, wait=1) if u == person]
     assert [(d["store"], d["changed"]) for d in usual] == [("rimi", False)]
     assert usual[0]["country"] == "EE" and usual[0]["internal"] is False and usual[0]["app_version"]
 
@@ -137,7 +139,7 @@ def test_first_visit_gets_an_anonymous_id_asks_the_name_and_logs_a_visit(base_ur
     page.wait_for_selector(".dish")
     assert not page.locator("#hello").is_visible() and not page.locator("#usual").is_visible()  # asked once
     assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == person  # same person next time
-    visits = [d for u, d in logged("visit") if u == person]
+    visits = [d for u, d in logged("visit", person, wait=2) if u == person]
     assert [v["first_visit"] for v in visits] == [True, False]
     assert visits[0]["from"] == "direct"
 
@@ -148,7 +150,7 @@ def test_tester_link_and_old_name_keep_their_id(base_url, browser):
     page.goto(base_url + "/?u=e2e-tester")
     page.wait_for_selector(".dish")
     assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == "e2e-tester"
-    assert [d["from"] for u, d in logged("visit") if u == "e2e-tester"] == ["tester_link"]
+    assert [d["from"] for u, d in logged("visit", "e2e-tester", wait=1) if u == "e2e-tester"] == ["tester_link"]
     page.goto(base_url + "/")  # the plain link later: still the same person, and not asked for a name
     page.wait_for_selector(".dish")
     assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == "e2e-tester"
@@ -225,7 +227,7 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     other.wait_for_selector(".sent")
     assert "Testi pasta" in other.locator(".sent").inner_text()
     assert "Testi pasta for 2" in other.locator(".receipt").inner_text()  # priced for the person who opened it
-    assert [d["from"] for u, d in logged("visit") if u == "e2e-ben"] == ["tester_link"]
+    assert [d["from"] for u, d in logged("visit", "e2e-ben", wait=1) if u == "e2e-ben"] == ["tester_link"]
     other.click("#saveShared")
     other.wait_for_selector(".sent >> text=Saved to Mine")
     other.click("[data-cat=mine]")
@@ -341,8 +343,7 @@ def test_a_products_photo_opens_a_quick_look_with_its_store_page(base_url, page)
     assert page.get_attribute("#pkOpen", "href") == "https://rimi.example/p/kohv-1"
     page.evaluate("document.querySelector('#pkOpen').addEventListener('click', e => e.preventDefault())")
     page.click("#pkOpen")
-    time.sleep(0.3)  # the event is sent in the background
-    assert [d["product"] for u, d in logged("open_product") if u == "e2e-peek"] == ["Kohv Test 500g"]
+    assert [d["product"] for u, d in logged("open_product", "e2e-peek", wait=1) if u == "e2e-peek"] == ["Kohv Test 500g"]
 
     page.click("#pkChoose")  # from the quick look to the products to choose from
     page.locator("#sheet").wait_for(state="visible")
@@ -469,7 +470,7 @@ def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, bro
     assert page.get_attribute("#getExtension", "href") == "/extension.zip"
     page.click("[data-cart-answer=yes]")
     page.wait_for_selector("#cartAsk:has-text('Thanks')")
-    assert [d["wants"] for u, d in logged("cart_interest") if u == "e2e-cart"] == [True]
+    assert [d["wants"] for u, d in logged("cart_interest", "e2e-cart", wait=1) if u == "e2e-cart"] == [True]
     page.context.close()
 
     page = browser.new_context().new_page()  # with it: the basket goes to the extension
@@ -523,7 +524,7 @@ def test_privacy_page_takes_a_deletion_request(base_url, page):
     page.wait_for_selector("h1:text('Your data')")
     page.click("#askDelete")
     page.wait_for_selector("#deleteNote:has-text('within 30 days')")
-    assert [d["person"] for u, d in logged("delete_request") if u == "e2e-privacy"] == ["e2e-privacy"]
+    assert [d["person"] for u, d in logged("delete_request", "e2e-privacy", wait=1) if u == "e2e-privacy"] == ["e2e-privacy"]
 
 
 def test_usual_store_goes_with_the_answer_and_can_be_changed(base_url, page):
@@ -537,12 +538,8 @@ def test_usual_store_goes_with_the_answer_and_can_be_changed(base_url, page):
     page.click("#usualForm button[value=maxima]")
     page.wait_for_selector(".usual-note:has-text('You usually shop at Maxima')")
     page.click("[data-fb=accept]")
-    for _ in range(50):
-        if logged("accept"):
-            break
-        time.sleep(0.05)
-    assert [d["usual_store"] for u, d in logged("accept") if u == "e2e-usual"] == ["maxima"]
-    assert [(d["store"], d["changed"]) for u, d in logged("usual_store") if u == "e2e-usual"] == [("maxima", True)]
+    assert [d["usual_store"] for u, d in logged("accept", "e2e-usual", wait=1) if u == "e2e-usual"] == ["maxima"]
+    assert [(d["store"], d["changed"]) for u, d in logged("usual_store", "e2e-usual", wait=1) if u == "e2e-usual"] == [("maxima", True)]
 
 
 def test_skipping_the_usual_store_isnt_asked_again(base_url, browser):
