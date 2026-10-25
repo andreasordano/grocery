@@ -14,7 +14,7 @@ from core import db, events
 from scripts.migrate import migrate
 
 SERVER = os.environ.get("TEST_DATABASE_URL", "postgresql://groceries:groceries@localhost:5433/groceries")
-TABLES = "events, my_dinners, shares, plans, nudges, price_observations, retailer_products, collection_runs"
+TABLES = "events, my_dinners, shares, plans, nudges, price_observations, retailer_products, collection_runs, search_cache"
 
 
 @pytest.fixture(scope="session")

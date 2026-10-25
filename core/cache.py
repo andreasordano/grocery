@@ -27,12 +27,12 @@ class TTLCache:
             self._data[key] = (value, ts)
             return value
 
-    def set(self, key, value):
-        now = time.time()
+    def set(self, key, value, at=None):
+        """at: when the value was fetched (epoch seconds), when it's older than now (loaded from the database)."""
         with self._lock:
             if key in self._data:
                 self._data.pop(key)
-            self._data[key] = (value, now)
+            self._data[key] = (value, at or time.time())
             if len(self._data) > self.maxsize:
                 self._data.popitem(last=False)
 
