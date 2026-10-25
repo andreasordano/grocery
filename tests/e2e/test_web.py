@@ -431,7 +431,7 @@ def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, bro
     def receipt(page):
         page.goto(base_url + "/?u=e2e-cart")
         page.click("[data-mode=list]")
-        page.fill("#item", "kohv, kartul 1,2 kg")
+        page.fill("#item", "kohv, suvikõrvits 1,2 kg")
         page.press("#item", "Enter")
         page.click("#find")
         page.wait_for_selector("#sendCart")
@@ -446,12 +446,13 @@ def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, bro
     page.context.close()
 
     page = browser.new_context().new_page()  # with it: the basket goes to the extension
-    page.add_init_script("""document.documentElement.dataset.pantryrunCart = 'rimi';
-      addEventListener('message', e => { if (e.data?.type === 'fill-cart') window.sentBasket = e.data; });""")
+    # what extension/pantryrun.js does; a test script runs before <html> exists, so mark it once the page has loaded
+    page.add_init_script("""addEventListener('message', e => { if (e.data?.type === 'fill-cart') window.sentBasket = e.data; });
+      addEventListener('DOMContentLoaded', () => { document.documentElement.dataset.pantryrunCart = 'rimi'; });""")
     receipt(page)
     page.click("#sendCart")
     page.wait_for_function("window.sentBasket")
     basket = page.evaluate("window.sentBasket")
-    assert basket["store"] == "rimi" and {i["id"]: i["qty"] for i in basket["items"]} == {"rimi-kohv-1": 1, "rimi-kartul-2": 1.2}
+    assert basket["store"] == "rimi" and {i["id"]: i["qty"] for i in basket["items"]} == {"rimi-kohv-1": 1, "rimi-suvikõrvits-1": 3}  # 3 × 500 g beat 1.2 kg loose
     assert "Opening Rimi" in page.text_content("#cart")
     page.context.close()
