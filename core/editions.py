@@ -3,8 +3,9 @@
 # make() prices a set of dinners at every store, saves them as a plan (core/plans.py) and returns the edition:
 # a plain-text summary and the email (core/weekly_plan_email.html filled in), to paste into MailerLite.
 # It runs on the server (POST /editions), because the stores answer the server's requests but may refuse
-# others (Selver blocks requests from outside Estonia), and it refuses to build when a store didn't answer:
-# a missing store can make the email send people to the wrong one.
+# others (Selver blocks requests from outside Estonia). It refuses to build when a store didn't answer
+# (a missing store can make the email send people to the wrong one) and when even the best store lacks
+# something (a plan should be buyable in one shop: swap the dinner that needs it).
 # =============================================================================
 
 import html
@@ -150,6 +151,10 @@ def make(title, dinners, featured=None, featured_url=None, servings=2, base="htt
                            "trusted. Try again in a few minutes.")
     if not result["store"]:
         raise EditionError("No store could price this plan. Check the dinners.")
+    missing = result["baskets"][0]["missing"]
+    if missing:
+        raise EditionError(f"No store has everything: even {SHOP.get(result['store'], result['store'])} lacks "
+                           f"{', '.join(missing)}. Swap the dinner that needs it.")
     for d in result["dinners"]:
         d["featured"] = d["id"] == featured
     token = plans.create(title, ids, featured)

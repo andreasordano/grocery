@@ -200,6 +200,18 @@ def test_edition_is_refused_when_a_store_didnt_answer(db, monkeypatch):
     assert not sqlite3.connect(db).execute("SELECT name FROM sqlite_master WHERE name = 'plans'").fetchall()  # nothing saved
 
 
+def test_edition_is_refused_when_even_the_best_store_lacks_something(db, monkeypatch):
+    recommend = priced({"selver": "ok", "rimi": "ok", "barbora": "ok"})
+    def lacking(*a, **kw):
+        result = recommend(*a, **kw)
+        for b in result["baskets"]:
+            b["missing"] = ["Lõhefilee"]
+        return result
+    monkeypatch.setattr(editions.catalog, "recommend", lacking)
+    with pytest.raises(editions.EditionError, match="even Selver lacks Lõhefilee. Swap the dinner"):
+        editions.make("Week 46", ["lohe_kartul"])
+
+
 def test_edition_saves_the_plan_with_the_featured_dinner(db, monkeypatch):
     monkeypatch.setattr(editions.catalog, "recommend", priced({"selver": "ok", "rimi": "ok", "barbora": "ok"}))
     made = editions.make("Week 46", ["kanasupp"], featured="pasta_hakklihaga", base="https://pantryrun.example/")
