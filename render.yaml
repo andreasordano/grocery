@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: pantryrun-api
-    env: docker
-    branch: main
-    dockerfilePath: api/Dockerfile
-    plan: starter
-

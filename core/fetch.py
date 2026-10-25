@@ -1,10 +1,10 @@
 # =============================================================================
-# FETCHERS  (delegated to the individual API modules)
-# This module defines functions to fetch product data from different stores based on a search term.
-# Stores are configurable in stores_config.py — add new stores without modifying this file.
-# The main function, `fetch_all`, orchestrates the fetching process for all items in the grocery list and selected stores, applies relevance scoring, and extracts weight/volume information. 
-# It returns a structured dictionary of products along with any warnings encountered during the fetching process.
-# It runs after the initial grocery list parsing and before the scoring and optimization phases, which rely on the fetched product data
+# FETCH  (store searches, and products for typed items)
+# _cached_fetch asks a store's connector (stores_config.py) and caches the answer; every store request goes
+# through it, and each one is written to the price log (core/price_log.py).
+# fetch_all finds products for free-text items (anything without an ingredient rule): it searches each store
+# with the typed words, sorts the results into match tiers using the store's own shelves, and ranks them by
+# price per 100 g within a tier. Ingredients with rules are found in core/catalog.py instead.
 # =============================================================================
 
 from collections import Counter, defaultdict
@@ -14,20 +14,8 @@ import re
 from datetime import datetime, timezone
 from core import price_log
 from core.cache import TTLCache
-from core.scoring import build_rules, compute_product_score, extract_weight_volume, head_weight, parse_price, relevance_score, shares_stem
+from core.scoring import head_weight, pack_size, parse_price, relevance_score, score, shares_stem
 from stores_config import get_fetcher, get_pagination_param
-
-
-# Default synonyms to broaden searches without requiring exact catalog names.
-_SYNONYMS = {
-    "piim": ["milk", "täispiim", "lahja piim"],
-    "riis": ["rice", "jasmiini riis", "basmati"],
-    "sojakaste": ["soy sauce", "soja kaste"],
-    "hambapasta": ["toothpaste", "suuhügieen"],
-    "õli": ["oil", "oliiviõli"],
-    "munad": ["eggs", "kana muna"],
-    "leib": ["bread"],
-}
 
 
 # Never suitable for a basket, whatever the item: pre-order and bulk listings.
@@ -95,13 +83,9 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
     if price == float("inf"):
         return None
 
-    # Try to extract size from name and extra fields.
-    extra_text = []
-    for key in ("unit", "volume", "product_volume"):
-        val = item.get(key)
-        if val:
-            extra_text.append(str(val))
-    weight, volume = extract_weight_volume(name, extra_text)
+    size = pack_size(name, item.get("volume"))
+    weight = size[0] if size and size[1] == "g" else None
+    volume = size[0] if size and size[1] == "ml" else None
 
     # Fallbacks for loose/bulk items priced per kg/l when size isn't embedded.
     unit_field = str(item.get("unit") or "").lower()
@@ -120,7 +104,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         volume = None
 
     rel = relevance_score(name, rules)
-    if rel < 0 or any(x in name.lower() for x in GLOBAL_EXCLUDE):
+    if any(x in name.lower() for x in GLOBAL_EXCLUDE):
         return None
     return {
         "item": display_name,
@@ -211,12 +195,6 @@ def _build_queries(spec: dict):
     if base:
         queries.append(base)
 
-    # Add synonyms for the first token when known.
-    if tokens:
-        key = tokens[0]
-        for syn in _SYNONYMS.get(key, []):
-            queries.append(syn)
-
     # Add individual tokens as fallbacks.
     for t in tokens:
         queries.append(t)
@@ -245,7 +223,7 @@ def _singular(item):
 
 def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit: int):
     """Run the query fallbacks for one item at one store; return (candidates, warnings)."""
-    rules = build_rules(spec)
+    rules = {"include": spec.get("include", [])}
     store_candidates = []
     warnings = []
     seen_ids = set()
@@ -285,13 +263,13 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
         if tier is None:
             continue
         p["relevance"] = tier
-        p["score"], p["explanation"] = compute_product_score(p, rules)
+        p["score"] = score(p)
         ranked.append(p)
     ranked.sort(key=lambda p: p["score"])
     return ranked[:per_store_limit], warnings
 
 
-def fetch_all(grocery_list, selected_stores, on_progress=None):
+def fetch_all(grocery_list, selected_stores):
     """
     Fetch and score products for every item/store combination using short,
     generic queries with cached responses, relevance tiers and a per-store shelf vote.
@@ -303,21 +281,18 @@ def fetch_all(grocery_list, selected_stores, on_progress=None):
 
     jobs = [(name, store) for name in grocery_list for store in selected_stores]
     results = {}
-    total = len(jobs)
 
     with ThreadPoolExecutor(max_workers=max(1, MAX_WORKERS)) as pool:
         futures = {
             pool.submit(_fetch_item_store, name, grocery_list[name], store, PER_STORE_LIMIT): (name, store)
             for name, store in jobs
         }
-        for count, fut in enumerate(as_completed(futures), start=1):
+        for fut in as_completed(futures):
             name, store = futures[fut]
             try:
                 results[(name, store)] = fut.result()
             except Exception as exc:
                 results[(name, store)] = ([], [f"{store}/{name}: {exc}"])
-            if on_progress:
-                on_progress(count, total, store, name)
 
     all_products = defaultdict(list)
     warnings = []

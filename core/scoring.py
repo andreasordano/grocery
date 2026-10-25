@@ -1,12 +1,12 @@
+# =============================================================================
+# SCORING  (what a product is, and how well it fits what was typed)
+# parse_price and pack_size read a store's product; the rest decides whether a product name is the typed
+# thing ("Banaan, kg" for "banaan"), a near form, or only mentions it, for free-text items (core/fetch.py).
+# =============================================================================
+
 import os
 import re
 from difflib import SequenceMatcher
-
-# =============================================================================
-# Score products based on price, relevance, and size. The scoring is designed to reward larger packs (lower unit price), 
-# penalize products that don't match keywords, and enforce a minimum size.
-# It runs after the initial parsing and before the optimization phase, which selects the best combination of products based on these scores.
-# =============================================================================
 
 def parse_price(price_str):
     if price_str is None:
@@ -20,34 +20,38 @@ def parse_price(price_str):
         return float("inf")
 
 
-def extract_weight_volume(name, extras=None, max_weight_g: float = 10000.0, max_volume_ml: float = 10000.0):
-    """Extract weight/volume from product name plus optional hint strings.
+_SIZE_RE = re.compile(r"(?:(\d+)\s*[x×]\s*)?(\d+(?:[.,]\d+)?)\s*(kg|g|ml|cl|l|tk|pcs)\b")
+_BONUS_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*(kg|g|ml|cl|l)\s*\+\s*(\d+(?:[.,]\d+)?)\s*(kg|g|ml|cl|l)\b")
+_EGG_RE = re.compile(r"\b[SMLX]{1,2}(\d{1,2})\b")  # egg packs like "M10", "L6", "XL10"
+_BASE = {"kg": (1000, "g"), "g": (1, "g"), "l": (1000, "ml"), "cl": (10, "ml"), "ml": (1, "ml"), "tk": (1, "pcs"), "pcs": (1, "pcs")}
 
-    Values above the given max thresholds are discarded to avoid bogus parses
-    (e.g., loose produce mistakenly parsed as tens of kilograms).
-    """
-    text = name.lower()
-    if extras:
-        text += " " + " ".join(str(x).lower() for x in extras if x)
-    matches = re.findall(r"(\d+(?:[.,]\d+)?)\s*(kg|g|ml|l)\b", text)
-    weight = volume = None
-    for value, unit in matches:
-        v = float(value.replace(",", "."))
-        if unit == "kg":
-            weight = v * 1000
-        elif unit == "g":
-            weight = v
-        elif unit == "l":
-            volume = v * 1000
-        elif unit == "ml":
-            volume = v
 
-    if weight and weight > max_weight_g:
-        weight = None
-    if volume and volume > max_volume_ml:
-        volume = None
+def _base(value, unit):
+    factor, base = _BASE[unit]
+    return float(value.replace(",", ".")) * factor, base
 
-    return weight, volume
+
+def pack_size(name, volume=None):
+    """(amount, unit) of a packaged product, unit g, ml or pcs; None when neither the store's size field
+    nor the name says. Multipacks count whole ("4x125g" → 500 g), bonus packs too ("250 g + 50 g" → 300 g),
+    and egg sizes give the count ("M10" → 10 pcs). The only pack-size reader: prices, ranking and the price log."""
+    for text in (volume, name):
+        if not text:
+            continue
+        t = str(text).lower()
+        bonus = _BONUS_RE.search(t)
+        if bonus:
+            (a, unit), (b, other) = _base(bonus[1], bonus[2]), _base(bonus[3], bonus[4])
+            if unit == other:
+                return a + b, unit
+        m = _SIZE_RE.search(t)
+        if m:
+            amount, unit = _base(m[2], m[3])
+            return amount * (int(m[1]) if m[1] else 1), unit
+        m = _EGG_RE.search(str(text))
+        if m:
+            return float(m[1]), "pcs"
+    return None
 
 
 def fold(text):
@@ -161,14 +165,8 @@ def shares_stem(name, rules, letters=5):
 
 def relevance_score(name, rules):
     """How well a product name fits the typed words:
-    -1 excluded, 0 unrelated, 1 some words mentioned, 2 all mentioned, 4 near forms, 5 it is the thing.
+    0 unrelated, 1 some words mentioned, 2 all mentioned, 4 near forms, 5 it is the thing.
     """
-    name_l = name.lower()
-
-    for w in rules.get("exclude", []):
-        if w and re.search(r"\b" + re.escape(w.lower()) + r"\b", name_l):
-            return -1
-
     includes = [fold(kw) for kw in rules.get("include", []) if kw]
     if not includes:
         return 2
@@ -185,67 +183,9 @@ def relevance_score(name, rules):
     return 1 if any(best) else 0
 
 
-def build_rules(spec):
-    """Merge user-provided preferences into a single rules dict."""
-    extra_inc = [kw.strip() for kw in spec.get("extra_include", "").split(",") if kw.strip()]
-    extra_exc = [kw.strip() for kw in spec.get("extra_exclude", "").split(",") if kw.strip()]
-    unit = spec.get("unit", "g")
-    rules = {
-        "include": list(spec.get("include", [])) + extra_inc,
-        "exclude": list(spec.get("exclude", [])) + extra_exc,
-        "unit": unit,
-    }
-    if unit == "ml":
-        rules["min_volume_ml"] = spec.get("user_min", 0)
-    else:
-        rules["min_weight_g"] = spec.get("user_min", 0)
-    return rules
-
-
-def compute_product_score(product, rules):
-    """
-    Lower score = better. Components:
-      1. Unit price per 100g or 100ml  →  rewards larger packs naturally
-      2. Relevance penalty             →  a worse match tier always ranks below a better one
-      3. Hard size penalty (+100)      →  if below the user's minimum size
-    Returns (score, explanation_dict).
-    """
-    price = product.get("price", float("inf"))
-    weight = product.get("weight_g")
-    volume = product.get("volume_ml")
-    relevance = product.get("relevance", 0)
-    unit = rules.get("unit", "g")
-
-    if unit == "ml" and volume:
-        size = volume
-        unit_label = "100ml"
-    elif unit in ("g", "kg") and weight:
-        size = weight
-        unit_label = "100g"
-    else:
-        size = None
-        unit_label = "unit"
-
-    unit_price = (price / (size / 100.0)) if size else price
-
-    # Large enough that unit price only orders products within the same match tier.
-    RELEVANCE_WEIGHT = 100.0
-
-    relevance_penalty = max(0, 5 - relevance) * RELEVANCE_WEIGHT
-
-    size_penalty = 0.0
-    user_min = rules.get("min_volume_ml" if unit == "ml" else "min_weight_g", 0)
-    if user_min and size and size < user_min:
-        size_penalty = 100.0
-
-    final_score = unit_price + relevance_penalty + size_penalty
-
-    return final_score, {
-        "unit_price": round(unit_price, 3),
-        "unit_label": unit_label,
-        "size": size,
-        "relevance": relevance,
-        "relevance_penalty": relevance_penalty,
-        "size_penalty": size_penalty,
-        "final_score": round(final_score, 3),
-    }
+def score(product):
+    """Lower is better: the price per 100 g (or 100 ml, or per pack when the size is unknown), plus a penalty
+    large enough that a worse match tier always ranks below a better one."""
+    size = product.get("weight_g") or product.get("volume_ml")
+    unit_price = product["price"] / (size / 100.0) if size else product["price"]
+    return unit_price + max(0, 5 - product.get("relevance", 0)) * 100.0
