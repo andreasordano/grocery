@@ -32,9 +32,21 @@ jobs:
       - name: Run tests (including the browser tests in tests/e2e)
         run: python -m pytest -q tests
 
+  secrets:
+    name: Look for secrets
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (every commit, so old ones are checked too)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail if a password or key was ever committed (gitleaks)
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.21.2 git /repo --redact --no-banner
+
   build-and-push:
     name: Build and push Docker images
-    needs: test
+    needs: [test, secrets]
     if: github.event_name != 'pull_request'  # pull requests are only tested
     runs-on: ubuntu-latest
     env:

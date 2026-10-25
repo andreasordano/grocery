@@ -6,19 +6,34 @@
 # others (Selver blocks requests from outside Estonia). It refuses to build when a store didn't answer
 # (a missing store can make the email send people to the wrong one) and when even the best store lacks
 # something (a plan should be buyable in one shop: swap the dinner that needs it).
+# promote() and record_sent() handle the subscribers around a send (POST /editions/promote, /editions/<plan>/sent),
+# also on the server, so the owner's laptop needs no database address and no MailerLite key: only EDITION_TOKEN.
 # =============================================================================
 
 import html
 import os
-from datetime import datetime
+import sqlite3
+from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
-from core import catalog, mailerlite, my_dinners, plans, recipe_import
+from core import catalog, events, mailerlite, my_dinners, plans, recipe_import
 
 DINNER_STORES = ["selver", "rimi", "barbora"]
 PERSON = "{$" + mailerlite.ID_FIELD + "}"  # MailerLite fills in each subscriber's pantryrun id
 SHOP = {"barbora": "Maxima (Barbora's prices)", "selver": "Selver", "rimi": "Rimi"}
 EMAIL = os.path.join(os.path.dirname(os.path.abspath(__file__)), "weekly_plan_email.html")
+FIRST_WEEK = timedelta(days=7)  # no reminders in a tester's first week (PROD-5)
+
+# nudges: every reminder sent to a tester (metrics.return_7d). On Postgres it comes with a migration.
+_SQLITE_NUDGES = """
+CREATE TABLE IF NOT EXISTS nudges (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts TEXT NOT NULL,
+    user_id TEXT NOT NULL,
+    channel TEXT NOT NULL,
+    note TEXT
+)
+"""
 
 
 class EditionError(ValueError):
@@ -161,3 +176,77 @@ def make(title, dinners, featured=None, featured_url=None, servings=2, base="htt
     base = base.rstrip("/")
     return {"token": token, "text": edition(title, token, result, base),
             "html": edition_html(title, token, result, base, datetime.now().strftime("%-d %B %Y"))}
+
+
+# ── around a send: who gets it, and recording that they did ─────────────────
+
+def _connect():
+    """(connection, placeholder, postgres?): the app's database, as in core/events.py."""
+    url = os.environ.get("DATABASE_URL")
+    if url:
+        import psycopg  # only needed when Postgres is configured
+        return psycopg.connect(url), "%s", True
+    path = os.environ.get("EVENTS_DB", "logs/events.db")
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
+    conn = sqlite3.connect(path)
+    conn.execute(events._SQLITE_SCHEMA)
+    conn.execute(_SQLITE_NUDGES)
+    return conn, "?", False
+
+
+def _when(value):
+    return value if isinstance(value, datetime) else datetime.fromisoformat(value)
+
+
+def first_seen(person_ids):
+    """{person id: their first event}, for the ids that have any."""
+    if not person_ids:
+        return {}
+    conn, ph, _ = _connect()
+    try:
+        rows = conn.execute(f"SELECT user_id, min(ts) FROM events WHERE user_id IN ({', '.join([ph] * len(person_ids))}) "
+                            "GROUP BY user_id", list(person_ids)).fetchall()
+    finally:
+        conn.close()
+    return {u: _when(ts) for u, ts in rows}
+
+
+def _groups():
+    if not mailerlite.configured():
+        raise EditionError("MailerLite isn't set up on the server (MAILERLITE_* settings).")
+    return os.environ["MAILERLITE_GROUP_NEW"], os.environ["MAILERLITE_GROUP_WEEKLY"]
+
+
+def promote(now=None):
+    """Move subscribers past their first week with pantryrun from the new group to the weekly one.
+    Someone who never used the app under their id counts from the day they signed up."""
+    new, weekly = _groups()
+    waiting = mailerlite.group_subscribers(new)
+    seen = first_seen({s["fields"].get(mailerlite.ID_FIELD) for s in waiting} - {None})
+    now, moved = now or datetime.now(timezone.utc), 0
+    for s in waiting:
+        since = seen.get(s["fields"].get(mailerlite.ID_FIELD)) or datetime.fromisoformat(s["created_at"])
+        if since.tzinfo is None:
+            since = since.replace(tzinfo=timezone.utc)
+        if now - since >= FIRST_WEEK:
+            mailerlite.move(s["id"], new, weekly)
+            moved += 1
+    return {"moved": moved, "waiting": len(waiting)}
+
+
+def record_sent(token):
+    """Log a sent edition as a reminder (nudges) for everyone in the weekly group."""
+    if plans.get(token) is None:
+        raise EditionError(f"No plan {token}.")
+    _, weekly = _groups()
+    readers = [r for r in (s["fields"].get(mailerlite.ID_FIELD) for s in mailerlite.group_subscribers(weekly)) if r]
+    conn, ph, postgres = _connect()
+    now = datetime.now(timezone.utc)
+    try:
+        for person in readers:
+            conn.execute(f"INSERT INTO nudges (ts, user_id, channel, note) VALUES ({ph}, {ph}, 'newsletter', {ph})",
+                         (now if postgres else now.isoformat(), person, f"plan {token}"))
+        conn.commit()
+    finally:
+        conn.close()
+    return {"logged": len(readers)}

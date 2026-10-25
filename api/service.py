@@ -309,19 +309,44 @@ def open_plan(token: str, user_id: Optional[str] = None, came_from: Optional[str
     return {"token": plan["token"], "title": plan["title"], "dinners": dinners}
 
 
-@app.post("/editions")
-def make_edition(req: EditionRequest, authorization: Optional[str] = Header(None)):
-    """A weekly plan edition, priced here (stores answer this server), for scripts/weekly_plan.py build.
-    Only for the owner: needs EDITION_TOKEN, because each one searches every store."""
+def _owner(authorization):
+    """Only the owner runs the newsletter (scripts/weekly_plan.py): EDITION_TOKEN, sent as a bearer token."""
     secret = os.environ.get("EDITION_TOKEN")
     if not secret:
         raise HTTPException(status_code=503, detail="EDITION_TOKEN isn't set on the server")
     if not hmac.compare_digest(authorization or "", f"Bearer {secret}"):
         raise HTTPException(status_code=401, detail="Wrong EDITION_TOKEN")
+
+
+def _edition_step(step):
     try:
-        return editions.make(req.title, req.dinners, req.featured, req.featured_url, max(1, min(req.servings, 12)))
+        return step()
     except editions.EditionError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
+    except mailerlite.MailerLiteError as exc:
+        raise HTTPException(status_code=502, detail=f"MailerLite: {exc}")
+
+
+@app.post("/editions")
+def make_edition(req: EditionRequest, authorization: Optional[str] = Header(None)):
+    """A weekly plan edition, priced here (stores answer this server). Each one searches every store."""
+    _owner(authorization)
+    return _edition_step(lambda: editions.make(req.title, req.dinners, req.featured, req.featured_url,
+                                               max(1, min(req.servings, 12))))
+
+
+@app.post("/editions/promote")
+def promote_subscribers(authorization: Optional[str] = Header(None)):
+    """Before an edition: subscribers past their first week join the group it's sent to."""
+    _owner(authorization)
+    return _edition_step(editions.promote)
+
+
+@app.post("/editions/{token}/sent")
+def edition_sent(token: str, authorization: Optional[str] = Header(None)):
+    """After an edition: log it as a reminder for everyone it went to."""
+    _owner(authorization)
+    return _edition_step(lambda: editions.record_sent(token))
 
 
 @app.get("/cooked")

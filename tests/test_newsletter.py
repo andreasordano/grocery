@@ -130,22 +130,54 @@ def test_group_subscribers_follows_the_cursor(monkeypatch, mailer):
 
 # ── the weekly script ────────────────────────────────────────────────────────
 
-def test_promote_lets_in_only_people_past_their_first_week(monkeypatch, mailer):
+def test_promote_lets_in_only_people_past_their_first_week(db, mailer, monkeypatch):
     now = datetime.now(timezone.utc)
+    events.log_event("visit", {}, user_id="old")
+    events.log_event("visit", {}, user_id="new")
+    sqlite3.connect(db).execute("UPDATE events SET ts = ? WHERE user_id = 'old'", ((now - timedelta(days=8)).isoformat(),)).connection.commit()
     waiting = [{"id": "s1", "created_at": "2026-01-01 10:00:00", "fields": {"pantryrun_id": "old"}},
-               {"id": "s2", "created_at": "2026-01-01 10:00:00", "fields": {"pantryrun_id": "new"}},
-               {"id": "s3", "created_at": (now - timedelta(days=2)).strftime("%Y-%m-%d %H:%M:%S"), "fields": {}}]
+               {"id": "s2", "created_at": "2026-01-01 10:00:00", "fields": {"pantryrun_id": "new"}},  # visited 0 days ago
+               {"id": "s3", "created_at": (now - timedelta(days=2)).strftime("%Y-%m-%d %H:%M:%S"), "fields": {}},
+               {"id": "s4", "created_at": (now - timedelta(days=9)).strftime("%Y-%m-%d %H:%M:%S"), "fields": {"pantryrun_id": "never-came"}}]
     moved = []
     monkeypatch.setattr(mailerlite, "group_subscribers", lambda g: waiting)
     monkeypatch.setattr(mailerlite, "move", lambda sid, a, b: moved.append((sid, a, b)))
+    assert editions.promote() == {"moved": 2, "waiting": 4}
+    assert moved == [("s1", "g-new", "g-weekly"), ("s4", "g-new", "g-weekly")]
 
-    class Conn:
-        def __enter__(self): return self
-        def __exit__(self, *a): return False
-    monkeypatch.setattr(weekly_plan, "_postgres", lambda: Conn())
-    monkeypatch.setattr(weekly_plan, "first_seen", lambda conn, ids: {"old": now - timedelta(days=8), "new": now - timedelta(days=3)})
-    weekly_plan.main(["promote"])
-    assert moved == [("s1", "g-new", "g-weekly")]
+
+def test_record_sent_logs_a_reminder_for_each_reader(db, mailer, monkeypatch):
+    token = plans.create("Week 46", ["kanasupp"])
+    monkeypatch.setattr(mailerlite, "group_subscribers",
+                        lambda g: [{"id": "1", "fields": {"pantryrun_id": "anna"}}, {"id": "2", "fields": {}}] if g == "g-weekly" else [])
+    assert editions.record_sent(token) == {"logged": 1}
+    rows = sqlite3.connect(db).execute("SELECT user_id, channel, note FROM nudges").fetchall()
+    assert rows == [("anna", "newsletter", f"plan {token}")]
+    with pytest.raises(editions.EditionError, match="No plan nope"):
+        editions.record_sent("nope")
+
+
+def test_owner_steps_need_the_token_and_say_why_they_fail(api, db, monkeypatch):
+    assert status(lambda: api.promote_subscribers(authorization="Bearer x")) == 503  # EDITION_TOKEN not set
+    monkeypatch.setenv("EDITION_TOKEN", "s3cret")
+    assert status(lambda: api.promote_subscribers(authorization="Bearer wrong")) == 401
+    assert status(lambda: api.edition_sent("x", authorization=None)) == 401
+    assert status(lambda: api.promote_subscribers(authorization="Bearer s3cret")) == 422  # MailerLite not set up
+    monkeypatch.setattr(editions, "promote", lambda: (_ for _ in ()).throw(mailerlite.MailerLiteError("500")))
+    assert status(lambda: api.promote_subscribers(authorization="Bearer s3cret")) == 502
+
+
+def test_script_reads_the_token_from_the_keychain(monkeypatch):
+    monkeypatch.delenv("EDITION_TOKEN", raising=False)
+
+    class Found:
+        returncode, stdout = 0, "from-keychain\n"
+    asked = []
+    monkeypatch.setattr(weekly_plan.subprocess, "run", lambda cmd, **kw: asked.append(cmd) or Found())
+    assert weekly_plan.token() == "from-keychain"
+    assert asked == [["security", "find-generic-password", "-s", "pantryrun-edition", "-w"]]
+    monkeypatch.setenv("EDITION_TOKEN", "from-env")
+    assert weekly_plan.token() == "from-env"
 
 
 def test_edition_has_tagged_links_the_featured_label_and_the_list():
@@ -242,7 +274,7 @@ def test_build_asks_the_live_site_and_writes_the_email(tmp_path, monkeypatch, ca
         def json(self):
             return {"token": "T0K", "text": "SUMMARY", "html": "<html>email</html>"}
     monkeypatch.setattr(weekly_plan.requests, "post", lambda url, **kw: sent.update(url=url, **kw) or Resp())
-    weekly_plan.main(["build", "--title", "Week 46", "--dinners", "kanasupp,nd-1318", "--base-url", "https://site.example/"])
+    weekly_plan.main(["--base-url", "https://site.example/", "build", "--title", "Week 46", "--dinners", "kanasupp,nd-1318"])
     assert sent["url"] == "https://site.example/editions"
     assert sent["headers"] == {"Authorization": "Bearer s3cret"}
     assert sent["json"]["dinners"] == ["kanasupp", "nd-1318"]
