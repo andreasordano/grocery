@@ -1,7 +1,7 @@
 // Drawing the receipt: waiting, printing, failed, and the answer for one store,
 // plus what you can do under it (go, not for me, wrong product, send the dinner).
 import { $, feed, after, reduceMotion } from "./dom.js";
-import { euro, num, cap, esc, amount, fold, storeNames } from "./format.js";
+import { euro, num, esc, amount, fold, storeNames, shopName } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
 import { shareDinner } from "./share.js";
@@ -116,8 +116,8 @@ export function showReceipt(storeName, animate) {
   const photos = b.lines.some(l => l.image);
   const items = lines => `<ul class="r-items${photos ? " photos" : ""}">${lines.map(l => line(l, photos)).join("")}</ul>`;
   const delta = !isBest && (b.missing.length > best.missing.length
-    ? `${cap(best.store)} has more of your list`
-    : `${euro.format(b.total_price - best.total_price)} more than ${cap(best.store)}`);
+    ? `${shopName(best.store)} has more of your list`
+    : `${euro.format(b.total_price - best.total_price)} more than ${shopName(best.store)}`);
   const n = res.items.length;
   const dinners = res.dinners ?? (res.recipe ? [res.recipe] : []);
   const what = dinners.length > 1 ? `${dinners.length} dinners for ${res.servings}`
@@ -126,7 +126,8 @@ export function showReceipt(storeName, animate) {
   print(`
     <div class="r-center">
       <div class="r-go">${isBest ? "Go to" : "At"}</div>
-      <h2 class="r-store">${esc(cap(b.store))}</h2>
+      <h2 class="r-store">${esc(shopName(b.store))}</h2>
+      ${b.store === "barbora" ? `<div class="r-what">Prices from Barbora, Maxima's e-shop</div>` : ""}
       <div class="r-what">${esc(what)}</div>
       ${delta ? `<div class="r-delta">${esc(delta)}</div>` : ""}
     </div>
@@ -145,12 +146,12 @@ export function showReceipt(storeName, animate) {
     ${prefsNote(b)}
     ${stores.length > 1 ? `<hr class="r-rule"><div class="r-head">Compare stores</div>
       <ul class="stores">${stores.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
-        <span class="s">${esc(cap(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span></button></li>`).join("")}</ul>` : ""}
+        <span class="s">${esc(shopName(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span></button></li>`).join("")}</ul>` : ""}
   `, animate);
 
   after.innerHTML = `
     <div class="actions" id="fb">
-      <button class="btn go" type="button" data-fb="accept">I'll go to ${esc(cap(b.store))}</button>
+      <button class="btn go" type="button" data-fb="accept">I'll go to ${esc(shopName(b.store))}</button>
       <button class="btn quiet" type="button" data-fb="reject">Not for me</button>
     </div>
     <div class="small">

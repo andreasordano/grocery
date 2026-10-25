@@ -239,7 +239,7 @@ def test_store_that_didnt_answer_is_named_not_missing(base_url, page):
     receipt = page.locator(".receipt").inner_text()
     assert "Selver didn't answer, prices from Rimi and Barbora" in receipt
     assert "Not in the e-shop" not in receipt
-    assert [s.split("\n")[0] for s in page.locator(".stores .s").all_inner_texts()] == ["Rimi", "Barbora"]
+    assert [s.split("\n")[0] for s in page.locator(".stores .s").all_inner_texts()] == ["Rimi", "Maxima"]  # Barbora prices, shown as the Maxima store
     statuses = {b["store"]: b.get("status") for b in [d for u, d in logged("basket") if u == "e2e-down"][-1]["baskets"]}
     assert statuses == {"rimi": "ok", "barbora": "ok", "selver": "no_answer"}
 
@@ -479,3 +479,17 @@ def test_basket_refuses_huge_lists_and_ignores_unknown_stores(base_url):
     assert e.value.code == 400
     res = post({"items": ["kohv"], "stores": ["rimi", "rimi", "evil.example"]})
     assert [b["store"] for b in res["baskets"]] == ["rimi"]  # each known store once, the rest dropped
+
+
+def test_barbora_prices_stand_for_a_maxima_store(base_url, page):
+    page.goto(base_url + "/?u=e2e-maxima")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.wait_for_selector(".stores [data-store=barbora]")
+    assert page.locator(".stores [data-store=barbora] .s").inner_text() == "Maxima"
+    page.click(".stores [data-store=barbora]")
+    page.wait_for_selector(".r-store:text('Maxima')")
+    assert "Prices from Barbora, Maxima's e-shop" in page.locator(".receipt").inner_text()
+    assert page.text_content("[data-fb=accept]") == "I'll go to Maxima"
