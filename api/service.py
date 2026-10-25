@@ -50,6 +50,7 @@ async def lifespan(app):
     if os.environ.get("CACHE_WARMUP", "1") == "1":
         threading.Thread(target=_keep_cache_warm, name="cache-warmup", daemon=True).start()
     yield
+    events.flush(timeout=5)  # a restart shouldn't lose the events still queued
 
 
 app = FastAPI(title="pantryrun API", lifespan=lifespan)

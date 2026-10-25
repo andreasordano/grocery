@@ -398,13 +398,7 @@ def test_list_item_packs_and_grams_for_free_text(fake_store, monkeypatch):
 
 # ── my dinners (people's own recipes) ────────────────────────────────────────
 
-@pytest.fixture
-def sqlite_db(tmp_path, monkeypatch):
-    monkeypatch.delenv("DATABASE_URL", raising=False)
-    monkeypatch.setenv("EVENTS_DB", str(tmp_path / "app.db"))
-
-
-def test_my_dinner_keeps_how_to_cook_it_and_its_link_also_when_sent(sqlite_db):
+def test_my_dinner_keeps_how_to_cook_it_and_its_link_also_when_sent(pg):
     from core import my_dinners
     d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], method="  1. Keeda.\n2. Söö.  ", link="https://nami-nami.ee/r/1")
     assert d["method"] == "1. Keeda.\n2. Söö." and my_dinners.get("anna", d["id"])["link"] == "https://nami-nami.ee/r/1"
@@ -416,33 +410,11 @@ def test_my_dinner_keeps_how_to_cook_it_and_its_link_also_when_sent(sqlite_db):
     assert (sent["method"], sent["link"]) == ("Keeda.", "https://x.ee/r")
 
 
-def test_dinner_keeps_its_photo_and_a_bad_photo_is_dropped(sqlite_db):
+def test_dinner_keeps_its_photo_and_a_bad_photo_is_dropped(pg):
     from core import my_dinners
     d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], image="https://cdn.example/p.jpg")
     assert my_dinners.get("anna", d["id"])["image"] == "https://cdn.example/p.jpg"
     assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], image="javascript:x")["image"] is None
-
-
-def test_without_the_image_column_dinners_save_without_their_photo(monkeypatch):
-    from core import my_dinners
-
-    class NoImageColumn:  # Postgres before the image migration
-        def execute(self, sql, *a):
-            return type("R", (), {"fetchone": lambda self: (0,)})()
-    monkeypatch.setitem(my_dinners._image_column, "there", False)
-    monkeypatch.setitem(my_dinners._image_column, "checked", 0.0)
-    assert my_dinners._notes(NoImageColumn(), postgres=True) == ("method", "link")
-    assert my_dinners._notes(NoImageColumn(), postgres=False) == ("method", "link", "image")
-
-
-def test_old_local_database_gets_the_new_columns(sqlite_db, tmp_path):
-    import sqlite3
-    from core import my_dinners
-    old = sqlite3.connect(tmp_path / "app.db")
-    old.execute("CREATE TABLE my_dinners (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id TEXT NOT NULL, name TEXT NOT NULL,"
-                " servings INTEGER NOT NULL, items TEXT NOT NULL, created TEXT NOT NULL, updated TEXT NOT NULL)")
-    old.commit(); old.close()
-    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], method="Keeda.")["method"] == "Keeda."
 
 
 def test_the_answer_has_a_recipe_card_for_each_dinner(fake_store):
@@ -451,7 +423,7 @@ def test_the_answer_has_a_recipe_card_for_each_dinner(fake_store):
     assert [(i["label"], i["amount"]) for i in card["ingredients"]] == [("Kartul", 1600), ("Kanamunad", 8)]
 
 
-def test_my_dinners_belong_to_their_owner(sqlite_db):
+def test_my_dinners_belong_to_their_owner(pg):
     from core import my_dinners
     d = my_dinners.save("anna", "  Pühapäeva   pasta ", 4, ["makaronid 500g", "hakkliha 400 g", "makaronid 500g"])
     assert d["name"] == "Pühapäeva pasta" and d["items"] == ["makaronid 500g", "hakkliha 400 g"]
@@ -464,7 +436,7 @@ def test_my_dinners_belong_to_their_owner(sqlite_db):
         my_dinners.save("anna", "", 2, ["x"])
 
 
-def test_my_dinner_scales_from_its_own_servings(fake_store, sqlite_db, monkeypatch):
+def test_my_dinner_scales_from_its_own_servings(fake_store, pg, monkeypatch):
     from core import my_dinners
     monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None: {})
     d = my_dinners.save("anna", "Kartulid", 4, ["kartul 2 kg"])
@@ -477,7 +449,7 @@ def test_my_dinner_scales_from_its_own_servings(fake_store, sqlite_db, monkeypat
 
 # ── dinners shared by link ───────────────────────────────────────────────────
 
-def test_shared_dinner_is_a_snapshot_anyone_can_open(fake_store, sqlite_db, monkeypatch):
+def test_shared_dinner_is_a_snapshot_anyone_can_open(fake_store, pg, monkeypatch):
     from core import my_dinners
     monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None: {})
     d = my_dinners.save("anna", "Kartulid", 4, ["kartul 2 kg"])

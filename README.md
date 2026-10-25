@@ -15,8 +15,8 @@ Two missions:
   (see [Frontend](#frontend) below)
 - **API:** FastAPI (`api/service.py`) — `POST /basket` (prices a dinner and/or list at every store), `GET /recipes`,
   `/my-dinners`, `/shares`, `POST /events`, `GET /vocab.json` (suggestion words), `GET /health`
-- **Events DB:** Postgres (via `DATABASE_URL`), falling back to SQLite at `logs/events.db`. Production runs on
-  Supabase (project `tafaiatzpjpvkdoazwiz`, Frankfurt); see [Database](#database)
+- **Database:** Postgres only (`DATABASE_URL`, one connection pool in `core/db.py`). Production runs on Supabase
+  (project `tafaiatzpjpvkdoazwiz`, Frankfurt); locally the docker-compose `db`. See [Database](#database)
 
 See `diagram.md` for the architecture.
 
@@ -47,8 +47,14 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# API + web app (events go to logs/events.db unless DATABASE_URL is set)
+# a local Postgres with the tables (supabase/migrations), then the API + web app
+docker compose up -d db
+export DATABASE_URL=postgresql://groceries:groceries@localhost:5433/groceries
+python -m scripts.migrate
 uvicorn api.service:app --reload --port 8000
+
+# tests use their own database on the same server (groceries_test, made and migrated by tests/conftest.py)
+python -m pytest -q tests
 ```
 
 Open http://localhost:8000.
@@ -337,16 +343,17 @@ and the app connects as the database owner.
   supabase migration new add_something   # creates supabase/migrations/<timestamp>_add_something.sql
   supabase db push                        # applies new migrations to the linked project
   ```
-  The app still runs `CREATE TABLE IF NOT EXISTS` for its tables (harmless there; needed for SQLite and local
-  Docker until everything moves to migrations).
+  The migrations are the only place tables are defined: the app never creates them. Local and test databases
+  get them with `python -m scripts.migrate` (it refuses Supabase).
 - **Credentials** stay out of the repo: the Render dashboard holds `DATABASE_URL`.
 
 ## Configuration
 
 | Variable | Used by | Default |
 |---|---|---|
-| `DATABASE_URL` | API | unset → SQLite |
-| `EVENTS_DB` | API (SQLite path) | `logs/events.db` |
+| `DATABASE_URL` | API | required: Postgres |
+| `DB_POOL_MAX` | API | `5` connections in the pool |
+| `TEST_DATABASE_URL` | tests | the docker-compose db; the tests use `<its name>_test` |
 | `FETCH_CACHE_TTL` / `FETCH_CACHE_MAX` | API | `21600` s / `512` |
 | `PER_STORE_LIMIT` | API | `12` candidates per item per store |
 | `CACHE_WARMUP` | API | `1`: fetch every ingredient rule's searches at startup and before they expire; `0` turns it off |

@@ -17,7 +17,8 @@ itself after every push; settings live in the Render dashboard, not in the repo;
 ## Picking it up again
 ```bash
 docker compose up --build -d                 # app at http://localhost:8000/?u=yourname
-python -m pytest -q tests                    # 94 tests (+9 browser tests with requirements-dev.txt)
+DATABASE_URL=postgresql://groceries:groceries@localhost:5433/groceries python -m scripts.migrate  # tables
+python -m pytest -q tests                    # needs the compose db; makes and migrates groceries_test
 python -m scripts.healthcheck                # are the stores and rules still OK?
 docker compose exec db psql -U groceries     # look at events (queries in README.md)
 

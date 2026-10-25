@@ -2,5 +2,5 @@ fastapi>=0.95
 uvicorn[standard]>=0.22
 requests>=2.0
 beautifulsoup4>=4.12
-psycopg[binary]>=3.1
+psycopg[binary,pool]>=3.1
 pyyaml>=6.0
