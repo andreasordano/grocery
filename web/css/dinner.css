@@ -59,6 +59,7 @@
 .sent .x:hover { background: var(--hover); color: var(--ink); }
 
 /* writing your own dinner */
+.editor .copy-note { margin: -8px 0 26px; font-size: 15px; }
 .editor label { display: block; margin: 0 0 6px; font-size: 14px; font-weight: 700; }
 .editor .name { width: 100%; max-width: 480px; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
   background: var(--milk); color: var(--ink); font: 600 19px var(--display); box-shadow: inset 0 0 0 1.5px var(--line); }

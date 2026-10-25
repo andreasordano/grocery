@@ -40,6 +40,8 @@ function card(d, open) {
     ${d.method ? `<div class="rc-method"><h4>How to cook it</h4>${method(d.method)}</div>` : ""}
     ${d.link ? link(d.link) : ""}
     ${own && !d.method && !d.link ? `<button type="button" class="link" data-write="${esc(d.id)}">Write down how you cook it</button>` : ""}
+    ${own ? "" : `<p class="rc-copy"><button type="button" class="link" data-copy="${esc(d.id)}">Make it yours</button>
+      <span class="fine">Change what goes in, or how you cook it, and keep it under Mine.</span></p>`}
     ${d.id.startsWith("nd-") ? `<p class="fine">Amounts from NutriData, Tervise Arengu Instituut. It has no method.</p>` : ""}
   </details>`;
 }
@@ -61,4 +63,6 @@ after.addEventListener("toggle", e => {
 after.addEventListener("click", e => {
   const write = e.target.closest("[data-write]");
   if (write) import("./editor-screen.js").then(m => m.editDinner(write.dataset.write));
+  const copy = e.target.closest("[data-copy]");
+  if (copy) import("./editor-screen.js").then(m => m.copyDinner(copy.dataset.copy));
 });

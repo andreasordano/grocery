@@ -44,7 +44,8 @@ EVENT_TYPES = {
     "item_added": "an item added to a list (how: typed or suggestion)",
     "item_changed": "an item edited",
     # people's own dinners and sharing
-    "my_dinner_saved": "a dinner of one's own saved",
+    "my_dinner_saved": "a dinner of one's own saved (from_share, from_dinner: what it was copied from)",
+    "dinner_copy": "\"Make it yours\": a dinner opened in the editor as a copy (from: its id)",
     "my_dinner_deleted": "a dinner of one's own deleted",
     "recipe_import": "reading a recipe link (site and items, or why it failed)",
     "share_created": "a link made to send a dinner",

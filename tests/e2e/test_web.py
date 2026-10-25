@@ -593,3 +593,26 @@ def test_newsletter_is_offered_once_and_says_when_sign_up_isnt_open(base_url, pa
     receipt_lines(page)
     page.wait_for_selector("#newsletter")  # still offered under the receipt
     assert not page.locator("#news").is_visible()  # but the dialog only once
+
+
+def test_make_it_yours_copies_a_dinner_into_mine(base_url, page):
+    body = json.dumps({"user_id": "e2e-author", "name": "Testi pasta", "servings": 2,
+                       "items": ["spagetid 500g", "suvikõrvits 300g"], "method": "Keeda pasta."}).encode()
+    made = json.load(urllib.request.urlopen(urllib.request.Request(base_url + "/my-dinners", body, {"Content-Type": "application/json"})))
+    share = json.load(urllib.request.urlopen(urllib.request.Request(
+        base_url + "/shares", json.dumps({"recipe_id": made["id"], "user_id": "e2e-author"}).encode(), {"Content-Type": "application/json"})))
+    page.goto(base_url + share["path"] + "&u=e2e-copier")
+    receipt_lines(page)
+    page.click("[data-copy]")  # the card is open on wide screens when there's one dinner
+    page.wait_for_selector("h1:has-text('Make it yours')")
+    assert page.input_value("#dname") == "Testi pasta" and page.input_value("#dmethod") == "Keeda pasta."
+    page.fill("#dname", "Minu pasta")
+    page.fill("#item", "parmesan 50g")
+    page.press("#item", "Enter")
+    page.click("#saveDinner")
+    page.wait_for_selector(".trip li:has-text('Minu pasta')")  # saved, and picked straight away
+    page.click("[data-cat=mine]")
+    assert "Minu pasta" in page.locator(".dishes .mine").inner_text()
+    assert [d["from"] for u, d in logged("dinner_copy", "e2e-copier", wait=1) if u == "e2e-copier"] == ["sh-" + share["token"]]
+    saved = [d for u, d in logged("my_dinner_saved", "e2e-copier", wait=1) if u == "e2e-copier"]
+    assert saved[-1]["from_dinner"] == "sh-" + share["token"] and saved[-1]["items"] == 3

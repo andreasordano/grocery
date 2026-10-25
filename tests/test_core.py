@@ -4,7 +4,7 @@ import sqlite3
 import pytest
 
 from api import rimi_api
-from core import events, fetch
+from core import catalog, events, fetch
 
 
 # ── fetch ────────────────────────────────────────────────────────────────────
@@ -272,3 +272,19 @@ def test_rimi_parses_regular_price_and_multibuy(monkeypatch):
     yogurt, cheese = rimi_api.search_rimi("x")
     assert (yogurt["price"], yogurt["regular_price"], yogurt["deal"]) == (1.29, 1.69, None)
     assert (cheese["price"], cheese["regular_price"], cheese["deal"]) == (1.55, None, "2 or more: −23%")
+
+
+# ── "Make it yours" (WEB-38) ─────────────────────────────────────────────────
+
+def test_any_dinner_can_be_copied_as_typed_items(sqlite_events):
+    from fastapi import HTTPException
+    from api import service
+    classic = service.copy_recipe("kanasupp")
+    assert classic["from"] == "kanasupp" and classic["name"] == "Kanasupp" and classic["servings"] == 2
+    assert classic["items"] and all(isinstance(i, str) and i for i in classic["items"])
+    assert classic["method"] == "" and classic["image"] == ""
+    dish = service.copy_recipe(catalog.load_dishes()["dishes"][0]["id"])
+    assert dish["items"]
+    with pytest.raises(HTTPException) as refused:
+        service.copy_recipe("nope")
+    assert refused.value.status_code == 404

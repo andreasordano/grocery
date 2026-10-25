@@ -1,5 +1,6 @@
 // Writing your own dinner: a name, what you buy for it (with amounts if you like), for how many people.
-// Saved dinners appear under "Mine" and are priced like any other.
+// Saved dinners appear under "Mine" and are priced like any other. "Make it yours" starts from a copy of
+// any other dinner (a classic, a NutriData dish, one sent by link).
 import { $, pick } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
@@ -9,6 +10,7 @@ import { render } from "./screens.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
 import { idle } from "./receipt.js";
 import { add, unpick } from "./dinners.js";
+import { api, logEvent } from "./api.js";
 
 export function open() {
   draw();
@@ -19,8 +21,9 @@ export function draw() {
   const d = state.editing;
   pick.innerHTML = `
     <div class="editor">
-      <h1>${d.id ? "Edit dinner" : "New dinner"}</h1>
-      <form class="from-link" id="fromLink" autocomplete="off">
+      <h1>${d.id ? "Edit dinner" : d.from ? "Make it yours" : "New dinner"}</h1>
+      ${d.from ? `<p class="fine copy-note">A copy: change what you like and save it. The original stays as it is.</p>` : ""}
+      <form class="from-link" id="fromLink" autocomplete="off"${d.from ? " hidden" : ""}>
         <label for="dlinkImport">${d.id ? "Fill it in again from a recipe page" : "Start from a recipe you found online"}</label>
         <div class="field">
           <input id="dlinkImport" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Paste a link, e.g. rimi.ee/retseptid/…" enterkeyhint="go">
@@ -67,6 +70,20 @@ export function draw() {
   $("#fromLink").onsubmit = e => { e.preventDefault(); readLink(); };
   bindAdd(d.items, draw);
   pick.onclick = onClick;
+}
+
+// "Make it yours": a copy of any dinner, to change and save as a new one of your own.
+export async function copyDinner(id) {
+  try {
+    const c = await api(`/recipes/${encodeURIComponent(id)}/copy?user_id=${encodeURIComponent(identity.personId)}`);
+    state.editing = { id: null, from: c.from, name: c.name, servings: c.servings, items: c.items, method: c.method,
+                      link: c.link, image: c.image };
+    logEvent("dinner_copy", { from: id });
+    render();
+    $("#item").focus();
+  } catch {
+    idle("Couldn't copy that dinner", "Check your connection, then try again.");
+  }
 }
 
 // Open the editor for one of your dinners, or for a new one (id null), ready for a recipe link.
@@ -123,7 +140,7 @@ async function readLink() {
 async function saveDinner() {
   const d = state.editing;
   const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, method: d.method, link: d.link,
-                 image: d.image };
+                 image: d.image, from_dinner: d.from ?? null };
   try {
     const res = await fetch(d.id ? `/my-dinners/${encodeURIComponent(d.id)}` : "/my-dinners", {
       method: d.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

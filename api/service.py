@@ -83,6 +83,7 @@ class MyDinnerRequest(BaseModel):
     link: Optional[str] = None    # a recipe page
     image: Optional[str] = None   # its photo (from a recipe link)
     from_share: Optional[str] = None  # link token, when saved from a dinner someone sent
+    from_dinner: Optional[str] = None  # the dinner it's a copy of ("Make it yours", WEB-38)
 
 
 class ShareRequest(BaseModel):
@@ -209,7 +210,8 @@ def _save_my_dinner(req: MyDinnerRequest, dinner_id: Optional[str] = None):
         raise HTTPException(status_code=404, detail="No such dinner")
     events.log_event("my_dinner_saved", {"id": dinner["id"], "new": dinner_id is None, "items": len(dinner["items"]),
                                          "method": bool(dinner["method"]), "link": bool(dinner["link"]),
-                                         "from_share": req.from_share}, user_id=req.user_id)
+                                         "from_share": req.from_share, "from_dinner": req.from_dinner},
+                     user_id=req.user_id)
     return dinner
 
 
@@ -229,6 +231,19 @@ def delete_my_dinner(dinner_id: str, user_id: str):
         raise HTTPException(status_code=404, detail="No such dinner")
     events.log_event("my_dinner_deleted", {"id": dinner_id}, user_id=user_id)
     return {"deleted": dinner_id}
+
+
+@app.get("/recipes/{recipe_id}/copy")
+def copy_recipe(recipe_id: str, user_id: Optional[str] = None):
+    """Any dinner (a classic, a NutriData dish, one sent by link) as typed items, to change and save as one's own
+    ("Make it yours"). Nothing is saved here."""
+    recipes = catalog.load_recipes()
+    recipe = catalog.find_recipe(recipe_id, recipes, user_id)
+    if recipe is None:
+        raise HTTPException(status_code=404, detail="No such dinner")
+    return {"from": recipe_id, "name": recipe["name"], "servings": recipe.get("servings", catalog.BASE_SERVINGS),
+            "items": catalog.recipe_as_items(recipe, recipes),
+            **{k: recipe.get(k) or "" for k in ("method", "link", "image")}}
 
 
 @app.post("/recipe-import")
