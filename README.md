@@ -63,8 +63,9 @@ http://localhost:8000/?u=maria
 
 Without `?u=` each browser gets a random person id on its first visit (kept in localStorage); `?u=` sets the id
 instead, and is remembered, so the plain link later is still the same person. The `user_id` column of events, dinners
-and shares holds this person id. A name is optional: it's asked for when someone saves their first dinner and logged
-as a `hello` event (`{"name": …}`).
+and shares holds this person id. The name is asked for on the first visit (it can't be skipped)
+and logged as a `hello` event (`{"name": …}`), which ties it to the person id. People who came with a tester link
+aren't asked: the link says who they are.
 
 Every page load is logged as a `visit` (`from`: `tester_link`, `shared_dinner` or `direct`, plus `first_visit` and
 the referrer). Every recommendation is logged as a `basket` event with a server-made `result_id`, the user's

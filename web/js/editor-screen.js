@@ -4,8 +4,7 @@ import { $, pick } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
-import { identity, askName } from "./identity.js";
-import { logEvent } from "./api.js";
+import { identity } from "./identity.js";
 import { render } from "./screens.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
 import { idle } from "./receipt.js";
@@ -123,8 +122,6 @@ async function readLink() {
 
 async function saveDinner() {
   const d = state.editing;
-  const name = await askName();  // first dinner only
-  if (name) logEvent("hello", { name });
   const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, method: d.method, link: d.link,
                  image: d.image };
   try {

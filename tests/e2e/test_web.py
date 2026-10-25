@@ -96,15 +96,25 @@ def receipt_lines(page):
     return [t.replace("\n", " | ") for t in page.locator(".r-line").all_inner_texts()]
 
 
-def test_first_visit_gets_an_anonymous_id_and_logs_a_visit(base_url, page):
+def test_first_visit_gets_an_anonymous_id_asks_the_name_and_logs_a_visit(base_url, page):
     page.goto(base_url + "/")
+    page.locator("#hello").wait_for(state="visible")  # the name is asked on the first visit
+    page.keyboard.press("Escape")
+    assert page.locator("#hello").is_visible()  # and can't be skipped
+    page.fill("#helloName", "  Mari   Maasikas ")
+    page.click("#helloForm button[type=submit]")
     page.wait_for_selector(".dish")
-    assert not page.locator("#hello").is_visible()  # no name asked until a dinner is saved
     person = page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))")
     assert re.fullmatch(r"[0-9a-f-]{36}", person)
+    for _ in range(50):  # the event is sent in the background
+        if logged("hello"):
+            break
+        time.sleep(0.05)
+    assert [d for u, d in logged("hello") if u == person] == [{"name": "Mari Maasikas"}]
 
     page.reload()
     page.wait_for_selector(".dish")
+    assert not page.locator("#hello").is_visible()  # asked once
     assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == person  # same person next time
     visits = [d for u, d in logged("visit") if u == person]
     assert [v["first_visit"] for v in visits] == [True, False]
@@ -118,9 +128,10 @@ def test_tester_link_and_old_name_keep_their_id(base_url, browser):
     page.wait_for_selector(".dish")
     assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == "e2e-tester"
     assert [d["from"] for u, d in logged("visit") if u == "e2e-tester"] == ["tester_link"]
-    page.goto(base_url + "/")  # the plain link later: still the same person
+    page.goto(base_url + "/")  # the plain link later: still the same person, and not asked for a name
     page.wait_for_selector(".dish")
     assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == "e2e-tester"
+    assert not page.locator("#hello").is_visible()
     ctx.close()
 
     ctx = browser.new_context()  # someone who typed a name before ids existed
@@ -178,12 +189,8 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     page.fill("#item", "spagetid 500g, suvikõrvits, 2 tomatipasta")
     page.press("#item", "Enter")
     page.click("#saveDinner")
-    page.locator("#hello").wait_for(state="visible")  # the first dinner asks for a name
-    page.fill("#helloName", "Anna")
-    page.click("#helloForm button[value=save]")
     page.wait_for_selector(".r-line")
-    assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.name'))") == "Anna"
-    assert ("e2e-anna", {"name": "Anna"}) in logged("hello")
+    assert not page.locator("#hello").is_visible()  # a tester link says who it is
     assert "Testi pasta for 2" in page.locator(".receipt").inner_text()
     assert page.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
 
@@ -199,9 +206,7 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     assert "Testi pasta for 2" in other.locator(".receipt").inner_text()  # priced for the person who opened it
     assert [d["from"] for u, d in logged("visit") if u == "e2e-ben"] == ["tester_link"]
     other.click("#saveShared")
-    other.click("#helloForm button[value=skip]")  # the name can be skipped
     other.wait_for_selector(".sent >> text=Saved to Mine")
-    assert other.evaluate("JSON.parse(localStorage.getItem('pantryrun.name'))") == ""
     other.click("[data-cat=mine]")
     assert other.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
 
@@ -327,7 +332,7 @@ def test_several_dinners_price_as_one_trip(base_url, page):
     for name, items in (("Testi pasta", ["spagetid 500g", "suvikõrvits 300g"]), ("Testi salat", ["suvikõrvits 200g"])):
         body = json.dumps({"user_id": "e2e-trip", "name": name, "servings": 2, "items": items}).encode()
         urllib.request.urlopen(urllib.request.Request(base_url + "/my-dinners", body, {"Content-Type": "application/json"}))
-    page.goto(base_url + "/?u=e2e-trip&trip=1")
+    page.goto(base_url + "/?u=e2e-trip")
     page.click("[data-cat=mine]")
     page.click(".dish >> text=Testi pasta")
     page.click(".dish >> text=Testi salat")
@@ -362,7 +367,6 @@ def test_own_dinner_has_a_recipe_card_with_how_to_cook_it(base_url, page):
     page.fill("#dmethod", "1. Tükelda.\n2. Keeda 20 min.")
     page.fill("#dlink", "https://nami-nami.ee/retseptid/1")
     page.click("#saveDinner")
-    page.click("#helloForm button[value=skip]")
     page.wait_for_selector(".rc")
     if not page.evaluate("document.querySelector('.rc').open"):  # folded on narrow screens
         page.click(".rc summary")
@@ -413,7 +417,6 @@ def test_dinner_from_a_recipe_link(base_url, page, monkeypatch):
     assert page.input_value("#dname") == "Testi kotletid" and page.text_content("#dservings") == "4"
     assert page.locator(".items .it").all_inner_texts() == ["600 g spagetid", "tomatipasta"]
     page.click("#saveDinner")
-    page.click("#helloForm button[value=skip]")
     page.wait_for_selector(".rc")
     assert page.locator(".rc-photo img").count() == 1
     assert page.text_content(".rc-link").startswith("Full recipe on rimi.ee")
