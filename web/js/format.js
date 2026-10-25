@@ -5,6 +5,10 @@ export const num = new Intl.NumberFormat("et-EE", { minimumFractionDigits: 2, ma
 
 export const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
 
+// The store you walk into. Barbora is Maxima's e-shop: its prices stand for a Maxima store,
+// so "Go to Maxima", while links and the cart still say Barbora.
+export const shopName = store => store === "barbora" ? "Maxima" : cap(store);
+
 // ["rimi", "barbora"] → "Rimi and Barbora"
 export const storeNames = stores => {
   const names = stores.map(cap);

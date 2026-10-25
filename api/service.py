@@ -65,6 +65,7 @@ class BasketRequest(BaseModel):
     stores: List[str] = DINNER_STORES
     user_id: Optional[str] = None
     session_id: Optional[str] = None
+    name: Optional[str] = None  # only to tell internal people apart; not stored
 
 
 class MyDinnerRequest(BaseModel):
@@ -93,12 +94,13 @@ class EventRequest(BaseModel):
     data: Dict[str, Any] = {}
     user_id: Optional[str] = None
     session_id: Optional[str] = None
+    name: Optional[str] = None  # only to tell internal people apart; not stored
 
 
 @app.post("/events")
 def log_event(req: EventRequest):
     """Record a user action from the web app (e.g. accepted/rejected a recommendation)."""
-    ok = events.log_event(req.type, req.data, user_id=req.user_id, session_id=req.session_id)
+    ok = events.log_event(req.type, req.data, user_id=req.user_id, session_id=req.session_id, name=req.name)
     return {"logged": ok}
 
 
@@ -125,11 +127,17 @@ def basket(req: BasketRequest):
         raise HTTPException(status_code=400, detail="Pick a recipe or add at least one item")
     if len(req.recipes) > catalog.MAX_DINNERS:
         raise HTTPException(status_code=400, detail=f"At most {catalog.MAX_DINNERS} dinners in one trip")
+    # One request can't make the server search the stores thousands of times (a store could block it).
+    if len([i for i in req.items if i.strip()]) > my_dinners.MAX_ITEMS:
+        raise HTTPException(status_code=400, detail=f"At most {my_dinners.MAX_ITEMS} items in one list")
+    stores = [s for s in dict.fromkeys(req.stores) if s in DINNER_STORES]  # known stores, each once
+    if not stores:
+        raise HTTPException(status_code=400, detail="No known store")
     people = lambda n: max(1, min(n, 12))
     dinners = [{"id": d.id, "servings": people(d.servings)} for d in req.recipes]
     started = time.monotonic()
     try:
-        result = catalog.recommend(req.recipe_id, people(req.servings), req.items, req.stores, req.prefs,
+        result = catalog.recommend(req.recipe_id, people(req.servings), req.items, stores, req.prefs,
                                    user_id=req.user_id, dinners=dinners)
     except KeyError as e:
         raise HTTPException(status_code=404, detail=f"Unknown recipe: {e.args[0]}")
@@ -145,7 +153,7 @@ def basket(req: BasketRequest):
             "servings": result["servings"],
             "items": result["items"],
             "prefs": req.prefs,
-            "stores": req.stores,
+            "stores": stores,
             "latency_s": round(time.monotonic() - started, 2),
             "recommended_store": result["store"],
             "baskets": [
@@ -156,6 +164,7 @@ def basket(req: BasketRequest):
         },
         user_id=req.user_id,
         session_id=req.session_id,
+        name=req.name,
     )
     return result
 

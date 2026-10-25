@@ -67,6 +67,13 @@ and shares holds this person id. The name is asked for on the first visit (it ca
 and logged as a `hello` event (`{"name": …}`), which ties it to the person id. People who came with a tester link
 aren't asked: the link says who they are.
 
+Every event's data also has `country` ("EE"), `app_version` (the git commit) and `internal` (the founder or
+Claude's checks: leave those out of every metric, `WHERE data->>'internal' = 'false'`). All event names and what
+they mean are listed in `core/events.py` (`EVENT_TYPES`); a test fails if the code logs one that isn't there.
+First-time visitors are also asked, in one tap, where they usually shop (`usual_store`); `accept`/`reject` carry it,
+for the store-switch rate. The privacy page (`web/privacy.html`) logs `delete_request` with the person id: delete
+that person's events and dinners by hand within 30 days.
+
 Every page load is logged as a `visit` (`from`: `tester_link`, `shared_dinner` or `direct`, plus `first_visit` and
 the referrer). Every recommendation is logged as a `basket` event with a server-made `result_id`, the user's
 preferences, and each store's `status` (`ok`, or `no_answer` when its search failed: that store isn't ranked). The

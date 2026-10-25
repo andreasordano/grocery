@@ -69,11 +69,26 @@ def base_url(tmp_path_factory):
     mp.undo()
 
 
+class _Browser:
+    """The browser, with every new context already past the one-tap usual-store question
+    (test_first_visit… asks it on purpose)."""
+    def __init__(self, browser):
+        self._browser = browser
+
+    def new_context(self, **kwargs):
+        ctx = self._browser.new_context(**kwargs)
+        ctx.add_init_script("localStorage.setItem('pantryrun.usualStore', JSON.stringify('selver'))")
+        return ctx
+
+    def __getattr__(self, name):
+        return getattr(self._browser, name)
+
+
 @pytest.fixture(scope="session")
 def browser():
     with sync_api.sync_playwright() as pw:
         b = pw.chromium.launch(channel=os.environ.get("PW_CHANNEL") or None)
-        yield b
+        yield _Browser(b)
         b.close()
 
 
@@ -97,12 +112,15 @@ def receipt_lines(page):
 
 
 def test_first_visit_gets_an_anonymous_id_asks_the_name_and_logs_a_visit(base_url, page):
+    page.add_init_script("if (!sessionStorage.getItem('asked')) { localStorage.removeItem('pantryrun.usualStore'); sessionStorage.setItem('asked', 1); }")
     page.goto(base_url + "/")
     page.locator("#hello").wait_for(state="visible")  # the name is asked on the first visit
     page.keyboard.press("Escape")
     assert page.locator("#hello").is_visible()  # and can't be skipped
     page.fill("#helloName", "  Mari   Maasikas ")
     page.click("#helloForm button[type=submit]")
+    page.locator("#usual").wait_for(state="visible")  # then, one tap: the usual store
+    page.click("#usualForm button[value=rimi]")
     page.wait_for_selector(".dish")
     person = page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))")
     assert re.fullmatch(r"[0-9a-f-]{36}", person)
@@ -110,11 +128,14 @@ def test_first_visit_gets_an_anonymous_id_asks_the_name_and_logs_a_visit(base_ur
         if logged("hello"):
             break
         time.sleep(0.05)
-    assert [d for u, d in logged("hello") if u == person] == [{"name": "Mari Maasikas"}]
+    assert [d["name"] for u, d in logged("hello") if u == person] == ["Mari Maasikas"]
+    usual = [d for u, d in logged("usual_store") if u == person]
+    assert [(d["store"], d["changed"]) for d in usual] == [("rimi", False)]
+    assert usual[0]["country"] == "EE" and usual[0]["internal"] is False and usual[0]["app_version"]
 
     page.reload()
     page.wait_for_selector(".dish")
-    assert not page.locator("#hello").is_visible()  # asked once
+    assert not page.locator("#hello").is_visible() and not page.locator("#usual").is_visible()  # asked once
     assert page.evaluate("JSON.parse(localStorage.getItem('pantryrun.person'))") == person  # same person next time
     visits = [d for u, d in logged("visit") if u == person]
     assert [v["first_visit"] for v in visits] == [True, False]
@@ -239,7 +260,7 @@ def test_store_that_didnt_answer_is_named_not_missing(base_url, page):
     receipt = page.locator(".receipt").inner_text()
     assert "Selver didn't answer, prices from Rimi and Barbora" in receipt
     assert "Not in the e-shop" not in receipt
-    assert [s.split("\n")[0] for s in page.locator(".stores .s").all_inner_texts()] == ["Rimi", "Barbora"]
+    assert [s.split("\n")[0] for s in page.locator(".stores .s").all_inner_texts()] == ["Rimi", "Maxima"]  # Barbora prices, shown as the Maxima store
     statuses = {b["store"]: b.get("status") for b in [d for u, d in logged("basket") if u == "e2e-down"][-1]["baskets"]}
     assert statuses == {"rimi": "ok", "barbora": "ok", "selver": "no_answer"}
 
@@ -468,3 +489,70 @@ def test_the_extension_can_be_downloaded(base_url):
     import io, zipfile
     names = zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(base_url + "/extension.zip").read())).namelist()
     assert "pantryrun-rimi/manifest.json" in names and "pantryrun-rimi/rimi.js" in names
+
+
+def test_basket_refuses_huge_lists_and_ignores_unknown_stores(base_url):
+    def post(body):
+        req = urllib.request.Request(base_url + "/basket", json.dumps(body).encode(), {"Content-Type": "application/json"})
+        return json.loads(urllib.request.urlopen(req).read())
+    with pytest.raises(urllib.error.HTTPError) as e:
+        post({"items": [f"asi {i}" for i in range(61)]})
+    assert e.value.code == 400
+    res = post({"items": ["kohv"], "stores": ["rimi", "rimi", "evil.example"]})
+    assert [b["store"] for b in res["baskets"]] == ["rimi"]  # each known store once, the rest dropped
+
+
+def test_barbora_prices_stand_for_a_maxima_store(base_url, page):
+    page.goto(base_url + "/?u=e2e-maxima")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.wait_for_selector(".stores [data-store=barbora]")
+    assert page.locator(".stores [data-store=barbora] .s").inner_text() == "Maxima"
+    page.click(".stores [data-store=barbora]")
+    page.wait_for_selector(".r-store:text('Maxima')")
+    assert "Prices from Barbora, Maxima's e-shop" in page.locator(".receipt").inner_text()
+    assert page.text_content("[data-fb=accept]") == "I'll go to Maxima"
+
+
+def test_privacy_page_takes_a_deletion_request(base_url, page):
+    page.goto(base_url + "/?u=e2e-privacy")
+    page.wait_for_selector(".dish")
+    page.click(".foot a")
+    page.wait_for_selector("h1:text('Your data')")
+    page.click("#askDelete")
+    page.wait_for_selector("#deleteNote:has-text('within 30 days')")
+    assert [d["person"] for u, d in logged("delete_request") if u == "e2e-privacy"] == ["e2e-privacy"]
+
+
+def test_usual_store_goes_with_the_answer_and_can_be_changed(base_url, page):
+    page.goto(base_url + "/?u=e2e-usual")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.wait_for_selector(".usual-note:has-text('You usually shop at Selver')")
+    page.click("#changeUsual")
+    page.click("#usualForm button[value=maxima]")
+    page.wait_for_selector(".usual-note:has-text('You usually shop at Maxima')")
+    page.click("[data-fb=accept]")
+    for _ in range(50):
+        if logged("accept"):
+            break
+        time.sleep(0.05)
+    assert [d["usual_store"] for u, d in logged("accept") if u == "e2e-usual"] == ["maxima"]
+    assert [(d["store"], d["changed"]) for u, d in logged("usual_store") if u == "e2e-usual"] == [("maxima", True)]
+
+
+def test_skipping_the_usual_store_isnt_asked_again(base_url, browser):
+    ctx = browser.new_context()
+    ctx.add_init_script("if (!sessionStorage.getItem('asked')) { localStorage.removeItem('pantryrun.usualStore'); sessionStorage.setItem('asked', 1); }")
+    page = ctx.new_page()
+    page.goto(base_url + "/?u=e2e-skip")
+    page.click("#usualForm button[value=skip]")
+    page.wait_for_selector(".dish")
+    page.reload()
+    page.wait_for_selector(".dish")
+    assert not page.locator("#usual").is_visible()
+    ctx.close()

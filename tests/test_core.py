@@ -139,7 +139,31 @@ def test_log_event_writes_row(sqlite_events):
 
     row = sqlite3.connect(sqlite_events).execute("SELECT user_id, session_id, type, data FROM events").fetchone()
     assert row[:3] == ("u1", "s1", "accept")
-    assert json.loads(row[3]) == {"store": "rimi", "price": 8.6}
+    assert json.loads(row[3]) == {"store": "rimi", "price": 8.6, "country": "EE", "app_version": events.APP_VERSION,
+                                  "internal": False}
+
+
+@pytest.mark.parametrize("user_id, name, internal", [
+    ("andrea", None, True), ("Andrea", None, True),          # the founder's tester link
+    ("3f1c…uuid", "andrea", True), ("3f1c…uuid", " Andrea ", True),  # the founder on a new device
+    ("claude-check", None, True), ("internal-claude-check", None, True),
+    ("3f1c…uuid", "Mari", False), ("mari", None, False), ("andreas", None, False),
+])
+def test_internal_people_are_flagged_and_the_name_isnt_stored(sqlite_events, user_id, name, internal):
+    events.log_event("visit", {}, user_id=user_id, name=name)
+    data = sqlite3.connect(sqlite_events).execute("SELECT data FROM events").fetchone()[0]
+    assert json.loads(data)["internal"] is internal
+    assert (name or "zz").strip() not in data or name is None
+
+
+def test_every_event_the_code_logs_is_listed():
+    import pathlib, re
+    root = pathlib.Path(__file__).resolve().parent.parent
+    code = "".join(p.read_text() for d in ("web/js", "api", "core") for p in (root / d).rglob("*.[jp][sy]"))
+    used = set(re.findall(r'logEvent\("([a-z_]+)"', code)) | set(re.findall(r'log_event\(\s*"([a-z_]+)"', code))
+    used |= {"accept", "reject"}  # logged from the buttons' data-fb
+    assert used - set(events.EVENT_TYPES) == set(), "add new events to core/events.py EVENT_TYPES"
+    assert {"usual_store", "delete_request"} <= set(events.EVENT_TYPES)
 
 
 def test_log_event_never_raises(monkeypatch):

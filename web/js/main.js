@@ -10,7 +10,7 @@
 //   identity.js, api.js, dom.js, format.js: who is using it, the server, page elements, formatting
 import { $ } from "./dom.js";
 import { state } from "./state.js";
-import { identity, askName } from "./identity.js";
+import { identity, askName, askUsualStore } from "./identity.js";
 import { api, logEvent } from "./api.js";
 import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
@@ -53,7 +53,11 @@ async function start() {
     from: identity.fromTesterLink ? "tester_link" : token ? "shared_dinner" : "direct",
     dinner_token: token, first_visit: identity.firstVisit, referrer: document.referrer || null,
   });
-  askName().then(name => { if (name) logEvent("hello", { name }); });  // first visit: who's this?
+  // first visit: who's this, and where do they usually shop?
+  askName()
+    .then(name => { if (name) logEvent("hello", { name }); })
+    .then(askUsualStore)
+    .then(store => { if (store !== undefined) logEvent("usual_store", { store, changed: false }); });
   try {
     const { recipes, dishes, categories } = await api("/recipes");
     Object.assign(state, { recipes, dishes, categories });

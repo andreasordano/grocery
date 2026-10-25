@@ -1,0 +1,15 @@
+/* The privacy page (privacy.html): one readable column in the brand's type. */
+
+.privacy { max-width: 640px; margin: 0 auto; padding: 32px 16px 64px; }
+.privacy .brand {
+  display: inline-block; padding: 8px 22px 9px; border-radius: 50%; background: var(--rhubarb); color: #fff;
+  font: 800 21px/1 var(--display); letter-spacing: -0.03em; text-decoration: none; transform: rotate(-5deg);
+}
+.privacy h1 { margin: 28px 0 8px; font: 800 clamp(40px, 8vw, 60px)/1 var(--display); letter-spacing: -0.035em; }
+.privacy .lead { margin: 0 0 8px; font-size: 18px; color: var(--ink-soft); }
+.privacy h2 { margin: 32px 0 8px; font: 700 21px var(--display); letter-spacing: -0.01em; }
+.privacy p, .privacy li { font-size: 16px; }
+.privacy ul { padding-left: 1.2em; display: grid; gap: 6px; }
+.privacy a { color: var(--ink); text-underline-offset: 3px; }
+.privacy .delete { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 16px; }
+.privacy .back { margin-top: 40px; }

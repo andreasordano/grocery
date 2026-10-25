@@ -153,3 +153,11 @@ def test_full_words_find_leek_and_chilli(stores):
 def test_oil_is_cooking_oil(stores):
     assert "Ol.õli" in picks("õli", "barbora")[0]
     assert not any("CarPlan" in n for n in picks("õli", "rimi"))
+
+
+def test_out_of_stock_products_are_never_options(monkeypatch):
+    stock = [{"store": "rimi", "id": "1", "name": "Kohv Paulig 500g", "price": 5.0, "in_stock": False},
+             {"store": "rimi", "id": "2", "name": "Kohv Löfbergs 500g", "price": 6.0, "in_stock": True}]
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q: stock)
+    products, _ = fetch.fetch_all({"kohv": fetch.spec_for("kohv")}, ["rimi"])
+    assert [p["name"] for p in products["kohv"]] == ["Kohv Löfbergs 500g"]

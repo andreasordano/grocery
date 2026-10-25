@@ -32,7 +32,7 @@ export async function ask({ fresh = false, keepView = false, scroll = state.mode
     const res = await api("/basket", {
       recipe_id: ids.length === 1 ? ids[0] : null, servings: state.servings, items,
       recipes: ids.length > 1 ? ids.map(id => ({ id, servings: state.servings })) : [],
-      prefs: state.prefs, user_id: identity.personId, session_id: identity.sessionId,
+      prefs: state.prefs, user_id: identity.personId, session_id: identity.sessionId, name: identity.name,
     });
     if (req !== state.request) return;
     feed.classList.remove("busy");
