@@ -53,7 +53,8 @@ def build(args):
     body = {"title": args.title, "dinners": [d for d in args.dinners.split(",") if d.strip()], "featured": args.featured,
             "featured_url": args.featured_url, "servings": args.servings}
     base = args.base_url.rstrip("/")
-    r = requests.post(f"{base}/editions", json=body, headers={"Authorization": f"Bearer {secret}"}, timeout=180)
+    r = requests.post(f"{base}/editions", json=body, headers={"Authorization": f"Bearer {secret}"},
+                      timeout=600)  # right after a deploy the price cache is cold: minutes, not seconds
     if r.status_code != 200:
         sys.exit(f"The site refused ({r.status_code}): {r.json().get('detail', r.text) if r.content else ''}")
     made = r.json()

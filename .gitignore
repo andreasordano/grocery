@@ -99,3 +99,6 @@ venv.bak/
 # Local event log (validation data)
 logs/
 *.db
+
+# Marketing
+marketing/
