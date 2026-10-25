@@ -1,5 +1,5 @@
 // The dinners to choose from: hand-written classics, NutriData dishes by category,
-// this person's own dinners, and one sent by link.
+// this person's own dinners, one sent by link, and a weekly plan's.
 import { state } from "./state.js";
 
 const SHOWN = 6;  // dinners on screen at once
@@ -35,6 +35,8 @@ export function dinnerById(id) {
   const d = state.dishes.find(x => x.id === id);
   if (d) return d;
   if (state.shared && id === state.shared.id) return state.shared;
+  const planned = state.plan?.dinners.find(x => x.id === id && x.name);  // only dinners sent by link come whole
+  if (planned) return planned;
   return state.mine.find(x => x.id === id) || state.recipes.find(r => r.id === id);
 }
 

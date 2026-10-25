@@ -8,6 +8,7 @@ import { identity, askUsualStore } from "./identity.js";
 import { shareDinner } from "./share.js";
 import { recipeCards } from "./recipe.js";
 import { cartButton } from "./cart.js";
+import { newsletterBox, bindNewsletterBox } from "./newsletter.js";
 
 function print(html, animate) {
   feed.innerHTML = `<div class="receipt">${html}</div>`;
@@ -166,8 +167,10 @@ export function showReceipt(storeName, animate) {
     ${cartButton(b)}
     ${recipeCards(res)}
     ${res.recipe ? `<div class="share"><button class="btn quiet" type="button" id="share">Send this dinner to someone</button>
-      <span class="fine" id="shareNote" role="status"></span></div>` : ""}`;
+      <span class="fine" id="shareNote" role="status"></span></div>` : ""}
+    ${newsletterBox()}`;
   if (res.recipe) $("#share").onclick = () => shareDinner(res.recipe);
+  bindNewsletterBox();
 
   const feedback = { usual_store: identity.usualStore === "skip" ? null : identity.usualStore ?? null, mission: dinners.length > 1 ? "dinners" : state.mode, recipe_id: res.recipe?.id ?? null,
                      recipe_ids: dinners.map(d => d.id), servings: res.servings, items: res.items,

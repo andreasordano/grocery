@@ -15,6 +15,7 @@ import { api, logEvent } from "./api.js";
 import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
 import { add } from "./dinners.js";
+import { offerNewsletter } from "./newsletter.js";
 import * as dinnerScreen from "./dinner-screen.js";
 import * as editorScreen from "./editor-screen.js";
 import * as listScreen from "./list-screen.js";
@@ -43,21 +44,25 @@ modeSwitch.addEventListener("click", e => {
 });
 addEventListener("resize", placePill);
 
-// ── start: the visit, the dinners, your own dinners, a dinner sent by link ──
+// ── start: the visit, the dinners, your own dinners, a dinner sent by link, a weekly plan ──
 async function start() {
   placePill();
   document.fonts?.ready.then(placePill);
   idle("Getting the dinners", "One moment.");
-  const token = new URLSearchParams(location.search).get("dinner");
+  const params = new URLSearchParams(location.search);
+  const token = params.get("dinner"), planToken = params.get("plan");
+  // where a link came from: the newsletter or a social post (?from=newsletter, instagram, fb-<group>)
+  const tagged = /^[a-z0-9-]{1,30}$/.test(params.get("from") ?? "") ? params.get("from") : null;
+  const from = tagged ?? (identity.fromTesterLink ? "tester_link" : token ? "shared_dinner" : planToken ? "plan" : "direct");
   logEvent("visit", {
-    from: identity.fromTesterLink ? "tester_link" : token ? "shared_dinner" : "direct",
-    dinner_token: token, first_visit: identity.firstVisit, referrer: document.referrer || null,
+    from, dinner_token: token, plan: planToken, first_visit: identity.firstVisit, referrer: document.referrer || null,
   });
-  // first visit: who's this, and where do they usually shop?
+  // first visit: who's this, where do they usually shop, and would they like the weekly plan?
   askName()
     .then(name => { if (name) logEvent("hello", { name }); })
     .then(askUsualStore)
-    .then(store => { if (store !== undefined) logEvent("usual_store", { store, changed: false }); });
+    .then(store => { if (store !== undefined) logEvent("usual_store", { store, changed: false }); })
+    .then(() => { if (tagged !== "newsletter") return offerNewsletter(); });  // once per browser
   try {
     const { recipes, dishes, categories } = await api("/recipes");
     Object.assign(state, { recipes, dishes, categories });
@@ -67,8 +72,14 @@ async function start() {
       state.shared = await api(`/shares/${encodeURIComponent(token)}?user_id=${encodeURIComponent(identity.personId)}`).catch(() => null);
       if (state.shared) add(state.shared.id);
     }
+    if (planToken) {
+      state.plan = await api(`/plans/${encodeURIComponent(planToken)}?user_id=${encodeURIComponent(identity.personId)}`
+                             + (tagged ? `&came_from=${tagged}` : "")).catch(() => null);
+      state.plan?.dinners.forEach(d => add(d.id));
+    }
     render();
     if (token && !state.shared) idle("This link doesn't lead to a dinner", "It may be mistyped. Pick a dinner here instead.");
+    if (planToken && !state.plan) idle("This link doesn't lead to a plan", "It may be mistyped. Pick a dinner here instead.");
   } catch {
     failed(() => location.reload());
   }

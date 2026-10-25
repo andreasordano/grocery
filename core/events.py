@@ -21,7 +21,8 @@ COUNTRY = "EE"
 # Every event the app logs, and what it means. tests/test_core.py checks the code uses only these.
 EVENT_TYPES = {
     # visits and people
-    "visit": "a page load (from: tester_link, shared_dinner or direct; first_visit; referrer)",
+    "visit": "a page load (from: tester_link, shared_dinner, plan, direct, or a link's ?from= tag such as "
+             "newsletter or instagram; plan: the weekly plan's token; first_visit; referrer)",
     "hello": "the name typed on the first visit",
     "usual_store": "the store someone usually shops at (store, or null for skip)",
     "delete_request": "someone asked for their data to be deleted",
@@ -53,6 +54,11 @@ EVENT_TYPES = {
     "cart_interest": "the answer to \"would you use one tap?\" (wants)",
     "cart_send": "a basket sent to the Rimi extension",
     "extension_download": "the Rimi extension downloaded",
+    # the weekly plan newsletter (WEB-37)
+    "newsletter_offer": "the answer to the sign-up offered after the first-visit questions (answer: later, signed_up)",
+    "newsletter_signup": "an email sent to MailerLite for the weekly plan (ok, where); the address isn't logged",
+    "plan_opened": "a weekly plan link opened (plan token, from)",
+    "cooked": "a \"Did you cook it?\" link in the plan email (plan, dinner, answer)",
 }
 
 

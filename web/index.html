@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="css/sheet.css">
   <link rel="stylesheet" href="css/peek.css">
   <link rel="stylesheet" href="css/recipe.css">
+  <link rel="stylesheet" href="css/newsletter.css">
 
   <script type="module" src="js/main.js"></script>
 </head>
@@ -84,6 +85,11 @@
     </div>
     <div class="sh-bottom"><button class="link" type="submit" value="skip">Skip</button></div>
   </form>
+</dialog>
+
+<!-- "Get next week's plan by email", offered once after the first-visit questions (js/newsletter.js). -->
+<dialog id="news" aria-labelledby="nlTitle-first_visit">
+  <form id="newsForm" novalidate></form>
 </dialog>
 
 <!-- A quick look at a receipt line's product (js/peek.js). -->

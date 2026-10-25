@@ -70,14 +70,15 @@ def base_url(tmp_path_factory):
 
 
 class _Browser:
-    """The browser, with every new context already past the one-tap usual-store question
-    (test_first_visit… asks it on purpose)."""
+    """The browser, with every new context already past the one-tap usual-store question and the newsletter
+    offer (test_first_visit… and test_newsletter… ask them on purpose)."""
     def __init__(self, browser):
         self._browser = browser
 
     def new_context(self, **kwargs):
         ctx = self._browser.new_context(**kwargs)
-        ctx.add_init_script("localStorage.setItem('pantryrun.usualStore', JSON.stringify('selver'))")
+        ctx.add_init_script("localStorage.setItem('pantryrun.usualStore', JSON.stringify('selver'));"
+                            "localStorage.setItem('pantryrun.newsletterAsked', 'true')")
         return ctx
 
     def __getattr__(self, name):
@@ -553,3 +554,42 @@ def test_skipping_the_usual_store_isnt_asked_again(base_url, browser):
     page.wait_for_selector(".dish")
     assert not page.locator("#usual").is_visible()
     ctx.close()
+
+
+def test_weekly_plan_link_loads_its_dinners_as_one_trip(base_url, page):
+    from core import my_dinners, plans
+    sent = "sh-" + my_dinners.share(None, None, "Testi kõrvitsasupp", 2, ["kõrvits 500g", "koor"])
+    token = plans.create("Week 46", ["kanasupp", sent], featured=sent)
+    page.goto(base_url + f"/?plan={token}&from=newsletter&u=e2e-plan")
+    page.wait_for_selector(".sent >> text=This week's plan")
+    assert "Week 46" in page.locator(".sent").inner_text()
+    page.wait_for_function("document.querySelector('.r-what')?.textContent.startsWith('2 dinners')")
+    trip = page.locator(".trip li").all_inner_texts()
+    assert len(trip) == 2 and sum("FEATURED" in t.upper() for t in trip) == 1 and "Testi kõrvitsasupp" in trip[1]
+    visit = [d for u, d in logged("visit", "e2e-plan", wait=1) if u == "e2e-plan"][0]
+    assert (visit["from"], visit["plan"]) == ("newsletter", token)
+    assert [d["from"] for u, d in logged("plan_opened") if u == "e2e-plan"] == ["newsletter"]
+
+    page.click("#dropPlan")
+    assert page.locator(".trip").count() == 0 and "plan=" not in page.url
+
+
+def test_newsletter_is_offered_once_and_says_when_sign_up_isnt_open(base_url, page):
+    page.add_init_script("if (!sessionStorage.getItem('nl')) { localStorage.removeItem('pantryrun.newsletterAsked'); sessionStorage.setItem('nl', 1); }")
+    page.goto(base_url + "/?u=e2e-news")
+    page.locator("#news").wait_for(state="visible")
+    page.fill("#news input[name=email]", "mari@example.ee")
+    page.check("#news input[name=consent]")
+    page.click("#news button[type=submit]")
+    page.wait_for_selector("#news .nl-note >> text=Sign-up isn't open yet")  # MailerLite isn't set up here
+    page.click("#newsLater")
+    assert not page.locator("#news").is_visible()
+    assert [d["answer"] for u, d in logged("newsletter_offer", "e2e-news", wait=1) if u == "e2e-news"] == ["later"]
+    page.reload()
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    receipt_lines(page)
+    page.wait_for_selector("#newsletter")  # still offered under the receipt
+    assert not page.locator("#news").is_visible()  # but the dialog only once
