@@ -6,14 +6,13 @@ import { identity } from "./identity.js";
 import { api, logEvent } from "./api.js";
 import { dinnerById, picked } from "./dinners.js";
 import { redraw } from "./screens.js";
-import { idle, printing, failed, showReceipt, reveal, answered } from "./receipt.js";
+import { idle, printing, failed, showReceipt, answered } from "./receipt.js";
 import { chooseProduct, editPreferences } from "./products.js";
 import { bindPeek } from "./peek.js";
 
 // fresh: a new question, so the receipt prints anew. keepView: stay on the store being looked at.
-// scroll: on phones, scroll down to the receipt. Not for dinners: more may be added to the trip, and
-// the trip's "See where to shop" button scrolls there.
-export async function ask({ fresh = false, keepView = false, scroll = state.mode === "list" } = {}) {
+// On phones the receipt is step 2: the bar at the bottom says what it found and goes there (steps.js).
+export async function ask({ fresh = false, keepView = false } = {}) {
   const dinner = state.mode === "dinner";
   const items = dinner ? state.extras : state.items;
   const ids = dinner ? picked() : [];
@@ -22,7 +21,7 @@ export async function ask({ fresh = false, keepView = false, scroll = state.mode
   const view = keepView ? state.view : null;
 
   if (fresh || !state.result) {
-    printing(scroll, ids.length > 1 ? `${ids.length} dinners for ${state.servings}`
+    printing(ids.length > 1 ? `${ids.length} dinners for ${state.servings}`
            : dinner ? `${dinnerById(ids[0]).name} for ${state.servings}`
                     : `${items.length} ${items.length === 1 ? "thing" : "things"} on your list`);
   } else {
@@ -48,7 +47,6 @@ export async function ask({ fresh = false, keepView = false, scroll = state.mode
     const animate = fresh || !state.result;
     state.result = res;
     showReceipt(view && stores.some(b => b.store === view) ? view : res.store, animate);
-    if (animate && scroll) reveal();
   } catch {
     if (req === state.request) failed(() => ask({ fresh: true }));
   }
@@ -64,7 +62,7 @@ feed.addEventListener("click", e => {
     showReceipt(store.dataset.store, true);
     return;
   }
-  if (e.target.closest("#editPrefs")) { editPreferences(askAgain); return; }
+  if (e.target.closest("[data-prefs]")) { editPreferences(askAgain); return; }
   const pantry = e.target.closest("[data-pantry]");
   if (pantry) {
     state.extras.push(pantry.dataset.pantry);

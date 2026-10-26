@@ -15,6 +15,8 @@ export const shopName = store => known.stores[store]?.shown_as ?? cap(store);
 export const eshopName = store => known.stores[store]?.name ?? cap(store);
 // The chains people shop at ({maxima: "Maxima", …}): "Where do you usually shop?"
 export const chains = () => known.chains;
+// Every store pantryrun prices: ["selver", "rimi", "barbora"]
+export const allStores = () => Object.keys(known.stores);
 
 // ["rimi", "barbora"] → "Rimi and Barbora"
 export const storeNames = stores => {

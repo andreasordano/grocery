@@ -1,10 +1,11 @@
 // The Shopping list screen: type what you need, then find the one store that has it all.
-import { pick } from "./dom.js";
+import { pick, heroText } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
 import { ask } from "./basket.js";
 import { idle } from "./receipt.js";
+import { refreshSteps } from "./steps.js";
 
 const addWhatYouNeed = () => idle("Add what you need", "We'll find the one store that has it all.");
 
@@ -14,9 +15,12 @@ export function open() {
 }
 
 export function draw() {
+  heroText.innerHTML = `<h1>What do you need?</h1>
+    <p class="sub">Type what you need. pantryrun finds the one store that has it all, for the least.</p>`;
+  heroText.onclick = null;
   pick.innerHTML = `
-    <h1>What do you need?</h1>
-    <p class="sub">Type a few things, separated by commas. Add an amount if you like.</p>
+    <h2 class="card-title"><span class="num" aria-hidden="true">1</span>Your list</h2>
+    <p class="card-sub">Separate things with commas. Add an amount if you like.</p>
     <form class="field" id="add" autocomplete="off">
       <input id="item" placeholder="piim, paprika 600g, 2 leib" aria-label="Add items" enterkeyhint="done">
       <button class="btn quiet" type="submit">Add</button>
@@ -28,6 +32,7 @@ export function draw() {
     <button class="btn dark" id="find" type="button" ${state.items.length ? "" : "disabled"}>Find the store</button>`;
   bindAdd(state.items, changed);
   pick.onclick = onClick;
+  refreshSteps();
 }
 
 // After the list changes: redraw, and price it again if there's an answer showing.

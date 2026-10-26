@@ -1,8 +1,8 @@
-/* The weekly plan (WEB-37): signing up for it by email (under the receipt, and once after the first-visit
-   questions), and the "Featured" sticker on a plan's featured dinner. */
+/* The weekly plan (WEB-37): signing up for it by email (in the foot, on phones after "How will you get it?",
+   and once after the first-visit questions), and the "Featured" sticker on a plan's featured dinner. */
 
 .newsletter { margin-top: 28px; max-width: 520px; }
-.newsletter h3, #news h3 { margin: 0 0 4px; font: 700 19px var(--display); }
+.newsletter :is(h2, h3), #news h3 { margin: 0 0 4px; font: 700 19px var(--display); }
 #news h3 { font-size: 24px; font-weight: 800; letter-spacing: -0.03em; }
 .newsletter > .fine, #news .fine { margin: 0 0 12px; }
 .nl-email { width: 100%; padding: 12px 18px; border-radius: 999px; border: 0; outline: none; background: var(--milk); color: var(--ink);
@@ -17,6 +17,22 @@
 .nl-note { margin: 10px 0 0; }
 .newsletter .btn { margin-top: 14px; }
 
-/* a plan's featured dinner, in the trip: always labelled */
+/* in the foot: on the dark band */
+.foot .newsletter { margin-top: 0; max-width: none; }
+.foot .newsletter h2 { margin-bottom: 6px; font-size: 15px; }
+.foot .newsletter .fine, .foot .nl-consent { color: var(--foot-soft); }
+.foot .nl-email { background: transparent; color: var(--foot-ink); box-shadow: inset 0 0 0 1.5px rgba(243, 241, 255, .3); }
+.foot .nl-email:focus { box-shadow: inset 0 0 0 2px var(--foot-ink); }
+.foot .newsletter .btn { background: var(--butter); color: #1c1f4a; box-shadow: none; }
+.foot .thanks { color: var(--foot-ink); }
+
+/* on phones, after "How will you get it?": the foot there is short */
+.get-news { display: none; }
+@media (max-width: 900px) {
+  .get-news { display: block; }
+  .get-news .newsletter { margin-top: 22px; padding: 18px; border-radius: 20px; background: var(--surface); }
+}
+
+/* a plan's featured dinner, in the basket: always labelled */
 .trip .featured { margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--butter); color: #1c1f4a;
   font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }

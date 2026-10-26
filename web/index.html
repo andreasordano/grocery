@@ -6,7 +6,7 @@
   <title>pantryrun</title>
   <meta name="description" content="Pick tonight's dinner. Get one store and a shopping list.">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#16183a" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#1c1f4a" media="(prefers-color-scheme: dark)">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,31 +30,66 @@
 <body>
 
 <header class="bar">
-  <div class="brand">pantryrun</div>
-  <div class="switch" role="group" aria-label="What you need">
-    <span class="pill" aria-hidden="true"></span>
-    <button type="button" data-mode="dinner" aria-pressed="true">Dinner</button>
-    <button type="button" data-mode="list" aria-pressed="false">Shopping list</button>
+  <div class="bar-in">
+    <div class="brand">pantryrun</div>
+    <div class="switch" role="group" aria-label="What you need">
+      <span class="pill" aria-hidden="true"></span>
+      <button type="button" data-mode="dinner" aria-pressed="true">Dinner</button>
+      <button type="button" data-mode="list" aria-pressed="false">Shopping list</button>
+    </div>
   </div>
 </header>
 
 <main>
-  <!-- The current screen: dinners, writing your own dinner, or the shopping list (js/screens.js). -->
-  <div id="pick" class="pick">
+  <!-- The screen's headline, and the three steps (js/steps.js). -->
+  <div class="hero">
+    <div class="hero-text" id="heroText"></div>
+    <nav class="steps" id="steps" aria-label="Steps"></nav>
+  </div>
+
+  <!-- 1. The current screen: dinners, writing your own dinner, or the shopping list (js/screens.js). -->
+  <div id="pick" class="pick card">
     <noscript><p class="sub">pantryrun needs JavaScript to find your store.</p></noscript>
   </div>
 
-  <!-- The answer: a receipt prints out of the slot (js/receipt.js). -->
-  <section class="printer" aria-label="Where to shop" aria-live="polite">
-    <div class="slot" aria-hidden="true"></div>
-    <div class="feed paper-shadow" id="feed">
-      <div class="receipt"><div class="waiting"><strong>Getting the dinners</strong>One moment.</div></div>
-    </div>
-    <div class="after" id="after"></div>
-  </section>
+  <div class="answer">
+    <!-- 2. The answer: a receipt prints out of the slot (js/receipt.js). -->
+    <section class="printer card" aria-labelledby="whereTitle" aria-live="polite">
+      <h2 class="card-title" id="whereTitle"><span class="num" aria-hidden="true">2</span>Where it’s cheapest</h2>
+      <div class="slot" aria-hidden="true"></div>
+      <div class="feed paper-shadow" id="feed">
+        <div class="receipt"><div class="waiting"><strong>Getting the dinners</strong>One moment.</div></div>
+      </div>
+      <div class="under" id="under"></div>
+    </section>
+
+    <!-- 3. How will you get it: in the store, online, or delivered (js/receipt.js). Empty until there's an answer. -->
+    <section class="get card" id="after" aria-label="How will you get it?"></section>
+  </div>
 </main>
 
-<footer class="foot"><a href="privacy.html">Privacy</a></footer>
+<!-- The foot: you, the weekly plan, where the numbers come from (js/footer.js). -->
+<footer class="foot">
+  <div class="foot-in">
+    <div class="foot-cols">
+      <div class="foot-brand">
+        <span class="brand">pantryrun</span>
+        <p>Pick dinners. Get one store and one list.</p>
+      </div>
+      <section class="foot-you" id="footYou" aria-label="You"></section>
+      <div class="foot-news" id="footNews"></div>
+      <section class="foot-sources" aria-labelledby="footSourcesTitle">
+        <h2 id="footSourcesTitle">Where the numbers come from</h2>
+        <p id="footStores">Prices from the stores’ e-shops.</p>
+        <p>Dishes and amounts from NutriData, Tervise Arengu Instituut.</p>
+      </section>
+    </div>
+    <p class="foot-end"><span>pantryrun</span><a href="privacy.html">Privacy</a></p>
+  </div>
+</footer>
+
+<!-- Phones: one step per screen, and this bar goes to the next one (js/steps.js). -->
+<div class="stepbar" id="stepbar"></div>
 
 <dialog id="hello" aria-labelledby="helloTitle">
   <form method="dialog" id="helloForm">

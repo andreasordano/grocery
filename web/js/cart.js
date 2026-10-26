@@ -1,7 +1,7 @@
 // Sending the basket to the store's e-shop, for people who shop online. Stores don't let another site
 // fill their cart, so there are three ways, shown in the sheet: open each product, pantryrun's browser
 // extension (extension/, Rimi only, computers only), or one tap once a store works with us (would you
-// use it?). With the extension on the Rimi receipt, "Send" fills the cart straight away.
+// use it?). With the extension, "Order online at Rimi" fills the cart straight away.
 // Also a fake door for delivery (WEB-39): would people rather have the list delivered by Wolt or Bolt?
 // Neither takes a list from other apps yet; the answers measure demand before asking them (PROD-18).
 import { $, after, sheet, sheetForm } from "./dom.js";
@@ -19,24 +19,27 @@ const cartItems = b => b.lines.filter(l => l.store_id && l.cart_qty)
 
 const qtyLabel = l => l.packs ? `${l.packs} ×` : l.cart_qty ? `${num.format(l.cart_qty)} kg` : "";
 
-export const cartButton = b => `<div class="cart" id="cart">
-  <button type="button" class="link" id="sendCart" data-store="${esc(b.store)}">Shopping online? Send this to the ${esc(eshopName(b.store))} cart</button>
-</div>${deliveryAsk("receipt")}`;
-
-// ── "Get it delivered instead?" Asked once per person, under the receipt or in the sheet, whichever comes first.
+// ── "Get it delivered instead?" Asked once per person: in the cart sheet, or after "Delivered by Wolt or Bolt"
+// under "How will you get it?", whichever comes first.
 const deliveryAnswered = () => storage.get("pantryrun.delivery", null) !== null;
 const DELIVERY_THANKS = "Thanks. Every yes helps us ask Wolt and Bolt.";
 
-function deliveryAsk(where) {
+function deliveryAsk() {
   if (deliveryAnswered()) return "";
-  const buttons = `<span class="btns"><button type="button" class="btn quiet" data-delivery="wolt">Wolt</button>
-      <button type="button" class="btn quiet" data-delivery="bolt">Bolt</button>
-      <button type="button" class="link" data-delivery="none">No, I'll go to the store</button></span>`;
-  return where === "sheet"
-    ? `<section class="delivery-ask"><h3>Get it delivered instead?</h3>
-        <p class="fine">Wolt and Bolt don't take a list from other apps yet. Would you use it with one of them?</p>${buttons}</section>`
-    : `<div class="delivery-ask"><p class="fine">Rather have it delivered? Wolt and Bolt don't take a list from other apps yet.
-        Would you use it?</p>${buttons}</div>`;
+  return `<section class="delivery-ask"><h3>Get it delivered instead?</h3>
+      <p class="fine">Wolt and Bolt don't take a list from other apps yet. Would you use it with one of them?</p>
+      <span class="btns"><button type="button" class="btn quiet" data-delivery="wolt">Wolt</button>
+        <button type="button" class="btn quiet" data-delivery="bolt">Bolt</button>
+        <button type="button" class="link" data-delivery="none">No, I'll go to the store</button></span></section>`;
+}
+
+// After "Delivered by Wolt or Bolt": which one, unless they said before.
+export function deliveryFollowUp() {
+  const before = storage.get("pantryrun.delivery", null);
+  if (before === "wolt" || before === "bolt") return `<p>${DELIVERY_THANKS}</p>`;
+  return `<div class="delivery-ask"><p>Neither can do it yet. Which one would you use?</p>
+    <span class="btns"><button type="button" class="btn quiet" data-delivery="wolt">Wolt</button>
+      <button type="button" class="btn quiet" data-delivery="bolt">Bolt</button></span></div>`;
 }
 
 function answerDelivery(button, where) {
@@ -45,15 +48,15 @@ function answerDelivery(button, where) {
   const b = state.result?.baskets.find(x => x.store === state.view) ?? state.result?.baskets[0];
   logEvent("delivery_interest", { service, where, store: b?.store ?? null, result_id: state.result?.result_id ?? null });
   document.querySelectorAll(".delivery-ask").forEach(box => {
-    box.innerHTML = `<p class="fine">${service === "none" ? "Thanks for saying." : DELIVERY_THANKS}</p>`;
+    box.innerHTML = `<p${where === "sheet" ? ` class="fine"` : ""}>${service === "none" ? "Thanks for saying." : DELIVERY_THANKS}</p>`;
   });
 }
 
-function fill(b, items, data) {
+function fill(b, items, data, note) {
   window.postMessage({ source: "pantryrun", type: "fill-cart", store: "rimi", items }, location.origin);
   logEvent("cart_send", { ...data, via: "extension" });
   const byHand = b.lines.length - items.length;
-  $("#cart").innerHTML = `<p class="fine">Opening Rimi in a new tab. Your cart fills in a moment${byHand
+  note.innerHTML = `<p>Opening Rimi in a new tab. Your cart fills in a moment${byHand
     ? `; ${byHand} ${byHand === 1 ? "product" : "products"} you'll add by hand` : ""}.</p>`;
 }
 
@@ -88,7 +91,7 @@ function ways(b, data) {
         <p class="fine">That needs ${esc(eshopName(b.store))} to work with pantryrun. Would you use it?</p>
         <span class="btns"><button type="button" class="btn quiet" data-cart-answer="yes">Yes, I'd use it</button>
           <button type="button" class="link" data-cart-answer="no">Not really</button></span></section>
-      ${deliveryAsk("sheet")}
+      ${deliveryAsk()}
     </div>
     <div class="sh-bottom"><button class="btn dark" value="close" type="submit">Done</button></div>`;
   sheetForm.onchange = null;
@@ -111,16 +114,17 @@ function ways(b, data) {
   sheet.showModal();
 }
 
-after.addEventListener("click", e => {
-  const delivery = e.target.closest("[data-delivery]");
-  if (delivery) { answerDelivery(delivery, "receipt"); return; }
-  const button = e.target.closest("#sendCart");
-  if (!button) return;
-  const b = state.result.baskets.find(x => x.store === button.dataset.store);
-  if (!b) return;
+// "Order online at Rimi": with the extension the cart fills at once (said in note), else the sheet of ways.
+export function sendToCart(b, note) {
   const items = cartItems(b);
   const data = { store: b.store, items: items.length, lines: b.lines.length, result_id: state.result?.result_id ?? null };
-  if (b.store === "rimi" && extension() && items.length) { fill(b, items, data); return; }
+  if (b.store === "rimi" && extension() && items.length) { fill(b, items, data, note); return; }
   logEvent("cart_click", data);
+  note.innerHTML = `<p>Stores don't let other sites fill their cart yet. Here's what works today.</p>`;
   ways(b, data);
+}
+
+after.addEventListener("click", e => {
+  const delivery = e.target.closest("[data-delivery]");
+  if (delivery) answerDelivery(delivery, "receipt");
 });

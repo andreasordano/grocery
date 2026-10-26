@@ -1,7 +1,7 @@
 // Writing your own dinner: a name, what you buy for it (with amounts if you like), for how many people.
 // Saved dinners appear under "Mine" and are priced like any other. "Make it yours" starts from a copy of
 // any other dinner (a classic, a NutriData dish, one sent by link).
-import { $, pick } from "./dom.js";
+import { $, pick, heroText } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
@@ -19,6 +19,7 @@ export function open() {
 
 export function draw() {
   const d = state.editing;
+  heroText.innerHTML = "";
   pick.innerHTML = `
     <div class="editor">
       <h1>${d.id ? "Edit dinner" : d.from ? "Make it yours" : "New dinner"}</h1>

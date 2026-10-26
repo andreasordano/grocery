@@ -4,7 +4,7 @@
 html, body { margin: 0; }
 body {
   min-height: 100vh; min-height: 100dvh;
-  background: var(--milk); color: var(--ink);
+  background: var(--ground); color: var(--ink);
   font: 400 16px/1.5 var(--sans);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;

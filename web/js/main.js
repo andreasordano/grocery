@@ -17,6 +17,7 @@ import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
 import { add } from "./dinners.js";
 import { offerNewsletter } from "./newsletter.js";
+import { startFooter } from "./footer.js";
 import * as dinnerScreen from "./dinner-screen.js";
 import * as editorScreen from "./editor-screen.js";
 import * as listScreen from "./list-screen.js";
@@ -41,6 +42,7 @@ modeSwitch.addEventListener("click", e => {
   modeSwitch.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
   placePill();
   state.result = null;
+  state.step = 1;
   render();
 });
 addEventListener("resize", placePill);
@@ -59,7 +61,7 @@ async function start() {
     from, dinner_token: token, plan: planToken, first_visit: identity.firstVisit, referrer: document.referrer || null,
   });
   // the dinners, and the stores as the server names them (needed by the usual-store question and receipts)
-  const loaded = api("/recipes").then(data => { setStores(data); return data; });
+  const loaded = api("/recipes").then(data => { setStores(data); startFooter(); return data; });
   // first visit: who's this, where do they usually shop, and would they like the weekly plan?
   askName()
     .then(name => { if (name) logEvent("hello", { name }); })

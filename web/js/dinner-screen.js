@@ -2,7 +2,7 @@
 // anything else for the trip, a dinner someone sent by link, and a weekly plan from the newsletter.
 // Tapping a dinner opens its own page (what's in it, how to cook it); "Add to this trip" puts it in the trip.
 // Under the trip: each dinner's recipe card and the weekly plan sign-up (recipe.js).
-import { $, pick } from "./dom.js";
+import { $, pick, heroText } from "./dom.js";
 import { esc } from "./format.js";
 import { state } from "./state.js";
 import { storage } from "./storage.js";
@@ -11,12 +11,13 @@ import { api, logEvent } from "./api.js";
 import { shownDinners, shuffle, dinnerById, picked, choose, unpick, MAX_TRIP } from "./dinners.js";
 import { bindAdd, itemButton, itemClick } from "./items.js";
 import { ask } from "./basket.js";
-import { idle, reveal } from "./receipt.js";
+import { idle } from "./receipt.js";
 import { editDinner } from "./editor-screen.js";
-import { recipeBody, recipeActions, hasPhoto, tripPanel } from "./recipe.js";
-import { bindNewsletterBox } from "./newsletter.js";
+import { recipeBody, recipeActions, hasPhoto } from "./recipe.js";
+import { refreshSteps } from "./steps.js";
+import { storeNames, allStores } from "./format.js";
 
-const pickADinner = () => idle("Pick a dinner", "Your store and shopping list print here. Pick more dinners for one trip.");
+const pickADinner = () => idle("Pick a dinner", "Where it’s cheapest prints here, with your shopping list.");
 
 export function open() {
   draw();
@@ -29,13 +30,12 @@ function tripStrip() {
   if (!ids.length) return "";
   const n = ids.length;
   return `<div class="trip">
-    <p><b>This trip:</b> ${n} ${n === 1 ? "dinner" : "dinners"}<span class="fine">${n < MAX_TRIP
-      ? " · Add another one below." : ` · ${MAX_TRIP} is the most for one trip.`}</span></p>
+    <p><b>Your basket:</b> ${n} ${n === 1 ? "dinner" : "dinners"}<span class="fine">${n < MAX_TRIP
+      ? " · Add another one below." : ` · ${MAX_TRIP} is the most for one basket.`}</span></p>
     <ul>${ids.map(id => `<li><span lang="et">${esc(dinnerById(id)?.name ?? "")}</span>${featured(id)
-      ? `<span class="featured">Featured</span>` : ""}<button type="button" data-unpick="${esc(id)}"
-      aria-label="Take ${esc(dinnerById(id)?.name ?? "")} out of the trip">×</button></li>`).join("")}</ul>
+      ? `<span class="featured">Featured</span>` : ""}<button type="button" class="open" data-open="${esc(id)}">Recipe</button><button type="button" data-unpick="${esc(id)}"
+      aria-label="Take ${esc(dinnerById(id)?.name ?? "")} out of the basket">×</button></li>`).join("")}</ul>
     ${n > 1 ? `<button type="button" class="link" id="clearTrip">Clear</button>` : ""}
-    <button type="button" class="btn dark see" id="seeStore">See where to shop <span aria-hidden="true">↓</span></button>
   </div>`;
 }
 
@@ -52,6 +52,7 @@ const stepper = () => `<span class="stepper" role="group" aria-label="Number of 
 function drawDetail() {
   const v = state.viewing, d = v.card, name = d?.name ?? dinnerById(v.id)?.name ?? "";
   const inTrip = picked().includes(v.id), n = d?.ingredients.length ?? 0;
+  heroText.innerHTML = "";
   pick.innerHTML = `
     <article class="dinner-page">
       <button type="button" class="link back" id="backToList"><span aria-hidden="true">←</span> All dinners</button>
@@ -59,8 +60,8 @@ function drawDetail() {
       <h1 class="dp-name" lang="et">${esc(name)}</h1>
       <p class="dp-sub">For ${stepper()} ${state.servings === 1 ? "person" : "people"}${d ? ` · ${n} ${n === 1 ? "ingredient" : "ingredients"}` : ""}</p>
       <div class="dp-add">${inTrip
-        ? `<span class="in-trip">In this trip</span><button type="button" class="link" id="takeOut">Take it out</button>`
-        : `<button type="button" class="btn dark" id="addToTrip">Add to this trip</button>`}
+        ? `<span class="in-trip">In your basket</span><button type="button" class="link" id="takeOut">Take it out</button>`
+        : `<button type="button" class="btn dark" id="addToTrip">Add to the basket</button>`}
         <span class="fine" id="tripFull" role="status"></span></div>
       ${d ? `<div class="dp-recipe">${recipeBody(d)}</div>${recipeActions(d)}`
         : v.failed ? `<p class="fine">Couldn't get the recipe. <button type="button" class="link" id="retryCard">Try again</button></p>`
@@ -97,10 +98,15 @@ export function draw() {
   if (state.viewing) { drawDetail(); return; }
   const dinners = shownDinners();
   const chosen = picked(), several = chosen.length > 1;
-  pick.innerHTML = `
+  heroText.innerHTML = `
     <h1>${several ? "Dinners" : "Dinner"} <span class="for">for ${stepper()}</span> ${several ? "this week" : "tonight"}</h1>
+    <p class="sub">Pick what you’ll cook. pantryrun prices it at ${allStores().length ? esc(storeNames(allStores())) : "the stores"}
+      and tells you where the whole basket costs least.</p>`;
+  heroText.onclick = onClick;
+  pick.innerHTML = `
+    <h2 class="card-title"><span class="num" aria-hidden="true">1</span>Pick your dinners</h2>
+    <p class="card-sub">One for tonight, or up to ${MAX_TRIP} for the week. They’re priced together, as one basket.</p>
     ${tripStrip()}
-    <div id="tripPanel">${tripPanel()}</div>
     ${state.shared ? `<div class="sent">
       <p><span class="what">A dinner sent to you</span><span class="name" lang="et">${esc(state.shared.name)}</span></p>
       <span class="btns">${state.shared.saved ? `<span class="fine">Saved to Mine</span>`
@@ -111,7 +117,6 @@ export function draw() {
       <p><span class="what">This week's plan</span><span class="name">${esc(state.plan.title)}</span></p>
       <span class="btns"><button type="button" class="x" id="dropPlan" aria-label="Close the plan">×</button></span>
     </div>` : ""}
-    ${chosen.length ? `<h2 class="more-dinners">Add another dinner</h2>` : ""}
     <div class="chips cats" role="group" aria-label="Kind of dinner">${[
       { id: "ideas", name: "Ideas" }, { id: "classics", name: "Classics" }, { id: "mine", name: "Mine" }, ...state.categories,
     ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}">${esc(c.name)}</button>`).join("")}</div>
@@ -126,20 +131,21 @@ export function draw() {
       <button type="button" class="link" id="fromLinkDinner">From a recipe link</button></span>`
       : state.category === "classics" ? ""
       : `<button type="button" class="link" id="shuffle">Show me others</button>`}
-      ${dinners.some(r => r.id.startsWith("nd-")) ? `<span class="fine">Dishes from NutriData, Tervise Arengu Instituut</span>` : ""}</div>
+</div>
     <div class="extras">${state.extrasOpen || state.extras.length ? `
-      <h2>Anything else on the way?</h2>
+      <h3>Anything else to buy?</h3>
       <form class="field" id="add" autocomplete="off">
         <input id="item" placeholder="kohv, leib, banaanid 1kg" aria-label="Add more items" enterkeyhint="done">
         <button class="btn quiet" type="submit">Add</button>
       </form>
       ${state.extras.length ? `<ul class="tags">${state.extras.map((it, i) => `
         <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")}</ul>` : ""}`
-      : `<button type="button" class="open-extras" id="openExtras"><span aria-hidden="true">+</span>Anything else on the way?</button>`}
+      : `<div class="extras-ask"><div><h3>Anything else to buy?</h3><p class="fine">Coffee, milk, toilet paper: it goes in the same basket.</p></div>
+        <button type="button" class="btn quiet add-more" id="openExtras"><span aria-hidden="true">+</span>Add items</button></div>`}
     </div>`;
   if (state.extrasOpen || state.extras.length) bindAdd(state.extras, extrasChanged);
-  bindNewsletterBox();
   pick.onclick = onClick;
+  refreshSteps();
 }
 
 // After the extras change: redraw, and price the dinner again if one is picked.
@@ -151,13 +157,15 @@ function extrasChanged() {
 let stepTimer;
 
 function onClick(e) {
+  const recipe = e.target.closest("[data-open]");
+  if (recipe) { openDinner(recipe.dataset.open); return; }
   const dish = e.target.closest(".dish");
   if (dish) { openDinner(dish.dataset.id); return; }
   if (e.target.closest("#backToList")) { backToList(); return; }
   if (e.target.closest("#retryCard")) { state.viewing.failed = false; draw(); loadCard(); return; }
   if (e.target.closest("#addToTrip")) {
     if (!choose(state.viewing.id)) {  // the trip is full
-      $("#tripFull").textContent = `${MAX_TRIP} dinners is the most for one trip. Take one out first.`;
+      $("#tripFull").textContent = `${MAX_TRIP} dinners is the most for one basket. Take one out first.`;
       return;
     }
     logEvent("trip_change", { dinners: picked().length });
@@ -179,7 +187,6 @@ function onClick(e) {
     picked().length ? ask({ fresh: true }) : pickADinner();
     return;
   }
-  if (e.target.closest("#seeStore")) { reveal(); return; }
   if (e.target.closest("#clearTrip")) {
     state.tripIds = []; state.recipeId = null;
     draw();

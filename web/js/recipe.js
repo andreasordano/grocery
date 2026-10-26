@@ -1,16 +1,10 @@
 // Recipes: what goes into a dinner for this many people, and how to cook it when that's known (people write it
 // for their own dinners; NutriData and the classics only have ingredients). Shown on a dinner's own page
-// (dinner-screen.js) and, once dinners are in the trip, as one card per dinner on the left, under the trip,
-// with the weekly plan sign-up. The right side keeps only the receipt.
-import { $ } from "./dom.js";
+// (dinner-screen.js), opened from the dinners or from "Recipe" on a dinner in the basket.
 import { esc, amount } from "./format.js";
 import { state } from "./state.js";
-import { logEvent } from "./api.js";
 import { dinnerById } from "./dinners.js";
 import { shareDinner } from "./share.js";
-import { newsletterBox, bindNewsletterBox } from "./newsletter.js";
-
-const wide = matchMedia("(min-width: 901px)");
 
 // "400 g", "2 packs", or what was typed with it ("2 tk")
 function howMuch(i) {
@@ -55,40 +49,6 @@ export function recipeActions(d) {
     <button type="button" class="link" data-share="${esc(d.id)}">Send to someone</button>
     <span class="fine share-note" role="status"></span></p>`;
 }
-
-function card(d, open) {
-  const photo = hasPhoto(d);
-  return `<details class="rc${photo ? " has-photo" : ""}"${open ? " open" : ""} data-recipe="${esc(d.id)}">
-    <summary>${photo ? `<span class="rc-photo"><img src="${esc(d.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"></span>` : ""}<span class="rc-name" lang="et">${esc(d.name)}</span>
-      <span class="rc-sub">Recipe for ${d.servings} · ${d.ingredients.length} ${d.ingredients.length === 1 ? "ingredient" : "ingredients"}</span></summary>
-    ${recipeBody(d)}
-    ${recipeActions(d)}
-  </details>`;
-}
-
-// Under the trip, on the left: a card per dinner in the answer (open on wide screens when there's just one),
-// then the weekly plan sign-up. Empty until the trip has an answer.
-export function tripPanel() {
-  const dinners = state.mode === "dinner" && state.tripIds.length ? state.result?.dinners ?? [] : [];
-  if (!dinners.length) return "";
-  return `<section class="recipes" aria-label="${dinners.length > 1 ? "Recipes" : "Recipe"}">
-      ${dinners.map(d => card(d, wide.matches && dinners.length === 1)).join("")}</section>
-    ${newsletterBox()}`;
-}
-
-// A new answer arrived: fill the trip's cards on the left (the dinner screen draws an empty #tripPanel).
-export function refreshTripPanel() {
-  const panel = $("#tripPanel");
-  if (!panel) return;
-  panel.innerHTML = tripPanel();
-  bindNewsletterBox();
-}
-
-document.addEventListener("toggle", e => {
-  if (e.target.matches?.(".rc") && e.target.open) {
-    logEvent("recipe_open", { recipe_id: e.target.dataset.recipe, result_id: state.result?.result_id ?? null });
-  }
-}, true);
 
 document.addEventListener("click", e => {
   const write = e.target.closest("[data-write]");

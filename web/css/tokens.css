@@ -4,7 +4,12 @@
    Phone layout starts below 900px wide (each stylesheet has its own @media for it). */
 
 :root {
-  --milk: #ffffff;           /* the page */
+  --milk: #ffffff;           /* fields and boxes inside a card */
+  --ground: #f4f2f8;         /* the page: a blueberry tint, so the cards stand on it */
+  --surface: #ffffff;        /* cards and the top bar */
+  --foot: #1c1f4a;           /* the foot: a band of its own */
+  --foot-ink: #f3f1ff;
+  --foot-soft: #c9cae6;
   --ink: #1c1f4a;            /* blueberry: text */
   --ink-soft: #5b5f86;
   --line: rgba(28, 31, 74, 0.12);
@@ -35,13 +40,13 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --milk: #16183a; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
+    --milk: #16183a; --ground: #121433; --surface: #1c1f4a; --foot: #0b0c24; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
     --rhubarb-text: #ff7d93; --panel: #2a1d4a; --sheet: #1f2250; --slot: #0b0c24;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --milk: #16183a; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
+  --milk: #16183a; --ground: #121433; --surface: #1c1f4a; --foot: #0b0c24; --ink: #f3f1ff; --ink-soft: #a9abd0; --line: rgba(243, 241, 255, 0.14); --hover: rgba(243, 241, 255, 0.07);
   --rhubarb-text: #ff7d93; --panel: #2a1d4a; --sheet: #1f2250; --slot: #0b0c24;
   color-scheme: dark;
 }

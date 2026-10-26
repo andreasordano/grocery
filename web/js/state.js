@@ -14,13 +14,16 @@ export const state = {
   plan: null,          // a weekly plan from the newsletter (?plan=): {token, title, dinners: [{id, featured, …}]}
   viewing: null,       // the dinner whose own page is open: {id, card (its recipe, once loaded), failed}
   recipeId: null,      // the dinner picked last
-  tripIds: [],         // the dinners in this trip, in the order picked (dinners.js)
+  tripIds: [],         // the dinners in the basket, in the order picked (dinners.js)
   servings: 2,
-  extras: [],          // dinner: anything else for this trip
+  extras: [],          // dinner: anything else for the basket
   extrasOpen: false,   // the field for those is folded away until asked for
   items: [],           // shopping list
   prefs: storage.get("pantryrun.prefs", {}),  // {key: {words: [], products: {store: name}}}
   result: null,        // last /basket answer for the current mode
+  status: "idle",      // the receipt: "idle", "pricing", "failed" or "answer"
+  way: null,           // how they'll get it: {result_id, store, via: "store" | "online" | "delivery"}
+  step: 1,             // phones: the step on screen (js/steps.js)
   view: null,          // store whose receipt is showing
   request: 0,          // counts requests, so an answer that arrives late is ignored
 };

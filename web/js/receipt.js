@@ -1,42 +1,45 @@
-// Drawing the receipt: waiting, printing, failed, and the answer for one store,
-// plus what you can do under it (go, not for me, wrong product, send the dinner).
-import { $, feed, after, reduceMotion } from "./dom.js";
+// Drawing the receipt (step 2): waiting, printing, failed, and the answer for one store, with notes under it
+// (e-shop prices, wrong product). Then step 3, how you'll get it: in the store, online, or delivered.
+// Picking one is what "accept" means; "Not for me" is the reject.
+import { $, feed, under, after, reduceMotion } from "./dom.js";
 import { euro, num, esc, amount, fold, storeNames, shopName, eshopName, chains } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
-import { identity, askUsualStore } from "./identity.js";
-import { refreshTripPanel } from "./recipe.js";
-import { cartButton } from "./cart.js";
+import { identity } from "./identity.js";
+import { sendToCart, deliveryFollowUp } from "./cart.js";
 import { newsletterBox, bindNewsletterBox } from "./newsletter.js";
+import { refreshSteps } from "./steps.js";
+import { refreshFooter } from "./footer.js";
 
 function print(html, animate) {
   feed.innerHTML = `<div class="receipt">${html}</div>`;
   if (animate && !reduceMotion()) feed.firstElementChild.classList.add("printing");
 }
 
-// On phones the receipt is below the screen: scroll to it when an answer prints.
-export function reveal() {
-  const top = $(".printer").getBoundingClientRect().top;
-  if (top > innerHeight * 0.55) scrollTo({ top: scrollY + top - 70, behavior: reduceMotion() ? "auto" : "smooth" });
+// No answer on the receipt: nothing under it, nothing to choose in step 3.
+function empty(status) {
+  state.status = status;
+  under.innerHTML = after.innerHTML = "";
+  refreshSteps();
 }
 
 // Nothing to price yet: a short receipt that says what to do.
 export function idle(title, text) {
   state.result = null;
   print(`<div class="waiting"><strong>${esc(title)}</strong>${esc(text)}</div>`, false);
-  after.innerHTML = "";
+  empty("idle");
 }
 
-export function printing(scroll, text) {
+export function printing(text) {
   print(`<div class="waiting"><strong>${esc(text)}</strong>Comparing prices<span class="dots"><i>.</i><i>.</i><i>.</i></span></div>`, false);
-  after.innerHTML = "";
-  if (scroll) reveal();
+  empty("pricing");
 }
 
 export function failed(retry) {
   feed.classList.remove("busy");
   print(`<div class="waiting"><strong>The stores didn't answer</strong>Check your connection, then try again.</div>`, false);
-  after.innerHTML = `<button class="btn quiet wide" type="button" id="retry">Try again</button>`;
+  empty("failed");
+  under.innerHTML = `<button class="btn quiet wide" type="button" id="retry">Try again</button>`;
   $("#retry").onclick = () => retry();
 }
 
@@ -90,19 +93,49 @@ function line(l, photos) {
     ${notes.length ? `<span class="d">${esc(notes.join(". "))}</span>` : ""}</button></li>`;
 }
 
-// Items the recipe assumes you have. Tapping one adds it to this trip.
+// Items the recipe assumes you have. Tapping one adds it to the basket.
 function pantryNote(res) {
   const notAdded = (res.pantry ?? res.recipe?.pantry ?? []).filter(p => !state.extras.some(e => e.toLowerCase() === p.toLowerCase()));
   if (!notAdded.length) return "";
-  return `<div class="r-note r-pantry">Have at home: ${notAdded.map(p => `<button type="button" data-pantry="${esc(p)}" aria-label="Add ${esc(p)} to the trip">${esc(p)}</button>`).join(", ")}. Missing one? Tap it to add it.</div>`;
+  return `<div class="r-note r-pantry">Have at home: ${notAdded.map(p => `<button type="button" data-pantry="${esc(p)}" aria-label="Add ${esc(p)} to the basket">${esc(p)}</button>`).join(", ")}. Missing one? Tap it to add it.</div>`;
 }
 
+// Said only when a preference changed a product here; how many there are is in the foot.
 function prefsNote(b) {
-  const keys = Object.keys(state.prefs);
-  if (!keys.length) return "";
   const used = b.lines.filter(l => l.pinned || l.preferred).map(l => l.label);
-  const text = used.length ? `Using your preferences for ${used.join(", ")}.` : `You have ${keys.length} saved ${keys.length === 1 ? "preference" : "preferences"}.`;
-  return `<div class="r-prefs">${esc(text)} <button type="button" id="editPrefs">Edit preferences</button></div>`;
+  if (!used.length) return "";
+  return `<div class="r-prefs">${esc(`Using your preferences for ${used.join(", ")}.`)} <button type="button" data-prefs>Edit preferences</button></div>`;
+}
+
+// ── Step 3: how you'll get it ──
+const ICONS = {
+  store: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>`,
+  online: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h2l2.4 11h10.2L20 8H6.2"/><circle cx="9" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>`,
+  delivery: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="17" r="2.5"/><path d="M8.5 17h7M14 6h3l2 8.5M5 11h7l2 6"/></svg>`,
+};
+
+const ways = b => [
+  { via: "store", title: "In the store", text: "Take the list with you on your phone." },
+  { via: "online", title: `Order online at ${eshopName(b.store)}`, text: `Add these products to your ${eshopName(b.store)} cart.` },
+  { via: "delivery", title: "Delivered by Wolt or Bolt", text: "Not possible yet. Tap if you'd use it." },
+];
+
+// The way picked for this store's receipt of this answer, if any.
+const wayFor = (res, b) => state.way?.result_id === res.result_id && state.way.store === b.store ? state.way.via : null;
+
+function getIt(res, b) {
+  const way = wayFor(res, b);
+  return `<h2 class="card-title" id="getTitle"><span class="num" aria-hidden="true">3</span>How will you get it?</h2>
+    <p class="card-sub">${esc(shopName(b.store))}, ${euro.format(b.total_price)}. Your list works either way.</p>
+    <div class="ways" role="group" aria-labelledby="getTitle">${ways(b).map(w => `
+      <button type="button" class="way" data-way="${w.via}" aria-pressed="${w.via === way}">
+        <span class="way-icon ${w.via}" aria-hidden="true">${ICONS[w.via]}</span>
+        <span class="way-text"><b>${esc(w.title)}</b><span>${esc(w.text)}</span></span></button>`).join("")}
+    </div>
+    <div class="way-note" id="wayNote" role="status"></div>
+    <div class="get-news">${way ? newsletterBox("get_it") : ""}</div>
+    <p class="way-foot">${way ? "" : `<button class="link" type="button" data-fb="reject">Not for me</button>`}
+      <span class="fine">In the store, prices can differ a little.</span></p>`;
 }
 
 // The receipt for one store of the current answer (the recommended one unless another was tapped).
@@ -126,12 +159,13 @@ export function showReceipt(storeName, animate) {
 
   print(`
     <div class="r-center">
-      <div class="r-go">${isBest ? "Go to" : "At"}</div>
+      <div class="r-go">${isBest ? "Cheapest at" : "At"}</div>
       <h2 class="r-store">${esc(shopName(b.store))}</h2>
       ${eshopName(b.store) !== shopName(b.store)
         ? `<div class="r-what">Prices from ${esc(eshopName(b.store))}, ${esc(shopName(b.store))}'s e-shop</div>` : ""}
       <div class="r-what">${esc(what)}</div>
       ${delta ? `<div class="r-delta">${esc(delta)}</div>` : ""}
+      ${chains()[identity.usualStore] === shopName(b.store) ? `<div class="r-usual">Your usual store</div>` : ""}
     </div>
     ${downNote(res)}
     <hr class="r-rule">
@@ -150,40 +184,50 @@ export function showReceipt(storeName, animate) {
       <ul class="stores">${stores.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
         <span class="s">${esc(shopName(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span></button></li>`).join("")}</ul>` : ""}
   `, animate);
+  const stamp = () => { if (!$(".stamp", feed)) feed.firstElementChild.insertAdjacentHTML("beforeend", `<div class="stamp">Going</div>`); };
+  if (wayFor(res, b) === "store") stamp();  // drawn again, e.g. after the usual store changed
 
-  after.innerHTML = `
-    <div class="actions" id="fb">
-      <button class="btn go" type="button" data-fb="accept">I'll go to ${esc(shopName(b.store))}</button>
-      <button class="btn quiet" type="button" data-fb="reject">Not for me</button>
-    </div>
-    <div class="small">
-      <button class="link" type="button" id="wrong">Wrong product?</button>
-      <span class="fine">E-shop prices. In store they can differ a little.</span>
-    </div>
-    <p class="fine usual-note">${chains()[identity.usualStore]
-      ? `You usually shop at ${esc(chains()[identity.usualStore])}.` : "Where do you usually shop?"}
-      <button class="link" type="button" id="changeUsual">${chains()[identity.usualStore] || identity.usualStore === "other" ? "Change" : "Tell us"}</button></p>
-    <div id="report"></div>
-    ${cartButton(b)}
-    ${state.mode === "list" ? newsletterBox() : ""}`;
-  // Dinners: their recipes and the weekly plan sign-up go on the left, under the trip.
-  if (state.mode === "list") bindNewsletterBox(); else refreshTripPanel();
+  state.status = "answer";
+  under.innerHTML = `<p class="fine"><span>Prices from the ${esc(eshopName(b.store))} e-shop.</span>
+      <button class="link" type="button" id="wrong">Wrong product?</button></p>
+    <div id="report"></div>`;
+  after.innerHTML = getIt(res, b);
+  refreshSteps();
+  refreshFooter();
 
   const feedback = { usual_store: identity.usualStore === "skip" ? null : identity.usualStore ?? null, mission: dinners.length > 1 ? "dinners" : state.mode, recipe_id: res.recipe?.id ?? null,
                      recipe_ids: dinners.map(d => d.id), servings: res.servings, items: res.items,
                      store: b.store, recommended_store: best.store, total_price: b.total_price, result_id: res.result_id };
-  after.querySelectorAll("[data-fb]").forEach(btn => btn.onclick = () => {
-    const accepted = btn.dataset.fb === "accept";
-    logEvent(btn.dataset.fb, feedback);
-    $("#fb").innerHTML = `<p class="thanks">${accepted ? "Have a good trip." : "Thanks. We'll use that to improve."}</p>`;
-    if (accepted) feed.firstElementChild.insertAdjacentHTML("beforeend", `<div class="stamp">Going</div>`);
-  });
-  $("#changeUsual").onclick = () => {
-    identity.usualStore = undefined;  // ask again
-    askUsualStore().then(store => {
-      logEvent("usual_store", { store, changed: true });
-      showReceipt(state.view, false);
-    });
+  // One accept per store's receipt of an answer, with the way picked first; picking another way after that
+  // is a way_change, so counting accepts (and store switches) stays as it was with "I'll go to <store>".
+  const pickWay = via => {
+    const before = wayFor(res, b);
+    if (via === before && via !== "online") return;  // online again: open the ways to fill the cart again
+    state.way = { result_id: res.result_id, store: b.store, via };
+    if (!before) logEvent("accept", { ...feedback, via });
+    else if (via !== before) logEvent("way_change", { via, from: before, store: b.store, result_id: res.result_id });
+    after.innerHTML = getIt(res, b);
+    bindNewsletterBox("get_it");
+    const note = $("#wayNote");
+    if (via === "store") {
+      note.innerHTML = `<p>Have a good shop. Keep this page open: your list is the receipt.</p>
+        <span class="btns"><button class="btn quiet see-list" type="button" data-go="2">See the list</button></span>`;
+      stamp();
+    } else {
+      $(".stamp", feed)?.remove();
+      if (via === "online") sendToCart(b, note);
+      else note.innerHTML = deliveryFollowUp();
+    }
+    refreshSteps();
+  };
+  after.onclick = e => {
+    const way = e.target.closest("[data-way]");
+    if (way) { pickWay(way.dataset.way); return; }
+    if (e.target.closest("[data-fb=reject]")) {
+      logEvent("reject", feedback);
+      $(".ways", after).remove();
+      $(".way-foot", after).innerHTML = `<span class="thanks">Thanks. We'll use that to improve.</span>`;
+    }
   };
   $("#wrong").onclick = () => {
     $("#report").innerHTML = `<div class="report">

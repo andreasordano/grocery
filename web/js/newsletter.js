@@ -1,5 +1,6 @@
-// "Get next week's plan by email" (WEB-37): offered once after the first-visit questions, and under the receipt
-// until someone signs up. The address goes to MailerLite (through the server), which asks them to confirm.
+// "Get next week's plan by email" (WEB-37): offered once after the first-visit questions, and until someone signs up
+// in the page's foot (where: "footer") and, on phones, after "How will you get it?" ("get_it").
+// The address goes to MailerLite (through the server), which asks them to confirm.
 import { $ } from "./dom.js";
 import { esc } from "./format.js";
 import { api, logEvent } from "./api.js";
@@ -8,8 +9,9 @@ import { storage } from "./storage.js";
 
 const signedUp = () => storage.get("pantryrun.newsletter", null) === "yes";
 
+// In the foot the title is the column's heading; elsewhere it sits under the card's or dialog's own.
 const form = where => `
-  <h3 id="nlTitle-${where}">Get next week's plan by email</h3>
+  <${where === "footer" ? "h2" : "h3"} id="nlTitle-${where}">Get next week's plan by email</${where === "footer" ? "h2" : "h3"}>
   <p class="fine">Every week: four dinners for your household, one shopping list and the cheapest store.
     The first one comes after your first week with pantryrun.</p>
   <input class="nl-email" type="email" name="email" autocomplete="email" placeholder="you@example.com" maxlength="200"
@@ -34,19 +36,22 @@ async function send(box, where) {
   }
 }
 
-// Under the receipt: a box to fill in, until someone has signed up.
-export function newsletterBox() {
-  return signedUp() ? "" : `<form class="newsletter" id="newsletter" aria-labelledby="nlTitle-receipt" novalidate>
-    ${form("receipt")}<button class="btn quiet" type="submit">Send me the plan</button></form>`;
+// In the page: a box to fill in, until someone has signed up.
+export function newsletterBox(where) {
+  return signedUp() ? "" : `<form class="newsletter" id="newsletter-${where}" aria-labelledby="nlTitle-${where}" novalidate>
+    ${form(where)}<button class="btn quiet" type="submit">Send me the plan</button></form>`;
 }
 
-export function bindNewsletterBox() {
-  const box = $("#newsletter");
+export function bindNewsletterBox(where) {
+  const box = $(`#newsletter-${where}`);
   if (!box) return;
   box.onsubmit = async e => {
     e.preventDefault();
-    if (await send(box, "receipt"))
-      box.innerHTML = `<p class="thanks">Almost done: check your inbox and confirm your email.</p>`;
+    if (await send(box, where)) {
+      document.querySelectorAll(".newsletter").forEach(other => {  // the other box goes too
+        other.innerHTML = `<p class="thanks">Almost done: check your inbox and confirm your email.</p>`;
+      });
+    }
   };
 }
 

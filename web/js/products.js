@@ -167,6 +167,6 @@ export function editPreferences(onChange) {
       changed = true; draw();
     }
   };
-  sheet.onclose = () => { if (changed && state.result) onChange(); };
+  sheet.onclose = () => { if (changed) onChange(); };
   openSheet();
 }
