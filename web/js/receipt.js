@@ -188,7 +188,8 @@ export function showReceipt(storeName, animate) {
   if (wayFor(res, b) === "store") stamp();  // drawn again, e.g. after the usual store changed
 
   state.status = "answer";
-  under.innerHTML = `<p class="fine"><span>Prices from the ${esc(eshopName(b.store))} e-shop.</span>
+  under.innerHTML = `<p class="fine"><span>${eshopName(b.store) === shopName(b.store)  // else the receipt says whose e-shop
+      ? `Prices from the ${esc(eshopName(b.store))} e-shop.` : "E-shop prices."}</span>
       <button class="link" type="button" id="wrong">Wrong product?</button></p>
     <div id="report"></div>`;
   after.innerHTML = getIt(res, b);

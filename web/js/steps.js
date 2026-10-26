@@ -1,6 +1,6 @@
 // The three steps: pick (dinners or a list), see where it's cheapest, say how you'll get it.
 // On a computer all three are on the page at once: the steps say where you are, and tapping one scrolls there.
-// On a phone each step is a screen of its own (body[data-step], layout.css), and a bar at the bottom shows
+// On a phone each step is a screen of its own (body[data-screen], layout.css), and a bar at the bottom shows
 // what you have so far and goes to the next step.
 import { $ } from "./dom.js";
 import { euro, shopName } from "./format.js";
@@ -38,7 +38,7 @@ export function goStep(n) {
 export function refreshSteps() {
   if (state.step > 1 && !filled()) state.step = 1;  // everything was taken out
   if (state.step === 3 && !answered() && state.status !== "pricing") state.step = 2;
-  document.body.dataset.step = state.step;
+  document.body.dataset.screen = state.step;  // not data-step: the servings stepper uses that
 
   const done = [filled() > 0, chosen(), chosen()];
   // a computer shows the next thing to do; a phone shows the screen it's on

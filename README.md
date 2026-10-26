@@ -83,10 +83,12 @@ that person's events and dinners by hand within 30 days.
 Every page load is logged as a `visit` (`from`: `tester_link`, `shared_dinner` or `direct`, plus `first_visit` and
 the referrer). Every recommendation is logged as a `basket` event with a server-made `result_id`, the user's
 preferences, and each store's `status` (`ok`, or `no_answer` when its search failed: that store isn't ranked). The
-receipt logs `accept`/`reject` (with the store chosen, which may not be the cheapest), `view_store` (comparing
+receipt logs `accept` when someone picks how they'll get it ("How will you get it?": `via` is `store`, `online` or
+`delivery`; once per store's receipt of an answer, later changes are `way_change`) and `reject` for "Not for me"
+(both with the store, which may not be the cheapest), `view_store` (comparing
 stores), `preference` (choosing another product or typing preference words), `wrong_product`, `quick_view`
 (tapping a product's photo) and `open_product` (opening a product in the store's e-shop, `from` the quick view or
-the chooser), `recipe_open` (unfolding a recipe card) and `recipe_import` (reading a recipe link: the site,
+the chooser), `recipe_import` (reading a recipe link: the site,
 how many items, or why it failed); all but `preference` carry the answer's `result_id`. Use those to decide which rule to fix.
 
 ### Looking at the data

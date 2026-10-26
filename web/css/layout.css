@@ -123,12 +123,13 @@ h1 .for { white-space: nowrap; }   /* "for 2" stays together */
   .card-sub { margin-left: 0; }
   .card-title { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; }
   .answer { display: block; }
+  .pick #find { display: none; }   /* the bar at the bottom finds the store */
 
   /* one step per screen */
-  body[data-step="1"] .answer,
-  body[data-step="2"] .pick, body[data-step="3"] .pick,
-  body[data-step="2"] .hero-text, body[data-step="3"] .hero-text,
-  body[data-step="2"] .get, body[data-step="3"] .printer { display: none; }
+  body[data-screen="1"] .answer,
+  body[data-screen="2"] .pick, body[data-screen="3"] .pick,
+  body[data-screen="2"] .hero-text, body[data-screen="3"] .hero-text,
+  body[data-screen="2"] .get, body[data-screen="3"] .printer { display: none; }
 
   .stepbar {
     position: fixed; z-index: 30; left: 0; right: 0; bottom: 0;
@@ -137,8 +138,8 @@ h1 .for { white-space: nowrap; }   /* "for 2" stays together */
     background: var(--surface); border-top: 1px solid var(--line);
     box-shadow: 0 -12px 24px -16px rgba(28, 31, 74, .35);
   }
-  body[data-step="3"] .stepbar { display: none; }
-  body:not([data-step="3"]) { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  body[data-screen="3"] .stepbar { display: none; }
+  body:not([data-screen="3"]) { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
   .sb-info { flex: 1; min-width: 0; margin: 0; }
   .sb-info span { display: block; font-size: 13px; color: var(--ink-soft); }
   .sb-info b { display: block; font: 700 17px/1.25 var(--display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

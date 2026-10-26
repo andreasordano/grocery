@@ -30,15 +30,17 @@ EVENT_TYPES = {
     "delete_request": "someone asked for their data to be deleted",
     # answers and what people did with them
     "basket": "a recommendation: every store's basket, with a result_id",
-    "accept": "\"I'll go to <store>\" under an answer",
+    "accept": "a way to get it picked under an answer (via: store, online or delivery); once per store's receipt "
+              "of an answer. Before Oct 2026: \"I'll go to <store>\"",
+    "way_change": "another way to get it picked after the first, under the same answer (via, from)",
     "reject": "\"Not for me\" under an answer",
     "view_store": "looking at another store's receipt",
     "wrong_product": "reporting a wrong product",
     "preference": "choosing another product or typing preference words",
-    "add_pantry": "adding a have-at-home item to the trip",
+    "add_pantry": "adding a have-at-home item to the basket",
     "quick_view": "tapping a product's photo",
     "open_product": "opening a product in the store's e-shop (from: quick_view, chooser, cart)",
-    "recipe_open": "unfolding a recipe card",
+    "recipe_open": "unfolding a recipe card (the cards left the page in Oct 2026)",
     "dinner_view": "a dinner's own page opened from the list (id)",
     # choosing dinners and items
     "dinner_category": "picking a kind of dinner",
@@ -54,12 +56,12 @@ EVENT_TYPES = {
     "share_created": "a link made to send a dinner",
     "share_opened": "a sent dinner opened",
     # shopping online
-    "cart_click": "\"Send this to the <store> cart\" without the extension",
+    "cart_click": "\"Order online at <store>\" without the extension",
     "cart_interest": "the answer to \"would you use one tap?\" (wants)",
     "cart_send": "a basket sent to the Rimi extension",
     "extension_download": "the Rimi extension downloaded",
     "delivery_interest": "\"Get it delivered instead?\", asked once per person (service: wolt, bolt or none; "
-                         "where: receipt or sheet)",
+                         "where: receipt, i.e. after \"Delivered by Wolt or Bolt\", or sheet)",
     # the weekly plan newsletter (WEB-37)
     "newsletter_offer": "the answer to the sign-up offered after the first-visit questions (answer: later, signed_up)",
     "newsletter_signup": "an email sent to MailerLite for the weekly plan (ok, where); the address isn't logged",

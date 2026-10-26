@@ -122,6 +122,12 @@ def receipt_lines(page):
     return [t.replace("\n", " | ") for t in page.locator(".r-line").all_inner_texts()]
 
 
+def open_recipe(page, name):
+    """A dinner's own page, from "Recipe" on it in the basket."""
+    page.click(f".trip li:has-text('{name}') .open")
+    page.wait_for_selector(".dp-recipe")
+
+
 def test_first_visit_gets_an_anonymous_id_asks_the_name_and_logs_a_visit(base_url, page):
     page.add_init_script("if (!sessionStorage.getItem('asked')) { localStorage.removeItem('pantryrun.usualStore'); sessionStorage.setItem('asked', 1); }")
     page.goto(base_url + "/")
@@ -222,8 +228,9 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     assert "Testi pasta for 2" in page.locator(".receipt").inner_text()
     assert page.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
 
-    page.click(".rc [data-share]")  # the recipe card, on the left under the trip
-    page.wait_for_function("document.querySelector('.rc .share-note').textContent.length > 0")
+    open_recipe(page, "Testi pasta")
+    page.click(".dinner-page [data-share]")
+    page.wait_for_function("document.querySelector('.dinner-page .share-note').textContent.length > 0")
     link = page.evaluate("navigator.clipboard.readText()")
     assert "/?dinner=" in link
 
@@ -247,14 +254,19 @@ def test_answer_id_comes_from_the_server_and_goes_back_with_feedback(base_url, p
     page.click("#find")
     receipt_lines(page)
     page.click("[data-store=selver]")
-    page.click("[data-fb=accept]")
-    page.wait_for_selector(".thanks")
+    page.click("[data-way=store]")  # "How will you get it?": in the store
+    page.wait_for_selector("#wayNote:has-text('Have a good shop')")
+    page.click("[data-way=online]")  # a change of mind isn't a second accept
+    page.locator("#sheet").wait_for(state="visible")
     page.wait_for_timeout(300)  # events are sent without waiting
 
     basket = [d for u, d in logged("basket") if u == "e2e-result"][-1]
     assert re.fullmatch(r"[0-9a-f]{32}", basket["result_id"])
-    for type in ("view_store", "accept"):
+    for type in ("view_store", "accept", "way_change"):
         assert [d["result_id"] for u, d in logged(type) if u == "e2e-result"] == [basket["result_id"]], type
+    [accept] = [d for u, d in logged("accept") if u == "e2e-result"]
+    assert (accept["via"], accept["store"]) == ("store", "selver")
+    assert [(d["via"], d["from"]) for u, d in logged("way_change") if u == "e2e-result"] == [("online", "store")]
 
 
 def test_store_that_didnt_answer_is_named_not_missing(base_url, page):
@@ -282,8 +294,35 @@ def test_dinner_screen_fits_a_phone(base_url, browser):
     page = ctx.new_page()
     page.goto(base_url + "/?u=e2e-phone")
     page.click("[data-cat=soup]")
-    widest = page.evaluate("Math.max(...[...document.querySelectorAll('#pick *')].map(e => e.getBoundingClientRect().right))")
+    # the kinds of dinner scroll sideways in their own row; nothing else may stick out
+    widest = page.evaluate("""Math.max(...[...document.querySelectorAll('#pick *')].filter(e => !e.closest('.cats') || e.matches('.cats'))
+                                     .map(e => e.getBoundingClientRect().right))""")
     assert widest <= 390
+    assert page.evaluate("document.documentElement.scrollWidth") <= 390
+    ctx.close()
+
+
+def test_a_phone_shows_one_step_at_a_time(base_url, browser):
+    ctx = browser.new_context(viewport={"width": 390, "height": 844}, is_mobile=True)
+    page = ctx.new_page()
+    page.goto(base_url + "/?u=e2e-steps")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    assert page.text_content(".stepbar .sb-info span") == "1 thing on your list"
+    assert not page.locator(".printer").is_visible() and not page.locator("#find").is_visible()
+    page.click(".stepbar [data-go='2']")  # "Find the store"
+    receipt_lines(page)
+    assert not page.locator("#pick").is_visible() and page.locator(".printer").is_visible()
+    assert page.get_attribute(".steps [data-go='2']", "aria-current") == "step"
+    page.click(".stepbar [data-go='3']")  # "How will you get it?"
+    page.wait_for_selector("[data-way=store]")
+    assert not page.locator(".printer").is_visible() and not page.locator(".stepbar").is_visible()
+    page.click("[data-way=store]")
+    page.click("#wayNote [data-go='2']")  # "See the list"
+    assert page.locator(".printer").is_visible() and page.locator(".stamp").is_visible()
+    page.click(".steps [data-go='1']")
+    assert page.locator("#pick").is_visible() and "Cheapest at" in page.text_content(".stepbar")
     ctx.close()
 
 
@@ -401,9 +440,7 @@ def test_own_dinner_has_a_recipe_card_with_how_to_cook_it(base_url, page):
     page.fill("#dmethod", "1. Tükelda.\n2. Keeda 20 min.")
     page.fill("#dlink", "https://nami-nami.ee/retseptid/1")
     page.click("#saveDinner")
-    page.wait_for_selector(".rc")
-    if not page.evaluate("document.querySelector('.rc').open"):  # folded on narrow screens
-        page.click(".rc summary")
+    open_recipe(page, "Testi supp")
     assert page.locator(".rc-ing li").all_inner_texts() == ["suvikõrvits\n400 g"]
     assert page.locator(".rc-method li").all_inner_texts() == ["Tükelda.", "Keeda 20 min."]
     assert page.get_attribute(".rc-link", "href") == "https://nami-nami.ee/retseptid/1"
@@ -451,12 +488,13 @@ def test_dinner_from_a_recipe_link(base_url, page, monkeypatch):
     assert page.input_value("#dname") == "Testi kotletid" and page.text_content("#dservings") == "4"
     assert page.locator(".items .it").all_inner_texts() == ["600 g spagetid", "tomatipasta"]
     page.click("#saveDinner")
-    page.wait_for_selector(".rc")
-    assert page.locator(".rc-photo img").count() == 1
+    open_recipe(page, "Testi kotletid")
+    assert page.locator(".dp-photo img").count() == 1
     assert page.text_content(".rc-link").startswith("Full recipe on rimi.ee")
     assert page.locator("[data-write]").count() == 0  # the method is on the page it links to
     assert [d for u, d in logged("recipe_import") if u == "e2e-import"][0]["items"] == 2
 
+    page.click("#backToList")
     page.click("#newDinner")
     monkeypatch.setattr(recipe_import, "fetch", lambda url: (url, "<title>Security check required</title>"))
     page.fill("#dlinkImport", "https://nami-nami.ee/retseptid/1")
@@ -471,12 +509,12 @@ def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, bro
         page.fill("#item", "kohv, suvikõrvits 1,2 kg")
         page.press("#item", "Enter")
         page.click("#find")
-        page.wait_for_selector("#sendCart")
+        page.wait_for_selector("[data-way=online]")
 
     page = browser.new_context().new_page()
     receipt(page)  # without the extension: the ways that work today, and would you use one tap?
-    assert page.text_content("#sendCart").endswith("Send this to the Rimi cart")
-    page.click("#sendCart")
+    assert page.text_content("[data-way=online] b") == "Order online at Rimi"
+    page.click("[data-way=online]")
     page.locator("#sheet").wait_for(state="visible")
     assert page.locator(".cart-links a").count() == 2  # each product's page
     assert page.get_attribute("#getExtension", "href") == "/extension.zip"
@@ -490,11 +528,11 @@ def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, bro
     page.add_init_script("""addEventListener('message', e => { if (e.data?.type === 'fill-cart') window.sentBasket = e.data; });
       addEventListener('DOMContentLoaded', () => { document.documentElement.dataset.pantryrunCart = 'rimi'; });""")
     receipt(page)
-    page.click("#sendCart")
+    page.click("[data-way=online]")
     page.wait_for_function("window.sentBasket")
     basket = page.evaluate("window.sentBasket")
     assert basket["store"] == "rimi" and {i["id"]: i["qty"] for i in basket["items"]} == {"rimi-kohv-1": 1, "rimi-suvikõrvits-1": 3}  # 3 × 500 g beat 1.2 kg loose
-    assert "Opening Rimi" in page.text_content("#cart")
+    assert "Opening Rimi" in page.text_content("#wayNote")
     page.context.close()
 
 
@@ -526,7 +564,8 @@ def test_barbora_prices_stand_for_a_maxima_store(base_url, page):
     page.click(".stores [data-store=barbora]")
     page.wait_for_selector(".r-store:text('Maxima')")
     assert "Prices from Barbora, Maxima's e-shop" in page.locator(".receipt").inner_text()
-    assert page.text_content("[data-fb=accept]") == "I'll go to Maxima"
+    assert page.text_content("#after .card-sub").startswith("Maxima,")
+    assert page.text_content("[data-way=online] b") == "Order online at Barbora"
 
 
 def test_privacy_page_takes_a_deletion_request(base_url, page):
@@ -545,11 +584,12 @@ def test_usual_store_goes_with_the_answer_and_can_be_changed(base_url, page):
     page.fill("#item", "kohv")
     page.press("#item", "Enter")
     page.click("#find")
-    page.wait_for_selector(".usual-note:has-text('You usually shop at Selver')")
+    receipt_lines(page)
+    page.wait_for_selector("#footYou:has-text('Usual store: Selver')")
     page.click("#changeUsual")
     page.click("#usualForm button[value=maxima]")
-    page.wait_for_selector(".usual-note:has-text('You usually shop at Maxima')")
-    page.click("[data-fb=accept]")
+    page.wait_for_selector("#footYou:has-text('Usual store: Maxima')")
+    page.click("[data-way=store]")
     assert [d["usual_store"] for u, d in logged("accept", "e2e-usual", wait=1) if u == "e2e-usual"] == ["maxima"]
     assert [(d["store"], d["changed"]) for u, d in logged("usual_store", "e2e-usual", wait=1) if u == "e2e-usual"] == [("maxima", True)]
 
@@ -602,7 +642,7 @@ def test_newsletter_is_offered_once_and_says_when_sign_up_isnt_open(base_url, pa
     page.press("#item", "Enter")
     page.click("#find")
     receipt_lines(page)
-    page.wait_for_selector("#newsletter")  # still offered under the receipt
+    page.wait_for_selector("#newsletter-footer")  # still offered, in the foot
     assert not page.locator("#news").is_visible()  # but the dialog only once
 
 
@@ -614,7 +654,8 @@ def test_make_it_yours_copies_a_dinner_into_mine(base_url, page):
         base_url + "/shares", json.dumps({"recipe_id": made["id"], "user_id": "e2e-author"}).encode(), {"Content-Type": "application/json"})))
     page.goto(base_url + share["path"] + "&u=e2e-copier")
     receipt_lines(page)
-    page.click("[data-copy]")  # the card is open on wide screens when there's one dinner
+    open_recipe(page, "Testi pasta")
+    page.click("[data-copy]")
     page.wait_for_selector("h1:has-text('Make it yours')")
     assert page.input_value("#dname") == "Testi pasta" and page.input_value("#dmethod") == "Keeda pasta."
     page.fill("#dname", "Minu pasta")
@@ -637,12 +678,13 @@ def test_delivery_is_asked_once_and_logged(base_url, page):
     page.press("#item", "Enter")
     page.click("#find")
     receipt_lines(page)
+    page.click("[data-way=delivery]")
     page.click("#after [data-delivery=wolt]")
     page.wait_for_selector("#after .delivery-ask >> text=Every yes helps us ask Wolt and Bolt")
     [(user, data)] = [(u, d) for u, d in logged("delivery_interest", "e2e-delivery", wait=1) if u == "e2e-delivery"]
     assert (data["service"], data["where"], data["store"]) == ("wolt", "receipt", "rimi") and data["result_id"]
 
-    page.click("#sendCart")  # the sheet doesn't ask again
+    page.click("[data-way=online]")  # the sheet doesn't ask again
     page.wait_for_selector("#cartAsk")
     assert page.locator("#sheet [data-delivery]").count() == 0
     page.reload()
@@ -651,7 +693,9 @@ def test_delivery_is_asked_once_and_logged(base_url, page):
     page.press("#item", "Enter")
     page.click("#find")
     receipt_lines(page)
-    assert page.locator("#after [data-delivery]").count() == 0  # nor the next receipt
+    page.click("[data-way=delivery]")
+    page.wait_for_selector("#wayNote:has-text('Every yes helps')")
+    assert page.locator("#after [data-delivery]").count() == 0  # nor the next answer
 
 
 def test_tapping_a_dinner_shows_its_page_and_adds_only_on_request(base_url, page):
@@ -673,5 +717,5 @@ def test_tapping_a_dinner_shows_its_page_and_adds_only_on_request(base_url, page
     page.click("#addToTrip")
     page.wait_for_selector(".trip li:has-text('Testi hautis')")
     receipt_lines(page)
-    page.wait_for_selector("#tripPanel .rc")  # its recipe card, on the left under the trip
-    assert page.locator("#after .rc").count() == 0 and page.locator("#tripPanel #newsletter").count() == 1
+    assert page.locator(".trip li:has-text('Testi hautis') .open").count() == 1  # its recipe, a tap away
+    assert page.locator("#newsletter-footer").count() == 1

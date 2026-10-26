@@ -105,7 +105,7 @@ class NewsletterRequest(BaseModel):
     consent: bool = False
     user_id: Optional[str] = None
     name: Optional[str] = None
-    where: Optional[str] = None  # where in the app: first_visit or receipt
+    where: Optional[str] = None  # where in the app: first_visit, footer or get_it (receipt before Oct 2026)
 
 
 class EditionRequest(BaseModel):
@@ -310,7 +310,7 @@ def newsletter_signup(req: NewsletterRequest):
         raise HTTPException(status_code=400, detail="Tick the box to say we may email you.")
     if not req.user_id or not mailerlite.configured():
         raise HTTPException(status_code=503, detail="Sign-up isn't open yet. Try again in a few days.")
-    where = req.where if req.where in ("first_visit", "receipt") else None
+    where = req.where if req.where in ("first_visit", "footer", "get_it", "receipt") else None
     try:
         mailerlite.subscribe(email, req.user_id, (req.name or "").strip()[:40] or None)
     except mailerlite.MailerLiteError as exc:
