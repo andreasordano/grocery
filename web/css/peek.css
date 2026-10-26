@@ -9,9 +9,10 @@
 #peek:popover-open { animation: peek .22s var(--ease); }
 @keyframes peek { from { transform: translateY(6px) scale(.98); opacity: 0; } }
 
-/* the photo on white, whatever the theme: product shots have white backgrounds */
-.pk-photo { height: 170px; background: #fff; display: grid; place-items: center; padding: 14px; }
-.pk-photo img { max-width: 100%; max-height: 100%; object-fit: contain; }
+/* the photo on white, whatever the theme: product shots have white backgrounds. It fills the box and keeps its
+   shape inside it, so a tall photo can't spill over the name below. */
+.pk-photo { height: 170px; background: #fff; padding: 14px; overflow: hidden; }
+.pk-photo img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
 .pk-body { padding: 14px 18px 16px; }
 .pk-for { margin: 0 0 4px; font-size: 12.5px; color: var(--ink-soft); }

@@ -54,8 +54,9 @@ function place(anchor) {
   peek.style.left = peek.style.top = "";
   if (phone.matches) return;  // CSS puts it at the bottom of the screen
   const a = anchor.getBoundingClientRect(), paper = (feed.firstElementChild || feed).getBoundingClientRect();
+  const slot = $(".slot")?.getBoundingClientRect();  // the printer's slot is wider than the paper: clear it too
   const w = peek.offsetWidth, h = peek.offsetHeight, gap = 10;
-  let left = paper.left - w - gap, top = a.top + a.height / 2 - h / 2;
+  let left = Math.min(paper.left, slot?.left ?? paper.left) - w - gap, top = a.top + a.height / 2 - h / 2;
   if (left < gap) { left = a.left; top = a.bottom + 6; }
   peek.style.left = `${Math.max(gap, Math.min(left, innerWidth - w - gap))}px`;
   peek.style.top = `${Math.max(gap, Math.min(top, innerHeight - h - gap))}px`;
