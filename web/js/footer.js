@@ -24,8 +24,8 @@ export function startFooter() {
 export function refreshFooter() {
   const usual = chains()[identity.usualStore];
   const n = Object.keys(state.prefs).length;
-  you.innerHTML = `<h2>You</h2>
-    <p>Usual store: ${usual ? esc(usual) : identity.usualStore === "other" ? "another store" : "not said yet"} ·
+  you.innerHTML = `<h2>Hi, ${identity.name ? ` ${esc(identity.name)}` : ""}</h2>
+    <p>Your usual store is ${usual ? esc(usual) : identity.usualStore === "other" ? "another store" : "not said yet"} ·
       <button type="button" class="link" id="changeUsual">${usual || identity.usualStore === "other" ? "Change" : "Tell us"}</button></p>
     <p>${n ? `${n} product ${n === 1 ? "preference" : "preferences"} · <button type="button" class="link" data-prefs>Edit</button>`
       : "No product preferences yet. Tap a product on the receipt to choose another."}</p>`;
