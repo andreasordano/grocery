@@ -34,7 +34,7 @@ sealiha:
 lohefilee:
   selver: {query: [lõhefilee jahutatud, lõhefilee], category: ["Värske kala, mereannid", "Külmutatud liha- ja kalatooted"], require: [lõhe], exclude: [suits, soola, marin, šašlõkk, suflee, graavi]}
   rimi:   {query: lõhefilee, category: [SH-8-20-27], require: [lõhe]}
-  barbora: {query: lõhefilee, category: [Värske kala], require: [lõhe], expect_missing: true}  # Barbora sells only smoked/salted/canned salmon online
+  barbora: {query: lõhefilee, category: [Värske kala], require: [lõhefilee, lõhe filee, lõhe liblikfilee], expect_missing: true}  # a fillet, not the whole fish (3 kg)
 
 keeduvorst:
   selver: {query: keeduvorst, category: ["Keedu- ja suitsuvorstid, viinerid"], require: [vorst], exclude: [suits, viiner, lõige, juustu]}

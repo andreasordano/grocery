@@ -136,6 +136,22 @@ def test_a_line_left_out_is_left_out_at_every_store(fake_store):
     assert res["skipped"] == [{"key": "munad", "label": "Kanamunad"}]
 
 
+def test_best_value_for_what_you_use_is_named_when_it_is_not_the_cheapest_to_pay(monkeypatch):
+    recipes = {"ingredients": {"lohe": {"name": "Lõhefilee", "unit": "g"}},
+               "recipes": [{"id": "kala", "name": "Kala", "ingredients": [{"item": "lohe", "amount": 300}]}]}
+    stock = {("a", "lõhe"): [{"name": "Lõhefilee, kg", "price": 13.99, "unit": "kg", "min_qty": 1.6, "qty_step": 1.6}],
+             ("b", "lõhe"): [{"name": "Lõhefilee 250g", "price": 5.0}]}
+    monkeypatch.setattr(catalog, "load_recipes", lambda: recipes)
+    monkeypatch.setattr(catalog, "load_rules", lambda: {"lohe": {s: {"query": "lõhe"} for s in "ab"}})
+    monkeypatch.setattr(catalog, "_cached_fetch", lambda store, q: stock[(store, q)])
+
+    res = catalog.recommend_dinner("kala", 2, ["a", "b"])
+
+    # b: two 250 g packs, 10 € to pay, 6 € of it used. a: Barbora's 1.6 kg minimum, 22.38 € to pay, 4.20 € used.
+    assert [(b["store"], b["total_price"], b["used_price"]) for b in res["baskets"]] == [("b", 10.0, 6.0), ("a", 22.38, 4.2)]
+    assert res["store"] == "b" and res["best_value"] == "a"
+
+
 def test_store_that_didnt_answer_is_not_ranked(fake_store, monkeypatch):
     def fetch(store, q):
         if store == "a":
@@ -527,3 +543,9 @@ def test_selver_chicken_breast_in_one_word_is_accepted():
     one_word = {"name": "Broileririnnafilee, TALLEGG, 1 kg", "category": ["Linnuliha"]}
     assert catalog.matches_rule(one_word, rule)
     assert not catalog.matches_rule({"name": "Broileririnnafilee marineeritud, 400 g", "category": ["Linnuliha"]}, rule)
+
+
+def test_barbora_salmon_fillet_is_not_the_whole_fish():
+    rule = catalog.load_rules()["lohefilee"]["barbora"]
+    assert not catalog.matches_rule({"name": "Jahutatud lõhe, kg", "category": ["Värske kala"]}, rule)  # sold by the 3 kg fish
+    assert catalog.matches_rule({"name": "Jahutatud lõhefilee C-trim, kg", "category": ["Värske kala"]}, rule)

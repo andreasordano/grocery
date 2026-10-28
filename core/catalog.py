@@ -154,6 +154,20 @@ def cost_for(product, need, need_unit, piece_g=None):
     return round(packs * price, 2), packs, f"{packs} × {price:.2f} €", None
 
 
+def used_cost(product, need, need_unit, piece_g=None):
+    """What the amount needed is worth, leftovers not counted: 300 g of a 1.6 kg minimum or of a 500 g pack is
+    300 g's worth. For "best value for what you use"; what you pay is cost_for's. None if unknown."""
+    price = parse_price(product.get("price"))
+    if price == float("inf") or need is None:
+        return None
+    if (product.get("unit") or "").lower() in ("kg", "l"):
+        grams = _convert(need, need_unit, "g", piece_g)
+        return round(price * grams / 1000, 2) if grams is not None else None
+    pack = pack_size(product.get("name") or "", product.get("volume"))
+    needed = _convert(need, need_unit, pack[1], piece_g) if pack else None
+    return round(price * needed / pack[0], 2) if needed and pack[0] > 0 else None
+
+
 def cart_qty(product, need, need_unit, packs, piece_g=None):
     """What to put in the e-shop's cart for what cost_for priced: packs, or kg (l) of a loose good."""
     if packs:
@@ -283,6 +297,7 @@ def ingredient_offers(ingredient_key, need, store, recipes, rules, pref=None):
             if priced:
                 cost, packs, how, bought = priced
                 options.append(_with_discount({"product": p["name"], "price": parse_price(p["price"]), "cost": cost,
+                                               "used_cost": used_cost(p, need, spec["unit"], spec.get("piece_g")),
                                                "packs": packs, "how": how, "bought": bought, "substitute": level > 0,
                                                "cart_qty": cart_qty(p, need, spec["unit"], packs, spec.get("piece_g")),
                                                **_looks(p)}, p))
@@ -494,6 +509,7 @@ def free_text_offers(items, stores, needs=None, failed=None):
                 cost, packs, how, bought = priced or (p["price"], 1, f"1 × {p['price']:.2f} €", None)
                 options.append((p.get("relevance", 0), p["score"], _with_discount(
                     {"product": p["name"], "price": p["price"], "cost": cost, "packs": packs, "how": how, "bought": bought,
+                     "used_cost": used_cost(p, needs[it], "g") if it in needs else None,
                      "substitute": False, "cart_qty": cart_qty(p, needs[it], "g", packs) if it in needs else packs,
                      **_looks(p)}, p)))
             by_amount = it in needs
@@ -517,7 +533,7 @@ def _times(option, n):
     if n == 1:
         return option
     mul = lambda v: round(v * n, 2) if v is not None else None
-    return {**option, "cost": mul(option["cost"]), "regular_cost": mul(option.get("regular_cost")),
+    return {**option, "cost": mul(option["cost"]), "regular_cost": mul(option.get("regular_cost")), "used_cost": mul(option.get("used_cost")),
             "card_cost": mul(option.get("card_cost")), "packs": n, "cart_qty": n, "how": f"{n:g} × {option['price']:.2f} €"}
 
 
@@ -547,6 +563,8 @@ def build_basket(store, needs, prefs, recipes, rules, free):
 
     total = round(sum(l["cost"] for l in lines), 2)
     return {
+        # What the lines are worth for what's needed, leftovers not counted (a 1.6 kg minimum for 300 g is 300 g).
+        "used_price": round(sum(l["cost"] if l.get("used_cost") is None else min(l["used_cost"], l["cost"]) for l in lines), 2),
         "store": store,
         "status": "ok",
         "lines": lines,
@@ -567,6 +585,22 @@ def no_answer_basket(store):
 
 
 MAX_DINNERS = 5  # dinners in one trip
+
+
+BEST_VALUE_MARGIN = 0.3  # € a store must beat the cheapest one by, for what's used, to be named best value
+
+
+def _best_value(baskets):
+    """The store that's cheapest for what the dinners use (leftovers from big minimums and packs not counted),
+    when that isn't the store that's cheapest to pay: Barbora's 1.6 kg of salmon costs more today, but is worth
+    more. Only among stores with as few missing as the cheapest. None when it's the same store."""
+    ok = [b for b in baskets if b["status"] == "ok"]
+    if len(ok) < 2:
+        return None
+    first = ok[0]
+    rivals = [b for b in ok[1:] if len(b["missing"]) == len(first["missing"])]
+    best = min(rivals, key=lambda b: b["used_price"], default=None)
+    return best["store"] if best and best["used_price"] <= first["used_price"] - BEST_VALUE_MARGIN else None
 
 
 def need_key(n):
@@ -623,6 +657,7 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     baskets = [build_basket(s, needs, prefs, recipes, rules, free) for s in stores if s not in failed]
     baskets.sort(key=lambda b: (len(b["missing"]), b["total_price"]))
     baskets += [no_answer_basket(s) for s in stores if s in failed]
+    best_value = _best_value(baskets)
 
     # Each dinner as a recipe card: its ingredients for this many people, and how to cook it when known.
     about = [card(r, people, needs) for (r, people), needs in zip(picked, each)]
@@ -635,6 +670,7 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
         "items": items,
         "skipped": skipped,
         "store": baskets[0]["store"] if baskets and baskets[0]["status"] == "ok" else None,
+        "best_value": best_value,
         "baskets": baskets,
     }
 

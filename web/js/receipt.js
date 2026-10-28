@@ -98,6 +98,20 @@ function line(l, photos, removable) {
     ${notes.length ? `<span class="d">${esc(notes.join(". "))}</span>` : ""}</button>${removable ? skipButton(l.key, l.label) : ""}</li>`;
 }
 
+// The store that's cheapest for what the dinners use, when it isn't the cheapest to pay (core/catalog._best_value):
+// its bigger amounts cost more today, but you keep what's left over.
+function valueNote(res, b, stores) {
+  const bv = stores.find(o => o.store === res.best_value);
+  if (!bv) return "";
+  if (b.store === bv.store) {
+    const big = b.lines.filter(l => l.used_cost != null && l.used_cost < l.cost - 0.5).map(l => l.label);
+    return `<div class="r-note r-value"><span class="bv">★ Best value for what you use</span> What you use is worth ${euro.format(b.used_price)}.
+      You pay more today${big.length ? ` because ${esc(big.join(", "))} ${big.length === 1 ? "comes" : "come"} in more than you need` : ""}, and keep the rest.</div>`;
+  }
+  return `<div class="r-note r-value"><span class="bv">★ Best value for what you use</span> <button type="button" data-store="${esc(bv.store)}">${esc(shopName(bv.store))}</button>:
+    ${euro.format(bv.total_price)} today, but what you use is worth ${euro.format(bv.used_price)}. You keep the rest.</div>`;
+}
+
 // What was taken off with ×: tap one to put it back.
 function skippedNote(res) {
   if (!res.skipped?.length) return "";
@@ -193,12 +207,14 @@ export function showReceipt(storeName, animate) {
     <div class="r-total"><span>Total</span><span>${euro.format(b.total_price)}</span></div>
     ${b.savings > 0 ? `<div class="r-save"><span>You save</span><span>${euro.format(b.savings)}</span></div>` : ""}
     ${b.card_savings > 0 ? `<div class="r-card">${euro.format(b.card_savings)} less with a loyalty card</div>` : ""}
+    ${valueNote(res, b, stores)}
     ${skippedNote(res)}
     ${pantryNote(res)}
     ${prefsNote(b)}
     ${stores.length > 1 ? `<hr class="r-rule"><div class="r-head">Compare stores</div>
       <ul class="stores">${stores.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
-        <span class="s">${esc(shopName(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span></button></li>`).join("")}</ul>` : ""}
+        <span class="s">${esc(shopName(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span>${o.store === res.best_value
+          ? `<span class="bv">★ Best value for what you use</span>` : ""}</button></li>`).join("")}</ul>` : ""}
   `, animate);
   const stamp = () => { if (!$(".stamp", feed)) feed.firstElementChild.insertAdjacentHTML("beforeend", `<div class="stamp">Going</div>`); };
   if (wayFor(res, b) === "store") stamp();  // drawn again, e.g. after the usual store changed

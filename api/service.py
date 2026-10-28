@@ -199,8 +199,10 @@ def basket(req: BasketRequest):
             "stores": stores,
             "latency_s": round(time.monotonic() - started, 2),
             "recommended_store": result["store"],
+            "best_value": result["best_value"],
             "baskets": [
                 {"store": b["store"], "status": b["status"], "total_price": b["total_price"], "missing": b["missing"],
+                 "used_price": b.get("used_price"),
                  "chosen": {l["key"]: l["product"] for l in b["lines"]}}
                 for b in result["baskets"]
             ],
