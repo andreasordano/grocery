@@ -18,7 +18,7 @@ hakkliha:
 
 broileri_koivad:
   selver: {query: [poolkoivad, broileri koivad], category: [Linnuliha], require: [koib, koiv], exclude: [marin, suits]}
-  rimi:   {query: [poolkoivad, broileri koivad], category: [SH-8-9-25], require: [koib, koiv, kint]}
+  rimi:   {query: [poolkoivad, broileri koivad], category: [SH-8-9-25], require: [koib, koiv, kint], exclude: [marin, suits, teriyaki, küp]}
   barbora: {query: [broileri koivad, poolkoivad], category: [Linnuliha], require: [koib, koiv, kint], exclude: [marin, suits]}
 
 kanafilee:
@@ -45,6 +45,12 @@ kartul:
   selver: {query: kartul, category: ["Köögiviljad, juurviljad"], require: [kartul], exclude: [bataat, mini, beebi]}
   rimi:   {query: kartul, category: [SH-12-1-1], require: [kartul], exclude: [aurutatud]}
   barbora: {query: kartul, category: ["Kartulid, porgandid ja kapsad"], require: [kartul]}
+
+kuuslauk:
+  # Fresh garlic: a net or loose. Not chopped, granulated, in oil, black garlic or garlic salt.
+  selver: {query: küüslauk, category: ["Köögiviljad, juurviljad"], require: [küüslauk], exclude: [must, hakitud, tükeld, purust, granul, õlis]}
+  rimi:   {query: küüslauk, category: [SH-12-1], require: [küüslauk], exclude: [must, hakitud, tükeld, purust, granul, õlis]}
+  barbora: {query: küüslauk, category: ["Sibul, küüslauk ja muud vürtsköögiviljad"], require: [küüslauk], exclude: [must, hakitud, tükeld, purust, granul, õlis]}
 
 sibul:
   selver: {query: sibul, category: ["Köögiviljad, juurviljad"], require: [sibul], exclude: [roheline, šalott]}

@@ -433,6 +433,23 @@ def test_plus_on_a_card_adds_the_dinner_without_opening_it(base_url, page):
     page.wait_for_selector(".trip", state="detached")
 
 
+def test_a_long_product_name_in_the_report_list_keeps_the_page_on_screen(base_url, browser):
+    ctx = browser.new_context(viewport={"width": 1280, "height": 900})
+    page = ctx.new_page()
+    page.goto(base_url + "/?u=e2e-wrong")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.click("#wrong")
+    page.evaluate("() => { document.querySelector('#wrongItem option').textContent = 'broileri rinnafilee: '"
+                  " + 'Broileri rinnafilee värske, A-klass, 500 g, jahutatud, pakendatud kaitsegaasi '.repeat(3); }")
+    assert page.evaluate("document.documentElement.scrollWidth") == 1280  # the column didn't grow off the screen
+    box = page.locator("#sendReport").bounding_box()
+    assert box["x"] + box["width"] <= 1280
+    ctx.close()
+
+
 def test_too_many_dinners_in_one_trip_is_refused(base_url):
     body = json.dumps({"recipes": [{"id": f"d{i}"} for i in range(6)]}).encode()
     req = urllib.request.Request(base_url + "/basket", body, {"Content-Type": "application/json"})

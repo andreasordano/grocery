@@ -15,7 +15,7 @@ import threading
 from datetime import datetime, timedelta, timezone
 from core import db, price_log
 from core.cache import TTLCache
-from core.scoring import head_weight, pack_size, parse_price, relevance_score, score, shares_stem
+from core.scoring import head_weight, made_from, misses_the_thing, pack_size, parse_price, relevance_score, score, shares_stem
 from stores_config import connector, max_concurrency
 
 
@@ -174,6 +174,9 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "match": rel,
         "related": rel >= 1 or shares_stem(name, rules),
         "weight": head_weight(name, rules),
+        # Made from it ("Br.kintsuliha jogurtimarinaadis" for kanakintsuliha): it shows which shelf the thing
+        # is on, so it votes, but it isn't offered.
+        "made_from": made_from(name, display_name) or misses_the_thing(name, display_name),
     }
 
 
@@ -242,10 +245,15 @@ def _build_queries(spec: dict):
     queries = []
     if base:
         queries.append(base)
+    words = base.lower().split()
+    if len(words) == 2 and all(w.isalpha() for w in words):
+        queries.append("".join(words))  # "hiina kapsas": the store may only know "Hiinakapsas"
 
     # Add individual tokens as fallbacks.
     for t in tokens:
         queries.append(t)
+    # "veiseliha": stores name the animal, then the cut ("Veise kaelaliha").
+    queries += [t[:-4] for t in tokens if len(t) >= 7 and t.endswith("liha")]
 
     # Deduplicate while preserving order.
     seen = set()
@@ -308,7 +316,7 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
     ranked = []
     for p in store_candidates:
         tier = _tier(p, top, trusted)
-        if tier is None:
+        if tier is None or p["made_from"]:
             continue
         p["relevance"] = tier
         p["score"] = score(p)

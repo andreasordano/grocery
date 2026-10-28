@@ -6,7 +6,8 @@
 
 ingredients:
   hakkliha: {name: "Kodune hakkliha",            unit: g, aliases: [hakkliha, kodune hakkliha, sea-veise hakkliha, sea- ja veisehakkliha]}
-  broileri_koivad: {name: "Broileri koivad",  unit: g, aliases: [koivad, broileri koivad, kanakoivad, poolkoivad, kintsud]}
+  broileri_koivad: {name: "Broileri koivad",  unit: g, aliases: [koivad, broileri koivad, kanakoivad, poolkoivad, kintsud, kanapoolkoivad,
+                                                                broileri poolkoivad]}
   kanafilee: {name: "Broileri rinnafilee",        unit: g, piece_g: 200, aliases: [kanafilee, broileri rinnafilee, broiler rinnafilee, kana rinnafilee, rinnafilee,
                                                                      kanarinnafilee, broileririnnafilee, broilerifilee]}  # a fillet is ~200 g
   sealiha: {name: "Sealiha", unit: g, aliases: [sealiha, kaelakarbonaad, sea kaelakarbonaad, abatükk, sea abatükk]}
@@ -14,6 +15,7 @@ ingredients:
   keeduvorst: {name: "Keeduvorst",  unit: g, aliases: [keeduvorst, doktorivorst, lastevorst]}
   kartul: {name: "Kartul",                     unit: g, aliases: [kartul, kartulid]}
   sibul: {name: "Sibul",                      unit: g, aliases: [sibul, sibulad]}
+  kuuslauk: {name: "Küüslauk", unit: g, piece_g: 50, aliases: [küüslauk, küüslaugud, küüslaugu küüned, küüslauguküüned]}  # a head ~50 g; in most store recipes
   porgand: {name: "Porgand",                    unit: g, aliases: [porgand, porgandid]}
   hapukapsas: {name: "Hapukapsas",                 unit: g, aliases: [hapukapsas]}
   paprika: {name: "Paprika",                    unit: g, aliases: [paprika, paprikad]}

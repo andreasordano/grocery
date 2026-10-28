@@ -123,11 +123,37 @@ def test_tilapia_is_fish_not_tilsit_cheese(stores):
     assert not any("Tilsit" in n or "Till" in n for n in picks("tilaapia", "barbora"))
 
 
-def test_beef_is_not_pet_food_or_stock(stores):
-    for store in ("barbora", "rimi"):
-        found = picks("veiseliha", store)
-        assert found, store
-        assert not any(w in n.lower() for n in found for w in ("kassi", "koera", "puljong", "püree")), (store, found)
+def test_beef_is_not_pet_food_stock_or_tinned(stores):
+    found = picks("veiseliha", "barbora")
+    assert found[0] == "Jahutatud veise koot kondig.WELL DONE,kg"
+    made_from = ("kassi", "koera", "puljong", "püree", "hautatud", "omas mahlas", "kuiv", "vinnut", "borš", "pelmeen")
+    assert not any(w in n.lower() for n in found for w in made_from), found
+    # Rimi's "veiseliha" search finds only stock, tins, jerky, baby and pet food: none of it is offered
+    # (real searches also ask for "veise", which finds the cuts).
+    assert picks("veiseliha", "rimi") == []
+
+
+@pytest.mark.parametrize("name, typed, expected", [
+    ("Küüslauk ürtidega päevalilleõlis, CITRES, 290 g", "küüslauk", True),
+    ("Šampinjonid marin. Rimi Smart 280g/165g", "šampinjonid", True),
+    ("Marineeritud šampinjonid EXTRA LINE 500g", "marineeritud šampinjonid", False),  # asked for
+    ("Piparmünditee EXTRA LINE,20x1.5g", "piparmünt", True),
+    ("Pelmeenid Hiina Uvic 700g", "hiina kapsas", True),
+    ("Õun-porg.-pastin.p.ELLA'S KITCHEN120g4k", "pastinaak", True),  # baby food, by its age
+    ("Kikerhernes Rimi 400g/250g", "kikerhernes", False),
+    ("Pastinaak kg", "pastinaak", False),
+    ("Täissuitsuvorst veise RANNAROOTSI,240g", "suitsuvorst", False),
+])
+def test_made_from_the_thing_is_not_the_thing(name, typed, expected):
+    from core.scoring import made_from
+    assert made_from(name, typed) is expected
+
+
+def test_two_typed_words_written_as_one_are_the_thing():
+    from core.scoring import relevance_score
+    assert relevance_score("Hiinakapsas, kg", {"include": ["hiina", "kapsas"]}) == 5
+    assert fetch._build_queries(fetch.spec_for("hiina kapsas"))[:2] == ["hiina kapsas", "hiinakapsas"]
+    assert "veise" in fetch._build_queries(fetch.spec_for("veiseliha"))
 
 
 def test_chicken_legs_are_found_by_their_last_part(stores):
@@ -159,3 +185,19 @@ def test_out_of_stock_products_are_never_options(monkeypatch):
     monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q: stock)
     products, _ = fetch.fetch_all({"kohv": fetch.spec_for("kohv")}, ["rimi"])
     assert [p["name"] for p in products["kohv"]] == ["Kohv Löfbergs 500g"]
+
+
+@pytest.mark.parametrize("name, typed, expected", [
+    ("Keedusalaami Paruni NÕO, 90g viil", "parma juust", True),             # neither cheese nor parma
+    ("Hele kaiser kukkel seemnetega 60g", "küpsetatud pardiliha", True),
+    ("Kooritud kreeka pähklid EXTRA LINE 150g", "kooritud mandel", True),  # "kooritud" only describes
+    ("Broileri kintsuliha, värske, A-kl Tallegg kg", "lamba kintsuliha", True),  # the wrong animal
+    ("Lamba kintsuliha kg", "lamba kintsuliha", False),
+    ("Punane sibul, kg", "sibul punane", False),                            # Rimi's recipes: noun first
+    ("Sibul,kg", "kollane sibul", False),
+    ("Riisinuudlid EXOTIC FOOD 250g", "riisinuudlid santa maria", False),   # another brand is fine
+    ("Kartul lahtine, kg", "kartul", False),                                # one word: not checked here
+])
+def test_an_item_of_several_words_needs_the_word_that_names_it(name, typed, expected):
+    from core.scoring import misses_the_thing
+    assert misses_the_thing(name, typed) is expected

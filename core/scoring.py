@@ -102,6 +102,8 @@ def word_match(word, query):
         form = max((_form(word[i:], query) for i in range(3, len(word) - 2)), default=0)
     if not form and len(word) >= 5 and query.endswith(word) and len(query) - len(word) >= 3:
         form = 2
+    if not form and len(query) >= 7 and query.endswith("liha") and word == query[:-4]:
+        form = 2  # "Veise kaelaliha" for veiseliha: stores name the animal, then the cut
     if form:
         # Estonian comitative/abessive: "maapähklivõiga" = with peanut butter, not peanut butter.
         if word.endswith(("ga", "ta")) and len(word) > len(query) and not query.endswith(("ga", "ta")):
@@ -163,6 +165,54 @@ def shares_stem(name, rules, letters=5):
                for w in _name_words(name) for q in includes)
 
 
+# Words that say a product is made from the typed thing, not the thing itself: tinned or marinated, chopped or
+# dried, a sauce, tea, crisps, dumplings, baby food, pet food. Free-text items leave such products out unless the
+# person typed the word too ("marineeritud šampinjonid", "piparmünditee"). Found anywhere in the name, or (the
+# second list) at the end of a word: "piparmünditee", "õunamahl", "tomatipasta".
+_MADE_FROM = ("marin", "soolvees", "õlis", "omas mahlas", "hautatud", "kauaküp", "teriyaki", "purustatud", "tükeldatud",
+              "hakitud", "granuleeritud", "kuiv", "vinnut", "konserv", "krõps", "pelmeen", "pür", "pehmik", "smuuti",
+              "galett", "puljong", "kaste", "kastme", "kast.", "borš", "hommikueine", "liköör", "šok", "jäätis", "koera", "kassi", "lemmiklooma",
+              # and as the stores shorten them, and more things made with it
+              "mar.", "kauak", "maits.", "paneer", "siider", "jook", "batoon", "krutoon", "majonees", "pirukas", "pitsa",
+              "pesto", "friikartul", "vesi", "mineraal", "kokt")
+_MADE_FROM_END = ("tee", "mahl", "supp", "pasta", "vorst", "roog")
+_BABY_AGE = re.compile(r"\d\s?k\.?\+?(?![\w])")  # baby food is sold by age: "120g4k", "7k.+"
+
+
+def made_from(name, typed):
+    """True when the name says it's made from the thing ("Küüslauk ürtidega päevalilleõlis") and `typed`
+    didn't ask for that."""
+    name, typed = name.lower(), typed.lower()
+    words = re.findall(r"[^\W\d_]+", name)
+    found = [m for m in _MADE_FROM if m in name] + [m for m in _MADE_FROM_END if any(w.endswith(m) for w in words)]
+    return any(m not in typed for m in found) or bool(_BABY_AGE.search(name))
+
+
+# Words that describe the thing rather than name it: "punane sibul", "küpsetatud pardiliha", "kooritud mandel".
+_DESCRIBES = ("ne", "line", "lised", "tud", "dud", "ga", "ta", "värske", "mahe", "suur", "väike")
+
+
+def misses_the_thing(name, typed):
+    """For an item of several words: True when the name has neither the first nor the last word that names the
+    thing ("Keedusalaami" for "parma juust", "Kooritud kreeka pähklid" for "kooritud mandel"). Rimi's recipes
+    write the noun first ("juust feta", "sibul punane"), most people last, so either will do."""
+    typed_words = [fold(w) for w in _WORD_RE.findall(typed.lower()) if len(w) > 1]
+    if len(typed_words) < 2:
+        return False
+    naming = [w for w in typed_words if not w.endswith(_DESCRIBES)] or typed_words
+    words = _name_words(name)
+    if not any(max(_word_matches(words, q), default=0) >= 2 for q in {naming[0], naming[-1]}):
+        return True
+    # "lamba kintsuliha" is lamb: chicken thighs ("Broileri kintsuliha") have the right cut of the wrong animal.
+    asked = {a for a, forms in _ANIMALS.items() if any(w.startswith(forms) for w in typed_words)}
+    named = {a for a, forms in _ANIMALS.items() if any(w.startswith(forms) for w in words)}
+    return bool(asked) and bool(named) and not asked & named
+
+
+_ANIMALS = {"lamb": ("lamba", "lammas"), "pork": ("sea",), "beef": ("veise", "veis"), "chicken": ("kana", "broiler", "br"),
+            "turkey": ("kalkun",), "duck": ("pardi", "part")}
+
+
 def relevance_score(name, rules):
     """How well a product name fits the typed words:
     0 unrelated, 1 some words mentioned, 2 all mentioned, 4 near forms, 5 it is the thing.
@@ -172,6 +222,8 @@ def relevance_score(name, rules):
         return 2
 
     words = _name_words(name)
+    if len(includes) > 1 and fold("".join(includes)) in words:
+        return 5  # "Hiinakapsas, kg" for "hiina kapsas"
     best = [max(_word_matches(words, q), default=0) for q in includes]
     worst = min(best)
     if worst == 3:

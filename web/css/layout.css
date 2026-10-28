@@ -45,7 +45,7 @@ main {
 .steps ol { list-style: none; margin: 1.5em 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; }
 .hero-text:empty { display: none; }   /* a dinner's own page and the editor have their own headline */
 .pick { grid-area: pick; min-width: 0; }
-.answer { grid-area: answer; min-width: 0; display: grid; gap: 24px; }
+.answer { grid-area: answer; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }  /* a long product name in the report list mustn't widen it */
 
 /* cards: white on the tinted page; the receipt's is rhubarb milk */
 .card { background: var(--surface); border-radius: 28px; padding: 28px; box-shadow: 0 1px 0 var(--line); }

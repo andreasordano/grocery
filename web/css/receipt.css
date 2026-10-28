@@ -116,6 +116,7 @@ button.r-photo { cursor: zoom-in; }
 .under .fine { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 13px; }
 .under .link { font-size: 13px; }
 .report { margin-top: 12px; display: flex; gap: 8px; }
+.report .btn { flex: none; }
 .thanks { margin: 0; font: 700 18px var(--display); }
 
 /* ── 3. How will you get it? One tap; it's what "accept" means now ── */
