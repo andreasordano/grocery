@@ -35,13 +35,14 @@ def test_cost_loose_by_weight():
     assert (cost, packs, bought) == (0.79, None, None)
 
 
-def test_cost_loose_is_what_is_needed_and_the_minimum_is_for_the_online_cart():
-    cabbage = {"name": "Hiinakapsas, kg", "price": 1.99, "unit": "kg", "min_qty": 1.3, "qty_step": 1.3}  # Selver
-    cost, _, how, bought = catalog.cost_for(cabbage, 300, "g")
-    assert (cost, bought) == (0.6, 1300) and how == "300 g × 1.99 €/kg"   # the e-shop sends a whole head
-    assert catalog.cart_qty(cabbage, 300, "g", None) == 1.3
-    cost, _, _, bought = catalog.cost_for({**cabbage, "qty_step": None, "min_qty": 0.12}, 1000, "g")
-    assert (cost, bought) == (1.99, None)       # above the minimum: nothing more is sent
+def test_cost_loose_with_a_minimum_is_at_least_the_minimum():
+    legs = {"name": "Eestimaine br.kints seljaosaga TALLEGG, kg", "price": 5.29, "unit": "kg", "min_qty": 0.9, "qty_step": 0.9}
+    cost, _, _, bought = catalog.cost_for(legs, 148, "g")
+    assert (cost, bought) == (4.76, 900)        # one 0.9 kg tray, not 148 g for 0.78
+    cost, _, _, bought = catalog.cost_for(legs, 1000, "g")
+    assert (cost, bought) == (9.52, 1800)       # two trays
+    cost, _, _, bought = catalog.cost_for({**legs, "qty_step": None, "min_qty": 0.6}, 1000, "g")
+    assert (cost, bought) == (5.29, None)       # minimum only (Rimi): above it, the amount needed
 
 
 @pytest.mark.parametrize("quantity, min_qty, step, expected", [

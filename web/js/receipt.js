@@ -83,7 +83,7 @@ function line(l, photos, removable) {
   const onSale = l.regular_cost && l.regular_cost > l.cost;
   const off = onSale ? `<span class="r-off">−${percentOff(l.regular_cost, l.cost)}%${l.deal_until ? ` until ${shortDate(l.deal_until)}` : ""}</span>` : "";
   const notes = [
-    l.bought ? `Ordering online, the store sends at least ${amount(l.bought, "g")}` : "",
+    l.bought ? `You buy ${amount(l.bought, "g")}, the least the store sells` : "",
     l.card_cost && l.card_cost < l.cost ? `${num.format(l.card_cost)} with a loyalty card` : "",
     l.deal || "",
   ].filter(Boolean);

@@ -127,9 +127,8 @@ def sold_quantity(quantity, min_qty=None, step=None):
 def cost_for(product, need, need_unit, piece_g=None):
     """Price to pay for `need` of an ingredient using this product, or None if unknown.
 
-    Returns (cost, packs, description, bought). A loose good costs what's needed: in the store you take that
-    much. bought is the grams or ml the e-shop sends when that is more (its minimum or step, often one piece:
-    a cucumber ~300 g, a Chinese cabbage ~1.3 kg), else None; the online cart asks for that.
+    Returns (cost, packs, description, bought): bought is the grams or ml of a loose good the
+    store sells you when that is more than the need (its minimum or step), else None.
     """
     price = parse_price(product.get("price"))
     if price == float("inf"):
@@ -142,7 +141,7 @@ def cost_for(product, need, need_unit, piece_g=None):
             return None
         sold = sold_quantity(grams / 1000, product.get("min_qty"), product.get("qty_step")) * 1000
         bought = sold if sold > grams + 0.5 else None
-        return max(0.01, round(price * grams / 1000, 2)), None, f"{grams:.0f} g × {price:.2f} €/{unit}", bought
+        return round(price * sold / 1000, 2), None, f"{sold:.0f} g × {price:.2f} €/{unit}", bought
 
     pack = pack_size(product.get("name") or "", product.get("volume"))
     if not pack:
