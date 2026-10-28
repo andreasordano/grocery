@@ -7,7 +7,8 @@
 ingredients:
   hakkliha: {name: "Kodune hakkliha",            unit: g, aliases: [hakkliha, kodune hakkliha, sea-veise hakkliha, sea- ja veisehakkliha]}
   broileri_koivad: {name: "Broileri koivad",  unit: g, aliases: [koivad, broileri koivad, kanakoivad, poolkoivad, kintsud]}
-  kanafilee: {name: "Broileri rinnafilee",        unit: g, aliases: [kanafilee, broileri rinnafilee, broiler rinnafilee, kana rinnafilee, rinnafilee]}
+  kanafilee: {name: "Broileri rinnafilee",        unit: g, piece_g: 200, aliases: [kanafilee, broileri rinnafilee, broiler rinnafilee, kana rinnafilee, rinnafilee,
+                                                                     kanarinnafilee, broileririnnafilee, broilerifilee]}  # a fillet is ~200 g
   sealiha: {name: "Sealiha", unit: g, aliases: [sealiha, kaelakarbonaad, sea kaelakarbonaad, abatükk, sea abatükk]}
   lohefilee: {name: "Lõhefilee",                  unit: g, aliases: [lõhe, lõhefilee]}
   keeduvorst: {name: "Keeduvorst",  unit: g, aliases: [keeduvorst, doktorivorst, lastevorst]}

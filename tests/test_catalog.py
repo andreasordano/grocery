@@ -214,9 +214,15 @@ def test_fallback_only_when_primary_finds_nothing(monkeypatch):
 @pytest.mark.parametrize("typed, key", [
     ("piim", "piim"), ("Kanamunad", "munad"), ("munad", "munad"), ("broiler rinnafilee", "kanafilee"),
     ("  pasta ", "makaronid"), ("Broileri rinnafilee", "kanafilee"), ("jogurt", None), ("piimapulber", None),
+    ("kanarinnafilee", "kanafilee"), ("broilerifilee", "kanafilee"),  # as Rimi's recipes write it
 ])
 def test_match_ingredient(typed, key):
     assert catalog.match_ingredient(typed) == key
+
+
+def test_chicken_fillets_counted_in_pieces_are_priced_by_weight():
+    need = catalog.to_need("2 tk kanarinnafilee", catalog.load_recipes())
+    assert (need["rule"], need["amount"], need["unit"]) == ("kanafilee", 400, "g")
 
 
 # ── preferences, extra items, other stores ───────────────────────────────────
