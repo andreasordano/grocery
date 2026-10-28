@@ -42,6 +42,34 @@ function tripStrip() {
 // The plan's featured dinner: an unpaid pick from a store's or brand's recipes, always labelled.
 const featured = id => state.plan?.dinners.some(d => d.id === id && d.featured);
 
+const ICON = {
+  look: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></svg>`,
+  plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>`,
+  tick: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>`,
+};
+const CATEGORY_EMOJI = { soup: "🍲", fish: "🐟", chicken: "🍗", mince: "🥘", meat: "🥩", veggie: "🥦" };
+
+// One dinner to pick: its photo (or a sticker), name, time and how many things to buy. The card opens the
+// recipe; the round + on the photo puts it in the basket (a tick takes it out again).
+function dinnerCard(r, inBasket) {
+  const own = r.id.startsWith("my-"), name = esc(r.name);
+  const count = r.count ?? r.items?.length;
+  const meta = [r.minutes ? `${r.minutes} min` : "", count ? `${count} to buy` : ""].filter(Boolean).join(" · ");
+  const photo = r.photo || (own && hasPhoto(r) ? r.image : "");
+  return `<li class="dc${own ? " mine" : ""}${inBasket ? " in" : ""}">
+    <button type="button" class="dish" data-id="${esc(r.id)}" aria-label="${name}: see the recipe">
+      <span class="dc-photo">${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+        : `<span class="dc-emoji" aria-hidden="true">${r.emoji ?? CATEGORY_EMOJI[r.category] ?? "🍽️"}</span>`}</span>
+      <span class="dc-name" lang="et">${name}</span>
+      ${meta ? `<span class="dc-meta">${meta}</span>` : ""}
+      <span class="dc-look">${ICON.look}${own ? "Recipe" : "See the recipe"}</span>
+    </button>
+    <button type="button" class="dc-add" data-add="${esc(r.id)}" aria-pressed="${inBasket}"
+      aria-label="${inBasket ? `Take ${name} out of the basket` : `Add ${name} to the basket`}">${inBasket ? ICON.tick : ICON.plus}</button>
+    ${own ? `<button type="button" class="link dc-edit" data-edit-dinner="${esc(r.id)}" aria-label="Edit ${name}">Edit</button>` : ""}
+  </li>`;
+}
+
 const stepper = () => `<span class="stepper" role="group" aria-label="Number of people">
         <button type="button" data-step="-1" aria-label="Fewer people">−</button>
         <output id="servings">${state.servings}</output>
@@ -58,10 +86,11 @@ function drawDetail() {
       <button type="button" class="link back" id="backToList"><span aria-hidden="true">←</span> All dinners</button>
       ${d && hasPhoto(d) ? `<div class="dp-photo"><img src="${esc(d.image)}" alt="" referrerpolicy="no-referrer"></div>` : ""}
       <h1 class="dp-name" lang="et">${esc(name)}</h1>
-      <p class="dp-sub">For ${stepper()} ${state.servings === 1 ? "person" : "people"}${d ? ` · ${n} ${n === 1 ? "ingredient" : "ingredients"}` : ""}</p>
+      ${d?.about ? `<p class="dp-about">${esc(d.about)}</p>` : ""}
+      <p class="dp-sub">For ${stepper()} ${state.servings === 1 ? "person" : "people"}${d ? ` · ${n} to buy` : ""}${d?.minutes ? ` · ${d.minutes} min` : ""}</p>
       <div class="dp-add">${inTrip
         ? `<span class="in-trip">In your basket</span><button type="button" class="link" id="takeOut">Take it out</button>`
-        : `<button type="button" class="btn dark" id="addToTrip">Add to the basket</button>`}
+        : `<button type="button" class="btn dark" id="addToTrip">${ICON.plus}Add to the basket</button>`}
         <span class="fine" id="tripFull" role="status"></span></div>
       ${d ? `<div class="dp-recipe">${recipeBody(d)}</div>${recipeActions(d)}`
         : v.failed ? `<p class="fine">Couldn't get the recipe. <button type="button" class="link" id="retryCard">Try again</button></p>`
@@ -122,11 +151,8 @@ export function draw() {
     ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}">${esc(c.name)}</button>`).join("")}</div>
     ${state.category === "mine" && !state.mine.length ? `<p class="empty">Write down a dinner you cook often. Type what you
       buy for it once, with amounts if you like, or start from a recipe you found online. pantryrun finds the store each time.</p>` : ""}
-    <ul class="dishes">${dinners.map(r => `
-      <li${r.id.startsWith("my-") ? ` class="mine"` : ""}><button type="button" class="dish" data-id="${esc(r.id)}" aria-pressed="${chosen.includes(r.id)}">
-        <span lang="et">${esc(r.name)}</span></button>${r.id.startsWith("my-")
-        ? `<button type="button" class="link" data-edit-dinner="${esc(r.id)}" aria-label="Edit ${esc(r.name)}">Edit</button>` : ""}</li>`).join("")}
-    </ul>
+    <ul class="dishes">${dinners.map(r => dinnerCard(r, chosen.includes(r.id))).join("")}</ul>
+    <p class="fine dishes-note" id="dishesNote" role="status"></p>
     <div class="more">${state.category === "mine" ? `<span class="btns"><button type="button" class="btn quiet" id="newDinner">New dinner</button>
       <button type="button" class="link" id="fromLinkDinner">From a recipe link</button></span>`
       : state.category === "classics" ? ""
@@ -154,6 +180,17 @@ function extrasChanged() {
   if (state.recipeId) ask();
 }
 
+// The + on a dinner's card: into the basket, or out of it when it's there.
+function toggle(id) {
+  if (!choose(id)) {  // the basket is full
+    $("#dishesNote").textContent = `${MAX_TRIP} dinners is the most for one basket. Take one out first.`;
+    return;
+  }
+  logEvent("trip_change", { dinners: picked().length, from: "card" });
+  draw();
+  picked().length ? ask({ fresh: true }) : pickADinner();
+}
+
 let stepTimer;
 
 function onClick(e) {
@@ -161,6 +198,8 @@ function onClick(e) {
   if (recipe) { openDinner(recipe.dataset.open); return; }
   const dish = e.target.closest(".dish");
   if (dish) { openDinner(dish.dataset.id); return; }
+  const add = e.target.closest("[data-add]");
+  if (add) { toggle(add.dataset.add); return; }
   if (e.target.closest("#backToList")) { backToList(); return; }
   if (e.target.closest("#retryCard")) { state.viewing.failed = false; draw(); loadCard(); return; }
   if (e.target.closest("#addToTrip")) {

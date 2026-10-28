@@ -17,7 +17,7 @@ import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
 import { add } from "./dinners.js";
 import { offerNewsletter } from "./newsletter.js";
-import { startFooter } from "./footer.js";
+import { refreshFooter, startFooter } from "./footer.js";
 import * as dinnerScreen from "./dinner-screen.js";
 import * as editorScreen from "./editor-screen.js";
 import * as listScreen from "./list-screen.js";
@@ -60,11 +60,13 @@ async function start() {
   logEvent("visit", {
     from, dinner_token: token, plan: planToken, first_visit: identity.firstVisit, referrer: document.referrer || null,
   });
+
   // the dinners, and the stores as the server names them (needed by the usual-store question and receipts)
   const loaded = api("/recipes").then(data => { setStores(data); startFooter(); return data; });
+
   // first visit: who's this, where do they usually shop, and would they like the weekly plan?
   askName()
-    .then(name => { if (name) logEvent("hello", { name }); })
+    .then(name => { if (name) { logEvent("hello", { name }); refreshFooter(); } })
     .then(() => loaded.catch(() => null))
     .then(askUsualStore)
     .then(store => { if (store !== undefined) logEvent("usual_store", { store, changed: false }); })

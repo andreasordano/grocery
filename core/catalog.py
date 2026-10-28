@@ -59,6 +59,15 @@ def load_dishes():
     return load_yaml("dishes.yaml")
 
 
+def load_store_recipes():
+    """Dinners from Rimi's recipe pages (scripts/import_rimi_recipes.py): a photo, the time, typed items for
+    `servings` people, and a link to the method. Empty until the script has run."""
+    try:
+        return load_yaml("store_recipes.yaml")
+    except FileNotFoundError:
+        return {"categories": [], "dinners": []}
+
+
 def _index(data, build, _cache={}):
     """build(data), computed once per loaded data object (it changes only when its file does)."""
     key = (id(data), build.__name__)
@@ -73,7 +82,8 @@ def _by_id(collection):
 
 
 def find_recipe(recipe_id, recipes, user_id=None):
-    """A hand-written recipe, a NutriData dish ("nd-…") or one of this person's dinners ("my-…"), or None."""
+    """A hand-written recipe, a NutriData dish ("nd-…"), a store's recipe ("rm-…") or one of this person's
+    dinners ("my-…"), or None."""
     if recipe_id.startswith(("my-", "sh-")):
         from core import my_dinners
         if recipe_id.startswith("sh-"):  # shared by link: anyone with it may open it
@@ -81,6 +91,8 @@ def find_recipe(recipe_id, recipes, user_id=None):
         return my_dinners.as_recipe(my_dinners.get(user_id, recipe_id))
     if recipe_id.startswith("nd-"):
         return _index(load_dishes()["dishes"], _by_id).get(recipe_id)
+    if recipe_id.startswith("rm-"):
+        return _index(load_store_recipes()["dinners"], _by_id).get(recipe_id)
     return _index(recipes["recipes"], _by_id).get(recipe_id)
 
 
@@ -618,7 +630,7 @@ def card(recipe, servings, needs):
     """A dinner as its recipe card shows it: ingredients for this many people, and how to cook it when known."""
     return {"id": recipe["id"], "name": recipe["name"], "servings": servings, "pantry": recipe.get("pantry", []),
             "ingredients": [{k: n.get(k) for k in ("label", "amount", "unit", "packs", "asked")} for n in needs],
-            "method": recipe.get("method"), "link": recipe.get("link"), "image": recipe.get("image")}
+            **{k: recipe.get(k) for k in ("method", "link", "image", "about", "minutes", "steps")}}
 
 
 def recipe_card(recipe_id, servings, user_id=None):

@@ -3,29 +3,45 @@
 
 .cats { margin: 0 0 18px; }
 
-/* the dinners: a menu in big type */
-.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 28px; }
-.dishes li { border-bottom: 1.5px solid var(--line); }
+/* the dinners: cards with a photo (or a sticker). The card opens the recipe; the round + on the photo
+   puts the dinner in the basket, and turns into a rhubarb tick. */
+.dishes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 16px; }
+.dc { position: relative; min-width: 0; }
 .dish {
-  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; cursor: pointer;
-  border: 0; background: none; padding: 15px 4px 14px;
-  font: 600 21px/1.15 var(--display); letter-spacing: -0.02em;
-  min-width: 0; overflow-wrap: anywhere; hyphens: auto;  /* long Estonian compounds: Suvikõrvitsapüreesupp */
-  transition: color .2s, padding .25s var(--ease);
+  width: 100%; display: flex; flex-direction: column; gap: 4px; text-align: left; cursor: pointer;
+  border: 0; background: none; padding: 0; color: var(--ink); min-width: 0;
 }
-@media (hover: hover) { .dish:hover { color: var(--rhubarb-text); } }   /* touch screens keep :hover after a tap */
-/* the picked dinner gets a tick sticker */
-.dish::after {
-  content: "✓"; flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
-  font: 800 15px/1 var(--sans); color: #fff; background: var(--rhubarb);
-  transform: scale(0) rotate(-30deg); transition: transform .3s var(--pop);
+.dc-photo { display: grid; place-items: center; aspect-ratio: 3 / 2; margin-bottom: 6px; border-radius: 18px; overflow: hidden;
+  background: var(--panel); transition: box-shadow .2s; }
+.dc-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .35s var(--ease); }
+.dc-emoji { font-size: 46px; line-height: 1; }
+.dc-name { font: 600 18px/1.15 var(--display); letter-spacing: -0.015em;
+  overflow-wrap: anywhere; hyphens: auto;  /* long Estonian compounds: Suvikõrvitsapüreesupp */
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.dc-meta { font-size: 13.5px; color: var(--ink-soft); }
+.dc-look { display: inline-flex; align-items: center; gap: 5px; margin-top: 2px; font-size: 13.5px; font-weight: 600;
+  text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+.dc-look svg { width: 15px; height: 15px; flex: none; }
+@media (hover: hover) {   /* touch screens keep :hover after a tap */
+  .dish:hover .dc-photo img { transform: scale(1.04); }
+  .dish:hover .dc-name, .dish:hover .dc-look { color: var(--rhubarb-text); }
 }
-.dish[aria-pressed="true"] { color: var(--rhubarb-text); padding-left: 10px; }
-.dish[aria-pressed="true"]::after { transform: none; }
-/* your own dinners have an Edit link */
-.dishes .mine { display: flex; align-items: center; gap: 4px; }
-.dishes .mine .dish { flex: 1; }
-.dishes .mine .link { flex: none; padding: 6px; }
+.dish:focus-visible { outline: none; }
+.dish:focus-visible .dc-photo { box-shadow: 0 0 0 3px var(--ink); }
+/* the + sticker, on the photo's corner */
+.dc-add { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+  border: 0; border-radius: 50%; cursor: pointer; background: var(--butter); color: #1c1f4a;
+  box-shadow: 0 2px 8px rgba(28, 31, 74, .22); transition: transform .3s var(--pop), background .2s; }
+.dc-add svg { width: 20px; height: 20px; }
+.dc-add:hover { transform: scale(1.08); }
+.dc-add:active { transform: scale(.92); }
+.dc-add[aria-pressed="true"] { background: var(--rhubarb); color: #fff; animation: stick .3s var(--pop) both; }
+.dc.in .dc-photo { box-shadow: 0 0 0 3px var(--rhubarb); }
+.dc.in .dc-name { color: var(--rhubarb-text); }
+/* your own dinners have an Edit link under the card */
+.dc-edit { margin-top: 6px; font-size: 13.5px; }
+.dishes-note:empty { display: none; }
+.dishes-note { margin: 12px 0 0; color: var(--rhubarb-text); }
 /* your basket: the dinners picked, as butter stickers you can peel off; "Recipe" opens a dinner's own page */
 .trip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 0 24px; padding: 14px 16px;
   border-radius: 20px; background: var(--ground); }
@@ -38,7 +54,7 @@
 .trip li .open { width: auto; height: auto; margin-left: 6px; padding: 2px 6px; border-radius: 8px;
   font: 600 13px var(--sans); text-decoration: underline; text-underline-offset: 3px; }
 @keyframes stick { from { transform: scale(.6) rotate(-6deg); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .trip li { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .trip li, .dc-add[aria-pressed="true"] { animation: none; } .dc-photo img { transition: none; } }
 .more { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
 .empty { color: var(--ink-soft); max-width: 460px; margin: 4px 0 14px; }
 
@@ -87,8 +103,10 @@
 .editor .error { color: var(--rhubarb-text); font-size: 14px; margin: 10px 0 0; min-height: 1.5em; }
 
 @media (max-width: 900px) {
-  .dishes { grid-template-columns: 1fr; }
-  .dish { font-size: 19px; padding: 13px 2px 12px; }
+  .dishes { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+  .dc-photo { border-radius: 16px; }
+  .dc-name { font-size: 16px; }
+  .dc-meta, .dc-look { font-size: 13px; }
   .trip { background: var(--surface); }
   .cats { flex-wrap: nowrap; overflow-x: auto; margin-inline: -16px; padding: 0 16px 4px; scrollbar-width: none; }
   .cats button { flex: none; }
@@ -100,6 +118,8 @@
 .dp-photo { margin: 0 0 22px; border-radius: 24px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--panel); }
 .dp-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .dp-name { margin: 0 0 8px; font-size: clamp(36px, 4.2vw, 56px); overflow-wrap: anywhere; }
+.dp-about { margin: 0 0 12px; font-size: 18px; line-height: 1.45; max-width: 46ch; }
+.dp-add .btn svg { width: 18px; height: 18px; margin-left: -4px; }
 .dp-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 20px; color: var(--ink-soft); font-size: 17px; }
 
 .dp-add { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0 0 28px; }

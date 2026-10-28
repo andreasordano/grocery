@@ -290,7 +290,7 @@ def test_any_dinner_can_be_copied_as_typed_items(pg):
     classic = service.copy_recipe("kanasupp")
     assert classic["from"] == "kanasupp" and classic["name"] == "Kanasupp" and classic["servings"] == 2
     assert classic["items"] and all(isinstance(i, str) and i for i in classic["items"])
-    assert classic["method"] == "" and classic["image"] == ""
+    assert classic["method"].startswith("1. Put the chicken legs") and classic["image"] == ""  # the method comes along
     dish = service.copy_recipe(catalog.load_dishes()["dishes"][0]["id"])
     assert dish["items"]
     with pytest.raises(HTTPException) as refused:
