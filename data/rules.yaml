@@ -22,7 +22,7 @@ broileri_koivad:
   barbora: {query: [broileri koivad, poolkoivad], category: [Linnuliha], require: [koib, koiv, kint], exclude: [marin, suits]}
 
 kanafilee:
-  selver: {query: broileri rinnafilee, category: [Linnuliha], require: [broileri rinnafilee], exclude: [marin, mar., ribad, fit, šašlõkk, pihv]}
+  selver: {query: [broileri rinnafilee, broileririnnafilee], category: [Linnuliha], require: [broileri rinnafilee, broileririnnafilee], exclude: [marin, mar., ribad, fit, šašlõkk, pihv]}
   rimi:   {query: broileri rinnafilee, category: [SH-8-9-25], require: [rinnafil]}
   barbora: {query: broileri rinnafilee, category: [Linnuliha], require: [rinnafil, rinnaf.], exclude: [marin, mar.]}
 

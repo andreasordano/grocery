@@ -510,3 +510,10 @@ def test_warm_cache_runs_every_rule_search_and_can_refresh(monkeypatch):
     calls.clear()
     catalog.warm_cache(["a"], refresh=True)
     assert all(refresh for _, _, refresh in calls) and len(calls) == 2
+
+
+def test_selver_chicken_breast_in_one_word_is_accepted():
+    rule = catalog.load_rules()["kanafilee"]["selver"]
+    one_word = {"name": "Broileririnnafilee, TALLEGG, 1 kg", "category": ["Linnuliha"]}
+    assert catalog.matches_rule(one_word, rule)
+    assert not catalog.matches_rule({"name": "Broileririnnafilee marineeritud, 400 g", "category": ["Linnuliha"]}, rule)
