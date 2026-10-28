@@ -79,3 +79,34 @@ def test_captcha_page_says_the_site_blocks_reading(monkeypatch):
     monkeypatch.setattr(recipe_import, "fetch", lambda url: (url, "<html><title>Security check required</title></html>"))
     with pytest.raises(PageError, match="doesn't let"):
         import_recipe("nami-nami.ee/retseptid/1")
+
+
+# ── Rimi's recipes as store dinners (scripts/import_rimi_recipes.py) ─────────
+
+from scripts import import_rimi_recipes as rimi  # noqa: E402
+
+RIMI = {"@type": "Recipe", "name": "Kartuli-liha ahjuvorm", "recipeCategory": "Toidukord, Pearoog, Õhtusöök, Ahjuroad",
+        "image": ["https://res.cloudinary.com/rimibaltic-web/image/upload/w_1200/R1.jpg"], "totalTime": "PT1H10M",
+        "recipeYield": 6, "recipeInstructions": ["Koori.", "Küpseta."],
+        "recipeIngredient": ["1 kg Kartul", "1 tl Sool", "300 ml Vahukoor", "400 g Hakkliha",
+                             "1 spl Universaalne vürtsisegu Rimi Smart", "150 g Riivjuust"]}
+KNOWN = {"kartul", "vahukoor", "hakkliha", "riivjuust"}
+
+
+def test_a_rimi_dinner_keeps_what_to_buy_and_leaves_staples_at_home():
+    d, why = rimi.place("https://www.rimi.ee/retseptid/kartuli-liha-ahjuvorm/15847", RIMI, KNOWN)
+    assert why is None
+    assert d["id"] == "rm-15847" and d["category"] == "mince" and d["minutes"] == 70 and d["steps"] == 2
+    assert d["ingredients"] == ["1 kg kartul", "300 ml vahukoor", "400 g hakkliha", "150 g riivjuust"]
+    assert "sool" in d["pantry"] and d["servings"] == 6
+
+
+@pytest.mark.parametrize("change, why", [
+    ({"recipeCategory": "Magustoidud"}, "not a dinner"),
+    ({"name": "Kana-avokaadosalat"}, "not a dinner"),
+    ({"totalTime": "PT3H"}, "too long"),
+    ({"image": []}, "no photo"),
+    ({"recipeIngredient": ["1 kg Kartul", "200 g Austerservikud", "400 g Hakkliha"]}, "can't price 200 g austerservikud"),
+])
+def test_rimi_recipes_that_are_not_weeknight_dinners_are_left_out(change, why):
+    assert rimi.place("https://www.rimi.ee/retseptid/x/1", {**RIMI, **change}, KNOWN) == (None, why)

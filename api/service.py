@@ -2,6 +2,7 @@ import threading
 from contextlib import asynccontextmanager
 
 import hmac
+import re
 
 from fastapi import FastAPI, Header, HTTPException, Response
 from fastapi.responses import RedirectResponse
@@ -133,15 +134,26 @@ def log_event(req: EventRequest):
 
 @app.get("/recipes")
 def recipes():
-    """Dinners the app can recommend: the hand-written classics, plus NutriData dishes by category; and the
-    stores, as the page names them (stores_config.py)."""
-    data, dishes = catalog.load_recipes(), catalog.load_dishes()
+    """Dinners the app can recommend: the hand-written classics, plus store recipes by category (NutriData dishes
+    until data/store_recipes.yaml exists), each with what its card shows; and the stores, as the page names them
+    (stores_config.py)."""
+    data, store = catalog.load_recipes(), catalog.load_store_recipes()
+    dishes = store if store["dinners"] else {**catalog.load_dishes(), "dinners": catalog.load_dishes()["dishes"]}
+    shown = lambda r: {"id": r["id"], "name": r["name"], "minutes": r.get("minutes"), "about": r.get("about"),
+                       "count": len(r["ingredients"]), "photo": _thumb(r.get("image"))}
     return {
         **stores_public(),
-        "recipes": [{"id": r["id"], "name": r["name"], "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]],
+        "recipes": [{**shown(r), "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]],
         "categories": dishes["categories"],
-        "dishes": [{"id": d["id"], "name": d["name"], "category": d["category"]} for d in dishes["dishes"]],
+        "dishes": [{**shown(d), "category": d["category"]} for d in dishes["dinners"]],
     }
+
+
+def _thumb(url):
+    """A card-sized photo: Rimi's image service makes one from the same address (1200×675 → 480×320)."""
+    if url and "res.cloudinary.com/rimibaltic-web/" in url:
+        return re.sub(r"/image/upload/[^/]*,[^/]*/", "/image/upload/b_white,c_fill,f_auto,h_320,q_auto,w_480/", url, count=1)
+    return url
 
 
 @app.post("/basket")

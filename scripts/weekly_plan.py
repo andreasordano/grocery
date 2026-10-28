@@ -92,7 +92,7 @@ def main(argv=None):
     sub = p.add_subparsers(dest="step", required=True)
     b = sub.add_parser("build", help="save a plan and print the edition")
     b.add_argument("--title", required=True)
-    b.add_argument("--dinners", required=True, help="dinner ids, comma-separated (classics, nd-… dishes, sh-… dinners sent by link)")
+    b.add_argument("--dinners", required=True, help="dinner ids, comma-separated (classics, rm-… Rimi recipes, nd-… dishes, sh-… dinners sent by link)")
     b.add_argument("--featured", help="the featured dinner's id")
     b.add_argument("--featured-url", help="a store's or brand's recipe page to feature")
     b.add_argument("--servings", type=int, default=2)

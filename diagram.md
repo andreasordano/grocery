@@ -6,7 +6,7 @@ product database. Our own data is the event log, people's dinners and shared lin
 ```mermaid
 flowchart TD
     subgraph WEB["Web page  (web/: index.html, css/, js/)"]
-        D["Dinner: classics, NutriData dishes, Mine,<br/>a dinner sent by link"]
+        D["Dinner: classics, Rimi recipes, Mine,<br/>a dinner sent by link"]
         L["Shopping list: items with amounts,<br/>suggestions from /vocab.json"]
         R["Receipt: one store, lines, alternatives,<br/>send this dinner, feedback"]
     end
@@ -31,7 +31,7 @@ flowchart TD
     end
 
     subgraph DATA["Data"]
-        Y["data/recipes.yaml (classics, aliases)<br/>data/dishes.yaml (NutriData, generated)<br/>web/vocab.json (generated)"]
+        Y["data/recipes.yaml (classics, aliases)<br/>data/dishes.yaml (NutriData, generated)<br/>data/store_recipes.yaml (Rimi, generated)<br/>web/vocab.json (generated)"]
         DB[("Postgres / SQLite:<br/>events · my_dinners · shares<br/>(core/events.py, core/my_dinners.py)")]
     end
 
@@ -48,6 +48,7 @@ flowchart TD
 
 Generated data and checks:
 - `scripts/import_nutridata.py` → `data/dishes.yaml` (re-run rarely).
+- `scripts/import_rimi_recipes.py` → `data/store_recipes.yaml` (re-run every few months).
 - `scripts/build_vocab.py` → `web/vocab.json` (every month or two).
 - `scripts/healthcheck.py`: daily on GitHub Actions; opens an issue when a store or ingredient rule breaks.
 - `scripts/rules_preview.py`: what each ingredient rule picks, to write or fix `data/rules.yaml`.

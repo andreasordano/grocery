@@ -44,6 +44,13 @@ recipes:
   - id: hakklihakaste
     name: Hakklihakaste kartulitega
     emoji: "🥔"
+    minutes: 35
+    about: "Estonia's weeknight standard: mince in a sour-cream gravy over boiled potatoes."
+    method: |
+      1. Peel the potatoes and boil them in salted water, about 20 minutes.
+      2. Chop the onion. Fry it in a little oil until soft, then add the mince and fry until browned.
+      3. Stir in 1 tbsp flour, then 200 ml water. Simmer for 10 minutes.
+      4. Stir in the sour cream, warm it through and season with salt and pepper. Serve over the potatoes.
     ingredients:
       - {item: hakkliha, amount: 400}
       - {item: sibul,    amount: 100}
@@ -54,6 +61,13 @@ recipes:
   - id: kanasupp
     name: Kanasupp
     emoji: "🍲"
+    minutes: 50
+    about: "A clear chicken soup with potatoes, carrot and noodles. Cooks in one pot."
+    method: |
+      1. Put the chicken legs in a pot with 1.5 l cold water, a bay leaf and salt. Bring to the boil and skim the foam.
+      2. Simmer for 25 minutes, then lift out the chicken, pull the meat off the bones and put it back.
+      3. Add the diced potatoes, carrot and onion. Cook for 15 minutes.
+      4. Add the noodles and cook for 5 more minutes. Season with salt and pepper.
     ingredients:
       - {item: broileri_koivad, amount: 500}
       - {item: kartul,          amount: 400}
@@ -65,6 +79,13 @@ recipes:
   - id: pasta_hakklihaga
     name: Pasta hakklihaga
     emoji: "🍝"
+    minutes: 30
+    about: "Mince in a tomato sauce, tossed with pasta and topped with cheese."
+    method: |
+      1. Boil the pasta in salted water as the pack says.
+      2. Fry the chopped onion in oil, add the mince and fry until browned.
+      3. Add the crushed tomatoes, salt and pepper. Simmer for 10 minutes.
+      4. Mix the sauce with the drained pasta and sprinkle the grated cheese on top.
     ingredients:
       - {item: makaronid,    amount: 250}
       - {item: hakkliha,     amount: 400}
@@ -76,6 +97,13 @@ recipes:
   - id: kapsahautis
     name: Hapukapsahautis sealihaga
     emoji: "🥬"
+    minutes: 90
+    about: "Sauerkraut stewed slowly with pork until soft and sweet. Better the next day."
+    method: |
+      1. Cut the pork into cubes and brown them in oil in a heavy pot.
+      2. Add the chopped onion and grated carrot and fry for a few minutes.
+      3. Add the sauerkraut and 300 ml water. Cover and stew on low heat for about 1 hour, stirring now and then.
+      4. Season with salt and pepper. Serve with bread or boiled potatoes.
     ingredients:
       - {item: hapukapsas, amount: 800}
       - {item: sealiha, amount: 400}
@@ -86,6 +114,12 @@ recipes:
   - id: ahjusealiha
     name: Ahjusealiha kartulitega
     emoji: "🍖"
+    minutes: 75
+    about: "Pork, potatoes and carrots roasted together on one tray."
+    method: |
+      1. Heat the oven to 200 °C.
+      2. Cut the potatoes, carrots and onion into chunks, toss them with oil, salt and pepper and spread them on a tray.
+      3. Season the pork, lay it on the vegetables and roast for 50–60 minutes, turning the vegetables once.
     ingredients:
       - {item: sealiha, amount: 600}
       - {item: kartul,  amount: 800}
@@ -96,6 +130,13 @@ recipes:
   - id: kana_riisikauss
     name: Kana-riisikauss
     emoji: "🍚"
+    minutes: 25
+    about: "Soy-glazed chicken on rice with fresh pepper and cucumber."
+    method: |
+      1. Cook the rice as the pack says.
+      2. Cut the chicken into strips and fry them in oil for 6–8 minutes. Add the soy sauce for the last minute.
+      3. Slice the pepper and cucumber.
+      4. Put rice, chicken and vegetables in bowls.
     ingredients:
       - {item: kanafilee, amount: 400}
       - {item: riis,      amount: 200}
@@ -107,6 +148,12 @@ recipes:
   - id: lohe_kartul
     name: Ahjulõhe kartulitega
     emoji: "🐟"
+    minutes: 35
+    about: "Salmon baked with lemon, with roast potatoes and a sour-cream dip."
+    method: |
+      1. Heat the oven to 200 °C. Cut the potatoes into wedges, toss with oil and salt and roast for 15 minutes.
+      2. Put the salmon on the tray with the potatoes, season it and lay lemon slices on top.
+      3. Bake for 15 more minutes. Serve with sour cream mixed with a squeeze of lemon, salt and pepper.
     ingredients:
       - {item: lohefilee, amount: 300}
       - {item: kartul,    amount: 800}
@@ -117,6 +164,13 @@ recipes:
   - id: shakshuka
     name: Shakshuka
     emoji: "🍳"
+    minutes: 25
+    about: "Eggs poached in a peppery tomato sauce, with bread to dip."
+    method: |
+      1. Fry the chopped onion and pepper in oil until soft, about 8 minutes.
+      2. Add the crushed tomatoes, salt and pepper and simmer for 5 minutes.
+      3. Make four hollows in the sauce, crack an egg into each, cover and cook until the whites are set, 5–7 minutes.
+      4. Serve in the pan, with toasted bread.
     ingredients:
       - {item: munad,        amount: 4}
       - {item: tomatid_purk, amount: 400}
@@ -128,6 +182,12 @@ recipes:
   - id: pannkoogid
     name: Pannkoogid kohupiimaga
     emoji: "🥞"
+    minutes: 35
+    about: "Thin pancakes with sweet curd cheese and jam. A dinner many Estonians grew up on."
+    method: |
+      1. Whisk the eggs with the milk, a pinch of salt, 1 tbsp sugar and about 250 g flour until smooth. Rest for 10 minutes.
+      2. Fry thin pancakes in a hot oiled pan, about a minute a side.
+      3. Mix the curd cheese with a little sugar. Fill or top the pancakes with it and the jam.
     ingredients:
       - {item: piim,     amount: 500}
       - {item: munad,    amount: 2}
@@ -138,6 +198,12 @@ recipes:
   - id: kartulisalat
     name: Kartulisalat
     emoji: "🥗"
+    minutes: 45
+    about: "The potato salad on every Estonian table: potato, egg, pickles and sausage in sour cream."
+    method: |
+      1. Boil the potatoes and carrots in their skins, about 20 minutes, and the eggs for 10. Let them cool.
+      2. Peel and dice the potatoes, carrots, eggs, pickles and sausage.
+      3. Mix with the sour cream, salt and pepper. Chill for an hour if you can.
     ingredients:
       - {item: kartul,     amount: 600}
       - {item: porgand,    amount: 150}

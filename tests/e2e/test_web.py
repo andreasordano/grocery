@@ -226,7 +226,7 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     page.wait_for_selector(".r-line")
     assert not page.locator("#hello").is_visible()  # a tester link says who it is
     assert "Testi pasta for 2" in page.locator(".receipt").inner_text()
-    assert page.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
+    assert page.locator(".dishes .mine .dc-name").inner_text() == "Testi pasta"
 
     open_recipe(page, "Testi pasta")
     page.click(".dinner-page [data-share]")
@@ -243,7 +243,7 @@ def test_own_dinner_is_saved_priced_and_sent_to_someone(base_url, browser, page)
     other.click("#saveShared")
     other.wait_for_selector(".sent >> text=Saved to Mine")
     other.click("[data-cat=mine]")
-    assert other.locator(".dishes .mine .dish").inner_text().endswith("Testi pasta")
+    assert other.locator(".dishes .mine .dc-name").inner_text() == "Testi pasta"
 
 
 def test_answer_id_comes_from_the_server_and_goes_back_with_feedback(base_url, page):
@@ -419,7 +419,18 @@ def test_several_dinners_price_as_one_trip(base_url, page):
 
     page.click("[data-unpick] >> nth=1")  # take the salad out: back to one dinner
     page.wait_for_function("document.querySelector('.r-what')?.textContent.startsWith('Testi pasta')")
-    assert page.locator(".dish[aria-pressed=true]").count() == 1
+    assert page.locator(".dc-add[aria-pressed=true]").count() == 1
+
+
+def test_plus_on_a_card_adds_the_dinner_without_opening_it(base_url, page):
+    page.goto(base_url + "/?u=e2e-plus")
+    page.click("[data-cat=classics]")
+    page.locator(".dc-add").first.click()
+    page.wait_for_selector(".trip li")
+    assert page.locator(".dinner-page").count() == 0  # still on the list
+    assert page.locator(".dc-add[aria-pressed=true]").count() == 1
+    page.click(".dc-add[aria-pressed=true]")  # the tick takes it out again
+    page.wait_for_selector(".trip", state="detached")
 
 
 def test_too_many_dinners_in_one_trip_is_refused(base_url):

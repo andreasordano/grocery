@@ -1,6 +1,6 @@
 // Recipes: what goes into a dinner for this many people, and how to cook it when that's known (people write it
-// for their own dinners; NutriData and the classics only have ingredients). Shown on a dinner's own page
-// (dinner-screen.js), opened from the dinners or from "Recipe" on a dinner in the basket.
+// for their own dinners and the classics have one; a store's recipe links to its method; NutriData has none).
+// Shown on a dinner's own page (dinner-screen.js), opened from the dinners or from "Recipe" on a dinner in the basket.
 import { esc, amount } from "./format.js";
 import { state } from "./state.js";
 import { dinnerById } from "./dinners.js";
@@ -20,11 +20,19 @@ function method(text) {
   return `<ol>${lines.map(l => `<li>${esc(l.replace(/^(\d+[.)]|[-*•])\s*/, ""))}</li>`).join("")}</ol>`;
 }
 
+const host = url => { try { return /^https?:/.test(url) ? new URL(url).hostname.replace(/^www\./, "") : ""; } catch { return ""; } };
+
 function link(url) {
-  let host;
-  try { host = new URL(url).hostname.replace(/^www\./, ""); } catch { return ""; }
-  if (!/^https?:/.test(url)) return "";
-  return `<a class="rc-link" href="${esc(url)}" target="_blank" rel="noopener">Full recipe on ${esc(host)} <span aria-hidden="true">↗</span></a>`;
+  return host(url) ? `<a class="rc-link" href="${esc(url)}" target="_blank" rel="noopener">Full recipe on ${esc(host(url))} <span aria-hidden="true">↗</span></a>` : "";
+}
+
+// A store's recipe: the method stays on its page, so the way there is the "How to cook it".
+function methodThere(d) {
+  if (!host(d.link)) return "";
+  const steps = d.steps ? `${d.steps} steps` : "Step by step";
+  return `<div class="rc-method"><h4>How to cook it</h4>
+    <a class="rc-there" href="${esc(d.link)}" target="_blank" rel="noopener"><span><b>${steps}${d.minutes ? `, ${d.minutes} min` : ""}</b>
+      on ${esc(host(d.link))}</span><span aria-hidden="true">↗</span></a></div>`;
 }
 
 export const hasPhoto = d => d.image && /^https?:/.test(d.image);
@@ -35,9 +43,10 @@ export function recipeBody(d) {
   return `<ul class="rc-ing">${d.ingredients.map(i => `<li><span lang="et">${esc(i.label)}</span><span>${esc(howMuch(i))}</span></li>`).join("")}</ul>
     ${d.pantry.length ? `<p class="rc-pantry">From home: <span lang="et">${esc(d.pantry.join(", "))}</span></p>` : ""}
     ${d.method ? `<div class="rc-method"><h4>How to cook it</h4>${method(d.method)}</div>` : ""}
-    ${d.link ? link(d.link) : ""}
+    ${d.link && !d.method && d.id.startsWith("rm-") ? methodThere(d) : d.link ? link(d.link) : ""}
     ${own && !d.method && !d.link ? `<button type="button" class="link" data-write="${esc(d.id)}">Write down how you cook it</button>` : ""}
-    ${d.id.startsWith("nd-") ? `<p class="fine">Amounts from NutriData, Tervise Arengu Instituut. It has no method.</p>` : ""}`;
+    ${d.id.startsWith("nd-") ? `<p class="fine">Amounts from NutriData, Tervise Arengu Instituut. It has no method.</p>` : ""}
+    ${d.id.startsWith("rm-") ? `<p class="fine">Recipe and photo from Rimi. pantryrun prices it at every store.</p>` : ""}`;
 }
 
 // What you can do with a dinner: change a copy of it (or edit your own), and send it to someone.

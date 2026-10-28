@@ -349,6 +349,29 @@ def test_dish_free_text_ingredient_is_priced_for_the_amount(fake_store, monkeypa
     assert res["recipe"] == {"id": "nd-1", "name": "Küüslaugukartul", "pantry": ["õli"]}
 
 
+# ── store recipes (data/store_recipes.yaml) ──────────────────────────────────
+
+def test_store_recipes_are_well_formed():
+    store = catalog.load_store_recipes()
+    categories = {c["id"] for c in store["categories"]}
+    ids = [d["id"] for d in store["dinners"]]
+    assert len(ids) == len(set(ids)) and all(i.startswith("rm-") for i in ids)
+    for d in store["dinners"]:
+        assert d["category"] in categories, d["name"]
+        assert d["image"].startswith("https://") and d["link"].startswith("https://www.rimi.ee/retseptid/"), d["name"]
+        assert 3 <= len(d["ingredients"]) <= 9 and d["servings"] >= 1, d["name"]
+
+
+def test_store_recipe_is_found_and_scaled(monkeypatch):
+    dinner = {"id": "rm-1", "name": "Kartuli-liha ahjuvorm", "category": "mince", "servings": 6, "minutes": 120,
+              "steps": 7, "ingredients": ["1 kg kartul", "300 ml vahukoor", "400 g hakkliha"], "pantry": ["sool"],
+              "image": "https://res.cloudinary.com/x.jpg", "link": "https://www.rimi.ee/retseptid/x/1"}
+    monkeypatch.setattr(catalog, "load_store_recipes", lambda: {"categories": [], "dinners": [dinner]})
+    card = catalog.recipe_card("rm-1", 3, None)
+    assert card["minutes"] == 120 and card["steps"] == 7 and card["link"] == dinner["link"]
+    assert [(i["label"], i["amount"]) for i in card["ingredients"]][:2] == [("kartul", 500), ("vahukoor", 150)]
+
+
 # ── quantities typed with an item ────────────────────────────────────────────
 
 @pytest.mark.parametrize("typed, expected", [

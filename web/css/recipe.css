@@ -13,6 +13,13 @@
 .rc-method ol { padding-left: 1.4em; display: grid; gap: 6px; }
 .rc-method li::marker { font-weight: 700; color: var(--rhubarb-text); }
 
+/* a store's recipe: its method is one tap away, on the store's page */
+.rc-there { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px; border-radius: 18px;
+  background: var(--panel); color: var(--ink); text-decoration: none; font-size: 15px; }
+.rc-there b { font-weight: 700; }
+.rc-there:hover { color: var(--rhubarb-text); }
+.rc-there span:last-child { font-size: 18px; font-weight: 700; }
+
 .rc-link { display: inline-flex; gap: 6px; margin: 0 0 14px; font-weight: 600; color: var(--ink); text-underline-offset: 3px; }
 .rc-link:hover { color: var(--rhubarb-text); }
 .dp-recipe .fine { margin: 0 0 14px; }
