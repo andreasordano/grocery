@@ -214,9 +214,15 @@ def test_fallback_only_when_primary_finds_nothing(monkeypatch):
 @pytest.mark.parametrize("typed, key", [
     ("piim", "piim"), ("Kanamunad", "munad"), ("munad", "munad"), ("broiler rinnafilee", "kanafilee"),
     ("  pasta ", "makaronid"), ("Broileri rinnafilee", "kanafilee"), ("jogurt", None), ("piimapulber", None),
+    ("kanarinnafilee", "kanafilee"), ("broilerifilee", "kanafilee"),  # as Rimi's recipes write it
 ])
 def test_match_ingredient(typed, key):
     assert catalog.match_ingredient(typed) == key
+
+
+def test_chicken_fillets_counted_in_pieces_are_priced_by_weight():
+    need = catalog.to_need("2 tk kanarinnafilee", catalog.load_recipes())
+    assert (need["rule"], need["amount"], need["unit"]) == ("kanafilee", 400, "g")
 
 
 # ── preferences, extra items, other stores ───────────────────────────────────
@@ -504,3 +510,10 @@ def test_warm_cache_runs_every_rule_search_and_can_refresh(monkeypatch):
     calls.clear()
     catalog.warm_cache(["a"], refresh=True)
     assert all(refresh for _, _, refresh in calls) and len(calls) == 2
+
+
+def test_selver_chicken_breast_in_one_word_is_accepted():
+    rule = catalog.load_rules()["kanafilee"]["selver"]
+    one_word = {"name": "Broileririnnafilee, TALLEGG, 1 kg", "category": ["Linnuliha"]}
+    assert catalog.matches_rule(one_word, rule)
+    assert not catalog.matches_rule({"name": "Broileririnnafilee marineeritud, 400 g", "category": ["Linnuliha"]}, rule)
