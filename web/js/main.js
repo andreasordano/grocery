@@ -39,6 +39,7 @@ modeSwitch.addEventListener("click", e => {
   const b = e.target.closest("button");
   if (!b || b.dataset.mode === state.mode) return;
   state.mode = b.dataset.mode;
+  state.skipped = [];  // what was left out belonged to the other mode's receipt
   modeSwitch.querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
   placePill();
   state.result = null;

@@ -31,7 +31,7 @@ export async function ask({ fresh = false, keepView = false } = {}) {
     const res = await api("/basket", {
       recipe_id: ids.length === 1 ? ids[0] : null, servings: state.servings, items,
       recipes: ids.length > 1 ? ids.map(id => ({ id, servings: state.servings })) : [],
-      prefs: state.prefs, user_id: identity.personId, session_id: identity.sessionId, name: identity.name,
+      prefs: state.prefs, skip: state.skipped.map(s => s.key), user_id: identity.personId, session_id: identity.sessionId, name: identity.name,
     });
     if (req !== state.request) return;
     feed.classList.remove("busy");
@@ -70,6 +70,22 @@ feed.addEventListener("click", e => {
                              recipe_ids: state.result?.dinners?.map(d => d.id) ?? [] });
     redraw();
     ask();
+    return;
+  }
+  // × on a line, or on something no store has: leave it out at every store, and rank them again.
+  const skip = e.target.closest("[data-skip]");
+  if (skip) {
+    const { skip: key, label } = skip.dataset;
+    state.skipped = [...state.skipped.filter(s => s.key !== key), { key, label }];
+    logEvent("line_removed", { key, store: state.view, result_id: state.result?.result_id });
+    ask({ keepView: true });
+    return;
+  }
+  const back = e.target.closest("[data-unskip]");
+  if (back) {
+    state.skipped = state.skipped.filter(s => s.key !== back.dataset.unskip);
+    logEvent("line_restored", { key: back.dataset.unskip, result_id: state.result?.result_id });
+    ask({ keepView: true });
     return;
   }
   const line = e.target.closest(".r-line");

@@ -71,14 +71,19 @@ const percentOff = (regular, cost) => Math.round((1 - cost / regular) * 100);
 // left out when it only repeats the item ("banaan · banaan").
 const shelfNote = l => l.shelf && !fold(l.shelf).includes(fold(l.label).slice(0, 4)) ? l.shelf.toLowerCase() : "";
 
+const X = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7l10 10M17 7 7 17"/></svg>`;
+const skipButton = (key, label) => `<button type="button" class="r-x" data-skip="${esc(key)}" data-label="${esc(label)}"
+  aria-label="Leave out ${esc(label)}" title="I don't need this">${X}</button>`;
+
 // photos: the store has photos for this receipt, so every line keeps a photo's place (lined up).
-function line(l, photos) {
+// removable: there's more than this one line, so × can take it off.
+function line(l, photos, removable) {
   const tag = l.substitute ? "swap" : (l.pinned || l.preferred) ? "your pick" : "";
   const amt = lineAmount(l);
   const onSale = l.regular_cost && l.regular_cost > l.cost;
   const off = onSale ? `<span class="r-off">−${percentOff(l.regular_cost, l.cost)}%${l.deal_until ? ` until ${shortDate(l.deal_until)}` : ""}</span>` : "";
   const notes = [
-    l.bought ? `You buy ${amount(l.bought, "g")}, the least the store sells` : "",
+    l.bought ? `Ordering online, the store sends at least ${amount(l.bought, "g")}` : "",
     l.card_cost && l.card_cost < l.cost ? `${num.format(l.card_cost)} with a loyalty card` : "",
     l.deal || "",
   ].filter(Boolean);
@@ -90,7 +95,14 @@ function line(l, photos) {
     <span class="c">${onSale ? `<s>${num.format(l.regular_cost)}</s>` : ""}${num.format(l.cost)}</span>
     <span class="p">${esc(l.product)}${shelfNote(l) ? `<span class="shelf"> · ${esc(shelfNote(l))}</span>` : ""}</span>
     ${l.for ? `<span class="f">for ${esc(l.for.join(", "))}</span>` : ""}
-    ${notes.length ? `<span class="d">${esc(notes.join(". "))}</span>` : ""}</button></li>`;
+    ${notes.length ? `<span class="d">${esc(notes.join(". "))}</span>` : ""}</button>${removable ? skipButton(l.key, l.label) : ""}</li>`;
+}
+
+// What was taken off with ×: tap one to put it back.
+function skippedNote(res) {
+  if (!res.skipped?.length) return "";
+  return `<div class="r-note r-pantry r-skipped">Left out: ${res.skipped.map(s => `<button type="button" data-unskip="${esc(s.key)}"
+    aria-label="Put ${esc(s.label)} back">${esc(s.label)}</button>`).join(", ")}. Tap one to put it back.</div>`;
 }
 
 // Items the recipe assumes you have. Tapping one adds it to the basket.
@@ -148,7 +160,8 @@ export function showReceipt(storeName, animate) {
   const isBest = b.store === best.store;
   const main = b.lines.filter(l => !l.extra), extra = b.lines.filter(l => l.extra);
   const photos = b.lines.some(l => l.image);
-  const items = lines => `<ul class="r-items${photos ? " photos" : ""}">${lines.map(l => line(l, photos)).join("")}</ul>`;
+  const removable = b.lines.length + b.missing.length > 1;  // the last thing stays: nothing would be left to price
+  const items = lines => `<ul class="r-items${photos ? " photos" : ""}">${lines.map(l => line(l, photos, removable)).join("")}</ul>`;
   const delta = !isBest && (b.missing.length > best.missing.length
     ? `${shopName(best.store)} has more of your list`
     : `${euro.format(b.total_price - best.total_price)} more than ${shopName(best.store)}`);
@@ -172,12 +185,15 @@ export function showReceipt(storeName, animate) {
     ${items(main)}
     ${dinners.length && extra.length ? `<div class="r-head">Also</div>` : ""}
     ${extra.length ? items(extra) : ""}
-    ${b.missing.length ? `<div class="r-missing">Not in the e-shop: ${b.missing.map(esc).join(", ")}</div>` : ""}
-    <div class="r-hint">${photos ? "Tap a photo for a closer look, an item to choose another." : "Tap an item to choose another."}</div>
+    ${b.missing.length ? `<div class="r-missing">Not in the e-shop: ${b.missing.map((m, i) => `${esc(m)}${removable && b.missing_keys?.[i]
+      ? skipButton(b.missing_keys[i], m) : ""}`).join(", ")}</div>` : ""}
+    <div class="r-hint">${photos ? "Tap a photo for a closer look, an item to choose another" : "Tap an item to choose another"}${removable
+      ? ", × if you don't need it." : "."}</div>
     <hr class="r-rule">
     <div class="r-total"><span>Total</span><span>${euro.format(b.total_price)}</span></div>
     ${b.savings > 0 ? `<div class="r-save"><span>You save</span><span>${euro.format(b.savings)}</span></div>` : ""}
     ${b.card_savings > 0 ? `<div class="r-card">${euro.format(b.card_savings)} less with a loyalty card</div>` : ""}
+    ${skippedNote(res)}
     ${pantryNote(res)}
     ${prefsNote(b)}
     ${stores.length > 1 ? `<hr class="r-rule"><div class="r-head">Compare stores</div>

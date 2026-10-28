@@ -63,7 +63,8 @@ NOT_DINNER_NAME = ("salat", "kaste", "dip", "tort", "kook", "muffin", "pirukas",
 # Bought once and kept at home: listed under "from home" instead of priced.
 STAPLES = ("sool", "pipar", "õli", "oliiviõli", "rapsiõli", "suhkur", "jahu", "nisujahu", "äädikas", "vesi", "vett", "puljong",
            "puljongikuubik", "maitseaine", "vürts", "paprikapulber", "küüslaugupulber", "loorber", "kaneel", "köömned",
-           "vürtsisegu", "kurkum", "karri", "tšillihelbed", "majoraan", "pune", "tüümian", "basiilik", "rosmariin", "muskaat",
+           "vürtsisegu", "kurkum", "karri", "tšillihelbed", "majoraan", "pune", "oregano", "tüümian", "basiilik", "rosmariin", "muskaat",
+           "petersell", "till", "koriander", "piparmünt", "münt", "murulauk", "salvei", "estragon", "ürdid",  # herbs
            "sinep", "ketšup", "majonees", "sojakaste", "mesi", "või", "riivsai", "tärklis", "sooda", "küpsetuspulber")
 BRANDS = re.compile(r"\b(rimi(\s+(smart|basic|eco|selection))?|smart|basic|i love eco|food ?studio|forte)\b", re.I)
 # What it's for, not what it is: "praadimiseks õli", "serveerimiseks laim".

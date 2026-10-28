@@ -17,6 +17,7 @@ export const state = {
   tripIds: [],         // the dinners in the basket, in the order picked (dinners.js)
   servings: 2,
   extras: [],          // dinner: anything else for the basket
+  skipped: [],         // receipt lines taken off with ×, at every store: {key, label}
   extrasOpen: false,   // the field for those is folded away until asked for
   items: [],           // shopping list
   prefs: storage.get("pantryrun.prefs", {}),  // {key: {words: [], products: {store: name}}}

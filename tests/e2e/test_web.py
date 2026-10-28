@@ -450,6 +450,27 @@ def test_a_long_product_name_in_the_report_list_keeps_the_page_on_screen(base_ur
     ctx.close()
 
 
+def test_a_line_left_out_with_x_comes_off_every_store_and_can_be_put_back(base_url, page):
+    page.goto(base_url + "/?u=e2e-skip")
+    page.click("[data-mode=list]")
+    page.fill("#item", "kohv, tee")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.wait_for_selector(".r-line")
+    assert len(receipt_lines(page)) == 2
+    page.click(".r-x[data-skip='text:tee']")
+    page.wait_for_selector(".r-skipped")
+    assert [l.split(" | ")[0] for l in receipt_lines(page)] == ["kohv"]
+    page.click("[data-store=selver]")  # another store: left out there too
+    page.wait_for_function("document.querySelectorAll('.r-line').length === 1")
+    assert page.locator(".r-x").count() == 0  # the last line stays
+    basket = [d for u, d in logged("basket", "e2e-skip", wait=2) if u == "e2e-skip"][-1]
+    assert basket["skip"] == ["text:tee"]
+    page.click("[data-unskip='text:tee']")  # put it back
+    page.wait_for_function("document.querySelectorAll('.r-line').length === 2")
+    assert page.locator(".r-skipped").count() == 0
+
+
 def test_too_many_dinners_in_one_trip_is_refused(base_url):
     body = json.dumps({"recipes": [{"id": f"d{i}"} for i in range(6)]}).encode()
     req = urllib.request.Request(base_url + "/basket", body, {"Content-Type": "application/json"})

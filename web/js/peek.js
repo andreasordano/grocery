@@ -107,6 +107,7 @@ export function bindPeek(changed) {
     if (!canHover.matches) return;
     const row = e.target.closest(".r-items [data-key]");
     if (!row) return;
+    if (e.target.closest(".r-x")) { clearTimeout(openTimer); return; }  // on its way to ×: no product card
     clearTimeout(closeTimer);
     clearTimeout(openTimer);
     if (shownKey === row.dataset.key) return;  // back on the line the card is about

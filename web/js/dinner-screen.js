@@ -227,7 +227,7 @@ function onClick(e) {
     return;
   }
   if (e.target.closest("#clearTrip")) {
-    state.tripIds = []; state.recipeId = null;
+    state.tripIds = []; state.recipeId = null; state.skipped = [];
     draw();
     pickADinner();
     return;

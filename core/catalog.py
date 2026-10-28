@@ -127,8 +127,9 @@ def sold_quantity(quantity, min_qty=None, step=None):
 def cost_for(product, need, need_unit, piece_g=None):
     """Price to pay for `need` of an ingredient using this product, or None if unknown.
 
-    Returns (cost, packs, description, bought): bought is the grams or ml of a loose good the
-    store sells you when that is more than the need (its minimum or step), else None.
+    Returns (cost, packs, description, bought). A loose good costs what's needed: in the store you take that
+    much. bought is the grams or ml the e-shop sends when that is more (its minimum or step, often one piece:
+    a cucumber ~300 g, a Chinese cabbage ~1.3 kg), else None; the online cart asks for that.
     """
     price = parse_price(product.get("price"))
     if price == float("inf"):
@@ -141,7 +142,7 @@ def cost_for(product, need, need_unit, piece_g=None):
             return None
         sold = sold_quantity(grams / 1000, product.get("min_qty"), product.get("qty_step")) * 1000
         bought = sold if sold > grams + 0.5 else None
-        return round(price * sold / 1000, 2), None, f"{sold:.0f} g × {price:.2f} €/{unit}", bought
+        return max(0.01, round(price * grams / 1000, 2)), None, f"{grams:.0f} g × {price:.2f} €/{unit}", bought
 
     pack = pack_size(product.get("name") or "", product.get("volume"))
     if not pack:
@@ -523,14 +524,14 @@ def _times(option, n):
 
 def build_basket(store, needs, prefs, recipes, rules, free):
     """One store's basket. needs: recipe ingredients (extra=False) then list items (extra=True)."""
-    lines, missing = [], []
+    lines, missing, missing_keys = [], [], []
     for n in needs:
         if n.get("rule"):
             key = n["rule"]
             offer, options = ingredient_offers(key, n["amount"], store, recipes, rules, prefs.get(key))
             need, unit = n["amount"], n["unit"]
         else:
-            key = "text:" + _norm(n["text"])
+            key = need_key(n)
             options = free.get(n["text"], {}).get(store, [])
             if n.get("packs"):
                 options = [_times(o, n["packs"]) for o in options]
@@ -543,6 +544,7 @@ def build_basket(store, needs, prefs, recipes, rules, free):
             lines.append({**line, "asked": n.get("asked"), "for": n.get("for")})
         else:
             missing.append(n["label"])
+            missing_keys.append(need_key(n))
 
     total = round(sum(l["cost"] for l in lines), 2)
     return {
@@ -550,6 +552,7 @@ def build_basket(store, needs, prefs, recipes, rules, free):
         "status": "ok",
         "lines": lines,
         "missing": missing,
+        "missing_keys": missing_keys,  # the same, as line keys (to leave one out)
         "total_price": total,
         # Already included in total_price: what the discounts take off regular prices.
         "savings": round(sum((l.get("regular_cost") or l["cost"]) - l["cost"] for l in lines), 2),
@@ -567,7 +570,12 @@ def no_answer_basket(store):
 MAX_DINNERS = 5  # dinners in one trip
 
 
-def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinners=None):
+def need_key(n):
+    """The key a need's receipt line has: its ingredient rule, or "text:<item>"."""
+    return n["rule"] if n.get("rule") else "text:" + _norm(n["text"])
+
+
+def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinners=None, skip=()):
     """Rank stores for a recipe (optional) plus extra items: fewest missing, then cheapest.
 
     dinners: several dinners for one trip, [{"id", "servings"}], priced together (merge_needs);
@@ -577,6 +585,8 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     after the ranked ones, rather than looking like a store that doesn't sell the things.
 
     prefs: {ingredient key or "text:<item>": {"products": {store: name}, "words": [...]}}
+    skip: line keys the person took off the receipt (they have it, or don't want it). They're left out at every
+    store, so the stores are ranked without them, and come back as `skipped` to be put back.
     """
     recipes, rules = load_recipes(), load_rules()
     if not dinners:
@@ -595,6 +605,9 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     dinner_needs = each[0] if len(each) == 1 else merge_needs([(r["name"], n) for (r, _), n in zip(picked, each)])
     needs = [{**n, "extra": False} for n in dinner_needs]
     needs += [{**to_need(it, recipes), "extra": True} for it in items]
+    skip = set(skip or ())
+    skipped = list({need_key(n): {"key": need_key(n), "label": n["label"]} for n in needs if need_key(n) in skip}.values())
+    needs = [n for n in needs if need_key(n) not in skip]
     keys = {n["rule"] for n in needs if n.get("rule")}
     # Free-text searches; those with an amount are priced for it (grams or ml).
     amounts = {n["text"]: n["amount"] for n in needs if n.get("text") and n.get("amount") is not None}
@@ -621,6 +634,7 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
         "pantry": list(dict.fromkeys(p for d in about for p in d["pantry"])),
         "servings": servings,
         "items": items,
+        "skipped": skipped,
         "store": baskets[0]["store"] if baskets and baskets[0]["status"] == "ok" else None,
         "baskets": baskets,
     }

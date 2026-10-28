@@ -73,6 +73,7 @@ class BasketRequest(BaseModel):
     items: List[str] = []
     # {ingredient key or "text:<item>": {"products": {store: name}, "words": [...]}}
     prefs: Dict[str, Any] = {}
+    skip: List[str] = []  # receipt lines taken off: ingredient keys or "text:<item>"
     stores: List[str] = DINNER_STORES
     user_id: Optional[str] = None
     session_id: Optional[str] = None
@@ -179,7 +180,7 @@ def basket(req: BasketRequest):
     started = time.monotonic()
     try:
         result = catalog.recommend(req.recipe_id, people(req.servings), req.items, stores, req.prefs,
-                                   user_id=req.user_id, dinners=dinners)
+                                   user_id=req.user_id, dinners=dinners, skip=req.skip[:100])
     except KeyError as e:
         raise HTTPException(status_code=404, detail=f"Unknown recipe: {e.args[0]}")
     result["result_id"] = uuid.uuid4().hex
@@ -194,6 +195,7 @@ def basket(req: BasketRequest):
             "servings": result["servings"],
             "items": result["items"],
             "prefs": req.prefs,
+            "skip": [s["key"] for s in result["skipped"]],
             "stores": stores,
             "latency_s": round(time.monotonic() - started, 2),
             "recommended_store": result["store"],

@@ -38,6 +38,8 @@ EVENT_TYPES = {
     "wrong_product": "reporting a wrong product",
     "preference": "choosing another product or typing preference words",
     "add_pantry": "adding a have-at-home item to the basket",
+    "line_removed": "× on a receipt line or a missing item: left out at every store (key, store looked at, result_id)",
+    "line_restored": "a line left out with × put back (key, result_id)",
     "quick_view": "tapping a product's photo",
     "open_product": "opening a product in the store's e-shop (from: quick_view, chooser, cart)",
     "recipe_open": "unfolding a recipe card (the cards left the page in Oct 2026)",

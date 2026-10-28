@@ -61,7 +61,7 @@
 .r-tag { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid currentColor; border-radius: 4px; font-size: 10px; font-weight: 400; color: var(--paper-red); }
 /* With photos: a small one before each line, printed in grey like the rest of the paper.
    Pointing at it brings back its colour; tapping it opens the quick view (peek.css). */
-.r-items.photos li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 4px; align-items: start; padding-left: 6px; }
+.r-items.photos li { grid-template-columns: 30px minmax(0, 1fr) 28px; column-gap: 4px; padding-left: 6px; }
 .r-photo { width: 30px; height: 30px; margin-top: 4px; padding: 0; border: 0; border-radius: 6px; background: var(--paper); overflow: hidden; display: grid; place-items: center; }
 button.r-photo { cursor: zoom-in; }
 .r-photo img { max-width: 100%; max-height: 100%; object-fit: contain; filter: grayscale(1) contrast(1.05); mix-blend-mode: multiply; transition: filter .2s; }
@@ -69,6 +69,13 @@ button.r-photo { cursor: zoom-in; }
 .r-photo:focus-visible { outline: 2px solid var(--paper-red); outline-offset: 1px; }
 .r-hint { margin-top: 8px; font-size: 11px; }
 .r-missing { margin-top: 10px; color: var(--paper-red); }
+/* × on a line: you don't need it, so it's left out at every store */
+.r-items li { display: grid; grid-template-columns: minmax(0, 1fr) 28px; align-items: start; }
+.r-x { width: 28px; height: 28px; margin-top: 2px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer;
+  display: grid; place-items: center; color: var(--paper-faint); transition: color .15s, background .15s; }
+.r-x svg { width: 14px; height: 14px; }
+.r-x:hover, .r-x:focus-visible { color: var(--paper-red); background: var(--paper-hover); outline: none; }
+.r-missing .r-x { display: inline-grid; width: 22px; height: 22px; margin: 0 0 0 1px; vertical-align: -6px; color: inherit; }
 
 /* ── totals and notes ── */
 .r-total { display: flex; justify-content: space-between; align-items: baseline; font: 800 26px/1 var(--display); letter-spacing: -0.02em; }

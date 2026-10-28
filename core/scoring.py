@@ -128,6 +128,9 @@ def _word_matches(words, query):
     out = []
     for i, w in enumerate(words):
         m = word_match(w, query)
+        if m < 2 and i + 1 < len(words) and len(w) >= 3:
+            # Typed as one word, written as two: "hiinakapsa" for "Hiina kapsas, kg".
+            m = max(m, min(word_match(w + words[i + 1], query), 3 if query.startswith(w) else 0))
         if m >= 2 and i + 1 < len(words) and words[i + 1] in _NOT_THE_THING_AFTER:
             m = 1
         out.append(m)

@@ -201,3 +201,9 @@ def test_out_of_stock_products_are_never_options(monkeypatch):
 def test_an_item_of_several_words_needs_the_word_that_names_it(name, typed, expected):
     from core.scoring import misses_the_thing
     assert misses_the_thing(name, typed) is expected
+
+
+def test_typed_as_one_word_written_as_two():
+    from core.scoring import relevance_score
+    assert relevance_score("Hiina kapsas, kg", {"include": ["hiinakapsa"]}) >= 4   # Barbora's spelling
+    assert relevance_score("Hiinapärane kaste poolmagus FELIX 500g", {"include": ["hiinakapsa"]}) == 0

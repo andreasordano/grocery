@@ -21,6 +21,52 @@ categories:
   name: Veggie
   emoji: 🥦
 dinners:
+- id: rm-10959
+  name: Kanasupp
+  category: soup
+  servings: 4
+  minutes: 60
+  steps: 4
+  ingredients:
+  - 500 g kanapoolkoivad greatlife
+  - 2 tk porgand
+  - 200 g kartul
+  - 100 g redis
+  - 50 g beebispinat
+  - 3 tk loorberileht
+  - 300 g kurk
+  - rukkileib
+  - kreeka jogurt
+  pantry:
+  - petersell
+  - sool
+  - pipar
+  - till
+  - söögiäädikas
+  - suhkur
+  - murulauk
+  image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/dcc2ccfb53ac4d9c386fb4f49ff991c79fa497e1.jpg
+  link: https://www.rimi.ee/retseptid/kanasupp/10959
+- id: rm-15084
+  name: Koorene köögiviljasupp lõhega
+  category: soup
+  servings: 4
+  minutes: 30
+  steps: 12
+  ingredients:
+  - 2 tk porgand
+  - 4 tk kartul
+  - 200 g lõhefilee
+  - 200 g brokoli
+  - 2 dl vahukoor
+  pantry:
+  - õli
+  - köögivilja puljongikuubik
+  - vajadusel sool
+  - till
+  - murulauk
+  image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102210/web-cms/R15084.jpg
+  link: https://www.rimi.ee/retseptid/koorene-koogiviljasupp-lohega/15084
 - id: rm-10075
   name: Lillkapsa-juustusupp
   category: soup
@@ -33,10 +79,10 @@ dinners:
   - küüslauk
   - 200 ml kohvikoor
   - 100 g juust kõva
-  - petersell
   pantry:
   - või
   - puljongikuubik
+  - petersell
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102613/web-cms/b84c5e538799464d2ec4ca5f12d10dbaa58a9510.jpg
   link: https://www.rimi.ee/retseptid/lillkapsa-juustusupp/10075
 - id: rm-11662
@@ -48,12 +94,12 @@ dinners:
   ingredients:
   - 1 tk sibul
   - 200 g külmutatud herned
-  - piparmünt
   - 0.5 dl vahukoor 35%
   - krutoonid
   pantry:
   - rapsiõli
   - kanapuljong
+  - piparmünt
   - sool
   - must pipar
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102210/web-cms/eedf8589874e26bd610f12e976194506a37035c4.jpg
@@ -116,6 +162,31 @@ dinners:
   - pipar
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102613/web-cms/R15883.jpg
   link: https://www.rimi.ee/retseptid/tomatisupp/15883
+- id: rm-15025
+  name: Vanakooli kana-klimbisupp
+  category: soup
+  servings: 6
+  minutes: 60
+  steps: 21
+  ingredients:
+  - 700 g kanakintsud
+  - 1 tk loorberileht
+  - 1 tk sibul
+  - 1 tk porgand
+  - 1 tk muna
+  - 1 dl piim
+  - 2 tk porgand
+  - 3 tk kartul
+  pantry:
+  - till
+  - vürts
+  - must pipar
+  - või
+  - nisujahu
+  - sool
+  - värskelt hakitud till
+  image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102210/web-cms/R15025.jpg
+  link: https://www.rimi.ee/retseptid/vanakooli-kana-klimbisupp/15025
 - id: rm-11485
   name: Vürtsikas herne-kõrvitsasupp
   category: soup
@@ -129,12 +200,12 @@ dinners:
   - 500 g kõrvits
   - kontsentreeritud tomatipasta
   - tšilli
-  - koriander
   - maitsestamata jogurt
   pantry:
   - kurkum
   - vürtsköömned
   - köögiviljapuljong
+  - koriander
   - sool
   - pipar
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/9c543fd207b91b961c63cd677bbb225fe78764f7.jpg
@@ -148,7 +219,6 @@ dinners:
   ingredients:
   - 500 g lõhefilee
   - küüslauk
-  - oregano
   - 1 tk sidrun
   - 400 g peet
   - 1 tk suvikõrvits
@@ -159,6 +229,7 @@ dinners:
   - oliiviõli
   - sool
   - tüümian
+  - oregano
   - basiilik
   - granaatõuna äädikas
   - must pipar
@@ -216,10 +287,10 @@ dinners:
   ingredients:
   - 2 tk kuldne meriahven
   - 2 tk sidrun
-  - till
   - küüslauk
   pantry:
   - majonees hellmans
+  - till
   - sool
   - pipar
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/R15007.jpg
@@ -253,13 +324,13 @@ dinners:
   - 200 g pasta
   - 400 ml toidukoor
   - 500 g lõhefilee
-  - 20 g till
   - 1 tk muna
   - 300 g tursk
   pantry:
   - kanapuljongikuubik
   - soola sool
   - pipart pipar
+  - till
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102613/web-cms/R99725702.jpg
   link: https://www.rimi.ee/retseptid/lohepasta/99725702
 - id: rm-10406
@@ -317,12 +388,35 @@ dinners:
   - 200 g rohelised herned
   - 200 ml toidukoor
   - küüslauk
-  - petersell
   pantry:
   - õli
   - sool
+  - petersell
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102210/web-cms/5b240cd2431f2637bca0f2bfd869d8f2654e1cae.jpg
   link: https://www.rimi.ee/retseptid/spagetid-tuunikalaga/12722
+- id: rm-11070
+  name: Suvikõrvitsanuudlid murulaugupestoga
+  category: fish
+  servings: 4
+  minutes: 45
+  steps: 5
+  ingredients:
+  - 60 g seedermänniseemned
+  - küüslauk
+  - 600 g suvikõrvits
+  - 200 g kirsstomatid
+  - 3 g juust parmigiano
+  - oliivid kalamata
+  - 0.5 tk sidrun
+  pantry:
+  - külmpressitud oliiviõli
+  - meresool
+  - tšillipipar
+  - murulauk potis grüne fee
+  - basiilik potis grüne fee
+  - must pipar
+  image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/ed894ed5e7e64ca1299afdf6bb623557f87bad2a.jpg
+  link: https://www.rimi.ee/retseptid/suvikorvitsanuudlid-murulaugupestoga/11070
 - id: rm-15702
   name: Valge kala tomati ja paprikaga
   category: fish
@@ -334,8 +428,8 @@ dinners:
   - 1 kg tomat
   - 1 tk küüslauk
   - 1 tk paprika
-  - koriander
   pantry:
+  - koriander
   - vürtsköömned
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/R15702.jpg
   link: https://www.rimi.ee/retseptid/valge-kala-tomati-ja-paprikaga/15702
@@ -471,10 +565,10 @@ dinners:
   - rooma salat
   - guacamole
   - 1 tk laim
-  - 0.5 koriander
   pantry:
   - õli
   - vürtsisegu
+  - koriander
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/597cf56e69ed4e5537a5775493ea8742f427906c.jpg
   link: https://www.rimi.ee/retseptid/kana-fajita-d/10416
 - id: rm-15842
@@ -487,12 +581,12 @@ dinners:
   - 4 tk kanafilee
   - 1 tk sibul
   - 500 g šampinjon
-  - petersell
   - 1 sulatatud just
   pantry:
   - õli
   - BBQ vürtsisegu
   - jahu
+  - petersell
   - kanapuljong
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102613/web-cms/R15842.jpg
   link: https://www.rimi.ee/retseptid/koorene-kana/15842
@@ -512,6 +606,26 @@ dinners:
   pantry: []
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/852cd6d471e0498758e1fe6a1fa30417a8c888dc.jpg
   link: https://www.rimi.ee/retseptid/koorene-pasta-kanaga/16385
+- id: rm-10797
+  name: Lillkapsakuskuss mustade ubade ja kanafileega
+  category: chicken
+  servings: 4
+  minutes: 20
+  steps: 5
+  ingredients:
+  - 400 g sügavkülmutatud lillkapsas
+  - 10 g ekstra-neitsioliiviõli sidruniga
+  - 460 g oad mustad
+  - 400 g kanarinnafilee
+  - 14 g itaaliapärane maitseainesegu
+  - roheline salat
+  pantry:
+  - küüslaugupulber
+  - sool
+  - oliiviõli
+  - ürdid
+  image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102613/web-cms/4e0dfc97041b2d97040254d585893e57975704c1.jpg
+  link: https://www.rimi.ee/retseptid/lillkapsakuskuss-mustade-ubade-ja-kanafileega/10797
 - id: rm-10119
   name: Täidetud kanafileerullid pärlkuskussiga
   category: chicken
@@ -521,7 +635,6 @@ dinners:
   ingredients:
   - 4 tk broilerifilee
   - prosciutto sink
-  - petersell
   - 200 g pärlkuskuss
   - kirsstomatid
   - 1 tk paprika
@@ -529,6 +642,7 @@ dinners:
   - hapukoor
   - magus tšillikaste
   pantry:
+  - petersell
   - sool
   - pipar
   - või
@@ -609,6 +723,28 @@ dinners:
   pantry: []
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/969efa97181d26782c596f85124d39cea8d0a203.jpg
   link: https://www.rimi.ee/retseptid/kerge-lillkapsa-hakklihavorm/11106
+- id: rm-10045
+  name: Kotlet pasta ja tomatikastmega
+  category: mince
+  servings: 4
+  minutes: 40
+  steps: 5
+  ingredients:
+  - pasta
+  - 1 tk muna
+  - 500 g hakkliha
+  - 500 g pastakaste
+  - 3 tk tomat
+  - 1 tk rooma salat
+  pantry:
+  - riivsai
+  - dijoni sinep
+  - sool
+  - pipar
+  - õli
+  - murulauk
+  image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102210/web-cms/8d65f9409762204fa195b04ccf2d28ff11594f32.jpg
+  link: https://www.rimi.ee/retseptid/kotlet-pasta-ja-tomatikastmega/10045
 - id: rm-10954
   name: Kotlet röstitud kartuli ja Padróni kaunpipardega
   category: mince
@@ -639,7 +775,6 @@ dinners:
   - 1 dl piim
   - 1 tk muna
   - 500 g hakkliha
-  - petersell
   - lehtsalat
   - 200 g beebiporgand
   pantry:
@@ -649,6 +784,7 @@ dinners:
   - dijoni sinep
   - tüümian
   - või
+  - petersell
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/acb2d75a93d3f7d7f82a722d642417cfd0828a31.jpg
   link: https://www.rimi.ee/retseptid/lihapallid-hautatud-makaronidega/10046
 - id: rm-14634
@@ -705,7 +841,6 @@ dinners:
   - 1 tk kollane sibul
   - küüslauk
   - tomatipüree
-  - jahvatatud koriander
   - 1 kg veiseliha
   - 0.33 l hele õlu
   - 25 g tume šokolaad
@@ -714,6 +849,7 @@ dinners:
   - kaneel
   - köömned
   - pune
+  - jahvatatud koriander
   - veisepuljong
   - sool
   - pipar
@@ -753,10 +889,10 @@ dinners:
   - 390 g pastakaste basiilikuga
   - 50 g juust grana padano
   - 250 g kirsstomatid
-  - 20 g petersell
   - 70 g sink
   pantry:
   - cayenne pipar
+  - petersell
   - oliiviõli
   - punase veini äädikas
   - sool
@@ -854,9 +990,9 @@ dinners:
   - 4 tk šampinjonid
   - hapukoor
   - 4 g riivjuust
-  - 1 g till
   pantry:
   - sinep
+  - till
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/R15273.jpg
   link: https://www.rimi.ee/retseptid/peekoni-seenetaidisega-kartulid/15273
 - id: rm-10374
@@ -908,8 +1044,8 @@ dinners:
   - 300 ml vahukoor
   - 100 g kirsstomat
   - 1 g trühvlipasta
-  - petersell
   pantry:
+  - petersell
   - sool
   - must pipar
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/R14609.jpg
@@ -928,10 +1064,10 @@ dinners:
   - 2 tk muna
   - 400 g külmutatud herned
   - 100 g toorjuust
-  - piparmünt
   pantry:
   - nisujahu
   - riivsai
+  - piparmünt
   - sool
   - õli
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102210/web-cms/458e4a374f10244b368ed31fbbb60714208e2d86.jpg
@@ -985,13 +1121,13 @@ dinners:
   - 2 dl panko
   - 1 tortilja
   - salsakaste
-  - koriander
   - laim
   pantry:
   - jahu
   - rapsiõli
   - meresool
   - tšillimajonees
+  - koriander
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/1480bd0a79155ec71de4f3c978bd794ee848b99d.jpg
   link: https://www.rimi.ee/retseptid/krobedad-avokaadotakod/10381
 - id: rm-10477
@@ -1006,9 +1142,9 @@ dinners:
   - 1 tk porgand
   - 1 tk laim
   - 1 tk sibul
-  - koriander
   - küüslauk
   pantry:
+  - koriander
   - tšillipipar
   - oliiviõli
   - köömned
@@ -1138,10 +1274,10 @@ dinners:
   - 100 g sinihallitusjuust
   - 100 g toorjuust
   - 80 g parma juust
-  - petersell
   pantry:
   - puljongikuubik
   - või
+  - petersell
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/8c3fc2f7bdca4e0f523a491bebcf4ba16ea83bff.jpg
   link: https://www.rimi.ee/retseptid/seenerisoto-sinihallitusjuustuga/10101
 - id: rm-11571
@@ -1156,10 +1292,10 @@ dinners:
   - 350 g riivitud peet
   - 200 g fetika juust
   - sidrunimahl
-  - hakitud till
   pantry:
   - oliivõli
   - aedviljapuljong
+  - hakitud till
   - sool
   - pipar
   image: https://res.cloudinary.com/rimibaltic-web/image/upload/b_white,c_fill,f_auto,h_675,q_auto,w_1200/v2026102121/web-cms/7ec1d22c7304021e4bc01d8c37162ddb02ee46b6.jpg
