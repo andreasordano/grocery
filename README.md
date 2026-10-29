@@ -146,8 +146,13 @@ show; partner collections set `brand` and a `label` that the card always shows.
 The chips above the dinners come from `data/dinner_chips.yaml`: moments first (Quick, With friends, In season), then
 kinds. pantryrun's dinners and the classics are tagged by hand; Quick comes from the minutes and In season from the
 months, never from a tag. Store recipes get their kind from their category and Pasta or Rice from the words of what's
-bought. The 24 sample dinners (migration `20261029120100_recipes_samples.sql`) were drafted with AI on 29 Oct 2026
-and arrive as drafts to read and publish.
+bought. Desserts is an `apart` chip: a dessert shows under Desserts only, never under Ideas or another chip. The 24
+sample dinners (migration `20261029120100_recipes_samples.sql`) and 9 desserts (`20261030120100_recipes_desserts.sql`)
+were drafted with AI and arrive as drafts to read and publish.
+
+"A store can sell all of it" only means every line found *a* product: check what each line picks (the admin's
+"Check at the stores" totals, or `catalog.recommend` lines) before publishing. On 30 Oct "kookospiim" picked a body
+lotion at Barbora and "peet" buttermilk; `20261030120000_recipes_line_fixes.sql` changed those words.
 
 ## NutriData dishes
 

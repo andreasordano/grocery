@@ -52,11 +52,16 @@ export function setPeople(id, n) {
   state.people = { ...state.people, [id]: n };
 }
 
+// The dinners under a chip. An "apart" chip's dinners (desserts) show under it only: never in Ideas or another chip.
 function pool(category) {
   if (category === "mine") return state.mine.map(r => r.id);
   if (category === "classics") return state.recipes.map(r => r.id);
-  if (category === "ideas") return [...state.recipes, ...state.dishes].map(r => r.id);
-  return [...state.recipes, ...state.dishes].filter(d => d.tags?.includes(category)).map(d => d.id);
+  const apart = state.categories.filter(c => c.apart).map(c => c.id);
+  const all = [...state.recipes, ...state.dishes];
+  if (apart.includes(category)) return all.filter(d => d.tags?.includes(category)).map(d => d.id);
+  const shown = all.filter(d => !d.tags?.some(t => apart.includes(t)));
+  if (category === "ideas") return shown.map(r => r.id);
+  return shown.filter(d => d.tags?.includes(category)).map(d => d.id);
 }
 
 // A random handful from the category; "Show me others" avoids repeating what was just on screen.

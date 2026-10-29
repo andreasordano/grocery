@@ -4,6 +4,8 @@
 # months a dinner is in season. Store recipes (store_recipes.yaml) get their kind from their category, and
 # pasta or rice from the words of what's bought: a word that starts or ends with one of `words`, unless it
 # starts with one of `not` (tomatipasta is tomato paste). Words are Estonian, as the stores name things.
+# An `apart` chip keeps its dinners to itself: desserts show under Desserts only, not under Ideas or any
+# other chip, so the dinner suggestions stay dinners.
 quick_minutes: 30
 chips:
   - {id: quick, name: Quick, moment: true}
@@ -17,3 +19,4 @@ chips:
   - {id: meat, name: Meat, categories: [meat, mince]}
   - {id: veggie, name: Veggie, categories: [veggie]}
   - {id: soup, name: Soups, categories: [soup]}
+  - {id: dessert, name: Desserts, apart: true}

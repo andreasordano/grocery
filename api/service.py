@@ -153,7 +153,7 @@ def recipes():
     return {
         **stores_public(),
         "recipes": classics,
-        "categories": [{k: c[k] for k in ("id", "name", "moment") if k in c} for c in cfg["chips"] if c["id"] in used],
+        "categories": [{k: c[k] for k in ("id", "name", "moment", "apart") if k in c} for c in cfg["chips"] if c["id"] in used],
         "dishes": others,
     }
 
