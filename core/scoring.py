@@ -179,7 +179,13 @@ _MADE_FROM = ("marin", "soolvees", "õlis", "omas mahlas", "hautatud", "kauaküp
               "mar.", "kauak", "maits.", "paneer", "siider", "jook", "batoon", "krutoon", "majonees", "pirukas", "pitsa",
               "pesto", "friikartul", "vesi", "mineraal", "kokt",
               # smoked fish isn't the fresh fish a recipe means ("Kuumsuitsu meriahven" for meriahven)
-              "kuumsuits", "külmsuits", "kuums.", "külms.", "snack", "snäkk")
+              "kuumsuits", "külmsuits", "kuums.", "külms.", "suitsutatud", "soolatud", "snack", "snäkk",
+              # minced, a dairy product or a pickle made with it, more pet food
+              "hakkliha", "jogurt", "kimchi", "kiisu", "kasside", "koerte",
+              # ready to cook or eat, and what's sold to season it
+              "burger", "šašlõkk", "puding", "vürtsid", "maitseaine",
+              # ready-made salads, not salad leaves
+              "kartulisalat", "pastasalat", "toorsalat", "coleslaw")
 _MADE_FROM_END = ("tee", "mahl", "supp", "pasta", "vorst", "roog")
 _BABY_AGE = re.compile(r"\d\s?k\.?\+?(?![\w])")  # baby food is sold by age: "120g4k", "7k.+"
 
@@ -191,7 +197,9 @@ def made_from(name, typed):
     words = re.findall(r"[^\W\d_]+", re.sub(r"(?<=[a-zäöüõšž])(?=[A-ZÄÖÜÕŠŽ]{2})", " ", name).lower())
     name, typed = name.lower(), typed.lower()
     found = [m for m in _MADE_FROM if m in name] + [m for m in _MADE_FROM_END if any(w.endswith(m) for w in words)]
-    return any(m not in typed for m in found) or bool(_BABY_AGE.search(name))
+    # "…veiselihast" (elative: from beef) names something made from it: "Vürtsiliha veiselihast", "Pihvid kanalihast".
+    from_it = any(w == t + "st" for t in re.findall(r"[^\W\d_]+", typed) if len(t) >= 4 for w in words)
+    return any(m not in typed for m in found) or from_it or bool(_BABY_AGE.search(name))
 
 
 # Words that describe the thing rather than name it: "punane sibul", "küpsetatud pardiliha", "kooritud mandel".
@@ -210,8 +218,10 @@ def misses_the_thing(name, typed):
     if not any(max(_word_matches(words, q), default=0) >= 2 for q in {naming[0], naming[-1]}):
         return True
     # "lamba kintsuliha" is lamb: chicken thighs ("Broileri kintsuliha") have the right cut of the wrong animal.
-    asked = {a for a, forms in _ANIMALS.items() if any(w.startswith(forms) for w in typed_words)}
-    named = {a for a, forms in _ANIMALS.items() if any(w.startswith(forms) for w in words)}
+    # Anywhere in a word for the longer names: "Suitsukana kintsuliha" is chicken.
+    has = lambda w, forms: w.startswith(forms) or any(len(f) >= 4 and f in w for f in forms)
+    asked = {a for a, forms in _ANIMALS.items() if any(has(w, forms) for w in typed_words)}
+    named = {a for a, forms in _ANIMALS.items() if any(has(w, forms) for w in words)}
     return bool(asked) and bool(named) and not asked & named
 
 

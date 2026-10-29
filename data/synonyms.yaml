@@ -8,6 +8,8 @@ groups:
   - [parmesan, parmesani juust, parmigiano reggiano, parmigiano]
   - [kruubid, odrakruubid, odrakruup, pärlkruup, odra pärlkruup]
   - [tomat, tomatid, värsked tomatid, kobartomat, ploomtomat]
+  - [tursk, tursafilee, tursa filee]
+  - [kanakintsuliha, broileri kintsuliha, kana kintsuliha]
 
 # Swaps: different things that do the same job in a dinner. Tried only when an item and its other names find
 # nothing at a store; the receipt tags the line "swap" so it's never a surprise. Rimi rarely has cod, but has

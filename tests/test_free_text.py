@@ -192,6 +192,7 @@ def test_out_of_stock_products_are_never_options(monkeypatch):
     ("Hele kaiser kukkel seemnetega 60g", "küpsetatud pardiliha", True),
     ("Kooritud kreeka pähklid EXTRA LINE 150g", "kooritud mandel", True),  # "kooritud" only describes
     ("Broileri kintsuliha, värske, A-kl Tallegg kg", "lamba kintsuliha", True),  # the wrong animal
+    ("Suitsukana kintsuliha TALLEGG,kg", "lamba kintsuliha", True),            # chicken at the end of a word
     ("Lamba kintsuliha kg", "lamba kintsuliha", False),
     ("Punane sibul, kg", "sibul punane", False),                            # Rimi's recipes: noun first
     ("Sibul,kg", "kollane sibul", False),
@@ -272,3 +273,32 @@ def test_a_swap_is_tried_last_and_marked(monkeypatch):
     from core import catalog
     offers = catalog.free_text_offers(["tursafilee"], ["rimi"], {"tursafilee": 400})
     assert offers["tursafilee"]["rimi"][0]["substitute"] is True  # the receipt says "swap"
+
+
+def test_describing_words_dont_hide_a_swap():
+    assert fetch.synonyms("külmutatud tursk", "swaps")[:2] == ["tursafilee", "pangaasiusefilee"]
+    assert fetch.synonyms("külmutatud tursk") == ["tursafilee", "tursa filee"]  # the same thing, tried first
+
+
+def test_many_tins_dont_stop_the_search_before_the_fresh_cuts(monkeypatch):
+    tins = [{"name": f"Veiseliha hautatud {i} 250g", "price": 2.0 + i / 10, "shelf": "Konservid"} for i in range(14)]
+    answers = {"veiseliha": tins, "veise": [{"name": "Veise kaelaliha Rimi kg", "price": 12.79, "unit": "kg", "shelf": "Veiseliha"},
+                                            {"name": "Veise koot Rimi kg", "price": 9.99, "unit": "kg", "shelf": "Veiseliha"}]}
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q, size=40: [{"store": store, "store_id": p["name"], **p}
+                                                                          for p in answers.get(q, [])])
+    assert picks("veiseliha", "rimi") == ["Veise koot Rimi kg", "Veise kaelaliha Rimi kg"]
+
+
+@pytest.mark.parametrize("name, typed, expected", [
+    ("Tursk suitsutatud, MSDM, 36 g", "külmutatud tursk", True),
+    ("Atlandi tursa hakkliha Nowaco külmutatud 450g", "külmutatud tursk", True),   # minced
+    ("Vürtsiliha veiselihast, viil. Otepää 100g", "veiseliha", True),             # "from beef"
+    ("Burgeripihvid veiselihast Americano Rimi 220g", "veiseliha", True),
+    ("Kiisueine Felix kana/loomaliha 4x85g", "kana", True),
+    ("Jogurt mango Alma 1kg", "mango", True),
+    ("Veise kaelaliha Rimi kg", "veiseliha", False),
+    ("Kartulisalat 250g", "salat", True),                                         # a ready salad, not lettuce
+])
+def test_made_from_after_testing_recipes(name, typed, expected):
+    from core.scoring import made_from
+    assert made_from(name, typed) is expected

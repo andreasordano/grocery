@@ -183,6 +183,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
 
 
 MADE_FROM_VOTE = 0.4
+MADE_FROM_CAP = 0.9
 
 
 def _shelves(candidates):
@@ -197,20 +198,30 @@ def _shelves(candidates):
     on the olive and sunflower oil shelves). Shelves where it only comes later in the names
     ("Kassitoit veiseliha", "Puljong veiseliha") hold something else made with it, and a lone
     cat litter "roh.tee" or car "Õli mitmeotstarbeline" doesn't count."""
+    # The best match level that has something real (not made from it) votes: at Rimi every exact "veiseliha" is
+    # a tin, stock or pet food, and the fresh beef is "Veise kaelaliha" (a near form), so the near forms vote.
     for level in (5, 4):
         voters = [p for p in candidates if p["match"] == level and p.get("shelf")]
-        if voters:
+        if any(not p.get("made_from") for p in voters):
             break
     else:
+        voters = [p for p in candidates if p["match"] >= 4 and p.get("shelf")]
+    if not voters:
         voters = [{**p, "weight": 1.0} for p in candidates[:8] if p.get("shelf") and p.get("related")]
     if not voters:
         return None, set()
-    weights, counts = Counter(), Counter()
+    weights, made, counts = Counter(), Counter(), Counter()
     for p in voters:
-        # Made from it (smoked, marinated) still says where the thing is kept, but less loudly than the thing:
-        # two hot-smoked redfish mustn't outvote the fresh one on its own shelf.
-        weights[p["shelf"]] += p["weight"] * (MADE_FROM_VOTE if p.get("made_from") else 1)
+        # Made from it (smoked, marinated, tinned) still says where the thing is kept, but less loudly than the
+        # thing, and all of them on a shelf together count less than one real match: two hot-smoked redfish, or
+        # seven tins of stewed beef, mustn't outvote the fresh one on its own shelf.
+        if p.get("made_from"):
+            made[p["shelf"]] += p["weight"] * MADE_FROM_VOTE
+        else:
+            weights[p["shelf"]] += p["weight"]
         counts[p["shelf"]] += 1
+    for shelf, w in made.items():
+        weights[shelf] += min(w, MADE_FROM_CAP)
     top = weights.most_common(1)[0][0]
     if counts.most_common(1)[0][1] == 1:  # too few matches to tell outliers apart: trust them all
         return top, set(counts)
@@ -288,11 +299,20 @@ def synonyms(item, kind="groups"):
     """Other names for the same thing (data/synonyms.yaml): "passata" for "passeeritud tomatid".
     kind="swaps": different things that do the same job ("pangaasiusefilee" for "tursafilee")."""
     from core.catalog import load_yaml  # deferred: catalog imports this module
-    name = " ".join(item.lower().split())
-    for group in load_yaml("synonyms.yaml").get(kind) or []:
-        if name in group:
-            return [g for g in group if g != name]
+    from core.scoring import _DESCRIBES
+    words = item.lower().split()
+    # "külmutatud tursk" is tursk: describing words in front don't make it another thing
+    for name in (" ".join(words), " ".join(w for w in words if not w.endswith(_DESCRIBES))):
+        for group in load_yaml("synonyms.yaml").get(kind) or []:
+            if name in group:
+                return [g for g in group if g != name]
     return []
+
+
+def _exact(candidates):
+    """How many are exactly the thing and could be offered: twelve tins of stewed beef don't mean the search for
+    "veiseliha" can stop before the fresh cuts ("Veise kaelaliha") are found."""
+    return sum(p["match"] == 5 and not p["made_from"] and not p["sold_out"] for p in candidates)
 
 
 def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit: int, alternatives=True):
@@ -309,7 +329,7 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
 
     singular = _singular(spec.get("search_term", ""))
     for q in _build_queries(spec) + ([singular] if singular else []):
-        if q == singular and sum(p["match"] == 5 for p in store_candidates) >= per_store_limit // 2:
+        if q == singular and _exact(store_candidates) >= per_store_limit // 2:
             break  # the plural found enough already
         try:
             raw = _cached_fetch(store, q)
@@ -330,7 +350,7 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
             if product:
                 store_candidates.append(product)
 
-        if sum(p["match"] == 5 for p in store_candidates) >= per_store_limit:
+        if _exact(store_candidates) >= per_store_limit:
             break
 
     # Trust the store's shelves: the shelf most real matches sit on decides what else
