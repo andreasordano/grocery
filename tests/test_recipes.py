@@ -171,7 +171,9 @@ def test_recipes_endpoint_shows_published_dinners_with_their_chips(api):
     own.save({**DINNER, "name": "Mustand"})  # a draft stays out
     out = api.recipes()
     mine = [d for d in out["dishes"] if d["id"].startswith("pr-")]
-    assert [(d["name"], d["tags"], d["label"]) for d in mine] == [("Kanakarri riisiga", ["quick", "rice", "chicken"], "With Santa Maria")]
+    assert [(d["name"], d["tags"], d["label"], d["servings"]) for d in mine] == \
+        [("Kanakarri riisiga", ["quick", "rice", "chicken"], "With Santa Maria", 2)]
+    assert all(d["servings"] is None for d in out["recipes"])  # the classics: the headline's number
     chips = [c["id"] for c in out["categories"]]
     assert chips[0] == "quick" and "friends" in chips  # the classics have friends
     assert all(any(c in d["tags"] for d in out["recipes"] + out["dishes"]) for c in chips)  # no empty chips

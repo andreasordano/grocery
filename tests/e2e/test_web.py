@@ -643,6 +643,33 @@ def test_usual_store_goes_with_the_answer_and_can_be_changed(base_url, page):
     assert [(d["store"], d["changed"]) for u, d in logged("usual_store", "e2e-usual", wait=1) if u == "e2e-usual"] == [("maxima", True)]
 
 
+def test_a_dinner_for_six_opens_and_is_priced_for_six(base_url, page):
+    from core import recipes as own
+    own.save({"name": "Testi lasanje", "servings": 6, "minutes": 90, "tags": ["friends"], "status": "published",
+              "ingredients": ["spagetid 500g", "suvikõrvits", "2 tomatipasta"]})
+    own.forget()
+    page.goto(base_url + "/?u=e2e-six")
+    page.click("[data-cat=friends]")
+    page.click(".dish:has-text('Testi lasanje')")
+    page.wait_for_selector(".dp-recipe")
+    assert page.text_content(".dinner-page #servings") == "6"  # the recipe's own number, not the headline's 2
+    page.click("#addToTrip")  # back to the list, and priced
+    page.wait_for_selector(".receipt:has-text('Testi lasanje for 6')")
+    assert page.text_content("#heroText #servings") == "6" and "for 6" in page.locator(".trip").inner_text()
+    page.click("#heroText [data-step='-1']")
+    page.wait_for_selector(".receipt:has-text('Testi lasanje for 5')")
+    page.click("[data-cat=classics]")
+    page.click(".dc:has-text('Shakshuka') .dc-add")  # a classic: the headline's number, 5 now
+    page.wait_for_selector(".receipt:has-text('2 dinners for 5')")
+    page.click(".trip li:has-text('Shakshuka') .open")
+    page.wait_for_selector(".dp-recipe")
+    page.click(".dinner-page [data-step='-1']")  # only this dinner
+    page.wait_for_selector(".receipt:has-text('2 dinners'):not(:has-text('2 dinners for'))")
+    page.click("#backToList")
+    assert not page.locator("#heroText #servings").count()  # they differ: each shows its own
+    assert [t.split("for ")[-1] for t in page.locator(".trip-n").all_inner_texts()] == ["5", "4"]
+
+
 def test_skipping_the_usual_store_isnt_asked_again(base_url, browser):
     ctx = browser.new_context()
     ctx.add_init_script("if (!sessionStorage.getItem('asked')) { localStorage.removeItem('pantryrun.usualStore'); sessionStorage.setItem('asked', 1); }")

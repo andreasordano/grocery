@@ -15,7 +15,8 @@ export const state = {
   viewing: null,       // the dinner whose own page is open: {id, card (its recipe, once loaded), failed}
   recipeId: null,      // the dinner picked last
   tripIds: [],         // the dinners in the basket, in the order picked (dinners.js)
-  servings: 2,
+  servings: 2,         // the headline's number: for dinners without their own (dinners.js peopleFor)
+  people: {},          // dinner id → how many people it's for, once chosen on its page or the headline
   extras: [],          // dinner: anything else for the basket
   skipped: [],         // receipt lines taken off with ×, at every store: {key, label}
   extrasOpen: false,   // the field for those is folded away until asked for
