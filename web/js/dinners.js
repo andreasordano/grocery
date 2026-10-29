@@ -1,4 +1,4 @@
-// The dinners to choose from: hand-written classics, NutriData dishes by category,
+// The dinners to choose from: hand-written classics, pantryrun's own and store recipes under their chips,
 // this person's own dinners, one sent by link, and a weekly plan's.
 import { state } from "./state.js";
 
@@ -44,7 +44,7 @@ function pool(category) {
   if (category === "mine") return state.mine.map(r => r.id);
   if (category === "classics") return state.recipes.map(r => r.id);
   if (category === "ideas") return [...state.recipes, ...state.dishes].map(r => r.id);
-  return state.dishes.filter(d => d.category === category).map(d => d.id);
+  return [...state.recipes, ...state.dishes].filter(d => d.tags?.includes(category)).map(d => d.id);
 }
 
 // A random handful from the category; "Show me others" avoids repeating what was just on screen.

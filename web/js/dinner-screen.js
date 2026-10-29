@@ -61,6 +61,7 @@ function dinnerCard(r, inBasket) {
       <span class="dc-photo">${photo ? `<img src="${esc(photo)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
         : `<span class="dc-emoji" aria-hidden="true">${r.emoji ?? CATEGORY_EMOJI[r.category] ?? "🍽️"}</span>`}</span>
       <span class="dc-name" lang="et">${name}</span>
+      ${r.label ? `<span class="dc-label">${esc(r.label)}</span>` : ""}
       ${meta ? `<span class="dc-meta">${meta}</span>` : ""}
       <span class="dc-look">${ICON.look}${own ? "Recipe" : "See the recipe"}</span>
     </button>
@@ -147,7 +148,8 @@ export function draw() {
       <span class="btns"><button type="button" class="x" id="dropPlan" aria-label="Close the plan">×</button></span>
     </div>` : ""}
     <div class="chips cats" role="group" aria-label="Kind of dinner">${[
-      { id: "ideas", name: "Ideas" }, { id: "classics", name: "Classics" }, { id: "mine", name: "Mine" }, ...state.categories,
+      { id: "ideas", name: "Ideas" }, ...state.categories.filter(c => c.moment), { id: "mine", name: "Mine" },
+      ...state.categories.filter(c => !c.moment), { id: "classics", name: "Classics" },
     ].map(c => `<button type="button" data-cat="${esc(c.id)}" aria-pressed="${c.id === state.category}">${esc(c.name)}</button>`).join("")}</div>
     ${state.category === "mine" && !state.mine.length ? `<p class="empty">Write down a dinner you cook often. Type what you
       buy for it once, with amounts if you like, or start from a recipe you found online. pantryrun finds the store each time.</p>` : ""}

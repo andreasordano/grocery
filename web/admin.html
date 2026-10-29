@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>pantryrun dinners</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@600;700;800&amp;family=Funnel+Sans:wght@400;500;600;700&amp;display=swap">
+
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/controls.css">
+  <link rel="stylesheet" href="css/admin.css">
+
+  <script type="module" src="js/admin.js"></script>
+</head>
+<body>
+  <header class="ad-top">
+    <h1>pantryrun <span>dinners</span></h1>
+    <button type="button" class="link" id="signOut" hidden>Forget the token</button>
+  </header>
+
+  <main class="ad-main">
+    <form class="ad-signin" id="signIn" hidden>
+      <h2>Owner only</h2>
+      <p class="fine">The owner token: EDITION_TOKEN on Render (Keychain item <code>pantryrun-edition</code>). It's kept in
+        this tab only.</p>
+      <label class="ad-field"><span>Token</span><input type="password" id="token" autocomplete="off" required></label>
+      <button class="btn dark" type="submit">Open</button>
+      <p class="ad-note" id="signInNote" role="status"></p>
+    </form>
+
+    <div class="ad" id="admin" hidden>
+      <section class="ad-list" aria-label="Dinners">
+        <div class="ad-list-head">
+          <h2>Dinners</h2>
+          <button type="button" class="btn dark" id="new">New dinner</button>
+        </div>
+        <div class="chips" id="filters" role="group" aria-label="Show"></div>
+        <ul id="list"></ul>
+      </section>
+      <section class="ad-edit" id="editor" aria-label="The dinner"></section>
+    </div>
+  </main>
+</body>
+</html>

@@ -4,8 +4,8 @@ import { storage } from "./storage.js";
 export const state = {
   mode: "dinner",      // "dinner" or "list": the switch in the top bar
   recipes: [],         // hand-written classics
-  dishes: [],          // store recipes (NutriData dishes before there were any): {id, name, category, minutes, count, photo}
-  categories: [],      // {id, name}
+  dishes: [],          // pantryrun's own and store recipes: {id, name, tags, minutes, count, photo, category?, label?}
+  categories: [],      // the chips: {id, name, moment?}
   category: storage.get("pantryrun.category", "ideas"),
   shown: [],           // dinner ids on screen; kept until the category changes or "Show me others"
   mine: [],            // this person's own dinners: {id, name, servings, items}

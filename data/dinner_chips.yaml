@@ -1,0 +1,19 @@
+# The chips above the dinners (WEB-52/53): moments first, then kinds of dinner. A dinner shows under every
+# chip in its tags. pantryrun's own dinners (the recipes table, edited in /admin.html) and the classics
+# (recipes.yaml) are tagged by hand; nobody tags "quick" or "seasonal": they come from the minutes and the
+# months a dinner is in season. Store recipes (store_recipes.yaml) get their kind from their category, and
+# pasta or rice from the words of what's bought: a word that starts or ends with one of `words`, unless it
+# starts with one of `not` (tomatipasta is tomato paste). Words are Estonian, as the stores name things.
+quick_minutes: 30
+chips:
+  - {id: quick, name: Quick, moment: true}
+  - {id: friends, name: With friends, moment: true}
+  - {id: seasonal, name: In season, moment: true}
+  - {id: pasta, name: Pasta, words: [pasta, spaget, makaron, penne, tagliatel, lasanj, fusilli, farfall, gemelli],
+     not: [tomatipasta, tšillipasta, karripasta, kontsentreeritud]}
+  - {id: rice, name: Rice, words: [riis, risoto, plov], not: [riisinuudl, riisipaber, riisiäädik, riisijahu]}
+  - {id: fish, name: Fish, categories: [fish]}
+  - {id: chicken, name: Chicken, categories: [chicken]}
+  - {id: meat, name: Meat, categories: [meat, mince]}
+  - {id: veggie, name: Veggie, categories: [veggie]}
+  - {id: soup, name: Soups, categories: [soup]}

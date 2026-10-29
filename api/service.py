@@ -18,6 +18,7 @@ from core import fetch
 from core import mailerlite
 from core import plans
 from core import recipe_import
+from core import recipes as own_recipes
 from stores_config import dinner_stores, public as stores_public
 
 import io
@@ -135,18 +136,25 @@ def log_event(req: EventRequest):
 
 @app.get("/recipes")
 def recipes():
-    """Dinners the app can recommend: the hand-written classics, plus store recipes by category (NutriData dishes
-    until data/store_recipes.yaml exists), each with what its card shows; and the stores, as the page names them
+    """Dinners the app can recommend: the hand-written classics, plus pantryrun's own (the recipes table, published
+    ones) and store recipes (NutriData dishes until data/store_recipes.yaml exists), each with what its card shows
+    and its chips; the chips that have dinners (data/dinner_chips.yaml); and the stores, as the page names them
     (stores_config.py)."""
     data, store = catalog.load_recipes(), catalog.load_store_recipes()
     dishes = store if store["dinners"] else {**catalog.load_dishes(), "dinners": catalog.load_dishes()["dishes"]}
+    cfg, month = own_recipes.chips(), own_recipes.this_month()
     shown = lambda r: {"id": r["id"], "name": r["name"], "minutes": r.get("minutes"), "about": r.get("about"),
-                       "count": len(r["ingredients"]), "photo": _thumb(r.get("image"))}
+                       "count": len(r["ingredients"]), "photo": _thumb(r.get("image")),
+                       "tags": own_recipes.tags_of(r, month, cfg)}
+    classics = [{**shown(r), "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]]
+    others = ([{**shown(r), "emoji": r["emoji"], "label": r["label"]} for r in own_recipes.published()]
+              + [{**shown(d), "category": d["category"]} for d in dishes["dinners"]])
+    used = {t for d in classics + others for t in d["tags"]}
     return {
         **stores_public(),
-        "recipes": [{**shown(r), "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]],
-        "categories": dishes["categories"],
-        "dishes": [{**shown(d), "category": d["category"]} for d in dishes["dinners"]],
+        "recipes": classics,
+        "categories": [{k: c[k] for k in ("id", "name", "moment") if k in c} for c in cfg["chips"] if c["id"] in used],
+        "dishes": others,
     }
 
 
@@ -358,7 +366,8 @@ def open_plan(token: str, user_id: Optional[str] = None, came_from: Optional[str
 
 
 def _owner(authorization):
-    """Only the owner runs the newsletter (scripts/weekly_plan.py): EDITION_TOKEN, sent as a bearer token."""
+    """Only the owner runs the newsletter (scripts/weekly_plan.py) and edits pantryrun's dinners (admin.html):
+    EDITION_TOKEN, sent as a bearer token."""
     secret = os.environ.get("EDITION_TOKEN")
     if not secret:
         raise HTTPException(status_code=503, detail="EDITION_TOKEN isn't set on the server")
@@ -395,6 +404,46 @@ def edition_sent(token: str, authorization: Optional[str] = Header(None)):
     """After an edition: log it as a reminder for everyone it went to."""
     _owner(authorization)
     return _edition_step(lambda: editions.record_sent(token))
+
+
+def _recipe_step(step):
+    try:
+        return step()
+    except own_recipes.RecipeError as exc:
+        raise HTTPException(status_code=422, detail=str(exc))
+    except LookupError:
+        raise HTTPException(status_code=404, detail="No dinner with that id")
+
+
+@app.get("/admin/recipes")
+def admin_recipes(authorization: Optional[str] = Header(None)):
+    """pantryrun's dinners for the admin page, every status, with how testers use them; and the chips to tag with."""
+    _owner(authorization)
+    taggable = [c for c in own_recipes.chips()["chips"] if c["id"] not in own_recipes.WORKED_OUT]
+    return {"chips": [{"id": c["id"], "name": c["name"], "moment": c.get("moment", False)} for c in taggable],
+            "quick_minutes": own_recipes.chips()["quick_minutes"], "stores": DINNER_STORES,
+            "recipes": own_recipes.with_usage()}
+
+
+@app.post("/admin/recipes")
+def admin_add_recipe(body: Dict[str, Any], authorization: Optional[str] = Header(None)):
+    """A new dinner; its id comes from its name and never changes."""
+    _owner(authorization)
+    return _recipe_step(lambda: own_recipes.save(body))
+
+
+@app.put("/admin/recipes/{recipe_id}")
+def admin_save_recipe(recipe_id: str, body: Dict[str, Any], authorization: Optional[str] = Header(None)):
+    """Change a dinner, its status too (draft, published, archived)."""
+    _owner(authorization)
+    return _recipe_step(lambda: own_recipes.save(body, recipe_id))
+
+
+@app.post("/admin/recipes/{recipe_id}/check")
+def admin_check_recipe(recipe_id: str, authorization: Optional[str] = Header(None)):
+    """Price a dinner at every store as a tester would get it: what each store is missing. Searches the stores."""
+    _owner(authorization)
+    return {"stores": _recipe_step(lambda: own_recipes.check(recipe_id, DINNER_STORES))}
 
 
 @app.get("/cooked")
