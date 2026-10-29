@@ -15,7 +15,7 @@ import { api, logEvent } from "./api.js";
 import { setStores } from "./format.js";
 import { addScreen, render } from "./screens.js";
 import { idle, failed } from "./receipt.js";
-import { add } from "./dinners.js";
+import { add, setPeople } from "./dinners.js";
 import { offerNewsletter } from "./newsletter.js";
 import { refreshFooter, startFooter } from "./footer.js";
 import * as dinnerScreen from "./dinner-screen.js";
@@ -85,7 +85,8 @@ async function start() {
     if (planToken) {
       state.plan = await api(`/plans/${encodeURIComponent(planToken)}?user_id=${encodeURIComponent(identity.personId)}`
                              + (tagged ? `&came_from=${tagged}` : "")).catch(() => null);
-      state.plan?.dinners.forEach(d => add(d.id));
+      // An edition is priced for one number of people, so its dinners keep the headline's, as in the email.
+      state.plan?.dinners.forEach(d => { add(d.id); setPeople(d.id, state.servings); });
     }
     render();
     if (token && !state.shared) idle("This link doesn't lead to a dinner", "It may be mistyped. Pick a dinner here instead.");

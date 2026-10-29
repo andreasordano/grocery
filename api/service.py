@@ -144,7 +144,7 @@ def recipes():
     dishes = store if store["dinners"] else {**catalog.load_dishes(), "dinners": catalog.load_dishes()["dishes"]}
     cfg, month = own_recipes.chips(), own_recipes.this_month()
     shown = lambda r: {"id": r["id"], "name": r["name"], "minutes": r.get("minutes"), "about": r.get("about"),
-                       "count": len(r["ingredients"]), "photo": _thumb(r.get("image")),
+                       "count": len(r["ingredients"]), "photo": _thumb(r.get("image")), "servings": r.get("servings"),
                        "tags": own_recipes.tags_of(r, month, cfg)}
     classics = [{**shown(r), "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]]
     others = ([{**shown(r), "emoji": r["emoji"], "label": r["label"]} for r in own_recipes.published()]

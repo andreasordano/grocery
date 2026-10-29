@@ -4,7 +4,7 @@ import { feed } from "./dom.js";
 import { state } from "./state.js";
 import { identity } from "./identity.js";
 import { api, logEvent } from "./api.js";
-import { dinnerById, picked } from "./dinners.js";
+import { dinnerById, picked, peopleFor } from "./dinners.js";
 import { redraw } from "./screens.js";
 import { idle, printing, failed, showReceipt, answered } from "./receipt.js";
 import { chooseProduct, editPreferences } from "./products.js";
@@ -20,17 +20,19 @@ export async function ask({ fresh = false, keepView = false } = {}) {
   const req = ++state.request;
   const view = keepView ? state.view : null;
 
+  const people = ids.map(peopleFor);  // each dinner for its own number of people
+  const same = new Set(people).size === 1 ? people[0] : null;
   if (fresh || !state.result) {
-    printing(ids.length > 1 ? `${ids.length} dinners for ${state.servings}`
-           : dinner ? `${dinnerById(ids[0]).name} for ${state.servings}`
+    printing(ids.length > 1 ? `${ids.length} dinners${same ? ` for ${same}` : ""}`
+           : dinner ? `${dinnerById(ids[0]).name} for ${people[0]}`
                     : `${items.length} ${items.length === 1 ? "thing" : "things"} on your list`);
   } else {
     feed.classList.add("busy");  // same question with a change: keep the receipt, dimmed
   }
   try {
     const res = await api("/basket", {
-      recipe_id: ids.length === 1 ? ids[0] : null, servings: state.servings, items,
-      recipes: ids.length > 1 ? ids.map(id => ({ id, servings: state.servings })) : [],
+      recipe_id: ids.length === 1 ? ids[0] : null, servings: people[0] ?? state.servings, items,
+      recipes: ids.length > 1 ? ids.map((id, i) => ({ id, servings: people[i] })) : [],
       prefs: state.prefs, skip: state.skipped.map(s => s.key), user_id: identity.personId, session_id: identity.sessionId, name: identity.name,
     });
     if (req !== state.request) return;

@@ -40,6 +40,18 @@ export function dinnerById(id) {
   return state.mine.find(x => x.id === id) || state.recipes.find(r => r.id === id);
 }
 
+// How many people a dinner is for: what was chosen for it, else its recipe's own number (a lasagne for 6
+// opens for 6), else the headline's. Dinners sent by link and a plan's take the headline's: they're priced
+// for the person who opened them, and a newsletter edition is priced for one number.
+export function peopleFor(id) {
+  const own = [...state.dishes, ...state.recipes, ...state.mine].find(d => d.id === id)?.servings;
+  return state.people[id] ?? own ?? state.servings;
+}
+
+export function setPeople(id, n) {
+  state.people = { ...state.people, [id]: n };
+}
+
 function pool(category) {
   if (category === "mine") return state.mine.map(r => r.id);
   if (category === "classics") return state.recipes.map(r => r.id);

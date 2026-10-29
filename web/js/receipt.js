@@ -202,8 +202,9 @@ export function showReceipt(storeName, animate) {
     : `${euro.format(b.total_price - best.total_price)} more than ${shopName(best.store)}`);
   const n = res.items.length;
   const dinners = res.dinners ?? (res.recipe ? [res.recipe] : []);
-  const what = dinners.length > 1 ? `${dinners.length} dinners for ${res.servings}`
-    : res.recipe ? `${res.recipe.name} for ${res.servings}` : `Your list of ${n}`;
+  const counts = new Set(dinners.map(d => d.servings));
+  const what = dinners.length > 1 ? `${dinners.length} dinners${counts.size === 1 ? ` for ${dinners[0].servings}` : ""}`
+    : res.recipe ? `${res.recipe.name} for ${dinners[0]?.servings ?? res.servings}` : `Your list of ${n}`;
 
   print(`
     <div class="r-center">
