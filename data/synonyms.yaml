@@ -1,0 +1,8 @@
+# Names for the same thing, as stores and recipes write them. When a typed item (or a recipe's ingredient
+# line) finds nothing at a store, the other names in its group are searched too: Rimi has no "tomatipüree",
+# only "Tomati Passata"; Barbora's passata is "Tomatipüree". Only for things that really are the same, not
+# substitutes (grana padano is not parmesan). Found with scripts/missing_report.py; keep it small.
+groups:
+  - [passeeritud tomatid, passata, tomatipassata, tomatipüree]
+  - [parmesan, parmesani juust, parmigiano reggiano, parmigiano]
+  - [kruubid, odrakruubid, odrakruup, pärlkruup, odra pärlkruup]

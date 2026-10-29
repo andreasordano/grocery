@@ -207,3 +207,44 @@ def test_typed_as_one_word_written_as_two():
     from core.scoring import relevance_score
     assert relevance_score("Hiina kapsas, kg", {"include": ["hiinakapsa"]}) >= 4   # Barbora's spelling
     assert relevance_score("Hiinapärane kaste poolmagus FELIX 500g", {"include": ["hiinakapsa"]}) == 0
+
+
+def test_sold_out_match_comes_back_alone_marked(monkeypatch):
+    stock = [{"store": "rimi", "store_id": "1", "name": "Kuldne meriahven, sulatatud, kg", "price": None, "in_stock": False,
+              "shelf": "SH-8-20"}]
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q, size=40: stock)
+    found, _ = fetch._fetch_item_store("meriahven", fetch.spec_for("meriahven"), "rimi", 12)
+    assert [(p["name"], p["sold_out"]) for p in found] == [("Kuldne meriahven, sulatatud, kg", True)]
+    from core import catalog
+    gone = {}
+    assert catalog.free_text_offers(["meriahven"], ["rimi"], sold_out=gone) == {"meriahven": {"rimi": []}}
+    assert gone == {("meriahven", "rimi"): "Kuldne meriahven, sulatatud, kg"}
+
+
+def test_another_name_is_tried_when_nothing_is_exactly_the_thing(monkeypatch):
+    stock = {"parmesan": [{"name": "Juust Rimi Tilsit 500g", "price": 4.0, "shelf": "Juust"},
+                          {"name": "Juust Parmigiano Reggiano 100g", "price": 3.0, "shelf": "Juust"}],
+             "parmigiano": [{"name": "Juust Parmigiano Reggiano 100g", "price": 3.0, "shelf": "Juust"}]}
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q, size=40: [{"store": store, "store_id": p["name"], **p}
+                                                                          for p in stock.get(q, [])])
+    assert fetch.synonyms("parmesan")[:1] == ["parmesani juust"]
+    assert picks("parmesan", "rimi") == ["Juust Parmigiano Reggiano 100g"]  # not the cheapest cheese on the shelf
+
+
+def test_smoked_fish_does_not_outvote_the_fresh_fish_shelf(monkeypatch):
+    stock = [{"name": "Kuumsuitsu kuldne meriahven, 300g", "price": 3.99, "shelf": "Suitsukala"},
+             {"name": "Kuumsuitsu kuldne meriahven, kg-lett", "price": 12.0, "unit": "kg", "shelf": "Suitsukala"},
+             {"name": "Sulatatud roogitud kuldne meriahven, kg", "price": 7.49, "unit": "kg", "shelf": "Värske kala"}]
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q, size=40: [{"store": store, "store_id": p["name"], **p} for p in stock])
+    assert picks("meriahven", "barbora") == ["Sulatatud roogitud kuldne meriahven, kg"]
+
+
+@pytest.mark.parametrize("name, typed, expected", [
+    ("Õuna-sidruni-piparmün.mahlKADARBIKU250ml", "piparmünt", True),   # a juice: the brand is written onto "mahl"
+    ("Külms.lõhefilee viil. M.V.WOOL, 200g", "lõhefilee", True),       # cold-smoked
+    ("Külmsuitsu lõhe 100g", "külmsuitsu lõhe", False),                # asked for
+    ("Parmesani juustu Super Snack M&M,85g", "parmesan", True),
+])
+def test_more_things_made_from_it(name, typed, expected):
+    from core.scoring import made_from
+    assert made_from(name, typed) is expected

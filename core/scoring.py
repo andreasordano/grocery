@@ -177,7 +177,9 @@ _MADE_FROM = ("marin", "soolvees", "õlis", "omas mahlas", "hautatud", "kauaküp
               "galett", "puljong", "kaste", "kastme", "kast.", "borš", "hommikueine", "liköör", "šok", "jäätis", "koera", "kassi", "lemmiklooma",
               # and as the stores shorten them, and more things made with it
               "mar.", "kauak", "maits.", "paneer", "siider", "jook", "batoon", "krutoon", "majonees", "pirukas", "pitsa",
-              "pesto", "friikartul", "vesi", "mineraal", "kokt")
+              "pesto", "friikartul", "vesi", "mineraal", "kokt",
+              # smoked fish isn't the fresh fish a recipe means ("Kuumsuitsu meriahven" for meriahven)
+              "kuumsuits", "külmsuits", "kuums.", "külms.", "snack", "snäkk")
 _MADE_FROM_END = ("tee", "mahl", "supp", "pasta", "vorst", "roog")
 _BABY_AGE = re.compile(r"\d\s?k\.?\+?(?![\w])")  # baby food is sold by age: "120g4k", "7k.+"
 
@@ -185,8 +187,9 @@ _BABY_AGE = re.compile(r"\d\s?k\.?\+?(?![\w])")  # baby food is sold by age: "12
 def made_from(name, typed):
     """True when the name says it's made from the thing ("Küüslauk ürtidega päevalilleõlis") and `typed`
     didn't ask for that."""
+    # A brand written straight after a word is a word of its own: "…piparmün.mahlKADARBIKU250ml" is mahl + KADARBIKU.
+    words = re.findall(r"[^\W\d_]+", re.sub(r"(?<=[a-zäöüõšž])(?=[A-ZÄÖÜÕŠŽ]{2})", " ", name).lower())
     name, typed = name.lower(), typed.lower()
-    words = re.findall(r"[^\W\d_]+", name)
     found = [m for m in _MADE_FROM if m in name] + [m for m in _MADE_FROM_END if any(w.endswith(m) for w in words)]
     return any(m not in typed for m in found) or bool(_BABY_AGE.search(name))
 

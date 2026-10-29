@@ -229,6 +229,17 @@ def find_products(rule, store):
     return found
 
 
+def sold_out_product(rules, ingredient_key, store):
+    """A product the ingredient's rule would take at this store but that's sold out online, or None: so the
+    receipt can say "sold out online" instead of "not in the e-shop". Searches are cached by now."""
+    for rule in rule_chain(rules, ingredient_key, store):
+        for q in _queries(rule):
+            for p in _safe_fetch(store, q):
+                if p.get("in_stock") is False and matches_rule({**p, "in_stock": True}, rule):
+                    return p.get("name")
+    return None
+
+
 def rule_chain(rules, ingredient_key, store):
     """The ingredient's rule at this store followed by its fallbacks, in order."""
     rule = (rules.get(ingredient_key) or {}).get(store)
@@ -484,12 +495,13 @@ def merge_needs(per_dinner):
 
 # ── baskets: an optional recipe plus extra items, per store ─────────────────
 
-def free_text_offers(items, stores, needs=None, failed=None):
+def free_text_offers(items, stores, needs=None, failed=None, sold_out=None):
     """Options per store for items with no ingredient rule (best guess first).
 
     needs: {item: grams} for dish ingredients. Those are priced for the amount (whole packs, or
     weight × price for loose goods) and, within a match tier, ordered cheapest for that amount.
-    Other items cost one pack. Stores with a search that failed are added to `failed`.
+    Other items cost one pack. Stores with a search that failed are added to `failed`; items a store has but
+    sold out online go in `sold_out` as {(item, store): product name}.
     """
     from core.fetch import fetch_all, spec_for  # deferred: fetch is only needed for free text
 
@@ -505,6 +517,10 @@ def free_text_offers(items, stores, needs=None, failed=None):
         for store in stores:
             options = []
             for p in (p for p in all_products.get(it, []) if p["store"] == store):
+                if p.get("sold_out"):
+                    if sold_out is not None:
+                        sold_out[(it, store)] = p["name"]
+                    continue
                 priced = cost_for(p, needs[it], "g") if it in needs else None
                 cost, packs, how, bought = priced or (p["price"], 1, f"1 × {p['price']:.2f} €", None)
                 options.append((p.get("relevance", 0), p["score"], _with_discount(
@@ -537,9 +553,10 @@ def _times(option, n):
             "card_cost": mul(option.get("card_cost")), "packs": n, "cart_qty": n, "how": f"{n:g} × {option['price']:.2f} €"}
 
 
-def build_basket(store, needs, prefs, recipes, rules, free):
-    """One store's basket. needs: recipe ingredients (extra=False) then list items (extra=True)."""
-    lines, missing, missing_keys = [], [], []
+def build_basket(store, needs, prefs, recipes, rules, free, sold_out=None):
+    """One store's basket. needs: recipe ingredients (extra=False) then list items (extra=True).
+    sold_out: {(free-text item, store): product name} from free_text_offers."""
+    lines, missing, missing_keys, missing_why = [], [], [], []
     for n in needs:
         if n.get("rule"):
             key = n["rule"]
@@ -560,6 +577,8 @@ def build_basket(store, needs, prefs, recipes, rules, free):
         else:
             missing.append(n["label"])
             missing_keys.append(need_key(n))
+            gone = (sold_out or {}).get((n["text"], store)) if n.get("text") else sold_out_product(rules, n["rule"], store)
+            missing_why.append({"sold_out": gone} if gone else None)
 
     total = round(sum(l["cost"] for l in lines), 2)
     return {
@@ -570,6 +589,7 @@ def build_basket(store, needs, prefs, recipes, rules, free):
         "lines": lines,
         "missing": missing,
         "missing_keys": missing_keys,  # the same, as line keys (to leave one out)
+        "missing_why": missing_why,    # the same again: {"sold_out": product} when the store has it but sold out online
         "total_price": total,
         # Already included in total_price: what the discounts take off regular prices.
         "savings": round(sum((l.get("regular_cost") or l["cost"]) - l["cost"] for l in lines), 2),
@@ -650,11 +670,12 @@ def recommend(recipe_id, servings, items, stores, prefs=None, user_id=None, dinn
     failed = set()
     with ThreadPoolExecutor(max_workers=2) as pool:
         warm = pool.submit(prefetch, rules, keys, stores, failed=failed)
-        free_job = pool.submit(free_text_offers, free_items, stores, amounts, failed=failed)
+        sold_out = {}
+        free_job = pool.submit(free_text_offers, free_items, stores, amounts, failed=failed, sold_out=sold_out)
         warm.result()
         free = free_job.result()
 
-    baskets = [build_basket(s, needs, prefs, recipes, rules, free) for s in stores if s not in failed]
+    baskets = [build_basket(s, needs, prefs, recipes, rules, free, sold_out) for s in stores if s not in failed]
     baskets.sort(key=lambda b: (len(b["missing"]), b["total_price"]))
     baskets += [no_answer_basket(s) for s in stores if s in failed]
     best_value = _best_value(baskets)

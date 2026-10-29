@@ -278,7 +278,7 @@ def test_store_that_didnt_answer_is_named_not_missing(base_url, page):
     receipt_lines(page)
     receipt = page.locator(".receipt").inner_text()
     assert "Selver didn't answer, prices from Rimi and Barbora" in receipt
-    assert "Not in the e-shop" not in receipt
+    assert page.locator(".r-missing").count() == 0  # a store that didn't answer isn't "missing" things
     assert [s.split("\n")[0] for s in page.locator(".stores .s").all_inner_texts()] == ["Rimi", "Maxima"]  # Barbora prices, shown as the Maxima store
     statuses = {b["store"]: b.get("status") for b in [d for u, d in logged("basket") if u == "e2e-down"][-1]["baskets"]}
     assert statuses == {"rimi": "ok", "barbora": "ok", "selver": "no_answer"}

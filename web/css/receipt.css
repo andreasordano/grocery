@@ -69,13 +69,18 @@ button.r-photo { cursor: zoom-in; }
 .r-photo:focus-visible { outline: 2px solid var(--paper-red); outline-offset: 1px; }
 .r-hint { margin-top: 8px; font-size: 11px; }
 .r-missing { margin-top: 10px; color: var(--paper-red); }
+.r-missing .r-head { margin: 0 0 2px; color: var(--paper-red); }
+.r-missing ul { list-style: none; margin: 0 -8px 0 0; padding: 0; }
+.r-missing li { display: grid; grid-template-columns: minmax(0, 1fr) 28px; align-items: start; padding: 2px 0; }
+.r-missing b { font-weight: 600; }
+.r-where { display: block; color: var(--paper-soft); font-size: 11.5px; }
 /* × on a line: you don't need it, so it's left out at every store */
 .r-items li { display: grid; grid-template-columns: minmax(0, 1fr) 28px; align-items: start; }
 .r-x { width: 28px; height: 28px; margin-top: 2px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer;
   display: grid; place-items: center; color: var(--paper-faint); transition: color .15s, background .15s; }
 .r-x svg { width: 14px; height: 14px; }
 .r-x:hover, .r-x:focus-visible { color: var(--paper-red); background: var(--paper-hover); outline: none; }
-.r-missing .r-x { display: inline-grid; width: 22px; height: 22px; margin: 0 0 0 1px; vertical-align: -6px; color: inherit; }
+.r-missing .r-x { color: inherit; }
 
 /* ── totals and notes ── */
 .r-total { display: flex; justify-content: space-between; align-items: baseline; font: 800 26px/1 var(--display); letter-spacing: -0.02em; }

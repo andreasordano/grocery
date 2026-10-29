@@ -277,7 +277,7 @@ def test_pick_ignores_preference_that_matches_nothing():
 
 
 def test_recommend_recipe_plus_extra_items(fake_store, monkeypatch):
-    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None: {
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None, sold_out=None: {
         "jogurt": {"a": [{"product": "Jogurt 1kg", "price": 1.49, "cost": 1.49, "packs": 1, "how": "", "substitute": False}],
                    "b": []}})
     res = catalog.recommend("test", 2, ["jogurt", "Munad"], ["a", "b"])
@@ -292,7 +292,7 @@ def test_recommend_recipe_plus_extra_items(fake_store, monkeypatch):
 
 
 def test_recommend_items_only(fake_store, monkeypatch):
-    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None: {})
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None, sold_out=None: {})
     res = catalog.recommend(None, 2, ["kartul"], ["a", "b"])
     assert res["recipe"] is None and res["store"] == "a"
     assert res["baskets"][0]["lines"][0]["options"][0]["product"] == "Kartul, kg"
@@ -424,7 +424,7 @@ def test_parse_quantity(typed, expected):
 
 
 def test_list_item_with_grams_uses_the_rule_for_that_amount(fake_store, monkeypatch):
-    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None: {})
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None, sold_out=None: {})
     res = catalog.recommend(None, 2, ["kartul 1,5 kg", "6 tk munad"], ["a"])
     lines = {l["key"]: l for l in res["baskets"][0]["lines"]}
     assert lines["kartul"]["need"] == 1500 and lines["kartul"]["cost"] == 1.5   # loose: 1.5 kg × 1.00
@@ -493,7 +493,7 @@ def test_my_dinners_belong_to_their_owner(pg):
 
 def test_my_dinner_scales_from_its_own_servings(fake_store, pg, monkeypatch):
     from core import my_dinners
-    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None: {})
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None, sold_out=None: {})
     d = my_dinners.save("anna", "Kartulid", 4, ["kartul 2 kg"])
     res = catalog.recommend(d["id"], 2, [], ["a"], user_id="anna")
     line = res["baskets"][0]["lines"][0]
@@ -506,7 +506,7 @@ def test_my_dinner_scales_from_its_own_servings(fake_store, pg, monkeypatch):
 
 def test_shared_dinner_is_a_snapshot_anyone_can_open(fake_store, pg, monkeypatch):
     from core import my_dinners
-    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None: {})
+    monkeypatch.setattr(catalog, "free_text_offers", lambda items, stores, needs=None, failed=None, sold_out=None: {})
     d = my_dinners.save("anna", "Kartulid", 4, ["kartul 2 kg"])
     token = my_dinners.share("anna", d["id"], d["name"], d["servings"], d["items"])
     my_dinners.save("anna", "Kartulid", 4, ["kartul 5 kg"], d["id"])         # a later edit…

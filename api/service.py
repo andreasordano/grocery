@@ -203,6 +203,7 @@ def basket(req: BasketRequest):
             "baskets": [
                 {"store": b["store"], "status": b["status"], "total_price": b["total_price"], "missing": b["missing"],
                  "used_price": b.get("used_price"),
+                 "sold_out": [m for m, why in zip(b["missing"], b.get("missing_why") or []) if why],
                  "chosen": {l["key"]: l["product"] for l in b["lines"]}}
                 for b in result["baskets"]
             ],

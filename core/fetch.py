@@ -124,11 +124,12 @@ def discount_fields(item: dict) -> dict:
 
 
 def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict):
-    if item.get("in_stock") is False:  # the store says it's out of stock: never recommend it
-        return None
+    # Out of stock: never recommended, but kept (sold_out) so a receipt can say "sold out online" rather
+    # than "not in the e-shop". Rimi gives those no price.
+    sold_out = item.get("in_stock") is False
     name = item.get("name") or ""
     price = parse_price(item.get("price") or item.get("retail_price"))
-    if price == float("inf"):
+    if price == float("inf") and not sold_out:
         return None
 
     size = pack_size(name, item.get("volume"))
@@ -177,7 +178,11 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         # Made from it ("Br.kintsuliha jogurtimarinaadis" for kanakintsuliha): it shows which shelf the thing
         # is on, so it votes, but it isn't offered.
         "made_from": made_from(name, display_name) or misses_the_thing(name, display_name),
+        "sold_out": sold_out,
     }
+
+
+MADE_FROM_VOTE = 0.4
 
 
 def _shelves(candidates):
@@ -202,7 +207,9 @@ def _shelves(candidates):
         return None, set()
     weights, counts = Counter(), Counter()
     for p in voters:
-        weights[p["shelf"]] += p["weight"]
+        # Made from it (smoked, marinated) still says where the thing is kept, but less loudly than the thing:
+        # two hot-smoked redfish mustn't outvote the fresh one on its own shelf.
+        weights[p["shelf"]] += p["weight"] * (MADE_FROM_VOTE if p.get("made_from") else 1)
         counts[p["shelf"]] += 1
     top = weights.most_common(1)[0][0]
     if counts.most_common(1)[0][1] == 1:  # too few matches to tell outliers apart: trust them all
@@ -277,8 +284,22 @@ def _singular(item):
     return w[:-2] if w[-2] in "aeiu" else w[:-1]
 
 
-def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit: int):
-    """Run the query fallbacks for one item at one store; return (candidates, warnings)."""
+def synonyms(item):
+    """Other names for the same thing (data/synonyms.yaml): "passata" for "passeeritud tomatid"."""
+    from core.catalog import load_yaml  # deferred: catalog imports this module
+    name = " ".join(item.lower().split())
+    for group in load_yaml("synonyms.yaml")["groups"]:
+        if name in group:
+            return [g for g in group if g != name]
+    return []
+
+
+def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit: int, alternatives=True):
+    """Run the query fallbacks for one item at one store; return (candidates, warnings).
+    Candidates are best first. When none is in stock, the best one that would match but is sold out comes
+    back alone, marked sold_out (for "sold out online").
+    When nothing is exactly the thing (tier 5), the item's other names are tried (synonyms): the first that
+    finds the thing exactly wins ("Parmigiano Reggiano" for parmesan, not the cheapest cheese on its shelf)."""
     rules = {"include": spec.get("include", [])}
     store_candidates = []
     warnings = []
@@ -314,15 +335,28 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
     # counts (same shelf) and what doesn't ("with peanut butter" snacks elsewhere).
     top, trusted = _shelves(store_candidates)
     ranked = []
+    sold_out = []
     for p in store_candidates:
         tier = _tier(p, top, trusted)
         if tier is None or p["made_from"]:
             continue
         p["relevance"] = tier
+        if p["sold_out"]:
+            sold_out.append(p)
+            continue
         p["score"] = score(p)
         ranked.append(p)
     ranked.sort(key=lambda p: p["score"])
-    return ranked[:per_store_limit], warnings
+    if alternatives and not any(p["relevance"] == 5 for p in ranked):
+        for alt in synonyms(spec.get("search_term", display_name)):
+            found, more = _fetch_item_store(alt, spec_for(alt), store, per_store_limit, alternatives=False)
+            for p in found:
+                p["item"] = display_name  # found under another name, for the item that was asked
+            warnings += more
+            if any(p["relevance"] == 5 and not p["sold_out"] for p in found):
+                return [p for p in found if p["relevance"] == 5], warnings
+    sold_out.sort(key=lambda p: -p["relevance"])
+    return (ranked[:per_store_limit] if ranked else sold_out[:1]), warnings
 
 
 def fetch_all(grocery_list, selected_stores):

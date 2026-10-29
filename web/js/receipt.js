@@ -112,6 +112,26 @@ function valueNote(res, b, stores) {
     ${euro.format(bv.total_price)} today, but what you use is worth ${euro.format(bv.used_price)}. You keep the rest.</div>`;
 }
 
+// Fresh things an e-shop lacks are often at a counter in the store: where to look, for the "In the store" way.
+const COUNTERS = [
+  [["kala", "lõhe", "tursk", "ahven", "forell", "heik", "räim", "kilu", "makrell", "krevet", "tuun", "koha", "lest", "angerjas"], "the fish counter"],
+  [["liha", "filee", "hakk", "sea", "veise", "lamba", "kana", "broiler", "kalkun", "part", "ribi", "karbonaad", "vorst", "sink"], "the meat counter"],
+  [["petersell", "till", "koriander", "münt", "basiilik", "murulauk", "salat", "spinat", "rukola", "seller", "porru", "ürt"], "the vegetable section"],
+];
+const counter = label => COUNTERS.find(([words]) => words.some(w => fold(label).includes(fold(w))))?.[1];
+
+// Missing here: still on your list (the receipt is the list in the store), with why (sold out online today, or
+// not in this e-shop), where to look in the store for fresh things, and × to leave it out everywhere.
+function missingNote(b, removable) {
+  if (!b.missing.length) return "";
+  return `<div class="r-missing"><div class="r-head">Not in ${esc(eshopName(b.store))}'s e-shop: still on your list</div>
+    <ul>${b.missing.map((m, i) => {
+      const where = counter(m), soldOut = b.missing_why?.[i]?.sold_out;
+      return `<li><span><b>${esc(m)}</b> ${soldOut ? "· sold out online today" : ""}${where
+        ? `<span class="r-where">In the store, try ${where}.</span>` : ""}</span>${removable && b.missing_keys?.[i] ? skipButton(b.missing_keys[i], m) : ""}</li>`;
+    }).join("")}</ul></div>`;
+}
+
 // What was taken off with ×: tap one to put it back.
 function skippedNote(res) {
   if (!res.skipped?.length) return "";
@@ -199,8 +219,7 @@ export function showReceipt(storeName, animate) {
     ${items(main)}
     ${dinners.length && extra.length ? `<div class="r-head">Also</div>` : ""}
     ${extra.length ? items(extra) : ""}
-    ${b.missing.length ? `<div class="r-missing">Not in the e-shop: ${b.missing.map((m, i) => `${esc(m)}${removable && b.missing_keys?.[i]
-      ? skipButton(b.missing_keys[i], m) : ""}`).join(", ")}</div>` : ""}
+    ${missingNote(b, removable)}
     <div class="r-hint">${photos ? "Tap a photo for a closer look, an item to choose another" : "Tap an item to choose another"}${removable
       ? ", × if you don't need it." : "."}</div>
     <hr class="r-rule">
@@ -213,7 +232,8 @@ export function showReceipt(storeName, animate) {
     ${prefsNote(b)}
     ${stores.length > 1 ? `<hr class="r-rule"><div class="r-head">Compare stores</div>
       <ul class="stores">${stores.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
-        <span class="s">${esc(shopName(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)` : ""}</span>${o.store === res.best_value
+        <span class="s">${esc(shopName(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)`
+          : stores.some(x => x.missing.length) ? " · has everything" : ""}</span>${o.store === res.best_value
           ? `<span class="bv">★ Best value for what you use</span>` : ""}</button></li>`).join("")}</ul>` : ""}
   `, animate);
   const stamp = () => { if (!$(".stamp", feed)) feed.firstElementChild.insertAdjacentHTML("beforeend", `<div class="stamp">Going</div>`); };

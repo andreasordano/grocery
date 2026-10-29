@@ -3,7 +3,8 @@
 Rimi publishes about a thousand recipes with schema.org Recipe data for search engines: name,
 photo, time, servings, categories, ingredient lines. This keeps weeknight dinners people
 recognise: a main course or dinner, at most an hour and a half, a handful of things to buy,
-each of them a word the stores sell (web/vocab.json) or an ingredient rule. Ingredient lines
+each of them a word the stores sell (web/vocab.json) or an ingredient rule, and that at least one store
+can sell completely today (priced through the app, as a tester would see it). Ingredient lines
 become typed items, as when someone pastes a recipe link (core/recipe_import.to_item); spoonfuls
 and staples go under "from home". The photo is hotlinked and the method stays on Rimi's page
 (the dinner keeps the link), as with a pasted link.
@@ -13,6 +14,7 @@ Generated file; don't edit dinners by hand. Re-run every few months to pick up n
   python -m scripts.import_rimi_recipes              # download and write data/store_recipes.yaml
   python -m scripts.import_rimi_recipes --cache DIR  # keep the downloads in DIR (for re-runs)
   python -m scripts.import_rimi_recipes --report     # also list why recipes were left out
+  python -m scripts.import_rimi_recipes --stores rimi,barbora,selver   # the stores to check (Selver blocks Italy)
 """
 
 import argparse
@@ -63,7 +65,7 @@ NOT_DINNER_NAME = ("salat", "kaste", "dip", "tort", "kook", "muffin", "pirukas",
 # Bought once and kept at home: listed under "from home" instead of priced.
 STAPLES = ("sool", "pipar", "õli", "oliiviõli", "rapsiõli", "suhkur", "jahu", "nisujahu", "äädikas", "vesi", "vett", "puljong",
            "puljongikuubik", "maitseaine", "vürts", "paprikapulber", "küüslaugupulber", "loorber", "kaneel", "köömned",
-           "vürtsisegu", "kurkum", "karri", "tšillihelbed", "majoraan", "pune", "oregano", "tüümian", "basiilik", "rosmariin", "muskaat",
+           "vürtsisegu", "maitseainesegu", "pulber", "kurkum", "karri", "tšillihelbed", "majoraan", "pune", "oregano", "tüümian", "basiilik", "rosmariin", "muskaat",
            "petersell", "till", "koriander", "piparmünt", "münt", "murulauk", "salvei", "estragon", "ürdid",  # herbs
            "sinep", "ketšup", "majonees", "sojakaste", "mesi", "või", "riivsai", "tärklis", "sooda", "küpsetuspulber")
 BRANDS = re.compile(r"\b(rimi(\s+(smart|basic|eco|selection))?|smart|basic|i love eco|food ?studio|forte)\b", re.I)
@@ -136,7 +138,7 @@ def is_staple(item):
     """Salt, oil, spices: assumed at home. "sool ja pipar", "kookosõli" (any word ending in a staple's name)."""
     name, _ = catalog.parse_quantity(item)
     ws = _words(name)
-    return bool(ws) and (ws[0].endswith(STAPLES) or ws[-1].endswith(STAPLES))
+    return bool(ws) and (ws[0].endswith(STAPLES) or ws[-1].endswith(STAPLES) or ws[0] == "jahvatatud")  # ground spices
 
 
 def category(name, items):
@@ -182,7 +184,18 @@ def place(url, recipe, known):
             "ingredients": buy, "pantry": list(dict.fromkeys(pantry)), "image": image, "link": url}, None
 
 
-def build(cache=None, report=False):
+CHECK_STORES = ["rimi", "barbora"]  # stores reachable where this runs; production also reaches Selver
+
+
+def complete_at(dinner, stores):
+    """The stores where the app finds everything the dinner needs (none missing), priced as a tester would see it.
+    A store whose search failed doesn't count."""
+    catalog.load_store_recipes = lambda: {"categories": [], "dinners": [dinner]}
+    res = catalog.recommend(dinner["id"], dinner["servings"], [], stores)
+    return [b["store"] for b in res["baskets"] if b["status"] == "ok" and not b["missing"]]
+
+
+def build(cache=None, report=False, stores=CHECK_STORES):
     known = known_words(json.load(open(VOCAB, encoding="utf-8")))
     kept, why = [], Counter()
     urls = recipe_urls()
@@ -202,11 +215,24 @@ def build(cache=None, report=False):
     by_name = {}
     for d in kept:
         by_name.setdefault(d["name"].lower(), d)
+    # Simplest first, keeping only dinners some store can sell completely, up to PER_CATEGORY of each kind.
     best = []
     for c in CATEGORIES:
         mine = [d for d in by_name.values() if d["category"] == c["id"]]
         mine.sort(key=lambda d: (len(d["ingredients"]), d["minutes"] or 60))
-        best += sorted(mine[:PER_CATEGORY], key=lambda d: d["name"])
+        chosen = []
+        for d in mine:
+            if len(chosen) == PER_CATEGORY:
+                break
+            d["complete_at"] = complete_at(d, stores) if stores else []
+            if d["complete_at"] or not stores:
+                chosen.append(d)
+            else:
+                why["no store has everything"] += 1
+                if report:
+                    print(f"  no store has everything{'':17} {d['link']}")
+        print(f"{c['name']}: {len(chosen)} of {len(mine)} checked", file=sys.stderr)
+        best += sorted(chosen, key=lambda d: d["name"])
     if report:
         print("Left out: " + ", ".join(f"{k} {v}" for k, v in why.most_common()))
     return best
@@ -217,7 +243,8 @@ def write(dinners):
     with open(OUT, "w", encoding="utf-8") as f:
         f.write("# Generated by scripts/import_rimi_recipes.py. Don't edit by hand; re-run the script.\n"
                 "# Source: Rimi's recipes (rimi.ee/retseptid). Photos are hotlinked and the method stays on Rimi's page.\n"
-                "# `ingredients` are typed items for `servings` people; `pantry` is assumed at home.\n")
+                "# `ingredients` are typed items for `servings` people; `pantry` is assumed at home.\n"
+                "# `complete_at`: the stores that could sell everything when this was generated.\n")
         yaml.safe_dump({"categories": cats, "dinners": dinners}, f, allow_unicode=True, sort_keys=False, width=120)
     counts = Counter(d["category"] for d in dinners)
     print(f"{len(dinners)} dinners → {OUT}: " + ", ".join(f"{c['name']} {counts[c['id']]}" for c in CATEGORIES))
@@ -227,10 +254,12 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--cache", help="directory to keep downloads in")
     ap.add_argument("--report", action="store_true", help="list why recipes were left out")
+    ap.add_argument("--stores", default=",".join(CHECK_STORES),
+                    help="stores that must be able to sell a dinner completely (one is enough); empty = don't check")
     args = ap.parse_args()
     if args.cache:
         os.makedirs(args.cache, exist_ok=True)
-    write(build(args.cache, args.report))
+    write(build(args.cache, args.report, [s for s in args.stores.split(",") if s]))
 
 
 if __name__ == "__main__":

@@ -13,14 +13,16 @@ HEADERS = {
 # Screen-reader price text, e.g. "1.39 € per pcs." or "20.99 € per kg"
 _PRICE_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s*€\s*per\s*([^\s.]+)")
 _NUMBER_RE = re.compile(r"(\d+[.,]\d+)")
-# Multi-buy label, e.g. "2 and more -23%"
-_MULTIBUY_RE = re.compile(r"(\d+)\s+and more\s*-\s*(\d+)\s*%")
+# Multi-buy label, e.g. "2 and more -23%" (English site) or "2 ja enam -23%"
+_MULTIBUY_RE = re.compile(r"(\d+)\s+(?:and more|ja enam|ja rohkem|või enam)\s*-\s*(\d+)\s*%")
 
 
 def search_rimi(query, limit=40):
     """Rimi's search page, read as HTML (its first page, about 40 products: limit can't ask for more or fewer):
-    products in the shape of stores_config.PRODUCT_FIELDS."""
-    url = "https://www.rimi.ee/epood/en/search"
+    products in the shape of stores_config.PRODUCT_FIELDS. The Estonian site's search: the English one finds
+    nothing for some Estonian words ("seller", "parmesan") that the Estonian one matches inside names
+    ("Juurseller", "Parmigiano Reggiano")."""
+    url = "https://www.rimi.ee/epood/ee/otsing"
     r = requests.get(url, params={"query": query, "currentPage": 0}, headers=HEADERS, timeout=15)
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
