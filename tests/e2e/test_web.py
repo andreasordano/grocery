@@ -670,6 +670,21 @@ def test_a_dinner_for_six_opens_and_is_priced_for_six(base_url, page):
     assert [t.split("for ")[-1] for t in page.locator(".trip-n").all_inner_texts()] == ["5", "4"]
 
 
+def test_desserts_show_under_desserts_only(base_url, page):
+    from core import recipes as own
+    own.save({"name": "Testi kook", "servings": 8, "minutes": 20, "tags": ["dessert", "friends"], "status": "published",
+              "ingredients": ["koor", "2 tomatipasta"]})
+    own.forget()
+    page.goto(base_url + "/?u=e2e-dessert")
+    page.wait_for_selector(".dish")
+    names = lambda: page.locator(".dc-name").all_inner_texts()
+    for chip in ("ideas", "quick", "friends"):  # quick by its minutes, friends by its tag: still not there
+        page.click(f"[data-cat={chip}]")
+        assert "Testi kook" not in names(), chip
+    page.click("[data-cat=dessert]")
+    assert names() == ["Testi kook"]
+
+
 def test_skipping_the_usual_store_isnt_asked_again(base_url, browser):
     ctx = browser.new_context()
     ctx.add_init_script("if (!sessionStorage.getItem('asked')) { localStorage.removeItem('pantryrun.usualStore'); sessionStorage.setItem('asked', 1); }")

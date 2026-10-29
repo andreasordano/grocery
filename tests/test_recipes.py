@@ -8,7 +8,10 @@ from conftest import rows
 from core import catalog, db, events
 from core import recipes as own
 
-SAMPLES = Path(__file__).resolve().parent.parent / "supabase" / "migrations" / "20261029120100_recipes_samples.sql"
+MIGRATIONS = Path(__file__).resolve().parent.parent / "supabase" / "migrations"
+SAMPLES = MIGRATIONS / "20261029120100_recipes_samples.sql"
+LINE_FIXES = MIGRATIONS / "20261030120000_recipes_line_fixes.sql"
+DESSERTS = MIGRATIONS / "20261030120100_recipes_desserts.sql"
 
 DINNER = {"name": "Kanakarri riisiga", "servings": 2, "minutes": 30, "tags": ["chicken", "rice"], "months": [],
           "ingredients": "400 g kanafilee\n200 g basmati riis\n\n400 ml kookospiim", "pantry": ["õli", "sool"],
@@ -67,7 +70,7 @@ def test_clean_tidies_the_form():
 
 @pytest.mark.parametrize("change, message", [
     ({"tags": ["quick"]}, "Unknown tags: quick"),
-    ({"tags": ["dessert"]}, "Unknown tags: dessert"),
+    ({"tags": ["breakfast"]}, "Unknown tags: breakfast"),
     ({"months": [13]}, "month must be between 1 and 12"),
     ({"ingredients": " \n "}, "at least one thing to buy"),
     ({"name": "  "}, "name can't be empty"),
@@ -130,6 +133,28 @@ def test_usage_counts_testers_only(pg):
     assert {k: usage[k] for k in ("views", "answers", "people", "copies", "cooked")} == \
         {"views": 1, "answers": 3, "people": 2, "copies": 1, "cooked": 1}
     assert rows("SELECT answers FROM metrics.dinner_usage WHERE id = 'rm-1'") == [(3,)]
+
+
+def test_line_fixes_change_only_dinners_nobody_edited(pg):
+    with db.connection() as conn:
+        conn.execute(SAMPLES.read_text())
+    own.save({**own.get("pr-korvitsasupp"), "about": "My own words."}, "pr-korvitsasupp")  # edited in the admin
+    with db.connection() as conn:
+        conn.execute(LINE_FIXES.read_text())
+    curry, soup = own.get("pr-kanakarri-riisiga"), own.get("pr-korvitsasupp")
+    assert "400 ml kookoskreem" in curry["ingredients"] and "400 ml kookospiim" not in curry["ingredients"]
+    assert "1 kg kõrvits" in soup["ingredients"] and soup["about"] == "My own words."  # the edit stays
+    assert own.clean(curry)["ingredients"] == curry["ingredients"]
+
+
+def test_the_desserts_are_drafts_under_desserts_only(pg):
+    with db.connection() as conn:
+        conn.execute(DESSERTS.read_text())
+    desserts = own.with_usage()
+    assert len(desserts) == 9 and {r["status"] for r in desserts} == {"draft"}
+    for r in desserts:
+        assert "dessert" in r["tags"] and own.clean(r)["ingredients"] == r["ingredients"], r["id"]
+    assert [c for c in own.chips()["chips"] if c.get("apart")] == [{"id": "dessert", "name": "Desserts", "apart": True}]
 
 
 def test_the_samples_are_drafts_the_admin_would_accept(pg):
