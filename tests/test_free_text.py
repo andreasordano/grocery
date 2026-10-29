@@ -248,3 +248,27 @@ def test_smoked_fish_does_not_outvote_the_fresh_fish_shelf(monkeypatch):
 def test_more_things_made_from_it(name, typed, expected):
     from core.scoring import made_from
     assert made_from(name, typed) is expected
+
+
+def test_selver_fresh_tomatoes_are_found_under_their_compound_names(monkeypatch):
+    # Selver's search matches whole words: "tomat" brings sauces and tins (as on 29 Oct), never "Kobartomat, kg".
+    answers = {"tomat": [{"name": "Pastakaste Tomat ja Juust, TARTU MILL, 340 g", "price": 3.99, "shelf": "Ketšupid, tomatipastad, kastmed"},
+                         {"name": "Tükeldatud tomatid, POMI, 500 g", "price": 2.02, "shelf": "Hoidised"},
+                         {"name": "Tomati püree, GESTUS, 700 g", "price": 2.39, "shelf": "Ketšupid, tomatipastad, kastmed"}],
+               "kobartomat": [{"name": "Kobartomat, kg", "price": 3.49, "unit": "kg", "shelf": "Köögiviljad, juurviljad"}]}
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q, size=40: [{"store": store, "store_id": p["name"], **p}
+                                                                          for p in answers.get(q, [])])
+    assert picks("tomat", "selver") == ["Kobartomat, kg"]
+
+
+def test_a_swap_is_tried_last_and_marked(monkeypatch):
+    answers = {"pangaasiusefilee": [{"name": "Pangaasiusefilee Northland 800g", "price": 6.99, "shelf": "Külmutatud kala"}],
+               "merluusifilee": [{"name": "Vaikse ookeani merluusifilee 800g", "price": 7.49, "shelf": "Külmutatud kala"}]}
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q, size=40: [{"store": store, "store_id": p["name"], **p}
+                                                                          for p in answers.get(q, [])])
+    found, _ = fetch._fetch_item_store("tursafilee", fetch.spec_for("tursafilee"), "rimi", 12)
+    assert [(p["name"], p["swap"], p["item"]) for p in found] == [("Pangaasiusefilee Northland 800g", True, "tursafilee"),
+                                                                 ("Vaikse ookeani merluusifilee 800g", True, "tursafilee")]
+    from core import catalog
+    offers = catalog.free_text_offers(["tursafilee"], ["rimi"], {"tursafilee": 400})
+    assert offers["tursafilee"]["rimi"][0]["substitute"] is True  # the receipt says "swap"

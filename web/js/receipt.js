@@ -114,7 +114,8 @@ function valueNote(res, b, stores) {
 
 // Fresh things an e-shop lacks are often at a counter in the store: where to look, for the "In the store" way.
 const COUNTERS = [
-  [["kala", "lõhe", "tursk", "ahven", "forell", "heik", "räim", "kilu", "makrell", "krevet", "tuun", "koha", "lest", "angerjas"], "the fish counter"],
+  [["kala", "lõhe", "turs", "ahven", "forell", "heik", "merluus", "pangaas", "tilaap", "räim", "kilu", "makrell", "krevet", "tuun",
+    "koha", "lest", "angerjas", "haug", "säga"], "the fish counter"],  // checked first: "tursafilee" is fish, not meat
   [["liha", "filee", "hakk", "sea", "veise", "lamba", "kana", "broiler", "kalkun", "part", "ribi", "karbonaad", "vorst", "sink"], "the meat counter"],
   [["petersell", "till", "koriander", "münt", "basiilik", "murulauk", "salat", "spinat", "rukola", "seller", "porru", "ürt"], "the vegetable section"],
 ];

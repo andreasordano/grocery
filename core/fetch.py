@@ -284,11 +284,12 @@ def _singular(item):
     return w[:-2] if w[-2] in "aeiu" else w[:-1]
 
 
-def synonyms(item):
-    """Other names for the same thing (data/synonyms.yaml): "passata" for "passeeritud tomatid"."""
+def synonyms(item, kind="groups"):
+    """Other names for the same thing (data/synonyms.yaml): "passata" for "passeeritud tomatid".
+    kind="swaps": different things that do the same job ("pangaasiusefilee" for "tursafilee")."""
     from core.catalog import load_yaml  # deferred: catalog imports this module
     name = " ".join(item.lower().split())
-    for group in load_yaml("synonyms.yaml")["groups"]:
+    for group in load_yaml("synonyms.yaml").get(kind) or []:
         if name in group:
             return [g for g in group if g != name]
     return []
@@ -299,7 +300,8 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
     Candidates are best first. When none is in stock, the best one that would match but is sold out comes
     back alone, marked sold_out (for "sold out online").
     When nothing is exactly the thing (tier 5), the item's other names are tried (synonyms): the first that
-    finds the thing exactly wins ("Parmigiano Reggiano" for parmesan, not the cheapest cheese on its shelf)."""
+    finds the thing exactly wins ("Parmigiano Reggiano" for parmesan, not the cheapest cheese on its shelf).
+    Then its swaps: the cheapest exact match among them, marked swap ("Pangaasiusefilee" for tursafilee)."""
     rules = {"include": spec.get("include", [])}
     store_candidates = []
     warnings = []
@@ -355,6 +357,13 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
             warnings += more
             if any(p["relevance"] == 5 and not p["sold_out"] for p in found):
                 return [p for p in found if p["relevance"] == 5], warnings
+        swaps = []
+        for alt in synonyms(spec.get("search_term", display_name), "swaps"):
+            found, more = _fetch_item_store(alt, spec_for(alt), store, per_store_limit, alternatives=False)
+            warnings += more
+            swaps += [{**p, "item": display_name, "swap": True} for p in found if p["relevance"] == 5 and not p["sold_out"]]
+        if swaps:
+            return sorted(swaps, key=lambda p: p["score"])[:per_store_limit], warnings
     sold_out.sort(key=lambda p: -p["relevance"])
     return (ranked[:per_store_limit] if ranked else sold_out[:1]), warnings
 

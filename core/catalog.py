@@ -525,8 +525,9 @@ def free_text_offers(items, stores, needs=None, failed=None, sold_out=None):
                 cost, packs, how, bought = priced or (p["price"], 1, f"1 × {p['price']:.2f} €", None)
                 options.append((p.get("relevance", 0), p["score"], _with_discount(
                     {"product": p["name"], "price": p["price"], "cost": cost, "packs": packs, "how": how, "bought": bought,
+                     "substitute": bool(p.get("swap")),
                      "used_cost": used_cost(p, needs[it], "g") if it in needs else None,
-                     "substitute": False, "cart_qty": cart_qty(p, needs[it], "g", packs) if it in needs else packs,
+                     "cart_qty": cart_qty(p, needs[it], "g", packs) if it in needs else packs,
                      **_looks(p)}, p)))
             by_amount = it in needs
             options.sort(key=lambda o: (-o[0], o[2]["cost"]) if by_amount else o[1])
