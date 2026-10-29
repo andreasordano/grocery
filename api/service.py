@@ -413,6 +413,8 @@ def _recipe_step(step):
         raise HTTPException(status_code=422, detail=str(exc))
     except LookupError:
         raise HTTPException(status_code=404, detail="No dinner with that id")
+    except own_recipes.NotMigrated as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
 
 
 @app.get("/admin/recipes")
@@ -422,7 +424,7 @@ def admin_recipes(authorization: Optional[str] = Header(None)):
     taggable = [c for c in own_recipes.chips()["chips"] if c["id"] not in own_recipes.WORKED_OUT]
     return {"chips": [{"id": c["id"], "name": c["name"], "moment": c.get("moment", False)} for c in taggable],
             "quick_minutes": own_recipes.chips()["quick_minutes"], "stores": DINNER_STORES,
-            "recipes": own_recipes.with_usage()}
+            "recipes": _recipe_step(own_recipes.with_usage)}
 
 
 @app.post("/admin/recipes")

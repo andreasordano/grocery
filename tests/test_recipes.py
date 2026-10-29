@@ -166,6 +166,26 @@ def test_admin_adds_edits_and_refuses_with_a_reason(api):
     assert "quick" not in {c["id"] for c in listed["chips"]} and listed["quick_minutes"] == 30
 
 
+def test_without_the_recipes_table_the_app_goes_on_and_the_admin_says_why(api):
+    """Production ran this code before `supabase db push` (29 Oct): the dinners screen must not depend on it."""
+    with db.connection() as conn:
+        conn.execute("ALTER TABLE recipes RENAME TO recipes_away")
+    try:
+        own.forget()
+        out = api.recipes()
+        assert out["dishes"] and not any(d["id"].startswith("pr-") for d in out["dishes"])
+        assert catalog.find_recipe("pr-x", catalog.load_recipes()) is None
+        ok = "Bearer s3cret"
+        assert status(lambda: api.admin_recipes(authorization=ok)) == 503
+        assert status(lambda: api.admin_add_recipe(DINNER, authorization=ok)) == 503
+        with pytest.raises(HTTPException, match="supabase db push"):
+            api.admin_recipes(authorization=ok)
+    finally:
+        with db.connection() as conn:
+            conn.execute("ALTER TABLE recipes_away RENAME TO recipes")
+        own.forget()
+
+
 def test_recipes_endpoint_shows_published_dinners_with_their_chips(api):
     own.save({**DINNER, "status": "published", "label": "With Santa Maria"})
     own.save({**DINNER, "name": "Mustand"})  # a draft stays out

@@ -33,6 +33,17 @@ class RecipeError(ValueError):
     """A dinner that can't be saved; the message is for the owner."""
 
 
+class NotMigrated(RuntimeError):
+    """The recipes table isn't there: the database lacks this code's migrations."""
+    def __init__(self):
+        super().__init__("The recipes table is missing: apply the migrations (supabase db push).")
+
+
+def _missing_table(exc):
+    import psycopg
+    return isinstance(exc, (psycopg.errors.UndefinedTable, psycopg.errors.InvalidSchemaName))
+
+
 def chips():
     return catalog.load_yaml("dinner_chips.yaml")
 
@@ -41,18 +52,33 @@ def this_month(now=None):
     return (now or datetime.now(ZoneInfo("Europe/Tallinn"))).month
 
 
+def _query(sql, params=()):
+    try:
+        return db.query(sql, params)
+    except Exception as exc:
+        if _missing_table(exc):
+            raise NotMigrated() from exc
+        raise
+
+
 def _rows(sql, params=()):
-    return [dict(zip(FIELDS, r)) for r in db.query(sql, params)]
+    return [dict(zip(FIELDS, r)) for r in _query(sql, params)]
 
 
 def published():
-    """The dinners the app shows, by name; none without a database (tests of the store matching)."""
+    """The dinners the app shows, by name; none without a database (tests of the store matching). When the
+    database can't give them (no recipes table yet, a failed query), the app goes on with the other dinners:
+    the failure is printed and kept for a minute, like a good answer, so it isn't retried on every visit."""
     if not db.configured():
         return []
     with _lock:
         if _cache["rows"] is not None and time.monotonic() - _cache["at"] < TTL:
             return _cache["rows"]
-    rows = _rows(_SELECT + " WHERE r.status = 'published' ORDER BY r.name")
+    try:
+        rows = _rows(_SELECT + " WHERE r.status = 'published' ORDER BY r.name")
+    except Exception as exc:
+        print(f"own dinners unavailable: {exc}")
+        rows = []
     with _lock:
         _cache.update(at=time.monotonic(), rows=rows)
     return rows
@@ -65,17 +91,20 @@ def forget():
 
 
 def get(recipe_id):
-    """One dinner, whatever its status (a draft can be checked at the stores), or None."""
+    """One dinner, whatever its status (a draft can be checked at the stores), or None (also without the table)."""
     if not db.configured():
         return None
-    rows = _rows(_SELECT + " WHERE r.id = %s", (recipe_id,))
+    try:
+        rows = _rows(_SELECT + " WHERE r.id = %s", (recipe_id,))
+    except NotMigrated:
+        return None
     return rows[0] if rows else None
 
 
 def with_usage():
     """Every dinner for the admin page, drafts first, each with how testers use it (metrics.dinner_usage)."""
     cols = ("views", "answers", "people", "copies", "cooked", "last_used")
-    rows = db.query(_SELECT[:-len(" FROM recipes r")] + ", " + ", ".join(f"u.{c}" for c in cols)
+    rows = _query(_SELECT[:-len(" FROM recipes r")] + ", " + ", ".join(f"u.{c}" for c in cols)
                     + " FROM recipes r LEFT JOIN metrics.dinner_usage u ON u.id = r.id"
                     + " ORDER BY array_position(ARRAY['draft','published','archived'], r.status), r.name")
     out = []
@@ -177,6 +206,17 @@ def save(data, recipe_id=None):
     """Add a dinner (no recipe_id: its id comes from the name) or change one; returns it as stored.
     LookupError when there's no dinner with that id."""
     row = clean(data)
+    try:
+        recipe_id = _write(row, recipe_id)
+    except Exception as exc:
+        if _missing_table(exc):
+            raise NotMigrated() from exc
+        raise
+    forget()
+    return get(recipe_id)
+
+
+def _write(row, recipe_id):
     with db.connection() as conn:
         if recipe_id is None:
             base = "pr-" + slug(row["name"])
@@ -189,8 +229,7 @@ def save(data, recipe_id=None):
                                (*(row[f] for f in EDITABLE), recipe_id))
             if cur.rowcount == 0:
                 raise LookupError(recipe_id)
-    forget()
-    return get(recipe_id)
+    return recipe_id
 
 
 def check(recipe_id, stores):
