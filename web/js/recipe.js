@@ -46,7 +46,9 @@ export function recipeBody(d) {
     ${d.link && !d.method && d.id.startsWith("rm-") ? methodThere(d) : d.link ? link(d.link) : ""}
     ${own && !d.method && !d.link ? `<button type="button" class="link" data-write="${esc(d.id)}">Write down how you cook it</button>` : ""}
     ${d.id.startsWith("nd-") ? `<p class="fine">Amounts from NutriData, Tervise Arengu Instituut. It has no method.</p>` : ""}
-    ${d.id.startsWith("rm-") ? `<p class="fine">Recipe and photo from Rimi. pantryrun prices it at every store.</p>` : ""}`;
+    ${d.id.startsWith("rm-") ? `<p class="fine">Recipe and photo from Rimi. pantryrun prices it at every store.</p>` : ""}
+    ${d.id.startsWith("pr-") ? `<p class="fine">${d.label ? `${esc(d.label)}: a partner recipe, labelled as one.`
+      : "A pantryrun recipe."} pantryrun prices it at every store.</p>` : ""}`;
 }
 
 // What you can do with a dinner: change a copy of it (or edit your own), and send it to someone.

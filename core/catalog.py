@@ -82,8 +82,11 @@ def _by_id(collection):
 
 
 def find_recipe(recipe_id, recipes, user_id=None):
-    """A hand-written recipe, a NutriData dish ("nd-…"), a store's recipe ("rm-…") or one of this person's
-    dinners ("my-…"), or None."""
+    """A hand-written recipe, a NutriData dish ("nd-…"), a store's recipe ("rm-…"), one of pantryrun's own
+    ("pr-…", the recipes table) or one of this person's dinners ("my-…"), or None."""
+    if recipe_id.startswith("pr-"):
+        from core import recipes as own
+        return own.get(recipe_id)
     if recipe_id.startswith(("my-", "sh-")):
         from core import my_dinners
         if recipe_id.startswith("sh-"):  # shared by link: anyone with it may open it
@@ -701,7 +704,7 @@ def card(recipe, servings, needs):
     """A dinner as its recipe card shows it: ingredients for this many people, and how to cook it when known."""
     return {"id": recipe["id"], "name": recipe["name"], "servings": servings, "pantry": recipe.get("pantry", []),
             "ingredients": [{k: n.get(k) for k in ("label", "amount", "unit", "packs", "asked")} for n in needs],
-            **{k: recipe.get(k) for k in ("method", "link", "image", "about", "minutes", "steps")}}
+            **{k: recipe.get(k) for k in ("method", "link", "image", "about", "minutes", "steps", "label")}}
 
 
 def recipe_card(recipe_id, servings, user_id=None):

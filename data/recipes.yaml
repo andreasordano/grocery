@@ -2,7 +2,7 @@
 # Amounts are for 2 servings. `pantry` items are assumed to be at home and are not priced.
 # Ingredient keys refer to `ingredients` below; data/rules.yaml says how to find them in each store.
 # `aliases` are words people type in the shopping list; a typed item matching one uses the rule
-# instead of free-text guessing.
+# instead of free-text guessing. A recipe's `tags` are its chips (data/dinner_chips.yaml).
 
 ingredients:
   hakkliha: {name: "Kodune hakkliha",            unit: g, aliases: [hakkliha, kodune hakkliha, sea-veise hakkliha, sea- ja veisehakkliha]}
@@ -48,6 +48,7 @@ recipes:
     name: Hakklihakaste kartulitega
     emoji: "🥔"
     minutes: 35
+    tags: [meat]
     about: "Estonia's weeknight standard: mince in a sour-cream gravy over boiled potatoes."
     method: |
       1. Peel the potatoes and boil them in salted water, about 20 minutes.
@@ -65,6 +66,7 @@ recipes:
     name: Kanasupp
     emoji: "🍲"
     minutes: 50
+    tags: [soup, chicken]
     about: "A clear chicken soup with potatoes, carrot and noodles. Cooks in one pot."
     method: |
       1. Put the chicken legs in a pot with 1.5 l cold water, a bay leaf and salt. Bring to the boil and skim the foam.
@@ -83,6 +85,7 @@ recipes:
     name: Pasta hakklihaga
     emoji: "🍝"
     minutes: 30
+    tags: [pasta, meat]
     about: "Mince in a tomato sauce, tossed with pasta and topped with cheese."
     method: |
       1. Boil the pasta in salted water as the pack says.
@@ -101,6 +104,7 @@ recipes:
     name: Hapukapsahautis sealihaga
     emoji: "🥬"
     minutes: 90
+    tags: [meat]
     about: "Sauerkraut stewed slowly with pork until soft and sweet. Better the next day."
     method: |
       1. Cut the pork into cubes and brown them in oil in a heavy pot.
@@ -118,6 +122,7 @@ recipes:
     name: Ahjusealiha kartulitega
     emoji: "🍖"
     minutes: 75
+    tags: [meat, friends]
     about: "Pork, potatoes and carrots roasted together on one tray."
     method: |
       1. Heat the oven to 200 °C.
@@ -134,6 +139,7 @@ recipes:
     name: Kana-riisikauss
     emoji: "🍚"
     minutes: 25
+    tags: [rice, chicken]
     about: "Soy-glazed chicken on rice with fresh pepper and cucumber."
     method: |
       1. Cook the rice as the pack says.
@@ -152,6 +158,7 @@ recipes:
     name: Ahjulõhe kartulitega
     emoji: "🐟"
     minutes: 35
+    tags: [fish]
     about: "Salmon baked with lemon, with roast potatoes and a sour-cream dip."
     method: |
       1. Heat the oven to 200 °C. Cut the potatoes into wedges, toss with oil and salt and roast for 15 minutes.
@@ -168,6 +175,7 @@ recipes:
     name: Shakshuka
     emoji: "🍳"
     minutes: 25
+    tags: [veggie]
     about: "Eggs poached in a peppery tomato sauce, with bread to dip."
     method: |
       1. Fry the chopped onion and pepper in oil until soft, about 8 minutes.
@@ -186,6 +194,7 @@ recipes:
     name: Pannkoogid kohupiimaga
     emoji: "🥞"
     minutes: 35
+    tags: [veggie]
     about: "Thin pancakes with sweet curd cheese and jam. A dinner many Estonians grew up on."
     method: |
       1. Whisk the eggs with the milk, a pinch of salt, 1 tbsp sugar and about 250 g flour until smooth. Rest for 10 minutes.
@@ -202,6 +211,7 @@ recipes:
     name: Kartulisalat
     emoji: "🥗"
     minutes: 45
+    tags: [meat, friends]
     about: "The potato salad on every Estonian table: potato, egg, pickles and sausage in sour cream."
     method: |
       1. Boil the potatoes and carrots in their skins, about 20 minutes, and the eggs for 10. Let them cool.

@@ -19,6 +19,9 @@
   overflow-wrap: anywhere; hyphens: auto;  /* long Estonian compounds: Suvikõrvitsapüreesupp */
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .dc-meta { font-size: 13.5px; color: var(--ink-soft); }
+/* a partner collection ("With Santa Maria"): always labelled, a butter sticker like a deal */
+.dc-label { align-self: flex-start; padding: 2px 9px; border-radius: 999px; background: var(--butter); color: #1c1f4a;
+  font-size: 12px; font-weight: 600; }
 .dc-look { display: inline-flex; align-items: center; gap: 5px; margin-top: 2px; font-size: 13.5px; font-weight: 600;
   text-decoration: underline; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 .dc-look svg { width: 15px; height: 15px; flex: none; }
