@@ -25,8 +25,9 @@ docker compose exec db psql -U groceries     # look at events (queries in README
 # Look at the data in the browser (read-only): local on :8081, production on :8082
 docker run --rm -p 127.0.0.1:8081:8081 sosedoff/pgweb --readonly \
   --url "postgres://groceries:groceries@host.docker.internal:5433/groceries?sslmode=disable"
+# production logs in as andrea_read (DATA-5): SELECT only, password in the Keychain item pantryrun-andrea-read
 docker run --rm -p 127.0.0.1:8082:8081 sosedoff/pgweb --readonly \
-  --url "<Supabase session pooler URL>?sslmode=require"
+  --url "postgres://andrea_read.tafaiatzpjpvkdoazwiz:$(security find-generic-password -s pantryrun-andrea-read -w)@aws-1-eu-central-1.pooler.supabase.com:5432/postgres?sslmode=require"
 ```
 
 After changing Python code, run `docker compose restart api`: the container doesn't reload, and the page
