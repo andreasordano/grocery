@@ -140,3 +140,16 @@ def test_analyst_reads_the_views_and_writes_nothing(pg):
     import psycopg
     with pytest.raises(psycopg.errors.InsufficientPrivilege):
         conn.execute("INSERT INTO nudges (user_id, channel) VALUES ('x', 'y')")
+
+
+def test_analyst_can_read_every_table(test_database_url):
+    """A new table needs its own grant and policy for the analyst (as in the plans migration), or pgweb can't read it."""
+    import psycopg
+    with psycopg.connect(test_database_url) as conn:
+        missing = [r[0] for r in conn.execute(
+            "SELECT c.relname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace "
+            "WHERE n.nspname = 'public' AND c.relkind = 'r' AND c.relrowsecurity "
+            "AND NOT (has_table_privilege('analyst', c.oid, 'SELECT') AND EXISTS ("
+            "    SELECT FROM pg_policies p WHERE p.schemaname = 'public' AND p.tablename = c.relname "
+            "    AND p.policyname = 'analyst_reads'))")]
+    assert missing == []
