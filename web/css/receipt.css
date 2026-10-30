@@ -85,7 +85,7 @@ button.r-photo { cursor: zoom-in; }
 /* ── totals and notes ── */
 .r-total { display: flex; justify-content: space-between; align-items: baseline; font: 800 26px/1 var(--display); letter-spacing: -0.02em; }
 .r-save { display: flex; justify-content: space-between; margin-top: 6px; color: var(--dill); font-weight: 600; }
-.r-card { color: var(--paper-soft); margin-top: 2px; }
+.r-card { display: flex; justify-content: space-between; margin-top: 6px; font-weight: 600; }
 .r-note { margin-top: 10px; color: var(--paper-soft); }
 .r-pantry button { border: 0; background: none; padding: 0 1px; font: inherit; color: var(--paper-ink); text-decoration: underline dotted; text-underline-offset: 3px; cursor: pointer; }
 .r-pantry button:hover { color: var(--paper-red); }
@@ -106,6 +106,8 @@ button.r-photo { cursor: zoom-in; }
 /* "★ Best value for what you use": a butter sticker, under the store's line and in its note */
 .stores button { flex-wrap: wrap; }
 .stores .bv { order: 3; flex-basis: 100%; }
+/* "12,84 € with Partnerkaart", under the store's total */
+.stores .cv { order: 3; flex-basis: 100%; text-align: right; color: var(--paper-soft); font-variant-numeric: tabular-nums; }
 .bv { display: inline-block; width: max-content; margin: 2px 0; padding: 1px 7px; border-radius: 999px; background: var(--butter);
   color: #1c1f4a; font-size: 11px; font-weight: 600; }
 .r-value button { border: 0; background: none; padding: 0; font: inherit; color: var(--paper-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }

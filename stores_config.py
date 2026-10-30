@@ -16,13 +16,14 @@
 import importlib
 
 STORES = {
+    # card: the chain's loyalty card, for its card prices ("12,84 € with Partnerkaart"). Rimi gives none.
     "selver": {"name": "Selver", "chain": "selver", "connector": "api.selver_api.search_selver",
-               "max_concurrency": 4, "prices_dinners": True},
+               "max_concurrency": 4, "prices_dinners": True, "card": "Partnerkaart"},
     "rimi": {"name": "Rimi", "chain": "rimi", "connector": "api.rimi_api.search_rimi",
              "max_concurrency": 4, "prices_dinners": True},
     # Barbora is Maxima's e-shop: its prices stand for a Maxima store (WEB-25). It answers one request at a time.
     "barbora": {"name": "Barbora", "chain": "maxima", "connector": "api.barbora_api.search_barbora",
-                "max_concurrency": 1, "prices_dinners": True},
+                "max_concurrency": 1, "prices_dinners": True, "card": "Aitäh kaart"},
 }
 
 # The chains people shop at, as the page names them ("Where do you usually shop?").
@@ -85,5 +86,6 @@ def max_concurrency(store):
 
 def public():
     """What the page needs to know about the stores (GET /recipes)."""
-    return {"stores": {s: {"name": c["name"], "chain": c["chain"], "shown_as": display_name(s)} for s, c in STORES.items()},
+    return {"stores": {s: {"name": c["name"], "chain": c["chain"], "shown_as": display_name(s), "card": c.get("card")}
+                       for s, c in STORES.items()},
             "chains": CHAINS}

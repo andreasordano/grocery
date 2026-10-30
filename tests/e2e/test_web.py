@@ -30,14 +30,15 @@ PHOTO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300
 
 def fake_fetch(store, query, size=40, refresh=False):
     """Two products per search, named after the query so free-text matching takes them.
-    Selver doesn't answer searches for "katki" (broken)."""
+    Selver doesn't answer searches for "katki" (broken), and has prunes ("ploomid") cheaper with Partnerkaart."""
     word = query.strip().lower()
     if store == "selver" and word == "katki":
         raise RuntimeError("403 Forbidden")
     base = STORES[store]
+    card = 1.2 if store == "selver" and word == "ploomid" else None
     return [
         {"store": store, "store_id": f"{store}-{word}-1", "name": f"{word.capitalize()} Test 500g", "price": base,
-         "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True,
+         "card_price": card, "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True,
          "image": PHOTO, "url": f"https://{store}.example/p/{word}-1"},
         {"store": store, "store_id": f"{store}-{word}-2", "name": f"{word.capitalize()}, kg", "price": base * 3, "unit": "kg",
          "shelf": "Testriiul", "category": ["Testriiul"], "in_stock": True},
@@ -615,6 +616,25 @@ def test_barbora_prices_stand_for_a_maxima_store(base_url, page):
     assert "Prices from Barbora, Maxima's e-shop" in page.locator(".receipt").inner_text()
     assert page.text_content("#after .card-sub").startswith("Maxima,")
     assert page.text_content("[data-way=online] b") == "Order online at Barbora"
+
+
+def test_totals_with_the_stores_loyalty_card(base_url, page):
+    page.goto(base_url + "/?u=e2e-card")
+    page.click("[data-mode=list]")
+    page.fill("#item", "ploomid")
+    page.press("#item", "Enter")
+    page.click("#find")
+    page.wait_for_selector(".stores [data-store=selver]")
+    # Rimi is cheapest on shelf prices (1,50 €); Selver's 2,00 € is 1,20 € with its card, said under its total.
+    assert page.locator(".r-store").inner_text() == "Rimi"
+    assert page.locator(".stores [data-store=selver] .cv").inner_text().replace("\xa0", " ") == "1,20 € with Partnerkaart"
+    assert page.locator(".stores [data-store=rimi] .cv").count() == 0
+    assert page.locator(".r-card").count() == 0  # nothing cheaper with a card at Rimi
+    page.click(".stores [data-store=selver]")
+    page.wait_for_selector(".r-store:text('Selver')")
+    assert page.locator(".r-total").inner_text().replace("\xa0", " ").split("\n") == ["Total", "2,00 €"]
+    assert page.locator(".r-card").inner_text().replace("\xa0", " ").split("\n") == ["With Partnerkaart", "1,20 €"]
+    assert "1,20 with Partnerkaart" in page.locator(".receipt").inner_text()
 
 
 def test_privacy_page_takes_a_deletion_request(base_url, page):
