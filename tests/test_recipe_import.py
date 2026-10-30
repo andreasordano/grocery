@@ -160,9 +160,76 @@ def test_the_title_intro_and_method_are_not_things_to_buy():
 
 
 def test_text_without_headings_reads_every_short_line():
-    found = from_text("hakkliha 500g\n2 porgandit\nMa teen seda igal reedel, sest lapsed armastavad seda väga\nfoo bar")
+    found = from_text("Ma teen seda igal reedel, sest lapsed armastavad seda väga\nhakkliha 500g\n2 porgandit\nfoo bar")
     assert found["items"] == ["hakkliha 500g", "2 porgandit"]
-    assert found["skipped"] == ["foo bar"]  # the sentence is left out quietly; a short unknown line is offered
+    assert found["skipped"] == ["foo bar"]  # the intro is left out quietly; a short unknown line is offered
+    assert found["name"] is None and found["method"] == ""
+
+
+# The owner's first try (31 Oct 2026): no headings; the title came in as a thing to buy and the method was lost.
+JUUSTULEIB = """Seest pehme ja mahlane, pealt mõnusalt kuldne ja kergelt krõbe valgurikas jahuta juustuleib. Sobib nii hommikusöögiks kui ka võileivapõhjaks.
+Valgurikas kodujuustu-juustuleib
+200 g kodujuustu
+2 muna
+100 g riivjuustu
+40 g maisitärklist
+1 tl küpsetuspulbrit
+½ tl soola
+½ tl küüslaugupulbrit
+½ tl kuivatatud oreganot või Itaalia ürdisegu
+Sega kausis kodujuust ja munad. Lisa riivjuust, tärklis, küpsetuspulber, sool ja maitseained. Sega ühtlaseks.
+Tõsta tainas küpsetuspaberiga kaetud ahjuplaadile ja vormi umbes 2–3 cm paksune ovaalne või ümmargune päts.
+Küpseta 180-200 umbes 25 minutit, kuni leib on pealt kuldpruun."""
+
+
+def test_the_title_is_the_name_and_the_steps_are_the_method():
+    found = from_text(JUUSTULEIB)
+    assert found["name"] == "Valgurikas kodujuustu-juustuleib"
+    assert found["items"] == ["200 g kodujuustu", "2 muna", "100 g riivjuustu", "40 g maisitärklist", "küpsetuspulbrit",
+                              "soola", "küüslaugupulbrit", "kuivatatud oreganot või itaalia ürdisegu"]
+    assert found["staples"] == ["40 g maisitärklist", "küpsetuspulbrit", "soola", "küüslaugupulbrit",
+                                "kuivatatud oreganot või itaalia ürdisegu"]
+    assert found["method"].splitlines()[0] == "Sega kausis kodujuust ja munad. Lisa riivjuust, tärklis, küpsetuspulber, " \
+                                              "sool ja maitseained. Sega ühtlaseks."
+    assert len(found["method"].splitlines()) == 3 and "Seest pehme" not in found["method"]  # the intro isn't a step
+    assert found["minutes"] is None and found["skipped"] == []  # 25 minutes is the baking, not the whole dinner
+
+
+def test_a_caption_gives_its_name_time_and_numbered_method():
+    found = from_text(CAPTION)
+    assert found["name"] == "Kiire kanapasta kooreses kastmes"  # up to the emoji
+    assert found["minutes"] == 20                                 # "valmib 20 minutiga"
+    assert found["method"] == ("1. Keeda pasta pakendil oleva juhendi järgi.\n2. Prae kana ja sibul õlis.\n"
+                               "Retsept: https://example.ee/kanapasta")  # the hashtags go
+
+
+def test_a_list_that_starts_without_amounts_has_no_title():
+    found = from_text("sool\npipar\n200 g hakkliha\n300 g kartulit")
+    assert found["name"] is None and found["items"][:2] == ["sool", "pipar"]
+
+
+@pytest.mark.parametrize("text, minutes", [
+    ("Valmistusaeg: 1 h\nhakkliha", 60), ("Ready in 35 minutes\nhakkliha", 35), ("Aega kulub umbes 40 min", 40),
+    ("Küpseta umbes 25 minutit.", None), ("hakkliha", None),
+])
+def test_the_time_is_only_the_whole_dinners(text, minutes):
+    assert from_text(text)["minutes"] == minutes
+
+
+@pytest.mark.parametrize("item, staple", [
+    ("½ tl soola", True), ("1 tl küpsetuspulbrit", True), ("kaneeli", True), ("kuivatatud oreganot", True),
+    ("2 spl oliiviõli", True), ("200 g kodujuustu", False), ("2 muna", False),
+])
+def test_staples_are_known_in_their_recipe_forms(item, staple):
+    from core.recipe_import import is_staple
+    assert is_staple(item) is staple
+
+
+def test_a_recipe_pages_time_comes_from_its_data():
+    page = RECIPE_PAGE.replace('"recipeYield"', '"prepTime": "PT15M", "cookTime": "PT1H", "recipeYield"')
+    assert parse(page, "https://x.ee/r")["minutes"] == 75
+    assert parse(page.replace('"prepTime"', '"totalTime": "PT40M", "prepTime"'), "https://x.ee/r")["minutes"] == 40
+    assert parse(RECIPE_PAGE, "https://x.ee/r")["minutes"] is None
 
 
 @pytest.mark.parametrize("text, servings", [
@@ -192,7 +259,8 @@ def test_pasted_text_is_logged_without_the_text(monkeypatch):
     found = service.read_recipe_text(service.RecipeTextRequest(text="400 g pastat\nfoo bar\nMinu salajane retsept, mida ema tegi meile igal pühapäeval",
                                                                user_id="anna"))
     assert found["items"] == ["400 g pastat"]
-    assert logged == [("recipe_text", {"lines": 3, "items": 1, "skipped": ["foo bar"]}, "anna")]
+    assert logged == [("recipe_text", {"lines": 3, "items": 1, "skipped": ["foo bar"], "name": False, "method": True,
+                                       "minutes": False}, "anna")]
 
 
 # ── Rimi's recipes as store dinners (scripts/import_rimi_recipes.py) ─────────

@@ -557,10 +557,12 @@ def test_dinner_from_a_recipes_text(base_url, page):
     page.goto(base_url + "/?u=e2e-text")
     page.click("[data-cat=mine]")
     page.click("#fromLinkDinner")
-    page.fill("#dlinkImport", "Kanapasta 🍝\nKoostisosad (4 portsjonit):\n- 400 g pastat\n- 2 küüslauguküünt\n"
-                              "Valmistamine:\n1. Keeda pasta pakendil oleva juhendi järgi.")
+    page.fill("#dlinkImport", "Kanapasta 🍝 Valmistusaeg: 30 min\nKoostisosad (4 portsjonit):\n- 400 g pastat\n"
+                              "- 2 küüslauguküünt\nValmistamine:\n1. Keeda pasta pakendil oleva juhendi järgi.")
     page.click("#readLink")
-    page.wait_for_selector("#linkNote:text('Added 1 thing')")
+    page.wait_for_selector("#linkNote:text('Added 1 thing to buy and the method')")
+    assert page.input_value("#dname") == "Kanapasta" and page.input_value("#dminutes") == "30"
+    assert page.input_value("#dmethod") == "1. Keeda pasta pakendil oleva juhendi järgi."
     assert page.locator(".items .it").all_inner_texts() == ["400 g pastat"]
     assert page.text_content("#dservings") == "4"
     page.click("[data-unskip='0']")  # the line pantryrun didn't recognise, added with one tap
@@ -568,6 +570,27 @@ def test_dinner_from_a_recipes_text(base_url, page):
     assert page.locator(".skipped").count() == 0
     data = logged("recipe_text", "e2e-text", wait=1)[-1][1]
     assert (data["lines"], data["items"], data["skipped"]) == (6, 1, ["2 küüslauguküünt"])  # not the text itself
+    page.fill("#dminutes", "35")  # typed over
+    page.click("#saveDinner")
+    page.wait_for_selector(".dishes :text('35 min')")
+
+
+def test_admin_starts_a_dinner_from_a_recipes_text(base_url, page, monkeypatch):
+    """The owner's page has the same box: staples go under From home, without their amounts."""
+    monkeypatch.setenv("EDITION_TOKEN", "e2e-owner")
+    page.goto(base_url + "/admin.html")
+    page.fill("#token", "e2e-owner")
+    page.press("#token", "Enter")
+    page.click("#new")
+    page.fill("#dlinkImport", "Juustuleib\n200 g kodujuustu\n2 muna\n½ tl soola\n1 tl küpsetuspulbrit\nfoo bar\n"
+                              "Sega kausis kodujuust ja munad, lisa sool ja küpsetuspulber ning sega ühtlaseks.")
+    page.click("#readLink")
+    page.wait_for_selector("#linkNote:text('Added')")
+    f = lambda name: page.input_value(f"#recipe [name={name}]")
+    assert f("name") == "Juustuleib" and f("ingredients") == "200 g kodujuustu\n2 muna"
+    assert f("pantry") == "soola\nküpsetuspulbrit" and f("method").startswith("Sega kausis")
+    page.click("[data-unskip='0']")
+    assert f("ingredients") == "200 g kodujuustu\n2 muna\nfoo bar" and page.locator(".skipped").count() == 0
 
 
 def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, browser):

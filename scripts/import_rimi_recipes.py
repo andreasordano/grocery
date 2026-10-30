@@ -61,23 +61,11 @@ NOT_DINNER = ("magustoit", "küpsetis", "hommikusöök", "jook", "kook", "suupis
 NOT_DINNER_NAME = ("salat", "kaste", "dip", "tort", "kook", "muffin", "pirukas", "võileib", "burger", "smuuti", "jook",
                    "kokteil", "pannkook", "vahvl", "küpsis", "mousse", "parfee", "austr", "tapas", "suupiste",
                    "hommikusöök", "jäätis", "pulga", "puder")
-# Bought once and kept at home: listed under "from home" instead of priced.
-STAPLES = ("sool", "pipar", "õli", "oliiviõli", "rapsiõli", "suhkur", "jahu", "nisujahu", "äädikas", "vesi", "vett", "puljong",
-           "puljongikuubik", "maitseaine", "vürts", "paprikapulber", "küüslaugupulber", "loorber", "kaneel", "köömned",
-           "vürtsisegu", "maitseainesegu", "pulber", "kurkum", "karri", "tšillihelbed", "majoraan", "pune", "oregano", "tüümian", "basiilik", "rosmariin", "muskaat",
-           "petersell", "till", "koriander", "piparmünt", "münt", "murulauk", "salvei", "estragon", "ürdid",  # herbs
-           "sinep", "ketšup", "majonees", "sojakaste", "mesi", "või", "riivsai", "tärklis", "sooda", "küpsetuspulber")
 BRANDS = re.compile(r"\b(rimi(\s+(smart|basic|eco|selection))?|smart|basic|i love eco|food ?studio|forte)\b", re.I)
 # What it's for, not what it is: "praadimiseks õli", "serveerimiseks laim".
 PURPOSE = re.compile(r"\b\w+(?:miseks|mseks)\b\s*", re.I)
 # Kitchen measures the stores don't sell by: the item is bought as one pack ("4 peotäis pasta" → "pasta").
 MEASURE = re.compile(r"^\s*(?:\d+(?:[.,]\d+)?\s*|paar\s+)?(?:peotäi\w*|punt\w*|viil\w*|ok\w*|lehte?|kimp\w*)\s+", re.I)
-
-
-def minutes(iso):
-    """90 from "PT1H30M"; None when there's no time."""
-    m = re.fullmatch(r"P(?:T)?(?:(\d+)H)?(?:(\d+)M)?", str(iso or "").strip())
-    return int(m[1] or 0) * 60 + int(m[2] or 0) if m and (m[1] or m[2]) else None
 
 
 def _get(url, cache):
@@ -109,14 +97,10 @@ def recipe_urls():
     return [u for u in re.findall(r"<loc>([^<]+)</loc>", xml) if re.search(r"/retseptid/[^/]+/\d+$", u)]
 
 
-_words, buyable = recipe_import._words, recipe_import.buyable  # shared with pasting a recipe's text
-
-
-def is_staple(item):
-    """Salt, oil, spices: assumed at home. "sool ja pipar", "kookosõli" (any word ending in a staple's name)."""
-    name, _ = catalog.parse_quantity(item)
-    ws = _words(name)
-    return bool(ws) and (ws[0].endswith(STAPLES) or ws[-1].endswith(STAPLES) or ws[0] == "jahvatatud")  # ground spices
+# Shared with pasting a recipe or a link in the editors. Staples (bought once and kept at home) are listed under
+# "from home" instead of priced.
+_words, buyable, is_staple = recipe_import._words, recipe_import.buyable, recipe_import.is_staple
+minutes = recipe_import.iso_minutes
 
 
 def category(name, items):

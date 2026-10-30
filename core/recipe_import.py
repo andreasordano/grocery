@@ -167,8 +167,23 @@ def to_item(line):
     return " ".join(w.lower() if w[:1].isupper() and not w.isupper() else w for w in text.split())
 
 
+def iso_minutes(iso):
+    """90 from "PT1H30M"; None when there's no time."""
+    m = re.fullmatch(r"P(?:T)?(?:(\d+)H)?(?:(\d+)M)?", str(iso or "").strip())
+    return int(m[1] or 0) * 60 + int(m[2] or 0) if m and (m[1] or m[2]) else None
+
+
+def _total_minutes(recipe):
+    """The whole time a recipe's data gives: totalTime, else preparing and cooking added up."""
+    total = iso_minutes(recipe.get("totalTime"))
+    parts = [iso_minutes(recipe.get(k)) for k in ("prepTime", "cookTime")]
+    total = total or (sum(p for p in parts if p) if any(parts) else None)
+    return total if total and total <= 600 else None
+
+
 def parse(html, url):
-    """{name, servings, items, image, link, partial}. partial: no Recipe data, only title and photo."""
+    """{name, servings, minutes, items, staples, image, link, partial}. partial: no Recipe data, only title and photo.
+    staples: the items usually at home (admin's "From home")."""
     soup = BeautifulSoup(html, "html.parser")
     recipe = None
     for script in soup.select('script[type="application/ld+json"]'):
@@ -184,10 +199,12 @@ def parse(html, url):
         lines = recipe.get("recipeIngredient") or recipe.get("ingredients") or []
         items = list(dict.fromkeys(i for i in map(to_item, lines if isinstance(lines, list) else [lines]) if i))
         name = " ".join(str(recipe.get("name") or meta("og:title") or title).split())
-        return {"name": name[:80], "servings": _servings(recipe.get("recipeYield")) or 2, "items": items[:60],
+        return {"name": name[:80], "servings": _servings(recipe.get("recipeYield")) or 2,
+                "minutes": _total_minutes(recipe), "items": items[:60], "staples": [i for i in items[:60] if is_staple(i)],
                 "image": _image(recipe.get("image")) or _image(meta("og:image")), "link": url, "partial": not items}
     name = " ".join((meta("og:title") or title).split())
-    return {"name": name[:80], "servings": 2, "items": [], "image": _image(meta("og:image")), "link": url, "partial": True}
+    return {"name": name[:80], "servings": 2, "minutes": None, "items": [], "staples": [], "image": _image(meta("og:image")),
+            "link": url, "partial": True}
 
 
 def import_recipe(url):
@@ -256,16 +273,82 @@ def _clean(line):
     return " ".join(_BULLET.sub("", line.strip()).split())
 
 
+def _step(raw):
+    """A line of the method as written, numbering kept, without emoji and hashtags."""
+    line = "".join(c for c in raw if unicodedata.category(c) not in ("So", "Sk", "Cf", "Co", "Cs"))
+    return " ".join(re.sub(r"(?:^|\s)[#@]\S+", " ", line).split())
+
+
+def _title(raw):
+    """The dinner's name in a line, up to its first emoji ("Kiire kanapasta 🍝 Ideaalne…" → "Kiire kanapasta"), or
+    None when that's a sentence or a heading."""
+    cut = next((i for i, c in enumerate(raw) if unicodedata.category(c) == "So"), len(raw))
+    name = _clean(raw[:cut]).strip(" .!:–-")
+    if not name or len(name.split()) > MAX_WORDS or len(name) > 80 or _INGREDIENTS.match(name) or _METHOD.match(name):
+        return None
+    return name
+
+
+_AMOUNT = re.compile(r"^[\d½¼¾⅓⅔]")  # "200 g kodujuustu", "½ tl soola": an ingredient line
+# Only a time the recipe gives for the whole dinner, never one step's ("Küpseta umbes 25 minutit").
+_TIME = re.compile(r"\b(?:valmistusaeg|valmistamise aeg|aega kulub|kokku|valmib|total time|ready in|cooking time|"
+                   r"time|takes)\s*:?\s*(?:umbes|u\.|about|~)?\s*(\d+)\s*(?:[-–]\s*\d+\s*)?"
+                   r"(min|minutit|minutiga|minuti|minutes|mins|h|tund|tundi|tunniga|hours?)\b", re.I)
+
+
+def _start(lines, raws):
+    """(where the ingredients start, the dinner's name or None). After an "Ingredients" heading, or else at the first
+    line with an amount when what comes before it is the title and an intro ("Valgurikas juustuleib" over
+    "200 g kodujuustu"); a plain list without amounts is read from the top."""
+    heading = next((i for i, line in enumerate(lines) if _INGREDIENTS.match(line)), None)
+    if heading is not None:
+        return heading, next((t for t in map(_title, raws[:heading]) if t), None)
+    amounts = [i for i, line in enumerate(lines) if _AMOUNT.match(line)]
+    if len(amounts) < 2:
+        return 0, None
+    before = [i for i in range(amounts[0]) if lines[i]]
+    short = [i for i in before if len(lines[i].split()) <= MAX_WORDS]
+    if len(short) > 1:
+        return 0, None  # a list that starts without amounts ("sool", "pipar", "200 g hakkliha")
+    return amounts[0], next((t for t in map(_title, [raws[i] for i in short + before]) if t), None)
+
+
+# Bought once and kept at home: admin's and the store dinners' "From home", not priced.
+STAPLES = ("sool", "pipar", "õli", "oliiviõli", "rapsiõli", "suhkur", "jahu", "nisujahu", "äädikas", "vesi", "vett", "puljong",
+           "puljongikuubik", "maitseaine", "vürts", "paprikapulber", "küüslaugupulber", "loorber", "kaneel", "köömned",
+           "vürtsisegu", "maitseainesegu", "pulber", "kurkum", "karri", "tšillihelbed", "majoraan", "pune", "oregano", "tüümian", "basiilik", "rosmariin", "muskaat",
+           "petersell", "till", "koriander", "piparmünt", "münt", "murulauk", "salvei", "estragon", "ürdid",  # herbs
+           "sinep", "ketšup", "majonees", "sojakaste", "mesi", "või", "riivsai", "tärklis", "sooda", "küpsetuspulber")
+# ...and as recipes write them: "pulber" → "pulbrit", "kaneel" → "kaneeli" (the e drops before an ending)
+_STAPLE_FORMS = STAPLES + tuple(s[:-2] + s[-1] for s in STAPLES if s.endswith(("er", "el")))
+
+
+def is_staple(item):
+    """Salt, oil, spices: assumed at home. "sool ja pipar", "kookosõli" (any word ending in a staple's name), also in
+    a recipe's forms: "½ tl soola", "1 tl küpsetuspulbrit", "kuivatatud oreganot"."""
+    name, _ = catalog.parse_quantity(item)
+    ws = _words(name)
+    ends = lambda w: any(w[:len(w) - cut].endswith(_STAPLE_FORMS) for cut in range(3) if len(w) - cut >= 3)
+    return bool(ws) and (ends(ws[0]) or ends(ws[-1]) or ws[0] in ("jahvatatud", "kuivatatud"))  # ground, dried spices
+
+
 def from_text(text):
-    """{items, skipped, servings} from a recipe's text, ready for the dinner editor. items: what the stores sell, as
-    typed items; skipped: short lines that name nothing pantryrun knows (an English word, a typo), for the person to
-    add if they buy it; servings: from "Serves 4" or "4 portsjonit", else None. Headings, sentences, links and
-    hashtags are left out quietly."""
-    lines = [_clean(raw) for raw in (text or "")[:MAX_TEXT].splitlines()]
-    # With an "Ingredients" heading, what comes before it is the title and the intro.
-    start = next((i for i, line in enumerate(lines) if _INGREDIENTS.match(line)), 0)
-    items, skipped, servings, method = [], [], None, False
-    for line in lines[start:]:
+    """A recipe's text, ready for the dinner editor: {name, servings, minutes, items, staples, skipped, method}.
+    items: what the stores sell, as typed items (staples: the ones usually at home, for admin's "From home");
+    skipped: short lines that name nothing pantryrun knows (an English word, a typo), for the person to add if they
+    buy it; method: the steps as written. name, servings and minutes are None when the text doesn't say. The intro,
+    links and hashtags are left out."""
+    raws = (text or "")[:MAX_TEXT].splitlines()
+    lines = [_clean(raw) for raw in raws]
+    start, name = _start(lines, raws)
+    time = _TIME.search(text or "")
+    minutes = time and int(time[1]) * (60 if time[2].lower().startswith(("h", "tun")) else 1)
+    items, skipped, steps, servings, method = [], [], [], None, False
+    for raw, line in zip(raws[start:], lines[start:]):
+        if method and not _INGREDIENTS.match(line):
+            if not _METHOD.match(line.strip(" .:")):
+                steps.append(_step(raw))
+            continue
         serves = _SERVES.search(line)  # "Serves 4", "Koostisosad (4 portsjonit):"
         if serves:
             servings = servings or max(1, min(int(serves[1] or serves[2]), 12))
@@ -276,15 +359,26 @@ def from_text(text):
         if heading and (_METHOD.match(heading[1].strip()) or _INGREDIENTS.match(heading[1]) or not heading[2]):
             # "Kastmeks:" or "Ingredients: 2 eggs": a part of the recipe, maybe with its first line after the colon
             method, line = bool(_METHOD.match(heading[1].strip())), heading[2]
+            if method:
+                steps += [heading[2]] if heading[2] else []
+                continue
         elif heading:
             line = f"{heading[1]} {heading[2]}"  # "Kanafilee: 500 g"
         elif _METHOD.match(line.strip(" .")) or _INGREDIENTS.match(line):
             method = bool(_METHOD.match(line.strip(" .")))
             continue
-        if method or not line or len(line.split()) > MAX_WORDS or re.search(r"https?://|www\.", line):
+        if not line or re.search(r"https?://|www\.", line):
+            continue
+        if len(line.split()) > MAX_WORDS:
+            # A sentence: the intro before the ingredients, a step after them. The method starts there.
+            if items or skipped:
+                method = True
+                steps.append(_step(raw))
             continue
         item = to_item(line)
         if item:
-            (items if buyable(item) else skipped).append(item)
-    return {"items": list(dict.fromkeys(items))[:60], "skipped": list(dict.fromkeys(skipped))[:30],
-            "servings": servings}
+            (items if is_staple(item) or buyable(item) else skipped).append(item)
+    items = list(dict.fromkeys(items))[:60]
+    return {"name": name, "servings": servings, "minutes": minutes if minutes and minutes <= 600 else None,
+            "items": items, "staples": [i for i in items if is_staple(i)], "skipped": list(dict.fromkeys(skipped))[:30],
+            "method": "\n".join(s for s in steps if s)[:4000]}

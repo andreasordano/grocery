@@ -11,6 +11,7 @@ import { bindAdd, itemButton, itemClick } from "./items.js";
 import { idle } from "./receipt.js";
 import { add, unpick } from "./dinners.js";
 import { api, logEvent } from "./api.js";
+import { importBox, bindImport } from "./recipe-import.js";
 
 export function open() {
   draw();
@@ -24,28 +25,21 @@ export function draw() {
     <div class="editor">
       <h1>${d.id ? "Edit dinner" : d.from ? "Make it yours" : "New dinner"}</h1>
       ${d.from ? `<p class="fine copy-note">A copy: change what you like and save it. The original stays as it is.</p>` : ""}
-      <form class="from-link" id="fromLink" autocomplete="off"${d.from ? " hidden" : ""}>
-        <label for="dlinkImport">${d.id ? "Fill it in again from a recipe" : "Start from a recipe you found online"}</label>
-        <div class="field">
-          <textarea id="dlinkImport" rows="1" autocapitalize="off" spellcheck="false" placeholder="Paste a link, or the recipe's text from Instagram or a message"></textarea>
-          <button class="btn quiet" type="submit" id="readLink">Read it</button>
-        </div>
-        <p class="fine" id="linkNote" role="status"></p>
-        ${d.skipped?.length ? `<div class="skipped">
-          <p class="fine">pantryrun didn't recognise these. Add the ones you buy:</p>
-          <ul>${d.skipped.map((s, i) => `<li><span>${esc(s)}</span><button type="button" class="link" data-unskip="${i}">Add</button></li>`).join("")}</ul>
-        </div>` : ""}
-      </form>
+      ${importBox(d.id ? "Fill it in again from a recipe" : "Start from a recipe you found online",
+                  { hidden: !!d.from, skipped: d.skipped || [] })}
       ${d.image ? `<div class="d-photo"><img src="${esc(d.image)}" alt="" referrerpolicy="no-referrer">
         <button type="button" class="link" id="dropPhoto">Remove photo</button></div>` : ""}
+      <label for="dname">Name</label>
+      <input id="dname" class="name" maxlength="80" value="${esc(d.name)}" placeholder="Pühapäeva pasta" autocomplete="off">
       <div class="sub">For
         <span class="stepper" role="group" aria-label="Number of people the amounts are for">
           <button type="button" data-dstep="-1" aria-label="Fewer people">−</button>
           <output id="dservings">${d.servings}</output>
           <button type="button" data-dstep="1" aria-label="More people">+</button>
         </span> people</div>
-      <label for="dname">Name</label>
-      <input id="dname" class="name" maxlength="80" value="${esc(d.name)}" placeholder="Pühapäeva pasta" autocomplete="off">
+      <div class="sub"><label class="inline" for="dminutes">Takes</label>
+        <input id="dminutes" class="minutes" type="number" inputmode="numeric" min="1" max="600" value="${d.minutes ?? ""}">
+        minutes</div>
       <h2>What you buy for it</h2>
       <p class="fine">Amounts are for ${d.servings} ${d.servings === 1 ? "person" : "people"} and scale with how many you cook for.</p>
       <form class="field" id="add" autocomplete="off">
@@ -72,11 +66,8 @@ export function draw() {
   $("#dname").addEventListener("input", e => { d.name = e.target.value; });
   $("#dmethod").addEventListener("input", e => { d.method = e.target.value; });
   $("#dlink").addEventListener("input", e => { d.link = e.target.value; });
-  $("#fromLink").onsubmit = e => { e.preventDefault(); read(); };
-  // Enter reads a link straight away; in a recipe's text it starts a new line
-  $("#dlinkImport").addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey && isLink(e.target.value.trim())) { e.preventDefault(); read(); }
-  });
+  $("#dminutes").addEventListener("input", e => { d.minutes = e.target.value ? +e.target.value : null; });
+  bindImport(fill, identity.personId);
   bindAdd(d.items, draw);
   pick.onclick = onClick;
 }
@@ -86,7 +77,7 @@ export async function copyDinner(id) {
   try {
     const c = await api(`/recipes/${encodeURIComponent(id)}/copy?user_id=${encodeURIComponent(identity.personId)}`);
     state.editing = { id: null, from: c.from, name: c.name, servings: c.servings, items: c.items, method: c.method,
-                      link: c.link, image: c.image };
+                      link: c.link, image: c.image, minutes: c.minutes };
     logEvent("dinner_copy", { from: id });
     render();
     $("#item").focus();
@@ -98,8 +89,9 @@ export async function copyDinner(id) {
 // Open the editor for one of your dinners, or for a new one (id null), ready for a recipe link.
 export function editDinner(id, { fromLink = false } = {}) {
   const m = id && state.mine.find(x => x.id === id);
-  state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items], method: m.method || "", link: m.link || "", image: m.image || "" }
-                    : { id: null, name: "", servings: state.servings, items: [], method: "", link: "", image: "" };
+  state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items], method: m.method || "", link: m.link || "", image: m.image || "",
+                        minutes: m.minutes }
+                    : { id: null, name: "", servings: state.servings, items: [], method: "", link: "", image: "", minutes: null };
   render();
   $(m ? "#item" : fromLink ? "#dlinkImport" : "#dname").focus();
 }
@@ -125,66 +117,26 @@ function onClick(e) {
   if (e.target.closest("#deleteDinner")) deleteDinner();
 }
 
-// One word with a dot and no spaces is a link ("rimi.ee/retseptid/…", "https://…"); anything else is a recipe's text.
-const isLink = v => !/\s/.test(v) && /^(https?:\/\/)?[\w-]+(\.[\w-]+)+([/?#].*)?$/i.test(v);
-
-function read() {
-  const v = $("#dlinkImport").value.trim();
-  if (v) (isLink(v) ? readLink : readText)(v);
-}
-
-// A recipe's text (an Instagram caption, a message) read into the dinner: what to buy, and the lines pantryrun
-// didn't recognise, to add with one tap (core/recipe_import.from_text). What's already typed stays.
-async function readText(text) {
-  const d = state.editing, note = $("#linkNote");
-  note.textContent = "Reading the text…";
-  $("#readLink").disabled = true;
-  try {
-    const found = await api("/recipe-text", { text, user_id: identity.personId });
-    d.items = [...new Set([...d.items, ...found.items])];
-    d.skipped = found.skipped.filter(s => !d.items.includes(s));
-    d.servings = found.servings || d.servings;
-    draw();
-    $("#linkNote").textContent = found.items.length
-      ? `Added ${found.items.length} ${found.items.length === 1 ? "thing" : "things"} to buy. Check them, then save.`
-      : found.skipped.length ? "" : "Couldn't find anything to buy in that text. Type what you buy for it below.";
-  } catch {
-    note.textContent = "Couldn't reach pantryrun. Check your connection, then try again.";
-    $("#readLink").disabled = false;
-  }
-}
-
-// A recipe page read into the dinner: its name, servings, what to buy, photo and link (core/recipe_import.py).
-// What's already typed stays; the page's items are added after it.
-async function readLink(url) {
-  const d = state.editing, note = $("#linkNote");
-  note.textContent = "Reading the page…";
-  $("#readLink").disabled = true;
-  try {
-    const res = await fetch("/recipe-import", { method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url, user_id: identity.personId }) });
-    const found = await res.json();
-    if (!res.ok) { note.textContent = found.detail || "Couldn't read that page."; $("#readLink").disabled = false; return; }
-    if (!d.name.trim()) d.name = found.name;
-    d.servings = found.servings;
-    d.items = [...new Set([...d.items, ...found.items])];
-    d.link = found.link;
-    d.image = found.image || d.image;
-    const site = new URL(found.link).hostname.replace(/^www\./, "");
-    draw();
-    $("#linkNote").textContent = found.items.length
-      ? `Found ${found.items.length} things to buy on ${site}. Check them, then save. The method stays on ${site}: the dinner links to it.`
-      : `${site} doesn't list its ingredients in a way pantryrun can read. Type what you buy for it below.`;
-  } catch {
-    note.textContent = "Couldn't reach pantryrun. Check your connection, then try again.";
-    $("#readLink").disabled = false;
-  }
+// What a recipe link or a pasted text gave (web/js/recipe-import.js). What's already typed stays: items are added
+// after it, and the name and method are filled only when empty. A link's method stays on its page (the dinner links
+// to it); a pasted text's method is the person's own copy.
+function fill(found) {
+  const d = state.editing;
+  if (!d.name.trim() && found.name) d.name = found.name;
+  d.servings = found.servings || d.servings;
+  d.minutes = found.minutes || d.minutes;
+  d.items = [...new Set([...d.items, ...found.items])];
+  d.skipped = found.skipped.filter(s => !d.items.includes(s));
+  if (!d.method.trim() && found.method) d.method = found.method;
+  if (found.link) d.link = found.link;
+  d.image = found.image || d.image;
+  draw();
 }
 
 async function saveDinner() {
   const d = state.editing;
   const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, method: d.method, link: d.link,
-                 image: d.image, from_dinner: d.from ?? null };
+                 image: d.image, minutes: d.minutes || null, from_dinner: d.from ?? null };
   try {
     const res = await fetch(d.id ? `/my-dinners/${encodeURIComponent(d.id)}` : "/my-dinners", {
       method: d.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

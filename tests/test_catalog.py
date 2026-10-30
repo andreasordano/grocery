@@ -472,6 +472,18 @@ def test_dinner_keeps_its_photo_and_a_bad_photo_is_dropped(pg):
     assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], image="javascript:x")["image"] is None
 
 
+def test_my_dinner_keeps_how_long_it_takes_also_when_sent(pg):
+    from core import my_dinners
+    d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], minutes="25")
+    assert my_dinners.get("anna", d["id"])["minutes"] == 25 and my_dinners.list_for("anna")[0]["minutes"] == 25
+    assert catalog.find_recipe(d["id"], catalog.load_recipes(), "anna")["minutes"] == 25  # the card shows "25 min"
+    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], minutes="")["minutes"] is None  # cleared
+    for wrong in (0, 601, "soon"):
+        with pytest.raises(ValueError, match="minutes"):
+            my_dinners.save("anna", "Pasta", 2, ["makaronid"], minutes=wrong)
+    assert my_dinners.shared(my_dinners.share("anna", d["id"], "Pasta", 2, ["makaronid"], minutes=40))["minutes"] == 40
+
+
 def test_the_answer_has_a_recipe_card_for_each_dinner(fake_store):
     card = catalog.recommend_dinner("test", 4, ["a"])["dinners"][0]
     assert card["servings"] == 4 and card["method"] is None

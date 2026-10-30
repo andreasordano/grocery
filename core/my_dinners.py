@@ -22,7 +22,7 @@ from core import db
 MAX_ITEMS = 60
 MAX_METHOD = 4000  # characters of "how to cook it"
 
-_NOTES = ("method", "link", "image")  # the optional columns
+_NOTES = ("method", "link", "image", "minutes")  # the optional columns
 _COLUMNS = f"id, name, servings, items, {', '.join(_NOTES)}"
 
 
@@ -40,8 +40,8 @@ def _num(dinner_id):
 _WEB = re.compile(r"https?://[^\s/]+\.[^\s]+$")
 
 
-def clean_notes(method, link, image=None):
-    """Validated {method, link, image}: each may be None. ValueError with a message for the person."""
+def clean_notes(method, link, image=None, minutes=None):
+    """Validated {method, link, image, minutes}: each may be None. ValueError with a message for the person."""
     method = (method or "").strip()[:MAX_METHOD] or None
     link = (link or "").strip() or None
     if link and not _WEB.match(link):
@@ -49,7 +49,13 @@ def clean_notes(method, link, image=None):
     image = (image or "").strip() or None
     if image and (not _WEB.match(image) or len(image) > 1000):
         image = None  # a photo is a nicety: never a reason to refuse the dinner
-    return {"method": method, "link": link[:500] if link else None, "image": image}
+    try:
+        minutes = int(minutes) if minutes not in (None, "") else None
+    except (TypeError, ValueError):
+        raise ValueError("The cooking time should be a number of minutes.")
+    if minutes is not None and not 1 <= minutes <= 600:
+        raise ValueError("The cooking time should be between 1 and 600 minutes.")
+    return {"method": method, "link": link[:500] if link else None, "image": image, "minutes": minutes}
 
 
 def clean(name, servings, items):
@@ -79,16 +85,17 @@ def get(user_id, dinner_id):
     return _row(rows[0]) if rows else None
 
 
-def save(user_id, name, servings, items, dinner_id=None, method=None, link=None, image=None):
+def save(user_id, name, servings, items, dinner_id=None, method=None, link=None, image=None, minutes=None):
     """Create a dinner, or update one this person owns. Returns it, or None if not theirs."""
     name, servings, items = clean(name, servings, items)
-    notes = clean_notes(method, link, image)
+    notes = clean_notes(method, link, image, minutes)
     values = (name, servings, Jsonb(items), *(notes[k] for k in _NOTES))
     now = datetime.now(timezone.utc)
     with db.connection() as conn:
         if dinner_id is None:
             num = conn.execute(f"INSERT INTO my_dinners (name, servings, items, {', '.join(_NOTES)}, user_id, created, updated) "
-                               "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id", (*values, user_id, now, now)).fetchone()[0]
+                               f"VALUES ({', '.join(['%s'] * (len(values) + 3))}) RETURNING id",
+                               (*values, user_id, now, now)).fetchone()[0]
         else:
             num = _num(dinner_id)
             sets = ", ".join(f"{c} = %s" for c in ("name", "servings", "items", *_NOTES, "updated"))
@@ -104,14 +111,14 @@ def delete(user_id, dinner_id):
         return conn.execute("DELETE FROM my_dinners WHERE id = %s AND user_id = %s", (_num(dinner_id), user_id)).rowcount > 0
 
 
-def share(user_id, recipe_id, name, servings, items, pantry=(), method=None, link=None, image=None):
+def share(user_id, recipe_id, name, servings, items, pantry=(), method=None, link=None, image=None, minutes=None):
     """Store a snapshot of a dinner and return its link token. Later edits don't change what was sent."""
     name, servings, items = clean(name, servings, items)
-    notes = clean_notes(method, link, image)
+    notes = clean_notes(method, link, image, minutes)
     token = secrets.token_urlsafe(6)  # 8 characters, ~48 bits: not guessable
     with db.connection() as conn:
         conn.execute(f"INSERT INTO shares (token, user_id, recipe_id, name, servings, items, pantry, {', '.join(_NOTES)}, created) "
-                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                     f"VALUES ({', '.join(['%s'] * (len(_NOTES) + 8))})",
                      (token, user_id, recipe_id, name, servings, Jsonb(items), Jsonb(list(pantry)),
                       *(notes[k] for k in _NOTES), datetime.now(timezone.utc)))
     return token

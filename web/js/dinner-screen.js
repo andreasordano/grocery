@@ -289,7 +289,8 @@ async function saveShared() {
   const d = state.shared;
   try {
     const saved = await api("/my-dinners", { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items,
-                                             method: d.method, link: d.link, image: d.image, from_share: d.token });
+                                             method: d.method, link: d.link, image: d.image, minutes: d.minutes,
+                                             from_share: d.token });
     state.mine = [...state.mine, saved].sort((a, b) => a.name.localeCompare(b.name));
     d.saved = true;
     draw();

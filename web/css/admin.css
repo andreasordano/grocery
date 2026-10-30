@@ -41,6 +41,7 @@
 .ad-hint { margin: 0; color: var(--ink-soft); max-width: 60ch; }
 .ad-form { display: grid; gap: 18px; }
 .ad-form-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; }
+.ad-edit > .ad-form-head, .ad-edit > .ad-usage, .ad-edit > .from-link { margin: 0 0 18px; }  /* above the form */
 .ad-id { font-size: 13px; padding: 2px 8px; border-radius: 8px; background: var(--hover); }
 .ad-usage { margin: -6px 0 0; font-size: 14px; color: var(--ink-soft); }
 .ad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
