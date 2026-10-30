@@ -484,6 +484,27 @@ def test_my_dinner_keeps_how_long_it_takes_also_when_sent(pg):
     assert my_dinners.shared(my_dinners.share("anna", d["id"], "Pasta", 2, ["makaronid"], minutes=40))["minutes"] == 40
 
 
+def test_dinners_are_kept_before_the_minutes_migration_has_run(pg, test_database_url, monkeypatch):
+    """The code can be deployed before 20261030230000_dinner_minutes.sql runs: dinners are kept without their time,
+    and with it once the column is there."""
+    import psycopg
+    from core import my_dinners
+    alter = lambda sql: [psycopg.connect(test_database_url, autocommit=True).execute(f"ALTER TABLE {t} {sql}")
+                         for t in ("my_dinners", "shares")]
+    monkeypatch.setattr(my_dinners, "_minutes", {"there": False, "checked": 0.0})
+    alter("DROP COLUMN minutes")
+    try:
+        d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], minutes=25)
+        assert d["minutes"] is None and my_dinners.get("anna", d["id"])["minutes"] is None
+        assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], method="Keeda.")["method"] == "Keeda."
+        assert my_dinners.shared(my_dinners.share("anna", d["id"], "Pasta", 2, ["makaronid"], minutes=40))["minutes"] is None
+    finally:
+        alter("ADD COLUMN IF NOT EXISTS minutes INT CHECK (minutes > 0)")
+    my_dinners._minutes["checked"] = 0.0  # a minute later
+    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], minutes=25)["minutes"] == 25
+    assert my_dinners.get("anna", d["id"])["minutes"] == 25
+
+
 def test_the_answer_has_a_recipe_card_for_each_dinner(fake_store):
     card = catalog.recommend_dinner("test", 4, ["a"])["dinners"][0]
     assert card["servings"] == 4 and card["method"] is None

@@ -13,6 +13,7 @@
 
 import re
 import secrets
+import time
 from datetime import datetime, timezone
 
 from psycopg.types.json import Jsonb
@@ -23,11 +24,27 @@ MAX_ITEMS = 60
 MAX_METHOD = 4000  # characters of "how to cook it"
 
 _NOTES = ("method", "link", "image", "minutes")  # the optional columns
-_COLUMNS = f"id, name, servings, items, {', '.join(_NOTES)}"
+_minutes = {"there": False, "checked": 0.0}
+
+
+def _notes():
+    """The optional columns the database has. `minutes` comes with migration 20261030230000_dinner_minutes.sql, which
+    may run after this code is deployed: until then dinners are kept without their time. Looked for again at most once
+    a minute, so the time is kept as soon as the migration has run, without a redeploy."""
+    if not _minutes["there"] and time.monotonic() - _minutes["checked"] > 60:
+        _minutes["checked"] = time.monotonic()
+        _minutes["there"] = db.query("SELECT count(*) FROM information_schema.columns WHERE column_name = 'minutes' "
+                                     "AND table_schema = current_schema() AND table_name IN ('my_dinners', 'shares')")[0][0] == 2
+    return _NOTES if _minutes["there"] else _NOTES[:-1]
+
+
+def _columns():
+    return f"id, name, servings, items, {', '.join(_notes())}"
 
 
 def _row(r):
-    return {"id": f"my-{r[0]}", "name": r[1], "servings": r[2], "items": r[3], **dict(zip(_NOTES, r[4:]))}
+    return {"id": f"my-{r[0]}", "name": r[1], "servings": r[2], "items": r[3], "minutes": None,
+            **dict(zip(_notes(), r[4:]))}
 
 
 def _num(dinner_id):
@@ -72,7 +89,7 @@ def clean(name, servings, items):
 
 
 def list_for(user_id):
-    rows = db.query(f"SELECT {_COLUMNS} FROM my_dinners WHERE user_id = %s ORDER BY name", (user_id,))
+    rows = db.query(f"SELECT {_columns()} FROM my_dinners WHERE user_id = %s ORDER BY name", (user_id,))
     return [_row(r) for r in rows]
 
 
@@ -81,28 +98,29 @@ def get(user_id, dinner_id):
     num = _num(dinner_id)
     if not user_id or num is None:
         return None
-    rows = db.query(f"SELECT {_COLUMNS} FROM my_dinners WHERE id = %s AND user_id = %s", (num, user_id))
+    rows = db.query(f"SELECT {_columns()} FROM my_dinners WHERE id = %s AND user_id = %s", (num, user_id))
     return _row(rows[0]) if rows else None
 
 
 def save(user_id, name, servings, items, dinner_id=None, method=None, link=None, image=None, minutes=None):
     """Create a dinner, or update one this person owns. Returns it, or None if not theirs."""
     name, servings, items = clean(name, servings, items)
-    notes = clean_notes(method, link, image, minutes)
-    values = (name, servings, Jsonb(items), *(notes[k] for k in _NOTES))
+    notes, kept = clean_notes(method, link, image, minutes), _notes()
+    values = (name, servings, Jsonb(items), *(notes[k] for k in kept))
     now = datetime.now(timezone.utc)
     with db.connection() as conn:
         if dinner_id is None:
-            num = conn.execute(f"INSERT INTO my_dinners (name, servings, items, {', '.join(_NOTES)}, user_id, created, updated) "
+            num = conn.execute(f"INSERT INTO my_dinners (name, servings, items, {', '.join(kept)}, user_id, created, updated) "
                                f"VALUES ({', '.join(['%s'] * (len(values) + 3))}) RETURNING id",
                                (*values, user_id, now, now)).fetchone()[0]
         else:
             num = _num(dinner_id)
-            sets = ", ".join(f"{c} = %s" for c in ("name", "servings", "items", *_NOTES, "updated"))
+            sets = ", ".join(f"{c} = %s" for c in ("name", "servings", "items", *kept, "updated"))
             if conn.execute(f"UPDATE my_dinners SET {sets} WHERE id = %s AND user_id = %s",
                             (*values, now, num, user_id)).rowcount == 0:
                 return None
-    return {"id": f"my-{num}", "name": name, "servings": servings, "items": items, **notes}
+    return {"id": f"my-{num}", "name": name, "servings": servings, "items": items, **notes,
+            **({} if "minutes" in kept else {"minutes": None})}
 
 
 def delete(user_id, dinner_id):
@@ -114,24 +132,25 @@ def delete(user_id, dinner_id):
 def share(user_id, recipe_id, name, servings, items, pantry=(), method=None, link=None, image=None, minutes=None):
     """Store a snapshot of a dinner and return its link token. Later edits don't change what was sent."""
     name, servings, items = clean(name, servings, items)
-    notes = clean_notes(method, link, image, minutes)
+    notes, kept = clean_notes(method, link, image, minutes), _notes()
     token = secrets.token_urlsafe(6)  # 8 characters, ~48 bits: not guessable
     with db.connection() as conn:
-        conn.execute(f"INSERT INTO shares (token, user_id, recipe_id, name, servings, items, pantry, {', '.join(_NOTES)}, created) "
-                     f"VALUES ({', '.join(['%s'] * (len(_NOTES) + 8))})",
+        conn.execute(f"INSERT INTO shares (token, user_id, recipe_id, name, servings, items, pantry, {', '.join(kept)}, created) "
+                     f"VALUES ({', '.join(['%s'] * (len(kept) + 8))})",
                      (token, user_id, recipe_id, name, servings, Jsonb(items), Jsonb(list(pantry)),
-                      *(notes[k] for k in _NOTES), datetime.now(timezone.utc)))
+                      *(notes[k] for k in kept), datetime.now(timezone.utc)))
     return token
 
 
 def shared(token):
     """The dinner behind a link, or None."""
-    rows = db.query(f"SELECT token, name, servings, items, pantry, {', '.join(_NOTES)} FROM shares WHERE token = %s", (token,))
+    kept = _notes()
+    rows = db.query(f"SELECT token, name, servings, items, pantry, {', '.join(kept)} FROM shares WHERE token = %s", (token,))
     if not rows:
         return None
     r = rows[0]
     return {"id": f"sh-{r[0]}", "token": r[0], "name": r[1], "servings": r[2], "items": r[3], "pantry": r[4],
-            **dict(zip(_NOTES, r[5:]))}
+            "minutes": None, **dict(zip(kept, r[5:]))}
 
 
 def as_recipe(dinner):
