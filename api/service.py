@@ -89,6 +89,7 @@ class MyDinnerRequest(BaseModel):
     method: Optional[str] = None  # how to cook it
     link: Optional[str] = None    # a recipe page
     image: Optional[str] = None   # its photo (from a recipe link)
+    minutes: Optional[int] = None  # how long it takes
     from_share: Optional[str] = None  # link token, when saved from a dinner someone sent
     from_dinner: Optional[str] = None  # the dinner it's a copy of ("Make it yours", WEB-38)
 
@@ -239,13 +240,14 @@ def _save_my_dinner(req: MyDinnerRequest, dinner_id: Optional[str] = None):
         raise HTTPException(status_code=400, detail="Missing user")
     try:
         dinner = my_dinners.save(req.user_id, req.name, req.servings, req.items, dinner_id, req.method, req.link,
-                                 req.image)
+                                 req.image, req.minutes)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     if dinner is None:
         raise HTTPException(status_code=404, detail="No such dinner")
     events.log_event("my_dinner_saved", {"id": dinner["id"], "new": dinner_id is None, "items": len(dinner["items"]),
                                          "method": bool(dinner["method"]), "link": bool(dinner["link"]),
+                                         "minutes": bool(dinner["minutes"]),
                                          "from_share": req.from_share, "from_dinner": req.from_dinner},
                      user_id=req.user_id)
     return dinner
@@ -289,7 +291,7 @@ def copy_recipe(recipe_id: str, user_id: Optional[str] = None):
         raise HTTPException(status_code=404, detail="No such dinner")
     return {"from": recipe_id, "name": recipe["name"], "servings": recipe.get("servings", catalog.BASE_SERVINGS),
             "items": catalog.recipe_as_items(recipe, recipes),
-            **{k: recipe.get(k) or "" for k in ("method", "link", "image")}}
+            **{k: recipe.get(k) or "" for k in ("method", "link", "image")}, "minutes": recipe.get("minutes")}
 
 
 @app.post("/recipe-import")
@@ -316,7 +318,8 @@ def read_recipe_text(req: RecipeTextRequest):
     names, which show what the English names of WEB-51 should cover)."""
     found = recipe_import.from_text(req.text)
     events.log_event("recipe_text", {"lines": len(req.text[:recipe_import.MAX_TEXT].splitlines()),
-                                     "items": len(found["items"]), "skipped": found["skipped"]}, user_id=req.user_id)
+                                     "items": len(found["items"]), "skipped": found["skipped"],
+                                     **{k: bool(found[k]) for k in ("name", "method", "minutes")}}, user_id=req.user_id)
     return found
 
 
@@ -329,7 +332,7 @@ def create_share(req: ShareRequest):
         raise HTTPException(status_code=404, detail="No such dinner")
     token = my_dinners.share(req.user_id, req.recipe_id, recipe["name"], recipe.get("servings", catalog.BASE_SERVINGS),
                              catalog.recipe_as_items(recipe, recipes), recipe.get("pantry", []),
-                             recipe.get("method"), recipe.get("link"), recipe.get("image"))
+                             recipe.get("method"), recipe.get("link"), recipe.get("image"), recipe.get("minutes"))
     events.log_event("share_created", {"token": token, "recipe_id": req.recipe_id}, user_id=req.user_id)
     return {"token": token, "path": f"/?dinner={token}"}
 

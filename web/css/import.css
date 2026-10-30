@@ -1,0 +1,17 @@
+/* Starting a dinner from a recipe: a link or a pasted text (js/recipe-import.js). The same box in the dinner
+   editor and on the admin page. */
+.from-link { padding: 16px 18px; border-radius: 22px; background: var(--panel); max-width: 520px; }
+.from-link > label { display: block; margin: 0 0 8px; font-size: 14px; font-weight: 700; }
+.from-link .field textarea {
+  flex: 1; min-width: 0; padding: 13px 18px; border-radius: 22px; border: 0; outline: none; resize: none;
+  background: var(--milk); color: var(--ink); font: 16px/1.35 var(--sans); box-shadow: inset 0 0 0 1.5px var(--line);
+  field-sizing: content; min-height: 48px; max-height: 14em;  /* grows with a pasted recipe */
+}
+.from-link .field textarea:focus { box-shadow: inset 0 0 0 2px var(--ink); }
+.from-link .field .btn { align-self: flex-start; }
+.from-link .fine:empty { display: none; }
+.from-link .fine { margin: 10px 0 0; }
+.from-link .skipped ul { list-style: none; margin: 6px 0 0; padding: 0; }
+.from-link .skipped li { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 0;
+  border-bottom: 1.5px solid var(--line); }
+.from-link .skipped li:last-child { border-bottom: 0; }

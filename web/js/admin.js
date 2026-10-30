@@ -2,6 +2,7 @@
 // edit one, check it at the stores, publish it. Everything goes through /admin/recipes with the owner token
 // (EDITION_TOKEN), which this tab keeps until it's closed. Dinners are archived, never deleted: their ids stay.
 import { esc } from "./format.js";
+import { importBox, bindImport, skippedList } from "./recipe-import.js";
 
 const $ = selector => document.querySelector(selector);
 const KEY = "pantryrun.ownerToken";
@@ -11,7 +12,7 @@ const FILTERS = [["all", "All"], ["draft", "Drafts"], ["published", "Published"]
 const BLANK = { name: "", emoji: "", about: "", servings: 4, minutes: null, tags: [], months: [], ingredients: [], pantry: [],
   method: "", image: "", brand: "", label: "", rights: "", review_by: null, notes: "", status: "draft" };
 
-const st = { token: remembered(), data: null, filter: "all", open: null, dirty: false };
+const st = { token: remembered(), data: null, filter: "all", open: null, dirty: false, skipped: [] };
 
 function remembered() {
   try { return sessionStorage.getItem(KEY) || ""; } catch { return ""; }
@@ -101,18 +102,20 @@ function drawEditor() {
   }
   const r = st.open === "new" ? BLANK : st.data.recipes.find(x => x.id === st.open);
   const tags = new Set(r.tags);
-  box.innerHTML = `<form id="recipe" class="ad-form" novalidate>
-    <div class="ad-form-head">
+  st.skipped = [];
+  box.innerHTML = `<div class="ad-form-head">
       <h2 lang="et">${esc(r.name || "New dinner")}</h2>
       ${r.id ? `<code class="ad-id">${esc(r.id)}</code>` : `<span class="fine">The id comes from the name and never changes.</span>`}
     </div>
     ${r.id ? usageLine(r) : ""}
+    ${importBox(r.id ? "Fill it in from a recipe" : "Start from a recipe", { skipped: st.skipped })}
+  <form id="recipe" class="ad-form" novalidate>
     <div class="ad-grid">
       ${field("name", "Name (Estonian)", input("name", r.name, 'required maxlength="80" lang="et"'))}
-      ${field("emoji", "Emoji", input("emoji", r.emoji, 'maxlength="8"'), "Shown when there's no photo")}
       ${field("servings", "People", input("servings", r.servings, 'type="number" min="1" max="12" required'))}
       ${field("minutes", "Minutes", input("minutes", r.minutes, 'type="number" min="1" max="600"'),
         `${st.data.quick_minutes} or less is Quick`)}
+      ${field("emoji", "Emoji", input("emoji", r.emoji, 'maxlength="8"'), "Shown when there's no photo")}
     </div>
     ${field("about", "On the card (English, one line)", input("about", r.about, 'maxlength="300"'))}
     <fieldset class="ad-set"><legend>Chips</legend>
@@ -126,11 +129,11 @@ function drawEditor() {
       <small class="fine">None: never under In season.</small>
     </fieldset>
     <div class="ad-grid two">
-      ${field("ingredients", "What to buy, one per line", area("ingredients", lines(r.ingredients), 9, 'lang="et"'),
+      ${field("ingredients", "What you buy for it, one per line", area("ingredients", lines(r.ingredients), 9, 'lang="et"'),
         "For that many people, as stores name things: <code>400 g kanafilee</code>, <code>2 tk sibul</code>, <code>till</code>")}
       ${field("pantry", "From home, one per line", area("pantry", lines(r.pantry), 9, 'lang="et"'), "Not priced: <code>sool</code>, <code>õli</code>")}
     </div>
-    ${field("method", "How to cook it (English)", area("method", r.method, 8), "Numbered steps, one per line")}
+    ${field("method", "How you cook it (English)", area("method", r.method, 8), "Numbered steps, one per line")}
     ${field("image", "Photo address", input("image", r.image, 'type="url" placeholder="https://…"'), "Only photos you may use (see Rights)")}
     <fieldset class="ad-set"><legend>Partner collection</legend>
       <div class="ad-grid">
@@ -152,6 +155,33 @@ function drawEditor() {
     </div>
     <div id="checked" aria-live="polite"></div>
   </form>`;
+  bindImport(fill);
+}
+
+// What a recipe link or a pasted text gave (js/recipe-import.js), into the form: what's there stays, lines are
+// added, and the name and method are filled only when empty. Staples (salt, oil, spices) go under From home, without
+// their amounts. The photo isn't taken: only photos we may use (Rights).
+const ownLines = el => el.value.split("\n").map(s => s.trim()).filter(Boolean);
+const addLines = (el, list) => { el.value = [...new Set([...ownLines(el), ...list])].join("\n"); };
+
+function fill(found) {
+  const f = $("#recipe").elements;
+  if (!f.name.value.trim() && found.name) f.name.value = found.name;
+  if (found.servings) f.servings.value = found.servings;
+  if (found.minutes) f.minutes.value = found.minutes;
+  addLines(f.ingredients, found.items.filter(i => !found.staples.includes(i)));
+  addLines(f.pantry, found.staples.map(s => s.replace(/^\s*[\d.,/½¼¾]+\s*(?:(?:kg|g|ml|dl|cl|l|tk|tl|spl)\b\.?)?\s*/i, "")));
+  if (!f.method.value.trim() && found.method) f.method.value = found.method;
+  st.skipped = found.skipped;
+  $("#skipped").innerHTML = skippedList(st.skipped);
+  st.dirty = true;
+}
+
+function unskip(i) {
+  const [line] = st.skipped.splice(i, 1);
+  addLines($("#recipe").elements.ingredients, [line]);
+  $("#skipped").innerHTML = skippedList(st.skipped);
+  st.dirty = true;
 }
 
 function readForm() {
@@ -224,6 +254,8 @@ document.addEventListener("click", e => {
     return;
   }
   if (e.target.closest("#check")) { check(); return; }
+  const skipped = e.target.closest("[data-unskip]");
+  if (skipped) { unskip(+skipped.dataset.unskip); return; }
   if (e.target.closest("#signOut") && leave()) signOut();
 });
 
