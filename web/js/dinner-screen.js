@@ -165,7 +165,7 @@ export function draw() {
     <ul class="dishes">${dinners.map(r => dinnerCard(r, chosen.includes(r.id))).join("")}</ul>
     <p class="fine dishes-note" id="dishesNote" role="status"></p>
     <div class="more">${state.category === "mine" ? `<span class="btns"><button type="button" class="btn quiet" id="newDinner">New dinner</button>
-      <button type="button" class="link" id="fromLinkDinner">From a recipe link</button></span>`
+      <button type="button" class="link" id="fromLinkDinner">From a recipe</button></span>`
       : state.category === "classics" ? ""
       : `<button type="button" class="link" id="shuffle">Show me others</button>`}
 </div>

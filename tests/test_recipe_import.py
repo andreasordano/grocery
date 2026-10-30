@@ -4,7 +4,7 @@ import socket
 import pytest
 
 from core import recipe_import
-from core.recipe_import import PageError, SocialPost, import_recipe, parse, to_item
+from core.recipe_import import PageError, SocialPost, buyable, from_text, import_recipe, parse, to_item
 
 RECIPE_PAGE = """<html><head><title>Kana-nuudliroog | Rimi</title>
 <meta property="og:image" content="https://cdn.example/og.jpg">
@@ -81,7 +81,7 @@ def test_a_redirect_to_a_private_address_is_refused(monkeypatch):
     ("https://vm.tiktok.com/ZMabc/", "TikTok"), ("https://www.threads.net/@cook/post/1", "Threads"),
 ])
 def test_social_posts_are_never_fetched(url, site, monkeypatch):
-    """WEB-50: Meta's APIs don't give other people's captions, so say what to do instead of trying."""
+    """WEB-50: their posts aren't read, so say what to do instead of trying (paste the text, WEB-51)."""
     monkeypatch.setattr(recipe_import.requests, "get", lambda *a, **k: pytest.fail("fetched " + url))
     with pytest.raises(SocialPost, match=f"can't open {site} posts") as refused:
         import_recipe(url)
@@ -121,6 +121,78 @@ def test_captcha_page_says_the_site_blocks_reading(monkeypatch):
     monkeypatch.setattr(recipe_import, "fetch", lambda url: (url, "<html><title>Security check required</title></html>"))
     with pytest.raises(PageError, match="doesn't let"):
         import_recipe("nami-nami.ee/retseptid/1")
+
+
+# ── a recipe's text, pasted (WEB-51) ─────────────────────────────────────────
+
+CAPTION = """Kiire kanapasta kooreses kastmes 🍝 Ideaalne nädalaõhtuks, valmib 20 minutiga!
+
+Koostisosad (4 portsjonit):
+✅ 400 g pastat
+✅ 500 g kanafileed
+• 1 sibul, hakitud
+- 1 spl oliiviõli
+- 2 küüslauguküünt
+- sool ja pipar maitse järgi
+Kastmeks:
+1 purk purustatud tomateid
+Vesi
+Valmistamine:
+1. Keeda pasta pakendil oleva juhendi järgi.
+2. Prae kana ja sibul õlis.
+Retsept: https://example.ee/kanapasta
+#kanapasta #õhtusöök @kokk"""
+
+
+def test_a_pasted_caption_gives_what_to_buy():
+    found = from_text(CAPTION)
+    assert found["items"] == ["400 g pastat", "500 g kanafileed", "1 sibul", "oliiviõli", "sool ja pipar",
+                              "1 purustatud tomateid"]
+    assert found["skipped"] == ["2 küüslauguküünt"]   # no product is named like that: the person adds it
+    assert found["servings"] == 4
+
+
+def test_the_title_intro_and_method_are_not_things_to_buy():
+    found = from_text(CAPTION)
+    everything = " ".join(found["items"] + found["skipped"])
+    assert "kanapasta" not in everything and "keeda" not in everything and "prae" not in everything
+    assert "#" not in everything and "http" not in everything and "vesi" not in everything
+
+
+def test_text_without_headings_reads_every_short_line():
+    found = from_text("hakkliha 500g\n2 porgandit\nMa teen seda igal reedel, sest lapsed armastavad seda väga\nfoo bar")
+    assert found["items"] == ["hakkliha 500g", "2 porgandit"]
+    assert found["skipped"] == ["foo bar"]  # the sentence is left out quietly; a short unknown line is offered
+
+
+@pytest.mark.parametrize("text, servings", [
+    ("Serves 2\nhakkliha", 2), ("Ingredients (for 6 people):\nhakkliha", 6), ("hakkliha", None),
+    ("Portsjone: 40\nhakkliha", 12),
+])
+def test_servings_come_from_the_text(text, servings):
+    assert from_text(text)["servings"] == servings
+
+
+def test_an_amount_after_a_colon_stays_with_its_item():
+    assert from_text("Kanafilee: 500 g")["items"] == ["kanafilee 500 g"]
+
+
+@pytest.mark.parametrize("item, known", [
+    ("400 g pastat", True), ("100 g riivjuustu", True), ("veisehakkliha", True), ("purustatud tomateid", True),
+    ("2 porgandit", True), ("xyzzy", False),
+])
+def test_recipe_words_are_known_in_their_recipe_forms(item, known):
+    assert buyable(item) is known
+
+
+def test_pasted_text_is_logged_without_the_text(monkeypatch):
+    from api import service
+    logged = []
+    monkeypatch.setattr(service.events, "log_event", lambda kind, data, user_id=None: logged.append((kind, data, user_id)))
+    found = service.read_recipe_text(service.RecipeTextRequest(text="400 g pastat\nfoo bar\nMinu salajane retsept, mida ema tegi meile igal pühapäeval",
+                                                               user_id="anna"))
+    assert found["items"] == ["400 g pastat"]
+    assert logged == [("recipe_text", {"lines": 3, "items": 1, "skipped": ["foo bar"]}, "anna")]
 
 
 # ── Rimi's recipes as store dinners (scripts/import_rimi_recipes.py) ─────────

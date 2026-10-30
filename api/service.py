@@ -103,6 +103,11 @@ class RecipeImportRequest(BaseModel):
     user_id: Optional[str] = None
 
 
+class RecipeTextRequest(BaseModel):
+    text: str
+    user_id: Optional[str] = None
+
+
 class NewsletterRequest(BaseModel):
     email: str
     consent: bool = False
@@ -301,6 +306,17 @@ def import_recipe(req: RecipeImportRequest):
         raise HTTPException(status_code=422, detail=str(exc))
     events.log_event("recipe_import", {"ok": True, "host": urlparse(found["link"]).hostname, "items": len(found["items"]),
                                        "partial": found["partial"], "image": bool(found["image"])}, user_id=req.user_id)
+    return found
+
+
+@app.post("/recipe-text")
+def read_recipe_text(req: RecipeTextRequest):
+    """A recipe's text pasted into the dinner editor (an Instagram caption, a message): what to buy, and the lines
+    pantryrun didn't recognise. Nothing is saved. The text isn't logged; the lines it didn't recognise are (ingredient
+    names, which show what the English names of WEB-51 should cover)."""
+    found = recipe_import.from_text(req.text)
+    events.log_event("recipe_text", {"lines": len(req.text[:recipe_import.MAX_TEXT].splitlines()),
+                                     "items": len(found["items"]), "skipped": found["skipped"]}, user_id=req.user_id)
     return found
 
 

@@ -25,12 +25,16 @@ export function draw() {
       <h1>${d.id ? "Edit dinner" : d.from ? "Make it yours" : "New dinner"}</h1>
       ${d.from ? `<p class="fine copy-note">A copy: change what you like and save it. The original stays as it is.</p>` : ""}
       <form class="from-link" id="fromLink" autocomplete="off"${d.from ? " hidden" : ""}>
-        <label for="dlinkImport">${d.id ? "Fill it in again from a recipe page" : "Start from a recipe you found online"}</label>
+        <label for="dlinkImport">${d.id ? "Fill it in again from a recipe" : "Start from a recipe you found online"}</label>
         <div class="field">
-          <input id="dlinkImport" type="text" inputmode="url" autocapitalize="off" spellcheck="false" placeholder="Paste a link, e.g. rimi.ee/retseptid/…" enterkeyhint="go">
+          <textarea id="dlinkImport" rows="1" autocapitalize="off" spellcheck="false" placeholder="Paste a link, or the recipe's text from Instagram or a message"></textarea>
           <button class="btn quiet" type="submit" id="readLink">Read it</button>
         </div>
         <p class="fine" id="linkNote" role="status"></p>
+        ${d.skipped?.length ? `<div class="skipped">
+          <p class="fine">pantryrun didn't recognise these. Add the ones you buy:</p>
+          <ul>${d.skipped.map((s, i) => `<li><span>${esc(s)}</span><button type="button" class="link" data-unskip="${i}">Add</button></li>`).join("")}</ul>
+        </div>` : ""}
       </form>
       ${d.image ? `<div class="d-photo"><img src="${esc(d.image)}" alt="" referrerpolicy="no-referrer">
         <button type="button" class="link" id="dropPhoto">Remove photo</button></div>` : ""}
@@ -68,7 +72,11 @@ export function draw() {
   $("#dname").addEventListener("input", e => { d.name = e.target.value; });
   $("#dmethod").addEventListener("input", e => { d.method = e.target.value; });
   $("#dlink").addEventListener("input", e => { d.link = e.target.value; });
-  $("#fromLink").onsubmit = e => { e.preventDefault(); readLink(); };
+  $("#fromLink").onsubmit = e => { e.preventDefault(); read(); };
+  // Enter reads a link straight away; in a recipe's text it starts a new line
+  $("#dlinkImport").addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey && isLink(e.target.value.trim())) { e.preventDefault(); read(); }
+  });
   bindAdd(d.items, draw);
   pick.onclick = onClick;
 }
@@ -106,15 +114,50 @@ function onClick(e) {
   if (itemClick(e, state.editing.items, draw)) return;
   if (e.target.closest("#saveDinner")) { saveDinner(); return; }
   if (e.target.closest("#dropPhoto")) { state.editing.image = ""; draw(); return; }
+  const unskip = e.target.closest("[data-unskip]");
+  if (unskip) {
+    const d = state.editing, [item] = d.skipped.splice(+unskip.dataset.unskip, 1);
+    d.items = [...new Set([...d.items, item])];
+    draw();
+    return;
+  }
   if (e.target.closest("#cancelDinner")) { state.editing = null; render(); return; }
   if (e.target.closest("#deleteDinner")) deleteDinner();
 }
 
+// One word with a dot and no spaces is a link ("rimi.ee/retseptid/…", "https://…"); anything else is a recipe's text.
+const isLink = v => !/\s/.test(v) && /^(https?:\/\/)?[\w-]+(\.[\w-]+)+([/?#].*)?$/i.test(v);
+
+function read() {
+  const v = $("#dlinkImport").value.trim();
+  if (v) (isLink(v) ? readLink : readText)(v);
+}
+
+// A recipe's text (an Instagram caption, a message) read into the dinner: what to buy, and the lines pantryrun
+// didn't recognise, to add with one tap (core/recipe_import.from_text). What's already typed stays.
+async function readText(text) {
+  const d = state.editing, note = $("#linkNote");
+  note.textContent = "Reading the text…";
+  $("#readLink").disabled = true;
+  try {
+    const found = await api("/recipe-text", { text, user_id: identity.personId });
+    d.items = [...new Set([...d.items, ...found.items])];
+    d.skipped = found.skipped.filter(s => !d.items.includes(s));
+    d.servings = found.servings || d.servings;
+    draw();
+    $("#linkNote").textContent = found.items.length
+      ? `Added ${found.items.length} ${found.items.length === 1 ? "thing" : "things"} to buy. Check them, then save.`
+      : found.skipped.length ? "" : "Couldn't find anything to buy in that text. Type what you buy for it below.";
+  } catch {
+    note.textContent = "Couldn't reach pantryrun. Check your connection, then try again.";
+    $("#readLink").disabled = false;
+  }
+}
+
 // A recipe page read into the dinner: its name, servings, what to buy, photo and link (core/recipe_import.py).
 // What's already typed stays; the page's items are added after it.
-async function readLink() {
-  const d = state.editing, url = $("#dlinkImport").value.trim(), note = $("#linkNote");
-  if (!url) return;
+async function readLink(url) {
+  const d = state.editing, note = $("#linkNote");
   note.textContent = "Reading the page…";
   $("#readLink").disabled = true;
   try {
