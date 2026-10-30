@@ -654,10 +654,10 @@ def test_usual_store_goes_with_the_answer_and_can_be_changed(base_url, page):
     page.press("#item", "Enter")
     page.click("#find")
     receipt_lines(page)
-    page.wait_for_selector("#footYou:has-text('Usual store: Selver')")
+    page.wait_for_selector("#footYou:has-text('Your usual store is Selver')")
     page.click("#changeUsual")
     page.click("#usualForm button[value=maxima]")
-    page.wait_for_selector("#footYou:has-text('Usual store: Maxima')")
+    page.wait_for_selector("#footYou:has-text('Your usual store is Maxima')")
     page.click("[data-way=store]")
     assert [d["usual_store"] for u, d in logged("accept", "e2e-usual", wait=1) if u == "e2e-usual"] == ["maxima"]
     assert [(d["store"], d["changed"]) for u, d in logged("usual_store", "e2e-usual", wait=1) if u == "e2e-usual"] == [("maxima", True)]
