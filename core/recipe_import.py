@@ -32,6 +32,29 @@ class PageError(Exception):
     """A page that can't be read; the message is for the person."""
 
 
+class SocialPost(PageError):
+    """A link to Instagram, Facebook or TikTok (WEB-50). Their posts aren't fetched: Meta's APIs don't give other
+    people's captions, logged-out pages mostly show a login wall, and automated collection is against their terms.
+    `site` is for the log, which shows how often people try (that decides WEB-51, pasting a recipe's text)."""
+
+    def __init__(self, site):
+        self.site = site
+        super().__init__(f"pantryrun can't open {site} posts. If the post links to a recipe page, paste that link "
+                         "here. Otherwise type what you buy for it below.")
+
+
+# host (and its subdomains) → the name people know it by; short links included
+SOCIAL = {"instagram.com": "Instagram", "instagr.am": "Instagram", "facebook.com": "Facebook", "fb.com": "Facebook",
+          "fb.me": "Facebook", "fb.watch": "Facebook", "threads.net": "Threads", "threads.com": "Threads",
+          "tiktok.com": "TikTok"}
+
+
+def _social(host):
+    """"Instagram" for www.instagram.com, None for a recipe site."""
+    host = host.lower().rstrip(".")
+    return next((name for domain, name in SOCIAL.items() if host == domain or host.endswith("." + domain)), None)
+
+
 # ── fetching a page someone typed ────────────────────────────────────────────
 
 def _public(host):
@@ -49,6 +72,8 @@ def fetch(url):
         parts = urlparse(url)
         if parts.scheme not in ("http", "https") or not parts.hostname:
             raise PageError("That doesn't look like a web address. Copy the link from the recipe page.")
+        if _social(parts.hostname):  # checked every hop: a short link can lead to a post
+            raise SocialPost(_social(parts.hostname))
         if not _public(parts.hostname):
             raise PageError("pantryrun can only open public web pages.")
         try:
