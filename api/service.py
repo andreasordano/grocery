@@ -293,6 +293,9 @@ def import_recipe(req: RecipeImportRequest):
     Nothing is saved here; the method stays on the page (the dinner keeps the link)."""
     try:
         found = recipe_import.import_recipe(req.url[:1000])
+    except recipe_import.SocialPost as exc:  # WEB-50: how often people try decides WEB-51
+        events.log_event("recipe_import", {"ok": False, "reason": "social", "site": exc.site}, user_id=req.user_id)
+        raise HTTPException(status_code=422, detail=str(exc))
     except recipe_import.PageError as exc:
         events.log_event("recipe_import", {"ok": False, "reason": str(exc)}, user_id=req.user_id)
         raise HTTPException(status_code=422, detail=str(exc))

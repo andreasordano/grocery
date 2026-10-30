@@ -4,7 +4,7 @@ import socket
 import pytest
 
 from core import recipe_import
-from core.recipe_import import PageError, import_recipe, parse, to_item
+from core.recipe_import import PageError, SocialPost, import_recipe, parse, to_item
 
 RECIPE_PAGE = """<html><head><title>Kana-nuudliroog | Rimi</title>
 <meta property="og:image" content="https://cdn.example/og.jpg">
@@ -73,6 +73,48 @@ def test_a_redirect_to_a_private_address_is_refused(monkeypatch):
     with pytest.raises(PageError, match="public"):
         import_recipe("https://example.ee/r")
     assert calls == ["https://example.ee/r"]  # the private address was never asked
+
+
+@pytest.mark.parametrize("url, site", [
+    ("https://www.instagram.com/p/C8abc123/", "Instagram"), ("instagram.com/reel/C8abc123", "Instagram"),
+    ("https://m.facebook.com/story.php?id=1", "Facebook"), ("https://fb.watch/abc/", "Facebook"),
+    ("https://vm.tiktok.com/ZMabc/", "TikTok"), ("https://www.threads.net/@cook/post/1", "Threads"),
+])
+def test_social_posts_are_never_fetched(url, site, monkeypatch):
+    """WEB-50: Meta's APIs don't give other people's captions, so say what to do instead of trying."""
+    monkeypatch.setattr(recipe_import.requests, "get", lambda *a, **k: pytest.fail("fetched " + url))
+    with pytest.raises(SocialPost, match=f"can't open {site} posts") as refused:
+        import_recipe(url)
+    assert refused.value.site == site and isinstance(refused.value, PageError)
+
+
+def test_a_short_link_to_a_social_post_is_refused_at_the_hop(monkeypatch):
+    class Redirect:
+        is_redirect, status_code, headers = True, 301, {"Location": "https://www.instagram.com/p/C8abc123/"}
+        def close(self): pass
+    public = [(socket.AF_INET, socket.SOCK_STREAM, 6, "", ("93.184.216.34", 0))]
+    monkeypatch.setattr(recipe_import.socket, "getaddrinfo", lambda host, *a: public)
+    calls = []
+    monkeypatch.setattr(recipe_import.requests, "get", lambda url, **k: calls.append(url) or Redirect())
+    with pytest.raises(SocialPost):
+        import_recipe("https://bit.ly/x")
+    assert calls == ["https://bit.ly/x"]
+
+
+def test_lookalike_hosts_are_ordinary_sites():
+    assert recipe_import._social("notinstagram.com") is None and recipe_import._social("instagram.com.evil.ee") is None
+    assert recipe_import._social("WWW.Facebook.com.") == "Facebook"
+
+
+def test_a_social_link_is_logged_as_social(monkeypatch):
+    from fastapi import HTTPException
+    from api import service
+    logged = []
+    monkeypatch.setattr(service.events, "log_event", lambda kind, data, user_id=None: logged.append((kind, data, user_id)))
+    with pytest.raises(HTTPException) as refused:
+        service.import_recipe(service.RecipeImportRequest(url="https://www.instagram.com/p/C8abc123/", user_id="anna"))
+    assert refused.value.status_code == 422 and "Instagram" in refused.value.detail
+    assert logged == [("recipe_import", {"ok": False, "reason": "social", "site": "Instagram"}, "anna")]
 
 
 def test_captcha_page_says_the_site_blocks_reading(monkeypatch):
