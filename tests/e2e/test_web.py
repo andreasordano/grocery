@@ -575,6 +575,26 @@ def test_dinner_from_a_recipes_text(base_url, page):
     page.wait_for_selector(".dishes :text('35 min')")
 
 
+def test_salt_and_spices_go_under_from_home(base_url, page):
+    """WEB-51: a dinner of one's own has a From home list, not priced; staples from a pasted recipe go there."""
+    page.goto(base_url + "/?u=e2e-home")
+    page.click("[data-cat=mine]")
+    page.click("#fromLinkDinner")
+    page.fill("#dlinkImport", "Juustuleib\n200 g kodujuustu\n2 muna\n½ tl soola")
+    page.click("#readLink")
+    page.wait_for_selector("#linkNote:text('Added')")
+    buy, home = (lambda: page.locator(".items:not(.pantry) .it").all_inner_texts(),
+                 lambda: page.locator(".items.pantry .it").all_inner_texts())
+    assert buy() == ["200 g kodujuustu", "2 muna"] and home() == ["soola"]
+    page.click("[data-tohome='1']")   # eggs are at home today
+    assert buy() == ["200 g kodujuustu"] and home() == ["soola", "muna"]
+    page.click("[data-tobuy='1']")    # no, buy them after all: back without the amount
+    assert buy() == ["200 g kodujuustu", "muna"] and home() == ["soola"]
+    page.click("#saveDinner")
+    open_recipe(page, "Juustuleib")
+    assert page.text_content(".rc-pantry") == "From home: soola"
+
+
 def test_admin_starts_a_dinner_from_a_recipes_text(base_url, page, monkeypatch):
     """The owner's page has the same box: staples go under From home, without their amounts."""
     monkeypatch.setenv("EDITION_TOKEN", "e2e-owner")

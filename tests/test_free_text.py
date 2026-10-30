@@ -302,3 +302,54 @@ def test_many_tins_dont_stop_the_search_before_the_fresh_cuts(monkeypatch):
 def test_made_from_after_testing_recipes(name, typed, expected):
     from core.scoring import made_from
     assert made_from(name, typed) is expected
+
+
+# ── a recipe's alternatives: "hapukoor või kreeka jogurt" (WEB-51) ──────────
+
+@pytest.mark.parametrize("item, expected", [
+    ("hapukoor või kreeka jogurt", ["hapukoor", "kreeka jogurt"]),
+    ("chicken or turkey", ["chicken", "turkey"]),
+    ("hapukoor / jogurt", ["hapukoor", "jogurt"]),
+    ("või või margariin", ["või", "margariin"]),   # butter or margarine
+    ("50 g võid", []),                             # butter
+    ("küüslaugu või", []),                         # garlic butter
+    ("2 või 3 sibulat", []),                       # an amount
+    ("kanafilee", []),
+])
+def test_alternatives_in_a_line(item, expected):
+    assert fetch.options(item) == expected
+
+
+SOUR = {"hapukoor": [{"name": "Hapukoor 20% Alma 400g", "price": 1.39, "unit": "tk", "shelf": "Hapukoored"}],
+        "kreeka jogurt": [{"name": "Kreeka jogurt 10% Farmi 400g", "price": 1.99, "unit": "tk", "shelf": "Jogurtid"}]}
+
+
+def _stock(monkeypatch, answers):
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, q, size=40: [{"store": store, "store_id": p["name"], **p}
+                                                                          for p in answers.get(q, [])])
+
+
+def _either(item):
+    found, _ = fetch._fetch_item_store(item, fetch.spec_for(item), "rimi", 12)
+    return found
+
+
+def test_the_first_alternative_wins_when_the_store_has_it(monkeypatch):
+    _stock(monkeypatch, SOUR)
+    found = _either("hapukoor või kreeka jogurt")
+    assert [p["name"] for p in found] == ["Hapukoor 20% Alma 400g"]
+    assert found[0]["item"] == "hapukoor või kreeka jogurt" and not found[0].get("swap")
+
+
+def test_the_second_alternative_when_the_first_is_missing(monkeypatch):
+    _stock(monkeypatch, {"kreeka jogurt": SOUR["kreeka jogurt"]})
+    found = _either("hapukoor või kreeka jogurt")
+    assert [p["name"] for p in found] == ["Kreeka jogurt 10% Farmi 400g"]
+    assert found[0]["item"] == "hapukoor või kreeka jogurt" and not found[0].get("swap")  # the recipe allows it
+
+
+def test_an_alternative_comes_before_a_swap(monkeypatch):
+    """The recipe's own second choice before a swap pantryrun knows (data/synonyms.yaml: tursafilee → pangaasius)."""
+    _stock(monkeypatch, {"pangaasiusefilee": [{"name": "Pangaasiusefilee 1kg", "price": 6.99, "unit": "tk", "shelf": "Kala"}],
+                         "lõhefilee": [{"name": "Lõhefilee 300g", "price": 7.49, "unit": "tk", "shelf": "Kala"}]})
+    assert [p["name"] for p in _either("tursafilee või lõhefilee")] == ["Lõhefilee 300g"]

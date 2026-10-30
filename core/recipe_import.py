@@ -156,7 +156,7 @@ def to_item(line):
     text = re.sub(r"\([^)]*\)", "", text)                      # notes in brackets
     text = re.split(r",\s|;\s| – | - ", text)[0]               # "…, peeneks hakitud"
     text = re.sub(r"\b(maitse järgi|soovi korral|to taste|optional)\b", "", text, flags=re.I)
-    text = re.sub(r"^\s*\d+(?:[.,/]\d+)?\s*-\s*", "", text)    # "2-3 tk" keeps the 3
+    text = re.sub(r"^\s*\d+(?:[.,/]\d+)?\s*(?:-|–|\s(?:või|or|to|kuni)\s)\s*(?=\d)", "", text, flags=re.I)  # "2-3 tk", "2 või 3": the 3
     text = re.sub(rf"^\s*(?:\d+(?:[.,/]\d+)?\s*)?{_SMALL}\s*", "", text, flags=re.I)
     text = re.sub(r"^\s*(\d+)/(\d+)\s*", lambda m: f"{int(m.group(1)) / int(m.group(2)):g} ", text)
     text = re.sub(r"^\s*(\d+(?:[.,]\d+)?)\s*(pakk|pk|purk|purki|pakki)\b\.?\s*", r"\1 ", text, flags=re.I)

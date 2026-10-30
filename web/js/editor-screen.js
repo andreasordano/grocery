@@ -11,7 +11,7 @@ import { bindAdd, itemButton, itemClick } from "./items.js";
 import { idle } from "./receipt.js";
 import { add, unpick } from "./dinners.js";
 import { api, logEvent } from "./api.js";
-import { importBox, bindImport } from "./recipe-import.js";
+import { importBox, bindImport, withoutAmount } from "./recipe-import.js";
 
 export function open() {
   draw();
@@ -47,9 +47,14 @@ export function draw() {
         <button class="btn quiet" type="submit">Add</button>
       </form>
       <ul class="items">${d.items.length ? d.items.map((it, i) => `
-        <li>${itemButton(it, i)}<button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")
+        <li>${itemButton(it, i)}<button type="button" class="move" data-tohome="${i}">At home</button><button type="button" data-remove="${i}" aria-label="Remove ${esc(it)}">×</button></li>`).join("")
         : `<li class="none">Nothing to buy yet.</li>`}
       </ul>
+      ${d.pantry.length ? `<h2>From home</h2>
+      <p class="fine">Not priced. The receipt lists them, so you can add one you're out of.</p>
+      <ul class="items pantry">${d.pantry.map((p, i) => `
+        <li><span class="it" lang="et">${esc(p)}</span><button type="button" class="move" data-tobuy="${i}">Buy it</button><button type="button" data-unpantry="${i}" aria-label="Remove ${esc(p)}">×</button></li>`).join("")}
+      </ul>` : ""}
       <h2><label for="dmethod">How you cook it</label></h2>
       <p class="fine">Optional. It shows on the recipe card next to the shopping list, and goes along when you send the dinner.</p>
       <textarea id="dmethod" class="method" rows="5" maxlength="4000" placeholder="1. Fry the mince with the onion.&#10;2. Add the sour cream and simmer for 10 minutes.">${esc(d.method)}</textarea>
@@ -77,7 +82,7 @@ export async function copyDinner(id) {
   try {
     const c = await api(`/recipes/${encodeURIComponent(id)}/copy?user_id=${encodeURIComponent(identity.personId)}`);
     state.editing = { id: null, from: c.from, name: c.name, servings: c.servings, items: c.items, method: c.method,
-                      link: c.link, image: c.image, minutes: c.minutes };
+                      link: c.link, image: c.image, minutes: c.minutes, pantry: c.pantry || [] };
     logEvent("dinner_copy", { from: id });
     render();
     $("#item").focus();
@@ -90,8 +95,9 @@ export async function copyDinner(id) {
 export function editDinner(id, { fromLink = false } = {}) {
   const m = id && state.mine.find(x => x.id === id);
   state.editing = m ? { id: m.id, name: m.name, servings: m.servings, items: [...m.items], method: m.method || "", link: m.link || "", image: m.image || "",
-                        minutes: m.minutes }
-                    : { id: null, name: "", servings: state.servings, items: [], method: "", link: "", image: "", minutes: null };
+                        minutes: m.minutes, pantry: [...(m.pantry || [])] }
+                    : { id: null, name: "", servings: state.servings, items: [], method: "", link: "", image: "", minutes: null,
+                        pantry: [] };
   render();
   $(m ? "#item" : fromLink ? "#dlinkImport" : "#dname").focus();
 }
@@ -104,6 +110,22 @@ function onClick(e) {
     return;
   }
   if (itemClick(e, state.editing.items, draw)) return;
+  // between what's bought and what's at home: at home it's a name, without the amount
+  const d = state.editing, home = e.target.closest("[data-tohome]"), buy = e.target.closest("[data-tobuy]");
+  if (home) {
+    const [item] = d.items.splice(+home.dataset.tohome, 1);
+    d.pantry = [...new Set([...d.pantry, withoutAmount(item)])];
+    draw();
+    return;
+  }
+  if (buy) {
+    const [name] = d.pantry.splice(+buy.dataset.tobuy, 1);
+    d.items = [...new Set([...d.items, name])];
+    draw();
+    return;
+  }
+  const unpantry = e.target.closest("[data-unpantry]");
+  if (unpantry) { d.pantry.splice(+unpantry.dataset.unpantry, 1); draw(); return; }
   if (e.target.closest("#saveDinner")) { saveDinner(); return; }
   if (e.target.closest("#dropPhoto")) { state.editing.image = ""; draw(); return; }
   const unskip = e.target.closest("[data-unskip]");
@@ -125,7 +147,8 @@ function fill(found) {
   if (!d.name.trim() && found.name) d.name = found.name;
   d.servings = found.servings || d.servings;
   d.minutes = found.minutes || d.minutes;
-  d.items = [...new Set([...d.items, ...found.items])];
+  d.items = [...new Set([...d.items, ...found.items.filter(i => !found.staples.includes(i))])];
+  d.pantry = [...new Set([...d.pantry, ...found.staples.map(withoutAmount)])];  // salt, spices: From home
   d.skipped = found.skipped.filter(s => !d.items.includes(s));
   if (!d.method.trim() && found.method) d.method = found.method;
   if (found.link) d.link = found.link;
@@ -136,7 +159,7 @@ function fill(found) {
 async function saveDinner() {
   const d = state.editing;
   const body = { user_id: identity.personId, name: d.name, servings: d.servings, items: d.items, method: d.method, link: d.link,
-                 image: d.image, minutes: d.minutes || null, from_dinner: d.from ?? null };
+                 image: d.image, minutes: d.minutes || null, pantry: d.pantry, from_dinner: d.from ?? null };
   try {
     const res = await fetch(d.id ? `/my-dinners/${encodeURIComponent(d.id)}` : "/my-dinners", {
       method: d.id ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });

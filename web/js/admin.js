@@ -2,7 +2,7 @@
 // edit one, check it at the stores, publish it. Everything goes through /admin/recipes with the owner token
 // (EDITION_TOKEN), which this tab keeps until it's closed. Dinners are archived, never deleted: their ids stay.
 import { esc } from "./format.js";
-import { importBox, bindImport, skippedList } from "./recipe-import.js";
+import { importBox, bindImport, skippedList, withoutAmount } from "./recipe-import.js";
 
 const $ = selector => document.querySelector(selector);
 const KEY = "pantryrun.ownerToken";
@@ -170,7 +170,7 @@ function fill(found) {
   if (found.servings) f.servings.value = found.servings;
   if (found.minutes) f.minutes.value = found.minutes;
   addLines(f.ingredients, found.items.filter(i => !found.staples.includes(i)));
-  addLines(f.pantry, found.staples.map(s => s.replace(/^\s*[\d.,/½¼¾]+\s*(?:(?:kg|g|ml|dl|cl|l|tk|tl|spl)\b\.?)?\s*/i, "")));
+  addLines(f.pantry, found.staples.map(withoutAmount));
   if (!f.method.value.trim() && found.method) f.method.value = found.method;
   st.skipped = found.skipped;
   $("#skipped").innerHTML = skippedList(st.skipped);

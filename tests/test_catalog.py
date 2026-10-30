@@ -484,25 +484,39 @@ def test_my_dinner_keeps_how_long_it_takes_also_when_sent(pg):
     assert my_dinners.shared(my_dinners.share("anna", d["id"], "Pasta", 2, ["makaronid"], minutes=40))["minutes"] == 40
 
 
-def test_dinners_are_kept_before_the_minutes_migration_has_run(pg, test_database_url, monkeypatch):
-    """The code can be deployed before 20261030230000_dinner_minutes.sql runs: dinners are kept without their time,
-    and with it once the column is there."""
+def test_my_dinner_keeps_what_comes_from_home(pg):
+    """WEB-51: salt and spices are listed under From home, not priced; also when the dinner is sent."""
+    from core import my_dinners
+    d = my_dinners.save("anna", "Juustuleib", 2, ["200 g kodujuustu", "2 muna"],
+                        pantry=[" soola ", "küpsetuspulbrit", "soola", "2 muna", ""])
+    assert d["pantry"] == ["soola", "küpsetuspulbrit"]  # once each, and not what's bought
+    assert my_dinners.get("anna", d["id"])["pantry"] == ["soola", "küpsetuspulbrit"]
+    recipe = catalog.find_recipe(d["id"], catalog.load_recipes(), "anna")
+    assert recipe["pantry"] == ["soola", "küpsetuspulbrit"] and recipe["ingredients"] == ["200 g kodujuustu", "2 muna"]
+    token = my_dinners.share("anna", d["id"], d["name"], 2, d["items"], recipe["pantry"])
+    assert my_dinners.shared(token)["pantry"] == ["soola", "küpsetuspulbrit"]
+    assert my_dinners.save("anna", "Juustuleib", 2, ["2 muna"], d["id"])["pantry"] == []  # emptied
+
+
+def test_dinners_are_kept_before_the_pantry_migration_has_run(pg, test_database_url, monkeypatch):
+    """The owner migrates after merging: until 20261030233000_dinner_pantry.sql has run, dinners are kept without
+    their From home list, and with it once the column is there."""
     import psycopg
     from core import my_dinners
-    alter = lambda sql: [psycopg.connect(test_database_url, autocommit=True).execute(f"ALTER TABLE {t} {sql}")
-                         for t in ("my_dinners", "shares")]
-    monkeypatch.setattr(my_dinners, "_minutes", {"there": False, "checked": 0.0})
-    alter("DROP COLUMN minutes")
+    alter = lambda sql: psycopg.connect(test_database_url, autocommit=True).execute(f"ALTER TABLE my_dinners {sql}")
+    monkeypatch.setattr(my_dinners, "_found", set())
+    monkeypatch.setattr(my_dinners, "_looked", {})
+    alter("DROP COLUMN pantry")
     try:
-        d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], minutes=25)
-        assert d["minutes"] is None and my_dinners.get("anna", d["id"])["minutes"] is None
+        d = my_dinners.save("anna", "Pasta", 2, ["makaronid"], pantry=["sool"], minutes=25)
+        assert d["pantry"] == [] and my_dinners.get("anna", d["id"])["pantry"] == []
+        assert my_dinners.list_for("anna")[0]["minutes"] == 25
         assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], method="Keeda.")["method"] == "Keeda."
-        assert my_dinners.shared(my_dinners.share("anna", d["id"], "Pasta", 2, ["makaronid"], minutes=40))["minutes"] is None
     finally:
-        alter("ADD COLUMN IF NOT EXISTS minutes INT CHECK (minutes > 0)")
-    my_dinners._minutes["checked"] = 0.0  # a minute later
-    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], minutes=25)["minutes"] == 25
-    assert my_dinners.get("anna", d["id"])["minutes"] == 25
+        alter("ADD COLUMN IF NOT EXISTS pantry JSONB NOT NULL DEFAULT '[]'")
+    my_dinners._looked.clear()  # a minute later
+    assert my_dinners.save("anna", "Pasta", 2, ["makaronid"], d["id"], pantry=["sool"])["pantry"] == ["sool"]
+    assert my_dinners.get("anna", d["id"])["pantry"] == ["sool"]
 
 
 def test_the_answer_has_a_recipe_card_for_each_dinner(fake_store):

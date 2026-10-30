@@ -6,6 +6,10 @@ import { esc } from "./format.js";
 
 const $ = selector => document.querySelector(selector);
 
+// What's at home is a name, without the amount: "½ tl soola" → "soola", "40 g maisitärklist" → "maisitärklist".
+export const withoutAmount = item =>
+  item.replace(/^\s*[\d.,/½¼¾]+\s*(?:(?:kg|g|ml|dl|cl|l|tk|tl|spl)\b\.?)?\s*/i, "").trim() || item;
+
 // One word with a dot and no spaces is a link ("rimi.ee/retseptid/…", "https://…"); anything else is a recipe's text.
 export const isLink = v => !/\s/.test(v) && /^(https?:\/\/)?[\w-]+(\.[\w-]+)+([/?#].*)?$/i.test(v);
 
