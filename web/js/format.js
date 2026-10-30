@@ -13,6 +13,8 @@ export const setStores = ({ stores, chains }) => { known = { stores: stores ?? {
 export const shopName = store => known.stores[store]?.shown_as ?? cap(store);
 // The e-shop itself, for links, the cart and products: "Barbora".
 export const eshopName = store => known.stores[store]?.name ?? cap(store);
+// The chain's loyalty card, for its card prices: "Partnerkaart".
+export const cardName = store => known.stores[store]?.card ?? "a loyalty card";
 // The chains people shop at ({maxima: "Maxima", …}): "Where do you usually shop?"
 export const chains = () => known.chains;
 // Every store pantryrun prices: ["selver", "rimi", "barbora"]

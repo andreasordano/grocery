@@ -36,7 +36,8 @@ def test_every_dinner_store_has_a_rule_for_every_ingredient(store):
 def test_store_names_come_from_the_registry():
     assert stores_config.display_name("barbora") == "Maxima" and stores_config.display_name("rimi") == "Rimi"
     page = stores_config.public()
-    assert page["stores"]["barbora"] == {"name": "Barbora", "chain": "maxima", "shown_as": "Maxima"}
+    assert page["stores"]["barbora"] == {"name": "Barbora", "chain": "maxima", "shown_as": "Maxima", "card": "Aitäh kaart"}
+    assert page["stores"]["rimi"]["card"] is None  # no card prices
     assert page["chains"] == stores_config.CHAINS
 
 

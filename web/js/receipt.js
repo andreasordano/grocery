@@ -2,7 +2,7 @@
 // (e-shop prices, wrong product). Then step 3, how you'll get it: in the store, online, or delivered.
 // Picking one is what "accept" means; "Not for me" is the reject.
 import { $, feed, under, after, reduceMotion } from "./dom.js";
-import { euro, num, esc, amount, fold, storeNames, shopName, eshopName, chains } from "./format.js";
+import { euro, num, esc, amount, fold, storeNames, shopName, eshopName, cardName, chains } from "./format.js";
 import { state } from "./state.js";
 import { logEvent } from "./api.js";
 import { identity } from "./identity.js";
@@ -76,15 +76,15 @@ const skipButton = (key, label) => `<button type="button" class="r-x" data-skip=
   aria-label="Leave out ${esc(label)}" title="I don't need this">${X}</button>`;
 
 // photos: the store has photos for this receipt, so every line keeps a photo's place (lined up).
-// removable: there's more than this one line, so × can take it off.
-function line(l, photos, removable) {
+// removable: there's more than this one line, so × can take it off. card: the store's loyalty card.
+function line(l, photos, removable, card) {
   const tag = l.substitute ? "swap" : (l.pinned || l.preferred) ? "your pick" : "";
   const amt = lineAmount(l);
   const onSale = l.regular_cost && l.regular_cost > l.cost;
   const off = onSale ? `<span class="r-off">−${percentOff(l.regular_cost, l.cost)}%${l.deal_until ? ` until ${shortDate(l.deal_until)}` : ""}</span>` : "";
   const notes = [
     l.bought ? `You buy ${amount(l.bought, "g")}, the least the store sells` : "",
-    l.card_cost && l.card_cost < l.cost ? `${num.format(l.card_cost)} with a loyalty card` : "",
+    l.card_cost && l.card_cost < l.cost ? `${num.format(l.card_cost)} with ${card}` : "",
     l.deal || "",
   ].filter(Boolean);
   const photo = !photos ? "" : l.image
@@ -185,6 +185,9 @@ function getIt(res, b) {
       <span class="fine">In the store, prices can differ a little.</span></p>`;
 }
 
+// What the basket costs with the store's loyalty card: card_savings are on top of the total.
+const cardTotal = b => b.total_price - b.card_savings;
+
 // The receipt for one store of the current answer (the recommended one unless another was tapped).
 export function showReceipt(storeName, animate) {
   const res = state.result;
@@ -196,7 +199,7 @@ export function showReceipt(storeName, animate) {
   const main = b.lines.filter(l => !l.extra), extra = b.lines.filter(l => l.extra);
   const photos = b.lines.some(l => l.image);
   const removable = b.lines.length + b.missing.length > 1;  // the last thing stays: nothing would be left to price
-  const items = lines => `<ul class="r-items${photos ? " photos" : ""}">${lines.map(l => line(l, photos, removable)).join("")}</ul>`;
+  const items = lines => `<ul class="r-items${photos ? " photos" : ""}">${lines.map(l => line(l, photos, removable, cardName(b.store))).join("")}</ul>`;
   const delta = !isBest && (b.missing.length > best.missing.length
     ? `${shopName(best.store)} has more of your list`
     : `${euro.format(b.total_price - best.total_price)} more than ${shopName(best.store)}`);
@@ -227,7 +230,7 @@ export function showReceipt(storeName, animate) {
     <hr class="r-rule">
     <div class="r-total"><span>Total</span><span>${euro.format(b.total_price)}</span></div>
     ${b.savings > 0 ? `<div class="r-save"><span>You save</span><span>${euro.format(b.savings)}</span></div>` : ""}
-    ${b.card_savings > 0 ? `<div class="r-card">${euro.format(b.card_savings)} less with a loyalty card</div>` : ""}
+    ${b.card_savings > 0 ? `<div class="r-card"><span>With ${esc(cardName(b.store))}</span><span>${euro.format(cardTotal(b))}</span></div>` : ""}
     ${valueNote(res, b, stores)}
     ${skippedNote(res)}
     ${pantryNote(res)}
@@ -235,7 +238,8 @@ export function showReceipt(storeName, animate) {
     ${stores.length > 1 ? `<hr class="r-rule"><div class="r-head">Compare stores</div>
       <ul class="stores">${stores.map(o => `<li><button type="button" data-store="${esc(o.store)}" aria-current="${o.store === b.store}">
         <span class="s">${esc(shopName(o.store))}</span><span class="v">${euro.format(o.total_price)}${o.missing.length ? ` (${o.missing.length} missing)`
-          : stores.some(x => x.missing.length) ? " · has everything" : ""}</span>${o.store === res.best_value
+          : stores.some(x => x.missing.length) ? " · has everything" : ""}</span>${o.card_savings > 0
+          ? `<span class="cv">${euro.format(cardTotal(o))} with ${esc(cardName(o.store))}</span>` : ""}${o.store === res.best_value
           ? `<span class="bv">★ Best value for what you use</span>` : ""}</button></li>`).join("")}</ul>` : ""}
   `, animate);
   const stamp = () => { if (!$(".stamp", feed)) feed.firstElementChild.insertAdjacentHTML("beforeend", `<div class="stamp">Going</div>`); };
