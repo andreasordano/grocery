@@ -309,6 +309,19 @@ def synonyms(item, kind="groups"):
     return []
 
 
+# A recipe's alternatives: "hapukoor või kreeka jogurt", "chicken or turkey", "hapukoor / jogurt". "Või" is also
+# butter ("50 g võid", "või või margariin" = butter or margarine), so it only splits with a name on both sides.
+_OR = re.compile(r"\s+(?:või|or)\s+|\s+/\s+", re.I)
+
+
+def options(item):
+    """["hapukoor", "kreeka jogurt"] for "hapukoor või kreeka jogurt"; [] when it's one thing."""
+    parts = [p.strip() for p in _OR.split(item)]
+    if len(parts) < 2 or any(not re.search(r"[^\W\d_]{2,}", p) for p in parts):
+        return []  # "2 või 3 sibulat" is an amount
+    return parts
+
+
 def _exact(candidates):
     """How many are exactly the thing and could be offered: twelve tins of stewed beef don't mean the search for
     "veiseliha" can stop before the fresh cuts ("Veise kaelaliha") are found."""
@@ -321,7 +334,11 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
     back alone, marked sold_out (for "sold out online").
     When nothing is exactly the thing (tier 5), the item's other names are tried (synonyms): the first that
     finds the thing exactly wins ("Parmigiano Reggiano" for parmesan, not the cheapest cheese on its shelf).
-    Then its swaps: the cheapest exact match among them, marked swap ("Pangaasiusefilee" for tursafilee)."""
+    Then its swaps: the cheapest exact match among them, marked swap ("Pangaasiusefilee" for tursafilee).
+    An item with alternatives ("hapukoor või kreeka jogurt") is the first one the store has (options())."""
+    either = options(spec.get("search_term", display_name)) if alternatives else []
+    if either:
+        return _first_option(display_name, either, store, per_store_limit)
     rules = {"include": spec.get("include", [])}
     store_candidates = []
     warnings = []
@@ -386,6 +403,24 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
             return sorted(swaps, key=lambda p: p["score"])[:per_store_limit], warnings
     sold_out.sort(key=lambda p: -p["relevance"])
     return (ranked[:per_store_limit] if ranked else sold_out[:1]), warnings
+
+
+def _first_option(display_name, either, store, per_store_limit):
+    """The recipe's first choice when the store has it exactly; else the next one ("kreeka jogurt" when there's no
+    hapukoor). Each as written first, then under their other names and swaps, so the recipe's own alternative comes
+    before a swap pantryrun knows. Nothing exact anywhere: the first choice's best guess. The line keeps the recipe's
+    words ("hapukoor või kreeka jogurt"), so a fallback isn't marked as a swap."""
+    warnings, first = [], None
+    for alternatives in (False, True):
+        for option in either:
+            found, more = _fetch_item_store(option, spec_for(option), store, per_store_limit, alternatives)
+            warnings += more
+            for p in found:
+                p["item"] = display_name
+            if any(p["relevance"] == 5 and not p["sold_out"] for p in found):
+                return [p for p in found if p["relevance"] == 5 and not p["sold_out"]], warnings
+            first = found if first is None else first
+    return first, warnings
 
 
 def fetch_all(grocery_list, selected_stores):

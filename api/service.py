@@ -321,6 +321,7 @@ def read_recipe_text(req: RecipeTextRequest):
     found = recipe_import.from_text(req.text)
     events.log_event("recipe_text", {"lines": len(req.text[:recipe_import.MAX_TEXT].splitlines()),
                                      "items": len(found["items"]), "skipped": found["skipped"],
+                                     "or": sum(bool(fetch.options(i)) for i in found["items"]),
                                      **{k: bool(found[k]) for k in ("name", "method", "minutes")}}, user_id=req.user_id)
     return found
 
