@@ -19,7 +19,7 @@ def search_selver(query, limit=40):
             "query_string": {"query": _RESERVED.sub(r"\\\1", query)}
         },
         "size": limit,
-        "_source": ["name", "final_price", "price", "original_price", "special_to_date",
+        "_source": ["name", "final_price", "price", "original_price", "special_to_date", "product_group_price",
                     "sku", "product_brand", "product_volume", "category", "stock", "thumbnail",
                     "product_main_ean", "url_key"]
     }
@@ -40,10 +40,13 @@ def search_selver(query, limit=40):
         src = h["_source"]
         volume = (src.get("product_volume") or "").strip()
         price = src.get("final_price") or src.get("price")
-        # Campaign price: original_price is the regular price. Selver's loyalty (Partnerkaart)
-        # prices are per numbered customer group and can't be identified, so they're not used.
+        # Campaign price: original_price is the regular price. Partnerkaart price: product_group_price
+        # (0 or missing without a card offer). The per-group `prices` list isn't it: most products
+        # there are 5-10% off for other numbered groups that a card holder doesn't get.
         regular = src.get("original_price")
         on_sale = bool(regular and price and float(regular) > float(price) + 0.004)
+        card = src.get("product_group_price")
+        card = float(card) if card and price and float(card) < float(price) - 0.004 else None
         categories = src.get("category") or []
         # Virtual categories are campaigns and brands ("FB", "Soodushinnaga toidukaubad"); the first real one is the shelf.
         shelf = next((c.get("name") for c in categories if str(c.get("is_virtual")).lower() != "true" and c.get("name")), None)
@@ -59,6 +62,7 @@ def search_selver(query, limit=40):
             "name": src.get("name"),
             "price": price,
             "regular_price": float(regular) if on_sale else None,
+            "card_price": card,
             "deal_until": (src.get("special_to_date") or "")[:10] or None if on_sale else None,
             "store_id": src.get("sku"),
             "ean": src.get("product_main_ean") or None,  # only Selver exposes EANs: the anchor for matching stores

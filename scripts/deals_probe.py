@@ -127,7 +127,7 @@ def selver_unmatched(rules):
     examples = {}
     while True:
         body = {"query": {"match_all": {}}, "size": 1000, "sort": [{"_id": "asc"}],
-                "_source": ["name", "final_price", "price", "original_price", "category", "stock"]}
+                "_source": ["name", "final_price", "price", "original_price", "product_group_price", "category", "stock"]}
         if after:
             body["search_after"] = after
         r = requests.post(SELVER_URL, json=body, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
@@ -139,8 +139,10 @@ def selver_unmatched(rules):
             total += 1
             s = h["_source"]
             price, regular = s.get("final_price") or s.get("price"), s.get("original_price")
+            card = s.get("product_group_price")  # Partnerkaart price, as in api/selver_api.py
             try:
-                if not (regular and price and float(regular) > float(price) + 0.004):
+                if not (price and ((regular and float(regular) > float(price) + 0.004)
+                                   or (card and float(card) < float(price) - 0.004))):
                     continue
             except (TypeError, ValueError):
                 continue
