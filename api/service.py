@@ -90,6 +90,7 @@ class MyDinnerRequest(BaseModel):
     link: Optional[str] = None    # a recipe page
     image: Optional[str] = None   # its photo (from a recipe link)
     minutes: Optional[int] = None  # how long it takes
+    pantry: List[str] = []         # from home: salt, spices (not priced)
     from_share: Optional[str] = None  # link token, when saved from a dinner someone sent
     from_dinner: Optional[str] = None  # the dinner it's a copy of ("Make it yours", WEB-38)
 
@@ -240,14 +241,14 @@ def _save_my_dinner(req: MyDinnerRequest, dinner_id: Optional[str] = None):
         raise HTTPException(status_code=400, detail="Missing user")
     try:
         dinner = my_dinners.save(req.user_id, req.name, req.servings, req.items, dinner_id, req.method, req.link,
-                                 req.image, req.minutes)
+                                 req.image, req.minutes, req.pantry)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     if dinner is None:
         raise HTTPException(status_code=404, detail="No such dinner")
     events.log_event("my_dinner_saved", {"id": dinner["id"], "new": dinner_id is None, "items": len(dinner["items"]),
                                          "method": bool(dinner["method"]), "link": bool(dinner["link"]),
-                                         "minutes": bool(dinner["minutes"]),
+                                         "minutes": bool(dinner["minutes"]), "pantry": len(dinner["pantry"]),
                                          "from_share": req.from_share, "from_dinner": req.from_dinner},
                      user_id=req.user_id)
     return dinner
@@ -291,7 +292,8 @@ def copy_recipe(recipe_id: str, user_id: Optional[str] = None):
         raise HTTPException(status_code=404, detail="No such dinner")
     return {"from": recipe_id, "name": recipe["name"], "servings": recipe.get("servings", catalog.BASE_SERVINGS),
             "items": catalog.recipe_as_items(recipe, recipes),
-            **{k: recipe.get(k) or "" for k in ("method", "link", "image")}, "minutes": recipe.get("minutes")}
+            **{k: recipe.get(k) or "" for k in ("method", "link", "image")}, "minutes": recipe.get("minutes"),
+            "pantry": recipe.get("pantry", [])}
 
 
 @app.post("/recipe-import")
