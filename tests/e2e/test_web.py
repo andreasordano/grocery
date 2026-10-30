@@ -552,6 +552,24 @@ def test_dinner_from_a_recipe_link(base_url, page, monkeypatch):
     page.wait_for_selector("#linkNote:text(\"doesn't let pantryrun read\")")
 
 
+def test_dinner_from_a_recipes_text(base_url, page):
+    """WEB-51: an Instagram caption pasted where a link goes."""
+    page.goto(base_url + "/?u=e2e-text")
+    page.click("[data-cat=mine]")
+    page.click("#fromLinkDinner")
+    page.fill("#dlinkImport", "Kanapasta 🍝\nKoostisosad (4 portsjonit):\n- 400 g pastat\n- 2 küüslauguküünt\n"
+                              "Valmistamine:\n1. Keeda pasta pakendil oleva juhendi järgi.")
+    page.click("#readLink")
+    page.wait_for_selector("#linkNote:text('Added 1 thing')")
+    assert page.locator(".items .it").all_inner_texts() == ["400 g pastat"]
+    assert page.text_content("#dservings") == "4"
+    page.click("[data-unskip='0']")  # the line pantryrun didn't recognise, added with one tap
+    assert page.locator(".items .it").all_inner_texts() == ["400 g pastat", "2 küüslauguküünt"]
+    assert page.locator(".skipped").count() == 0
+    data = logged("recipe_text", "e2e-text", wait=1)[-1][1]
+    assert (data["lines"], data["items"], data["skipped"]) == (6, 1, ["2 küüslauguküünt"])  # not the text itself
+
+
 def test_send_to_cart_asks_without_the_extension_and_fills_with_it(base_url, browser):
     def receipt(page):
         page.goto(base_url + "/?u=e2e-cart")

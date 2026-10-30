@@ -55,6 +55,8 @@ EVENT_TYPES = {
     "dinner_copy": "\"Make it yours\": a dinner opened in the editor as a copy (from: its id)",
     "my_dinner_deleted": "a dinner of one's own deleted",
     "recipe_import": "reading a recipe link (site and items, or why it failed)",
+    "recipe_text": "a recipe's text pasted into the editor (lines, items found, and the lines it didn't recognise: "
+                   "what the English ingredient names of WEB-51 should cover); the text itself isn't logged",
     "share_created": "a link made to send a dinner",
     "share_opened": "a sent dinner opened",
     # shopping online

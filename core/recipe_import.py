@@ -7,16 +7,23 @@
 # person types what to buy. No AI: it's structured data.
 # The server fetches a URL someone typed, so only public web addresses are allowed,
 # redirects are checked hop by hop, and the page is read up to a size limit.
+# A recipe's text can be pasted too (an Instagram caption, a message; WEB-51): each line
+# becomes an item the same way, and lines that name nothing the stores sell are set aside.
 # =============================================================================
 
+import functools
 import ipaddress
 import json
+import os
 import re
 import socket
+import unicodedata
 from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
+
+from core import catalog
 
 MAX_BYTES = 3_000_000
 MAX_REDIRECTS = 3
@@ -33,14 +40,15 @@ class PageError(Exception):
 
 
 class SocialPost(PageError):
-    """A link to Instagram, Facebook or TikTok (WEB-50). Their posts aren't fetched: Meta's APIs don't give other
-    people's captions, logged-out pages mostly show a login wall, and automated collection is against their terms.
-    `site` is for the log, which shows how often people try (that decides WEB-51, pasting a recipe's text)."""
+    """A link to Instagram, Facebook or TikTok (WEB-50). Their posts aren't fetched: logged-out pages mostly show a
+    login wall, Meta's API only reads business and creator accounts (and needs the poster's username), and automated
+    collection is against their terms. The person pastes the post's text instead (WEB-51).
+    `site` is for the log, which shows how often people try."""
 
     def __init__(self, site):
         self.site = site
-        super().__init__(f"pantryrun can't open {site} posts. If the post links to a recipe page, paste that link "
-                         "here. Otherwise type what you buy for it below.")
+        super().__init__(f"pantryrun can't open {site} posts. Copy the post's text and paste it here instead, "
+                         "or the link to the recipe page if the post has one.")
 
 
 # host (and its subdomains) → the name people know it by; short links included
@@ -194,3 +202,89 @@ def import_recipe(url):
     if not found["name"] and not found["items"]:
         raise PageError("Couldn't read a recipe on that page.")
     return found
+
+
+# ── a recipe's text, pasted ──────────────────────────────────────────────────
+
+VOCAB = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "web", "vocab.json")
+MAX_TEXT = 10_000
+MAX_WORDS = 8  # longer lines are sentences: the intro or a step of the method
+
+# A line that starts a part of the recipe ("Ingredients:", "Kastmeks:", "Method"). After a method heading, lines are
+# steps ("Prae sibul õlis" names sibul, but it's not a thing to buy) until the next ingredients heading.
+_HEADING = re.compile(r"^([^:]{1,40}):\s*(.*)$")
+_METHOD = re.compile(r"^(method|instructions?|directions?|steps?|preparation|how to( make( it)?)?|to make|"
+                     r"valmistamine|valmistusviis|valmistusõpetus|valmistus|juhend|tegemine|nii teed|kuidas teha)$", re.I)
+_INGREDIENTS = re.compile(r"^(ingredients?|you('ll)? need|what you need|koostisosad|koostis|vaja läheb|vaja on|"
+                          r"sul läheb vaja|sul on vaja|ostunimekiri)\b", re.I)
+_BULLET = re.compile(r"^(?:[-–—•*·▪►>+~]+|\d{1,2}[.)](?=\s+\D))\s*")  # "1. sibul" is a list; "1 sibul" is one onion
+_SERVES = re.compile(r"\b(?:serves|servings|portions|yield|makes|portsjone|annuseid)\s*:?\s*(\d+)\b|"
+                     r"\b(\d+)\s*(?:portsjonit?|portsjonile|inimesele|servings|portions|people)\b", re.I)
+
+
+def _words(text):
+    return re.findall(r"[a-zäöüõšž]+", text.lower())
+
+
+@functools.lru_cache(maxsize=1)
+def known_words():
+    """Words that name products in the stores (web/vocab.json, scripts/build_vocab.py) and the ingredient rules'
+    names."""
+    words = {w for w, *_ in json.load(open(VOCAB, encoding="utf-8"))}
+    for spec in catalog.load_recipes()["ingredients"].values():
+        words.update(spec.get("aliases", []))
+    return frozenset(words)
+
+
+def buyable(item, known=None):
+    """True when the stores sell it: it matches an ingredient rule, or one of its words is a word products are
+    named with, whole or at the end of a compound ("sibul punane", "veisehakkliha" → "hakkliha"). Recipes say
+    "400 g pastat", "100 g riivjuustu", "tomateid": a word also counts without its last few letters."""
+    known = known_words() if known is None else known
+    name, _ = catalog.parse_quantity(item)
+    name = name.lower()
+    if catalog.match_ingredient(name) or name in known:
+        return True
+    forms = {w[:len(w) - cut] for w in _words(name) if len(w) >= 4 for cut in range(4) if len(w) - cut >= 4}
+    return any(f in known or any(f.endswith(k) for k in known if len(k) >= 5) for f in forms)
+
+
+def _clean(line):
+    """A pasted line without emoji, bullets and hashtags: "✅ 2 sibulat #easy" → "2 sibulat"."""
+    line = "".join(c for c in line if unicodedata.category(c) not in ("So", "Sk", "Cf", "Co", "Cs"))
+    line = re.sub(r"(?:^|\s)[#@]\S+", " ", line)
+    return " ".join(_BULLET.sub("", line.strip()).split())
+
+
+def from_text(text):
+    """{items, skipped, servings} from a recipe's text, ready for the dinner editor. items: what the stores sell, as
+    typed items; skipped: short lines that name nothing pantryrun knows (an English word, a typo), for the person to
+    add if they buy it; servings: from "Serves 4" or "4 portsjonit", else None. Headings, sentences, links and
+    hashtags are left out quietly."""
+    lines = [_clean(raw) for raw in (text or "")[:MAX_TEXT].splitlines()]
+    # With an "Ingredients" heading, what comes before it is the title and the intro.
+    start = next((i for i, line in enumerate(lines) if _INGREDIENTS.match(line)), 0)
+    items, skipped, servings, method = [], [], None, False
+    for line in lines[start:]:
+        serves = _SERVES.search(line)  # "Serves 4", "Koostisosad (4 portsjonit):"
+        if serves:
+            servings = servings or max(1, min(int(serves[1] or serves[2]), 12))
+            line = _SERVES.sub("", line).replace("()", "").strip()
+            if not line:
+                continue
+        heading = _HEADING.match(line)
+        if heading and (_METHOD.match(heading[1].strip()) or _INGREDIENTS.match(heading[1]) or not heading[2]):
+            # "Kastmeks:" or "Ingredients: 2 eggs": a part of the recipe, maybe with its first line after the colon
+            method, line = bool(_METHOD.match(heading[1].strip())), heading[2]
+        elif heading:
+            line = f"{heading[1]} {heading[2]}"  # "Kanafilee: 500 g"
+        elif _METHOD.match(line.strip(" .")) or _INGREDIENTS.match(line):
+            method = bool(_METHOD.match(line.strip(" .")))
+            continue
+        if method or not line or len(line.split()) > MAX_WORDS or re.search(r"https?://|www\.", line):
+            continue
+        item = to_item(line)
+        if item:
+            (items if buyable(item) else skipped).append(item)
+    return {"items": list(dict.fromkeys(items))[:60], "skipped": list(dict.fromkeys(skipped))[:30],
+            "servings": servings}

@@ -37,7 +37,6 @@ from core import catalog, recipe_import  # noqa: E402
 SITEMAP = "https://www.rimi.ee/sitemaps/recipes.xml"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "data", "store_recipes.yaml")
-VOCAB = os.path.join(ROOT, "web", "vocab.json")
 HEADERS = {"User-Agent": "pantryrun recipe index (pantryrun.ee)"}
 
 # The same kinds of dinner as data/dishes.yaml, so the chips stay. First match wins, on the name and
@@ -110,28 +109,7 @@ def recipe_urls():
     return [u for u in re.findall(r"<loc>([^<]+)</loc>", xml) if re.search(r"/retseptid/[^/]+/\d+$", u)]
 
 
-def _words(text):
-    return re.findall(r"[a-zäöüõšž]+", text.lower())
-
-
-def known_words(vocab):
-    """Words that name products in the stores, and the ingredient rules' names."""
-    words = {w for w, *_ in vocab}
-    recipes = catalog.load_recipes()
-    for spec in recipes["ingredients"].values():
-        words.update(spec.get("aliases", []))
-    return words
-
-
-def buyable(item, known):
-    """True when the stores sell it: it matches an ingredient rule, or one of its words is a word products are
-    named with, whole or at the end of a compound ("sibul punane", "veisehakkliha" → "hakkliha")."""
-    name, _ = catalog.parse_quantity(item)
-    name = name.lower()
-    if catalog.match_ingredient(name) or name in known:
-        return True
-    return any(w in known or any(w.endswith(k) for k in known if len(k) >= 5)
-               for w in _words(name) if len(w) >= 4)
+_words, buyable = recipe_import._words, recipe_import.buyable  # shared with pasting a recipe's text
 
 
 def is_staple(item):
@@ -196,7 +174,7 @@ def complete_at(dinner, stores):
 
 
 def build(cache=None, report=False, stores=CHECK_STORES):
-    known = known_words(json.load(open(VOCAB, encoding="utf-8")))
+    known = recipe_import.known_words()
     kept, why = [], Counter()
     urls = recipe_urls()
     with ThreadPoolExecutor(4) as pool:  # a few at a time: Rimi's pages take a few seconds each
