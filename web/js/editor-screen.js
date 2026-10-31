@@ -29,7 +29,8 @@ export function draw() {
                   { hidden: !!d.from, skipped: d.skipped || [] })}
       ${d.image ? `<div class="d-photo"><img src="${esc(d.image)}" alt="" referrerpolicy="no-referrer">
         <button type="button" class="link" id="dropPhoto">Remove photo</button></div>` : ""}
-      <label for="dname">Name</label>
+      <div class="from-link">
+        <label for="dname">Name</label>
       <input id="dname" class="name" maxlength="80" value="${esc(d.name)}" placeholder="Pühapäeva pasta" autocomplete="off">
       <div class="sub facts">
         <span class="fact">For
@@ -41,6 +42,7 @@ export function draw() {
         <span class="fact"><label class="inline" for="dminutes">Takes</label>
           <input id="dminutes" class="minutes" type="number" inputmode="numeric" min="1" max="600" value="${d.minutes ?? ""}">
           minutes</span>
+      </div>
       </div>
       <h2>What you buy for it</h2>
       <p class="fine">Amounts are for ${d.servings} ${d.servings === 1 ? "person" : "people"} and scale with how many you cook for.</p>
