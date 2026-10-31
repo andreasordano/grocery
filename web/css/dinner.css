@@ -95,6 +95,9 @@
 .editor .minutes::-webkit-inner-spin-button, .editor .minutes::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 .editor .minutes:focus { box-shadow: inset 0 0 0 2px var(--ink); }
 .editor #dname { margin-bottom: 18px; }
+/* people and minutes share a row; the minutes drop below as a whole when it is narrow */
+.editor .facts { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 24px; max-width: none; }
+.editor .fact { white-space: nowrap; }
 /* moving a line between what's bought and From home */
 .editor .items li button.move { width: auto; height: auto; padding: 5px 10px; margin-left: 6px; border-radius: 999px;
   font: 600 13px var(--sans); color: var(--ink-soft); white-space: nowrap; }
