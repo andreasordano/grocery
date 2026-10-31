@@ -1,6 +1,6 @@
 /* Starting a dinner from a recipe: a link or a pasted text (js/recipe-import.js). The same box in the dinner
    editor and on the admin page. */
-.from-link { padding: 16px 18px; border-radius: 22px; background: var(--panel); max-width: 520px; }
+.from-link { padding: 16px 18px; border-radius: 22px; background: var(--panel); }
 .from-link > label { display: block; margin: 0 0 8px; font-size: 14px; font-weight: 700; }
 .from-link .field textarea {
   flex: 1; min-width: 0; padding: 13px 18px; border-radius: 22px; border: 0; outline: none; resize: none;
