@@ -81,10 +81,11 @@
 .sent .x { border: 0; background: none; cursor: pointer; color: var(--ink-soft); font-size: 18px; width: 32px; height: 32px; border-radius: 50%; }
 .sent .x:hover { background: var(--hover); color: var(--ink); }
 
-/* writing your own dinner */
+/* writing your own dinner: the editor sets the width, its fields fill it */
+.editor { max-width: 640px; }
 .editor .copy-note { margin: -8px 0 26px; font-size: 15px; }
 .editor label { display: block; margin: 0 0 6px; font-size: 14px; font-weight: 700; }
-.editor .name { width: 100%; max-width: 480px; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
+.editor .name { width: 100%; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
   background: var(--milk); color: var(--ink); font: 600 19px var(--display); box-shadow: inset 0 0 0 1.5px var(--line); }
 .editor .name:focus { box-shadow: inset 0 0 0 2px var(--ink); }
 .editor .from-link { margin: -6px 0 22px; }  /* the box itself: css/import.css, shared with the admin page */
@@ -103,7 +104,7 @@
 .d-photo img { width: 96px; height: 72px; object-fit: cover; border-radius: 14px; background: #fff; }
 .more .btns { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .editor h2 label { display: inline; margin: 0; font: inherit; }
-.editor .method { display: block; width: 100%; max-width: 480px; padding: 13px 18px; border-radius: 22px; border: 0; outline: none; resize: vertical;
+.editor .method { display: block; width: 100%; padding: 13px 18px; border-radius: 22px; border: 0; outline: none; resize: vertical;
   background: var(--milk); color: var(--ink); font: 15px/1.5 var(--sans); box-shadow: inset 0 0 0 1.5px var(--line); }
 .editor .method:focus { box-shadow: inset 0 0 0 2px var(--ink); }
 .editor .actions { margin-top: 26px; }

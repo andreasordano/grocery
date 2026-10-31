@@ -31,7 +31,7 @@
 .chips button[aria-pressed="true"] { background: var(--ink); color: var(--milk); box-shadow: none; }
 
 /* a text field with its button: adding items */
-.field { position: relative; display: flex; gap: 8px; max-width: 480px; }
+.field { position: relative; display: flex; gap: 8px; }  /* as wide as what holds it */
 .field input {
   flex: 1; min-width: 0; padding: 13px 18px; border-radius: 999px; border: 0; outline: none;
   background: var(--milk); color: var(--ink); font: 16px var(--sans);
