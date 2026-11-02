@@ -55,9 +55,12 @@ def pack_size(name, volume=None):
 
 
 def fold(text):
-    """Spelling-tolerant form: "spaghetti" and "Spagetid" both become "spageti…"."""
+    """Spelling-tolerant form: "spaghetti" and "Spagetid" both become "spageti…", "tilaapia" and "tilapia" the
+    same. A double vowel becomes one, written as a capital: word_match tells "peet" (beetroot) from "pett"
+    (buttermilk) by it, and nothing else does."""
     t = text.lower()
     t = re.sub(r"(?<=[gctp])h", "", t)   # spaghetti → spagetti
+    t = re.sub(r"([aeiouõäöü])\1+", lambda m: m[1].upper(), t)
     return re.sub(r"(.)\1+", r"\1", t)  # double letters → single
 
 
@@ -92,6 +95,9 @@ def word_match(word, query):
     A word that is the last part of a typed compound is a near form: "kintsuliha" (Br.kintsuliha)
     for "kanakintsuliha", since Estonian compounds end in what the thing is.
     """
+    if word != query and word.lower() == query.lower():
+        return 0  # the same letters with another vowel length: "pett" isn't "peet"
+    word, query = word.lower(), query.lower()  # everything else as if vowels were short
     parts = word.split("-")
     if len(parts) > 1:
         # In "mango-banaani" or "maapähkli- ja …" only the last part can be the thing itself.
@@ -130,7 +136,7 @@ def _word_matches(words, query):
         m = word_match(w, query)
         if m < 2 and i + 1 < len(words) and len(w) >= 3:
             # Typed as one word, written as two: "hiinakapsa" for "Hiina kapsas, kg".
-            m = max(m, min(word_match(w + words[i + 1], query), 3 if query.startswith(w) else 0))
+            m = max(m, min(word_match(w + words[i + 1], query), 3 if query.lower().startswith(w.lower()) else 0))
         if m >= 2 and i + 1 < len(words) and words[i + 1] in _NOT_THE_THING_AFTER:
             m = 1
         out.append(m)
@@ -164,7 +170,7 @@ def shares_stem(name, rules, letters=5):
     "Maapähklikreem" for "maapähklivõi". Store search also returns look-alikes with nothing in
     common ("Tilsit" for "tilaapia", a lamp for "porru"); those don't."""
     includes = [fold(kw) for kw in rules.get("include", []) if kw]
-    return any(len(os.path.commonprefix([w, q])) >= min(letters, len(q))
+    return any(len(os.path.commonprefix([w.lower(), q.lower()])) >= min(letters, len(q))
                for w in _name_words(name) for q in includes)
 
 
@@ -185,8 +191,11 @@ _MADE_FROM = ("marin", "soolvees", "õlis", "omas mahlas", "hautatud", "kauaküp
               # ready to cook or eat, and what's sold to season it
               "burger", "šašlõkk", "puding", "vürtsid", "maitseaine",
               # ready-made salads, not salad leaves
-              "kartulisalat", "pastasalat", "toorsalat", "coleslaw")
-_MADE_FROM_END = ("tee", "mahl", "supp", "pasta", "vorst", "roog")
+              "kartulisalat", "pastasalat", "toorsalat", "coleslaw",
+              # glazed or in a glaze ("Glasuur. skyr", "Vaarikad kakaoglasuuris"), processed cheese with it, juice drinks
+              "glasuur.", "glasuuris", "glasuuriga", "sulatatud juust", "sulat.juust", "mahlaj", "mah.j", "dessert", "dess.")
+_MADE_FROM_END = ("tee", "mahl", "supp", "pasta", "vorst", "roog", "nektar", "puder", "moos", "marmelaad", "džemm")
+_MADE_FROM_WORD = ("segu",)  # "Mandlite ja marjade segu", but hakklihasegu is mince
 _BABY_AGE = re.compile(r"\d\s?k\.?\+?(?![\w])")  # baby food is sold by age: "120g4k", "7k.+"
 
 
@@ -196,14 +205,15 @@ def made_from(name, typed):
     # A brand written straight after a word is a word of its own: "…piparmün.mahlKADARBIKU250ml" is mahl + KADARBIKU.
     words = re.findall(r"[^\W\d_]+", re.sub(r"(?<=[a-zäöüõšž])(?=[A-ZÄÖÜÕŠŽ]{2})", " ", name).lower())
     name, typed = name.lower(), typed.lower()
-    found = [m for m in _MADE_FROM if m in name] + [m for m in _MADE_FROM_END if any(w.endswith(m) for w in words)]
+    found = ([m for m in _MADE_FROM if m in name] + [m for m in _MADE_FROM_END if any(w.endswith(m) for w in words)]
+             + [m for m in _MADE_FROM_WORD if m in words])
     # "…veiselihast" (elative: from beef) names something made from it: "Vürtsiliha veiselihast", "Pihvid kanalihast".
     from_it = any(w == t + "st" for t in re.findall(r"[^\W\d_]+", typed) if len(t) >= 4 for w in words)
     return any(m not in typed for m in found) or from_it or bool(_BABY_AGE.search(name))
 
 
 # Words that describe the thing rather than name it: "punane sibul", "küpsetatud pardiliha", "kooritud mandel".
-_DESCRIBES = ("ne", "line", "lised", "tud", "dud", "ga", "ta", "värske", "mahe", "suur", "väike")
+_DESCRIBES = ("ne", "line", "lised", "tud", "dud", "ga", "ta", "värske", "mahe", "suur", "väike", "terve")
 
 
 def misses_the_thing(name, typed):
@@ -238,7 +248,7 @@ def relevance_score(name, rules):
         return 2
 
     words = _name_words(name)
-    if len(includes) > 1 and fold("".join(includes)) in words:
+    if len(includes) > 1 and fold("".join(kw for kw in rules["include"] if kw)) in words:
         return 5  # "Hiinakapsas, kg" for "hiina kapsas"
     best = [max(_word_matches(words, q), default=0) for q in includes]
     worst = min(best)
@@ -253,7 +263,9 @@ def relevance_score(name, rules):
 
 def score(product):
     """Lower is better: the price per 100 g (or 100 ml, or per pack when the size is unknown), plus a penalty
-    large enough that a worse match tier always ranks below a better one."""
+    large enough that a worse match tier always ranks below a better one. Within a tier, the thing itself comes
+    before a near form ("Suvikõrvits roheline" before "Jaapani kõrvits" for suvikõrvits)."""
     size = product.get("weight_g") or product.get("volume_ml")
     unit_price = product["price"] / (size / 100.0) if size else product["price"]
-    return unit_price + max(0, 5 - product.get("relevance", 0)) * 100.0
+    near = 50.0 if product.get("match", 5) < 5 else 0.0
+    return unit_price + max(0, 5 - product.get("relevance", 0)) * 100.0 + near

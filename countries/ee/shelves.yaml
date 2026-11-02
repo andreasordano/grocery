@@ -1,0 +1,50 @@
+# What kind of thing a store's shelf holds, when it isn't food to cook with (WEB-54). A typed item that doesn't
+# ask for these kinds never gets their products: a body lotion for "kookospiim", a gin for "rabarber", a comb for
+# "kama". Everything not listed is food.
+#   alcohol: only when the item names a drink with alcohol (`alcohol_words`).
+#   drinks:  only when the item names a drink (`drink_words`, alcohol words too), or nothing else fits.
+#   nonfood: only when nothing else fits (someone typed "šampoon").
+# Shelves as each store names them: Rimi's category code (its sub-codes too), Barbora's category path (any part of
+# it), Selver's category name. Selver has no top level, so its shelves are listed one by one (from its e-shop,
+# 2 Nov 2026); a new one it adds counts as food until it's listed here.
+
+alcohol:
+  rimi: [SH-1]
+  barbora: [Kange alkohol, Muud veinid ja veinijoogid, Punased ja roosad veinid, Valged veinid, Õlu ja siider]
+  selver: [Aperitiiviid, Džinnid, "Konjakid, brändid", Liköörid, Liköörveinid, "Õlled, siidrid, segud, kokteilid",
+           Punased veinid, Roosad veinid, Rummid, "Šampanjad, vahuveinid", Valged veinid, Viinad, Viskid]
+
+drinks:
+  rimi: [SH-3]
+  barbora: [Alkoholivabad joogid, Karastusjoogid, "Kohv, tee, kakao", "Mahlad, nektarid ja mahlajoogid", Veed]
+  selver: [Alkoholivabad joogid, Energiajoogid, Joogid, "Kakaod, kakaojoogid", "Karastusjoogid, toonikud", Kohvid,
+           "Mahlad ja -kontsentraadid, siirupid", "Smuutid, värsked mahlad", Spordijoogid, Teed, Veed]
+
+nonfood:
+  rimi: [SH-2, SH-5, SH-7, SH-10]
+  barbora: [Enesehooldustooted, Kodukaubad ja vaba aeg, Lastekaubad, Puhastustarbed ja lemmikloomatooted]
+  selver: [Aiatööriistad, Ajalehed ja ajakirjad, Apteegikaubad, Audiotehnika, Autokaubad, Beebi hooldusvahendid,
+           Bürootarbed, "Dušigeelid, seebid", "Elektripirnid, pikendusjuhtmed", Eriotstarbelised puhastusvahendid,
+           "Fooliumid, kiled, küpsetuspaberid", Grillimistarvikud, "Hambaharjad, hambaniidid", "Hambapastad, suuveed",
+           Higistamisvastased tarbed, Ilutooted, Intiimhügieen, Jalatsihooldusvahendid,
+           "Jumestuskreemid, puudrid, põsepunad", "Juukseharjad, kammid, kummid", Juuksevärvid,
+           "Käsitöötarbed, hobikunst", Kassitoidud, "Kehakreemid, ihupiimad", Kingiideed, Koeratoidud, Kõnekaardid,
+           Köögitehnika, "Küünlad, lambiõlid", Küünelakid, "Laste sokid, sukad, pesu", "Lauamängud, pusled, kleepsud",
+           Lemmikloomatarbed, Lõikamistarbed, Mähkmed, Majapidamispaberid, Maniküüri ja pediküüri vahendid,
+           Matkatarbed, Meeste juuksehooldus, Meeste kehahooldus, Meeste näohooldus, "Meeste sokid, pesu",
+           Muud köögitarbed, "Naiste sokid, sukad", Näokreemid, Näomaskid, Näopuhastus, Nõudepesuvahendid,
+           Päevituskosmeetika, Parasiitide tõrjevahendid, Patareid, Pehmed mänguasjad, Peokaubad,
+           Pesupesemisvahendid, Pisiparandus, Poti- ja lõikelilled, "Potid, pannid, koogivormid",
+           "Prügikotid, tolmukotid", Raseerimis- ja epileerimistarbed, Rõivaste hoolduse abivahendid,
+           "Säilitamise- ja hoidistamisetarbed", "Salvrätikud, laudlinad", "Šampoonid, palsamid, maskid",
+           Saunatarbed, Soengutugevdajad, Sport- ja hooajamängud, Suveniirid, "Svammid, harjad",
+           "Taldrikud, vaagnad, tassid, klaasid", Tarvikud, Toidulisandid, Tualettpaberid, Tüdrukute mänguasjad,
+           Ühekordsed nõud, "Uisud, lisatarbed", Universaalsed puhastusvahendid, "Väetised, mullad, mürgid",
+           Väikeloomatoidud, "Vihikud, märkmikud, kirjutustarbed"]
+
+# Words that ask for a drink, at the end of a typed word: "apelsinimahl", "mineraalvesi", "punane vein".
+alcohol_words: [vein, õlu, õlut, siider, gin, džinn, viin, viina, rumm, viski, konjak, brändi, liköör, šampanja,
+                prosecco, cava, vermut, sherry, portvein, tekiila, kokteil, alkohol, long drink]
+# A word that starts with one asks too: "kakaopulber", "kohvioad".
+drink_words: [jook, joogid, mahl, nektar, vesi, vett, limonaad, toonik, kohv, tee, kakao, kali, smuuti, kombucha, cola,
+              fanta, sprite, pepsi]

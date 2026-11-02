@@ -152,9 +152,12 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
     if volume and volume > 10000:
         volume = None
 
-    rel = relevance_score(name, rules)
     if any(x in name.lower() for x in GLOBAL_EXCLUDE):
         return None
+    # The brand doesn't say what the product is: "Herned rohelised Salvest" isn't salvei (sage), "Piim Tere" isn't
+    # terve kana. Brands in capitals are dropped by the scoring already; these are the ones written like words.
+    named = _without_brand(name, item.get("brand"), display_name)
+    rel = relevance_score(named, rules)
     return {
         "item": display_name,
         "store": store,
@@ -173,13 +176,69 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         "weight_g": weight,
         "volume_ml": volume,
         "match": rel,
-        "related": rel >= 1 or shares_stem(name, rules),
-        "weight": head_weight(name, rules),
+        "related": rel >= 1 or shares_stem(named, rules),
+        "weight": head_weight(named, rules),
+        "kind": shelf_kind(item.get("category")),
         # Made from it ("Br.kintsuliha jogurtimarinaadis" for kanakintsuliha): it shows which shelf the thing
         # is on, so it votes, but it isn't offered.
-        "made_from": made_from(name, display_name) or misses_the_thing(name, display_name),
+        "made_from": made_from(name, display_name) or misses_the_thing(named, display_name),
         "sold_out": sold_out,
     }
+
+
+def _without_brand(name, brand, typed):
+    """The name without its brand's words where they're written like words ("Herned rohelised Salvest"), unless
+    the person typed the brand ("salvest ketšup"). In capitals they're left: the scoring drops those already, and
+    "Sulat.juust HIIRTE JUUST" must keep its juust."""
+    words = re.findall(r"[^\W\d_]+", str(brand or "").lower())
+    if not words or len("".join(words)) < 3 or " ".join(words) in typed.lower():
+        return name
+    phrase = r"\W+".join(map(re.escape, words))  # the whole brand, never one of its words ("juust")
+    out = re.sub(rf"(?<![^\W\d_]){phrase}(?![^\W\d_])", lambda m: m[0] if m[0].isupper() else " ", name, flags=re.I)
+    return " ".join(out.split())
+
+
+# ── what kind of shelf: food, or drinks, alcohol and non-food (countries/ee/shelves.yaml, WEB-54) ────────────
+
+SHELVES = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "countries", "ee", "shelves.yaml")
+KINDS = ("alcohol", "drinks", "nonfood")
+
+
+def shelf_kind(categories):
+    """"alcohol", "drinks" or "nonfood" for a product on such a shelf, else "food". Categories as the store gives
+    them: Rimi's codes ("SH-1-10-45" is under SH-1), Barbora's path, Selver's names."""
+    from core.catalog import load_yaml  # deferred: catalog imports this module
+    pack = load_yaml(SHELVES)
+    cats = [str(c) for c in categories or []]
+    for kind in KINDS:
+        shelves = [s for names in pack[kind].values() for s in names]
+        if any(c == s or c.startswith(s + "-") for c in cats for s in shelves):
+            return kind
+    return "food"
+
+
+def _asks(typed, words):
+    """True when a typed word starts or ends with one of the words: "apelsinimahl" asks for mahl, "kakaopulber"
+    for kakao (Barbora keeps it with coffee and tea)."""
+    typed = typed.lower()
+    return any(w in typed if " " in w else any(t.endswith(w) or t.startswith(w) for t in re.findall(r"[^\W\d_]+", typed))
+               for w in words)
+
+
+def _kinds_asked(candidates, typed):
+    """Mark `unasked` what's on a shelf the person didn't ask for: a gin for "rabarber", a body lotion for "kookospiim",
+    a comb for "kama". A drink is kept when the item names a drink ("õunamahl", "punane vein"); otherwise, like
+    anything not food, only when no food fits and the name says the typed thing first ("Šampoon Fructis" for
+    šampoon, "Kali Linnamäe" for kali)."""
+    from core.catalog import load_yaml  # deferred: catalog imports this module
+    pack = load_yaml(SHELVES)
+    alcohol = _asks(typed, pack["alcohol_words"])
+    asked = {"food"} | ({"alcohol", "drinks"} if alcohol else {"drinks"} if _asks(typed, pack["drink_words"]) else set())
+    food_fits = any(p["kind"] in asked and p["related"] for p in candidates)
+    for p in candidates:
+        # marked, not removed: the store's own order still decides the shelf when nothing matches well (_shelves)
+        p["unasked"] = not (p["kind"] in asked or (not food_fits and p["match"] >= 4 and p["weight"] == 1.0))
+    return candidates
 
 
 MADE_FROM_VOTE = 0.4
@@ -201,13 +260,13 @@ def _shelves(candidates):
     # The best match level that has something real (not made from it) votes: at Rimi every exact "veiseliha" is
     # a tin, stock or pet food, and the fresh beef is "Veise kaelaliha" (a near form), so the near forms vote.
     for level in (5, 4):
-        voters = [p for p in candidates if p["match"] == level and p.get("shelf")]
+        voters = [p for p in candidates if p["match"] == level and p.get("shelf") and not p.get("unasked")]
         if any(not p.get("made_from") for p in voters):
             break
     else:
-        voters = [p for p in candidates if p["match"] >= 4 and p.get("shelf")]
+        voters = [p for p in candidates if p["match"] >= 4 and p.get("shelf") and not p.get("unasked")]
     if not voters:
-        voters = [{**p, "weight": 1.0} for p in candidates[:8] if p.get("shelf") and p.get("related")]
+        voters = [{**p, "weight": 1.0} for p in candidates[:8] if p.get("shelf") and p.get("related") and not p.get("unasked")]
     if not voters:
         return None, set()
     weights, made, counts = Counter(), Counter(), Counter()
@@ -370,6 +429,7 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
         if _exact(store_candidates) >= per_store_limit:
             break
 
+    store_candidates = _kinds_asked(store_candidates, display_name)
     # Trust the store's shelves: the shelf most real matches sit on decides what else
     # counts (same shelf) and what doesn't ("with peanut butter" snacks elsewhere).
     top, trusted = _shelves(store_candidates)
@@ -377,7 +437,7 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
     sold_out = []
     for p in store_candidates:
         tier = _tier(p, top, trusted)
-        if tier is None or p["made_from"]:
+        if tier is None or p["made_from"] or p["unasked"]:
             continue
         p["relevance"] = tier
         if p["sold_out"]:
