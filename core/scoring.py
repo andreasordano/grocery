@@ -68,12 +68,13 @@ _WORD_RE = re.compile(r"[^\W\d_]+(?:-[^\W\d_]*)*")  # letter words, hyphen group
 
 
 def _form(word, query):
-    """3: the same word (õun, õunad), 2: a near form (õuna, maapähklivõie, a typo), 0: other."""
+    """3: the same word (õun, õunad), 2: a near form (maapähklivõie, a typo), 1: "of it" (õuna, kukeseene), 0: other."""
     if word == query:
         return 3
     if len(word) >= 3 and query.startswith(word) and len(query) - len(word) <= 2:
         # Typed a plural: "õun" is the thing, but "õuna" (= õunad minus d) is the "of apple" form.
-        return 2 if query.endswith("d") and word == query[:-1] else 3
+        # "kukeseene" (of chanterelle) names something else: "Gouda Kukeseene", "Koorene kukeseene kaste".
+        return 1 if query.endswith("d") and word == query[:-1] else 3
     if len(query) >= 3 and word == query + "d":  # typed singular, name has the plural
         return 3
     n = len(os.path.commonprefix([word, query]))
@@ -88,8 +89,8 @@ def word_match(word, query):
     """How a name word relates to a typed word (both folded).
 
     3: it *is* the thing: the same word or a compound ending in it (rukkileib → leib).
-    2: a near form: "of X" (õuna mahl), a close variant (maapähklivõie) or a typo.
-    1: it only mentions it: "with/without X" (maapähklivõiga), a hyphen prefix
+    2: a near form: a close variant (maapähklivõie) or a typo.
+    1: it only mentions it: "of X" (õuna mahl, Gouda kukeseene), "with/without X" (maapähklivõiga), a hyphen prefix
        (maapähklivõi-proteiinibatoon) or X inside a longer word.
     0: unrelated.
     A word that is the last part of a typed compound is a near form: "kintsuliha" (Br.kintsuliha)
@@ -134,11 +135,13 @@ def _word_matches(words, query):
     out = []
     for i, w in enumerate(words):
         m = word_match(w, query)
-        if m < 2 and i + 1 < len(words) and len(w) >= 3:
+        if m < 2 and i + 1 < len(words) and len(w) >= 3 and len(words[i + 1]) >= 3:  # not a unit ("250 g")
             # Typed as one word, written as two: "hiinakapsa" for "Hiina kapsas, kg".
             m = max(m, min(word_match(w + words[i + 1], query), 3 if query.lower().startswith(w.lower()) else 0))
         if m >= 2 and i + 1 < len(words) and words[i + 1] in _NOT_THE_THING_AFTER:
             m = 1
+        if m == 1 and i + 1 < len(words) and words[i + 1] == "mix" and query.lower().startswith(w.lower()):
+            m = 3  # "Kirsstomati mix" is cherry tomatoes, not something of them
         out.append(m)
     return out
 
@@ -199,17 +202,38 @@ _MADE_FROM_WORD = ("segu",)  # "Mandlite ja marjade segu", but hakklihasegu is m
 _BABY_AGE = re.compile(r"\d\s?k\.?\+?(?![\w])")  # baby food is sold by age: "120g4k", "7k.+"
 
 
-def made_from(name, typed):
-    """True when the name says it's made from the thing ("Küüslauk ürtidega päevalilleõlis") and `typed`
-    didn't ask for that."""
+def _made_from_why(name, typed):
+    """The words that say the name is made from the thing and `typed` didn't ask for."""
     # A brand written straight after a word is a word of its own: "…piparmün.mahlKADARBIKU250ml" is mahl + KADARBIKU.
     words = re.findall(r"[^\W\d_]+", re.sub(r"(?<=[a-zäöüõšž])(?=[A-ZÄÖÜÕŠŽ]{2})", " ", name).lower())
     name, typed = name.lower(), typed.lower()
     found = ([m for m in _MADE_FROM if m in name] + [m for m in _MADE_FROM_END if any(w.endswith(m) for w in words)]
              + [m for m in _MADE_FROM_WORD if m in words])
+    why = [m for m in found if m not in typed]
     # "…veiselihast" (elative: from beef) names something made from it: "Vürtsiliha veiselihast", "Pihvid kanalihast".
-    from_it = any(w == t + "st" for t in re.findall(r"[^\W\d_]+", typed) if len(t) >= 4 for w in words)
-    return any(m not in typed for m in found) or from_it or bool(_BABY_AGE.search(name))
+    if any(w == t + "st" for t in re.findall(r"[^\W\d_]+", typed) if len(t) >= 4 for w in words):
+        why.append("from it")
+    if _BABY_AGE.search(name):
+        why.append("baby food")
+    return why
+
+
+def made_from(name, typed):
+    """True when the name says it's made from the thing ("Küüslauk ürtidega päevalilleõlis") and `typed`
+    didn't ask for that."""
+    return bool(_made_from_why(name, typed))
+
+
+# Pickled, still the thing: offered when a store has nothing fresh ("Kukeseen marineeritud" for kukeseened at
+# Selver), marked as a swap. Not tinned (stewed beef isn't beef to cook) nor dried (30 g of dried mushrooms priced
+# for 400 g is 13 packs).
+_PRESERVED = ("marin", "mar.", "soolvees")
+
+
+def preserved(name, typed):
+    """True when the only thing that makes the name "made from it" is that it's pickled or in brine."""
+    why = _made_from_why(name, typed)
+    return bool(why) and all(w in _PRESERVED for w in why)
 
 
 # Words that describe the thing rather than name it: "punane sibul", "küpsetatud pardiliha", "kooritud mandel".

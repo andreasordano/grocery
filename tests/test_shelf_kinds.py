@@ -88,3 +88,25 @@ def test_a_brand_written_like_a_word_doesnt_name_the_thing():
 def test_thawed_fish_and_mince_mix_are_the_thing():
     assert not made_from("Sulatatud roogitud kuldne meriahven, kg", "meriahven")
     assert not made_from("Delikatess broilerihakklihasegu, TALLEGG, 300 g", "broilerihakkliha")
+
+
+# Selver's answer for "kukeseened" and "kukeseen" (production search cache, 2 Nov 2026): no fresh or frozen ones.
+SELVER_KUKESEENED = [
+    {"name": "Gouda Kukeseene, NOPRI, 250 g", "price": 5.68, "category": ["Juustud", "Gluteenivaba", "FB"], "shelf": "Juustud"},
+    {"name": "Koorene Kukeseene kaste, FOODSTUDIO, 230ml", "price": 3.89,
+     "category": ["Köögiviljad, juurviljad", "Jahutatud valmistoidud", "FB"], "shelf": "Köögiviljad, juurviljad"},
+    {"name": "Kuivatatud kukeseen, EESTI AND, 30 g", "price": 5.39, "category": ["Seened", "FB"], "shelf": "Seened"},
+    {"name": "Kukeseen marineeritud, EESTI AND, 500 g", "price": 7.99, "category": ["Seened", "FB"], "shelf": "Seened"},
+    {"name": "Kartulikrõpsud kukeseente ja juustukastme maitselised, ESTRELLA, 170g", "price": 2.45,
+     "category": ["Sipsid", "FB"], "shelf": "Sipsid"},
+    {"name": "Sulatatud juust kukeseentega, MEREVAIK, 200 g", "price": 1.99, "category": ["Määrdejuustud", "FB"],
+     "shelf": "Määrdejuustud"},
+]
+
+
+def test_of_it_is_another_thing_and_a_jar_is_the_last_resort(monkeypatch):
+    monkeypatch.setattr(fetch, "_cached_fetch", lambda store, query, size=40: SELVER_KUKESEENED)
+    found, _ = fetch._fetch_item_store("kukeseened", fetch.spec_for("kukeseened"), "selver", 12)
+    # Gouda "of chanterelle" is cheese, the sauce is a sauce, 30 g dried isn't 400 g: the jar, marked as a swap
+    assert [(p["name"], p.get("swap")) for p in found] == [("Kukeseen marineeritud, EESTI AND, 500 g", True)]
+    assert word_match(fold("kukeseene"), fold("kukeseened")) == 1

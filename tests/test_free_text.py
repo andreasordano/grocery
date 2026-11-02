@@ -31,12 +31,12 @@ def picks(item, store):
     ("õun", "õunad", 3),                       # singular of what was typed
     ("rukkileib", "leib", 3),                  # compound ending in it
     ("maapähklivõie", "maapähklivõi", 2),      # close variant
-    ("õuna", "õunad", 2),                      # "of apple" (õuna mahl)
+    ("õuna", "õunad", 1),                      # "of apple" (õuna mahl): it names something else
     ("maapähklivõie", "maapäklivõi", 2),       # typo
     ("maapähklivõiga", "maapähklivõi", 1),     # "with peanut butter"
     ("võiga", "või", 1),
     ("maapähklivõi-proteiini", "maapähklivõi", 1),  # hyphen prefix: a protein bar
-    ("mango-banaani", "banaanid", 2),         # last hyphen part counts
+    ("mango-banaani", "banaanid", 1),         # last hyphen part counts: "of mango and banana"
     ("kassiliiv", "tee", 0),
     ("kintsuliha", "kanakintsuliha", 2),       # last part of a typed compound (Br.kintsuliha)
     ("liha", "kanakintsuliha", 0),             # too short to tell

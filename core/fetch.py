@@ -15,7 +15,8 @@ import threading
 from datetime import datetime, timedelta, timezone
 from core import db, price_log
 from core.cache import TTLCache
-from core.scoring import head_weight, made_from, misses_the_thing, pack_size, parse_price, relevance_score, score, shares_stem
+from core.scoring import (head_weight, made_from, misses_the_thing, pack_size, parse_price, preserved, relevance_score,
+                           score, shares_stem)
 from stores_config import connector, max_concurrency
 
 
@@ -182,6 +183,7 @@ def _normalize_candidate(item: dict, display_name: str, store: str, rules: dict)
         # Made from it ("Br.kintsuliha jogurtimarinaadis" for kanakintsuliha): it shows which shelf the thing
         # is on, so it votes, but it isn't offered.
         "made_from": made_from(name, display_name) or misses_the_thing(named, display_name),
+        "preserved": preserved(name, display_name) and not misses_the_thing(named, display_name),
         "sold_out": sold_out,
     }
 
@@ -461,6 +463,15 @@ def _fetch_item_store(display_name: str, spec: dict, store: str, per_store_limit
             swaps += [{**p, "item": display_name, "swap": True} for p in found if p["relevance"] == 5 and not p["sold_out"]]
         if swaps:
             return sorted(swaps, key=lambda p: p["score"])[:per_store_limit], warnings
+        # Last: the thing itself in a jar ("Kukeseen marineeritud" when the store has no fresh or frozen ones), on
+        # the shelf where it's kept, as a swap so the receipt says so.
+        kept = [{**p, "relevance": 5, "swap": True} for p in store_candidates
+                if p["preserved"] and p["match"] == 5 and not p["sold_out"] and not p["unasked"]
+                and (top is None or p.get("shelf") in trusted)]
+        if kept:
+            for p in kept:
+                p["score"] = score(p)
+            return sorted(kept, key=lambda p: p["score"])[:per_store_limit], warnings
     sold_out.sort(key=lambda p: -p["relevance"])
     return (ranked[:per_store_limit] if ranked else sold_out[:1]), warnings
 
