@@ -416,10 +416,14 @@ def _amount_label(amount, unit):
 def to_need(item, recipes):
     """What to buy for one typed item: an ingredient rule with an amount, or a free-text search
     with an amount (grams/ml) or a number of packs. Without a quantity, a rule item gets its usual
-    amount (largest any recipe uses) and a free-text item one pack."""
-    name, qty = parse_quantity(item)
+    amount (largest any recipe uses) and a free-text item one pack. An English name ("chicken breast 1 lb") keeps
+    its label and is searched in Estonian (kanafilee, 450 g)."""
+    from core import english  # deferred: english reads the country pack through this module
+
+    name, qty = parse_quantity(english.metric(item))
+    label, name = name, (english.translate(name) or name)
     key = match_ingredient(name, recipes)
-    need = {"label": name, "asked": _amount_label(*qty) if qty else None}
+    need = {"label": label, "asked": _amount_label(*qty) if qty else None}
     if key:
         spec = recipes["ingredients"][key]
         usual = list_amount(key, recipes)

@@ -23,7 +23,7 @@ from urllib.parse import urljoin, urlparse
 import requests
 from bs4 import BeautifulSoup
 
-from core import catalog
+from core import catalog, english
 
 MAX_BYTES = 3_000_000
 MAX_REDIRECTS = 3
@@ -143,19 +143,43 @@ def _servings(value):
 
 _FRACTIONS = {"½": ".5", "¼": ".25", "¾": ".75", "⅓": ".33", "⅔": ".67"}
 # Amounts that mean "a bit of something you buy once": the line keeps only the name (one pack).
-_SMALL = r"(?:spl|sl|tls|tl|tsp|tbsp|tbs|näputäis|näpuotsatäis|natuke|veidi|küünt|küüs|oksa|oks|tass|tassi|klaas|klaasi|cup|cups|pinch)\b\.?"
-_SKIP = {"vesi", "vett", "keeduvesi", "keeva vett", "külma vett", "sooja vett", "water", "jää", "jääkuubikud"}
+_SMALL = (r"(?:spl|sl|tls|tl|tsp|tbsp|tbs|tblsp|tbls|teaspoons?|tablespoons?|näputäis|näpuotsatäis|natuke|veidi|küünt|küüs|oksa|oks|"
+          r"tass|tassi|klaas|klaasi|cups?|pinch(?:es)?|cloves?|sprigs?|handfuls?|dash(?:es)?|bunch(?:es)?|stalks?|"
+          r"slices?)\b\.?(?:\s+of\b)?")
+_SKIP = {"vesi", "vett", "keeduvesi", "keeva vett", "külma vett", "sooja vett", "water", "warm water", "cold water",
+         "boiling water", "jää", "jääkuubikud", "ice"}
 
 
 def to_item(line):
     """A recipe's ingredient line as a typed item, or None for what isn't bought (water).
-    "500 g Maasikad" → "500 g maasikad"; "2 spl oliiviõli" → "oliiviõli"; "1 sibul, hakitud" → "1 sibul"."""
+    "500 g Maasikad" → "500 g maasikad"; "2 spl oliiviõli" → "oliiviõli"; "1 sibul, hakitud" → "1 sibul";
+    "1 lb chicken breast" → "450 g kanafilee"."""
+    return _english(_line(line))[0]
+
+
+def _english(text):
+    """(the item, its name's Estonian or None): "1 lb chicken breast" → ("450 g kanafilee", "450 g kanafilee")."""
+    if not text:
+        return None, None
+    estonian = english.translate(text)
+    return estonian or english.metric(text), estonian
+
+
+def _line(line):
+    """An ingredient line without notes, spoonfuls and capitals, as written: "1 sibul, hakitud" → "1 sibul"."""
     text = " ".join(BeautifulSoup(str(line), "html.parser").get_text(" ").split())
+    text = re.sub(r"(\d)\s+(?=[½¼¾⅓⅔])", r"\1", text)          # "1 ½ tl": 1½
     for k, v in _FRACTIONS.items():
         text = re.sub(rf"(\d?){k}", lambda m: (m.group(1) or "0") + v, text)
     text = re.sub(r"\([^)]*\)", "", text)                      # notes in brackets
     text = re.split(r",\s|;\s| – | - ", text)[0]               # "…, peeneks hakitud"
     text = re.sub(r"\b(maitse järgi|soovi korral|to taste|optional)\b", "", text, flags=re.I)
+    # what it's for, before the amount: "For frying Vegetable Oil", "To serve Bread"
+    text = re.sub(r"^\s*(?:for (?:frying|brushing|greasing|dusting|serving|garnish|decoration)|to (?:serve|garnish)|"
+                  r"as (?:required|needed))\b\s*", "", text, flags=re.I)
+    text = re.sub(r"^\s*(\d+)\s+(\d+)/(\d+)\b", lambda m: f"{int(m[1]) + int(m[2]) / int(m[3]):g}", text)  # "1 1/2 cups"
+    text = re.sub(r"^\s*(\d+(?:[.,]\d+)?\s*(?:kg|g|ml|l))\s*/\s*\d+(?:[.,]\d+)?\s*(?:oz|lbs?|cups?)\b", r"\1", text,
+                  flags=re.I)  # "175g/6oz": the grams
     text = re.sub(r"^\s*\d+(?:[.,/]\d+)?\s*(?:-|–|\s(?:või|or|to|kuni)\s)\s*(?=\d)", "", text, flags=re.I)  # "2-3 tk", "2 või 3": the 3
     text = re.sub(rf"^\s*(?:\d+(?:[.,/]\d+)?\s*)?{_SMALL}\s*", "", text, flags=re.I)
     text = re.sub(r"^\s*(\d+)/(\d+)\s*", lambda m: f"{int(m.group(1)) / int(m.group(2)):g} ", text)
@@ -333,17 +357,21 @@ def is_staple(item):
 
 
 def from_text(text):
-    """A recipe's text, ready for the dinner editor: {name, servings, minutes, items, staples, skipped, method}.
+    """A recipe's text, ready for the dinner editor: {name, servings, minutes, items, staples, skipped, method, english}.
     items: what the stores sell, as typed items (staples: the ones usually at home, for admin's "From home");
     skipped: short lines that name nothing pantryrun knows (an English word, a typo), for the person to add if they
-    buy it; method: the steps as written. name, servings and minutes are None when the text doesn't say. The intro,
+    buy it; method: the steps as written; english: how many lines named an ingredient in English (now in
+    Estonian). name, servings and minutes are None when the text doesn't say. The intro,
     links and hashtags are left out."""
     raws = (text or "")[:MAX_TEXT].splitlines()
     lines = [_clean(raw) for raw in raws]
     start, name = _start(lines, raws)
     time = _TIME.search(text or "")
     minutes = time and int(time[1]) * (60 if time[2].lower().startswith(("h", "tun")) else 1)
-    items, skipped, steps, servings, method = [], [], [], None, False
+    # "Serves 4" can come before the ingredients, under the title
+    before = next((m for m in map(_SERVES.search, lines[:start]) if m), None)
+    servings = before and max(1, min(int(before[1] or before[2]), 12))
+    items, skipped, steps, method, in_english = [], [], [], False, 0
     for raw, line in zip(raws[start:], lines[start:]):
         if method and not _INGREDIENTS.match(line):
             if not _METHOD.match(line.strip(" .:")):
@@ -375,10 +403,12 @@ def from_text(text):
                 method = True
                 steps.append(_step(raw))
             continue
-        item = to_item(line)
+        plain = _line(line)
+        item, estonian = _english(plain)
+        in_english += bool(estonian) and estonian != plain  # "penne" is the same in both
         if item:
-            (items if is_staple(item) or buyable(item) else skipped).append(item)
+            (items if estonian or is_staple(item) or buyable(item) else skipped).append(item)
     items = list(dict.fromkeys(items))[:60]
     return {"name": name, "servings": servings, "minutes": minutes if minutes and minutes <= 600 else None,
             "items": items, "staples": [i for i in items if is_staple(i)], "skipped": list(dict.fromkeys(skipped))[:30],
-            "method": "\n".join(s for s in steps if s)[:4000]}
+            "method": "\n".join(s for s in steps if s)[:4000], "english": in_english}

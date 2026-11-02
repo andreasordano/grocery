@@ -261,8 +261,8 @@ def test_pasted_text_is_logged_without_the_text(monkeypatch):
     found = service.read_recipe_text(service.RecipeTextRequest(text="400 g pastat\nfoo bar\nMinu salajane retsept, mida ema tegi meile igal pühapäeval",
                                                                user_id="anna"))
     assert found["items"] == ["400 g pastat"]
-    assert logged == [("recipe_text", {"lines": 3, "items": 1, "skipped": ["foo bar"], "or": 0, "name": False,
-                                       "method": True, "minutes": False}, "anna")]
+    assert logged == [("recipe_text", {"lines": 3, "items": 1, "skipped": ["foo bar"], "or": 0, "english": 0,
+                                       "name": False, "method": True, "minutes": False}, "anna")]
 
 
 # ── Rimi's recipes as store dinners (scripts/import_rimi_recipes.py) ─────────
