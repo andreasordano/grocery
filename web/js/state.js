@@ -2,9 +2,9 @@
 import { storage } from "./storage.js";
 
 export const state = {
-  mode: "dinner",      // "dinner" or "list": the switch in the top bar
+  mode: "dinner",      // "dinner", "list" or "store" (At the store): the switch in the top bar
   recipes: [],         // hand-written classics
-  dishes: [],          // pantryrun's own and store recipes: {id, name, tags, minutes, count, photo, category?, label?}
+  dishes: [],          // pantryrun's own and store recipes: {id, name, tags, minutes, count, photo, category?, label?, deal?}
   categories: [],      // the chips: {id, name, moment?}
   category: storage.get("pantryrun.category", "ideas"),
   shown: [],           // dinner ids on screen; kept until the category changes or "Show me others"
@@ -24,6 +24,10 @@ export const state = {
   prefs: storage.get("pantryrun.prefs", {}),  // {key: {words: [], products: {store: name}}}
   result: null,        // last /basket answer for the current mode
   status: "idle",      // the receipt: "idle", "pricing", "failed" or "answer"
+  atStore: storage.get("pantryrun.atStore", null),  // At the store: the store you're at (stores_config.py key)
+  deals: null,         // this week's deal dinners (GET /deals): {at, stores: {store: [{id, count, on_sale, …}]}}
+  dealsFrom: 0,        // At the store: where the three on screen start in that store's deals
+  tonight: null,       // At the store: the dinner picked, priced at that store only
   way: null,           // how they'll get it: {result_id, store, via: "store" | "online" | "delivery"}
   step: 1,             // phones: the step on screen (js/steps.js)
   view: null,          // store whose receipt is showing

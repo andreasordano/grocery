@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 from core import catalog
+from core import deals
 from core import editions
 from core import my_dinners
 from core import events
@@ -35,8 +36,8 @@ DINNER_STORES = dinner_stores()
 
 def _keep_cache_warm():
     """Load the store answers saved before the restart, then fetch every ingredient rule's searches that
-    aren't fresh, and all of them again before the cache expires (about 130 store requests each time).
-    Set CACHE_WARMUP=0 to turn it off."""
+    aren't fresh, and all of them again before the cache expires (about 130 store requests each time). After
+    each round, this week's deals are worked out again (core/deals.py). Set CACHE_WARMUP=0 to turn it off."""
     print(f"loaded {fetch.load_saved_searches()} saved store searches")
     refresh = False
     while True:
@@ -46,6 +47,12 @@ def _keep_cache_warm():
             print(f"cache warm-up done in {time.monotonic() - started:.0f} s")
         except Exception as exc:  # never take the service down over it
             print(f"cache warm-up failed: {exc}")
+        started = time.monotonic()
+        try:
+            found = deals.refresh(DINNER_STORES)  # the searches are cached by now
+            print(f"deals worked out in {time.monotonic() - started:.0f} s: {found}")
+        except Exception as exc:
+            print(f"deals failed: {exc}")
         refresh = True
         time.sleep(fetch._CACHE.ttl * 0.8)
 
@@ -145,14 +152,15 @@ def log_event(req: EventRequest):
 def recipes():
     """Dinners the app can recommend: the hand-written classics, plus pantryrun's own (the recipes table, published
     ones) and store recipes (NutriData dishes until data/store_recipes.yaml exists), each with what its card shows
-    and its chips; the chips that have dinners (data/dinner_chips.yaml); and the stores, as the page names them
-    (stores_config.py)."""
+    and its chips (a dinner under "Cheap this week" also says where it's a deal); the chips that have dinners
+    (data/dinner_chips.yaml); and the stores, as the page names them (stores_config.py)."""
     data, store = catalog.load_recipes(), catalog.load_store_recipes()
     dishes = store if store["dinners"] else {**catalog.load_dishes(), "dinners": catalog.load_dishes()["dishes"]}
-    cfg, month = own_recipes.chips(), own_recipes.this_month()
+    cfg, month, cheap = own_recipes.chips(), own_recipes.this_month(), deals.chip_ids()
     shown = lambda r: {"id": r["id"], "name": r["name"], "minutes": r.get("minutes"), "about": r.get("about"),
                        "count": len(r["ingredients"]), "photo": _thumb(r.get("image")), "servings": r.get("servings"),
-                       "tags": own_recipes.tags_of(r, month, cfg)}
+                       "tags": own_recipes.tags_of(r, month, cfg, cheap),
+                       **({"deal": deals.badge(r["id"])} if r["id"] in cheap else {})}
     classics = [{**shown(r), "emoji": r.get("emoji", "🍽️")} for r in data["recipes"]]
     others = ([{**shown(r), "emoji": r["emoji"], "label": r["label"]} for r in own_recipes.published()]
               + [{**shown(d), "category": d["category"]} for d in dishes["dinners"]])
@@ -163,6 +171,29 @@ def recipes():
         "categories": [{k: c[k] for k in ("id", "name", "moment", "apart") if k in c} for c in cfg["chips"] if c["id"] in used],
         "dishes": others,
     }
+
+
+@app.get("/deals")
+def week_deals():
+    """This week's deal dinners at each store, best first ("At the store", WEB-29): {at, stores: {store: [{id,
+    count, on_sale: [{label, product, off}], share, saving, total}]}}. `at` is None until the server has worked
+    them out (a few minutes after a restart)."""
+    found = deals.week()
+    return {"at": found["at"], "stores": {s: v[:DEALS_SHOWN] for s, v in found["stores"].items()}}
+
+
+DEALS_SHOWN = 12  # per store: three at a time, and "Show me others"
+
+
+@app.get("/deals/unmatched")
+def deals_unmatched(authorization: Optional[str] = Header(None)):
+    """The monthly review (WEB-28): Selver's discounted food that no ingredient rule catches, by shelf. Owner only:
+    it pages Selver's whole catalogue (scripts/deals_report.py)."""
+    _owner(authorization)
+    try:
+        return deals.unmatched_food()
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Selver: {exc}")
 
 
 def _thumb(url):

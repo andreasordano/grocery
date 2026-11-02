@@ -20,7 +20,7 @@ FIELDS = ("id", "name", "about", "method", "emoji", "image", "servings", "minute
           "months", "brand", "label", "rights", "status", "review_by", "notes", "created", "updated")
 EDITABLE = FIELDS[1:-2]
 STATUSES = ("draft", "published", "archived")
-WORKED_OUT = ("quick", "seasonal")  # chips nobody tags: they come from the minutes and the months
+WORKED_OUT = ("quick", "seasonal", "deals")  # chips nobody tags: the minutes, the months and this week's deals
 TTL = 60  # seconds the app keeps the published dinners before reading them again
 MAX_LINES = 30
 
@@ -158,7 +158,7 @@ def clean(data):
     tags = list(dict.fromkeys(data.get("tags") or []))
     unknown = [t for t in tags if t not in taggable]
     if unknown:
-        raise RecipeError(f"Unknown tags: {', '.join(map(str, unknown))}. Quick and In season come from the minutes and months.")
+        raise RecipeError(f"Unknown tags: {', '.join(map(str, unknown))}. Quick, In season and Cheap this week are worked out.")
     months = sorted({_number(m, "month", 1, 12) for m in data.get("months") or []})
     image = _text(data.get("image"), "photo address", 500)
     if image and not image.startswith("https://"):
@@ -254,10 +254,10 @@ def _says(word, chip):
             and not any(word.startswith(n) for n in chip.get("not", ())))
 
 
-def tags_of(dinner, month, cfg=None):
+def tags_of(dinner, month, cfg=None, cheap=()):
     """A dinner's chips, in the chips' order: its own tags (pantryrun's dinners and the classics), or for a store
     recipe the kind its category names plus pasta or rice from its words; then quick and seasonal from its
-    minutes and months."""
+    minutes and months, and "Cheap this week" when it's among `cheap` (core/deals.py chip_ids)."""
     cfg = cfg or chips()
     out = set(dinner.get("tags") or ())
     if not out and dinner.get("category"):
@@ -269,4 +269,6 @@ def tags_of(dinner, month, cfg=None):
         out.add("quick")
     if month in (dinner.get("months") or ()):
         out.add("seasonal")
+    if dinner.get("id") in cheap:
+        out.add("deals")
     return [c["id"] for c in cfg["chips"] if c["id"] in out]

@@ -1,4 +1,4 @@
-// Which screen is on the left: the dinners, writing your own dinner, or the shopping list.
+// Which screen is on the left: the dinners, writing your own dinner, the shopping list, or At the store.
 // main.js registers the screens here, so they can switch to one another without importing each other.
 // A screen is a module with open() (draw it and set what the receipt shows) and draw() (redraw it only).
 import { state } from "./state.js";
@@ -7,7 +7,7 @@ const screens = {};
 
 export function addScreen(name, screen) { screens[name] = screen; }
 
-const current = () => state.mode === "list" ? "list" : state.editing ? "editor" : "dinner";
+const current = () => state.mode === "list" || state.mode === "store" ? state.mode : state.editing ? "editor" : "dinner";
 
 // Open the screen that fits the state.
 export function render() {

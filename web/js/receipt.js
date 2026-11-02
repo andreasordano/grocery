@@ -211,7 +211,7 @@ export function showReceipt(storeName, animate) {
 
   print(`
     <div class="r-center">
-      <div class="r-go">${isBest ? "Cheapest at" : "At"}</div>
+      <div class="r-go">${isBest && stores.length > 1 ? "Cheapest at" : "At"}</div>
       <h2 class="r-store">${esc(shopName(b.store))}</h2>
       ${eshopName(b.store) !== shopName(b.store)
         ? `<div class="r-what">Prices from ${esc(eshopName(b.store))}, ${esc(shopName(b.store))}'s e-shop</div>` : ""}

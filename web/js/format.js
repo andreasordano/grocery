@@ -19,6 +19,8 @@ export const cardName = store => known.stores[store]?.card ?? "a loyalty card";
 export const chains = () => known.chains;
 // Every store pantryrun prices: ["selver", "rimi", "barbora"]
 export const allStores = () => Object.keys(known.stores);
+// The store whose prices stand for a chain: "maxima" → "barbora". null for "other" or a chain pantryrun doesn't price.
+export const storeOfChain = chain => allStores().find(s => known.stores[s].chain === chain) ?? null;
 
 // ["rimi", "barbora"] → "Rimi and Barbora"
 export const storeNames = stores => {

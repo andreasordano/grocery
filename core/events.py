@@ -48,6 +48,10 @@ EVENT_TYPES = {
     "dinner_category": "picking a kind of dinner",
     "dinner_shuffle": "\"Show me others\"",
     "trip_change": "a dinner added to or taken out of the trip (dinners: how many now)",
+    # At the store (WEB-29)
+    "deals_store": "At the store: a store's deal dinners shown (store; how: usual, again, tap or more; dinners: the ids "
+                   "on screen; from: where they start in the store's list)",
+    "deal_pick": "At the store: a deal dinner picked for tonight (store, id, rank: 1 is the best deal)",
     "item_added": "an item added to a list (how: typed or suggestion)",
     "item_changed": "an item edited",
     # people's own dinners and sharing

@@ -1,25 +1,27 @@
-// The three steps: pick (dinners or a list), see where it's cheapest, say how you'll get it.
+// The three steps: pick (dinners, a list, or tonight's dinner at the store you're at), see where it's cheapest
+// (at the store: its list), say how you'll get it.
 // On a computer all three are on the page at once: the steps say where you are, and tapping one scrolls there.
 // On a phone each step is a screen of its own (body[data-screen], layout.css), and a bar at the bottom shows
 // what you have so far and goes to the next step.
 import { $ } from "./dom.js";
-import { euro, shopName } from "./format.js";
+import { esc, euro, shopName } from "./format.js";
 import { state } from "./state.js";
-import { picked } from "./dinners.js";
+import { picked, dinnerById } from "./dinners.js";
 import { ask } from "./basket.js";
 
 const phone = matchMedia("(max-width: 900px)");
 const nav = $("#steps"), bar = $("#stepbar");
 
-const filled = () => state.mode === "dinner" ? picked().length : state.items.length;
+const filled = () => state.mode === "dinner" ? picked().length : state.mode === "store" ? +!!state.tonight : state.items.length;
 const answered = () => state.status === "answer" && !!state.result;
 const chosen = () => !!state.way && state.way.result_id === state.result?.result_id;
 const best = () => state.result?.baskets.find(b => b.store === state.result.store);
 
 // [the long label for computers, the short one for phone tabs]
 const labels = () => [
-  state.mode === "dinner" ? ["Pick dinners", "Dinners"] : ["Write your list", "List"],
-  ["See where it’s cheapest", "Store"],
+  state.mode === "dinner" ? ["Pick dinners", "Dinners"] : state.mode === "store" ? ["Pick tonight’s dinner", "Dinner"]
+    : ["Write your list", "List"],
+  state.mode === "store" ? ["See your list", "List"] : ["See where it’s cheapest", "Store"],
   ["Get it, in store or online", "Get it"],
 ];
 
@@ -39,6 +41,8 @@ export function refreshSteps() {
   if (state.step > 1 && !filled()) state.step = 1;  // everything was taken out
   if (state.step === 3 && !answered() && state.status !== "pricing") state.step = 2;
   document.body.dataset.screen = state.step;  // not data-step: the servings stepper uses that
+  // At the store, the answer is one store's list: nothing to compare
+  $("#whereTitle").lastChild.textContent = state.mode === "store" ? "Your list" : "Where it’s cheapest";
 
   const done = [filled() > 0, chosen(), chosen()];
   // a computer shows the next thing to do; a phone shows the screen it's on
@@ -53,6 +57,7 @@ export function refreshSteps() {
 
 // Step 1: what's in the basket, the answer so far, and on to it.
 function barPick() {
+  if (state.mode === "store") return barTonight();
   const n = filled(), dinner = state.mode === "dinner";
   const what = dinner ? (n ? `${n} ${n === 1 ? "dinner" : "dinners"} in your basket` : "Your basket is empty")
     : (n ? `${n} ${n === 1 ? "thing" : "things"} on your list` : "Your list is empty");
@@ -66,6 +71,17 @@ function barPick() {
   return `<p class="sb-info"><span>${what}</span><b>${answer}</b></p>
     <button class="btn go" type="button" data-go="2"${find ? " data-find" : ""} ${n ? "" : "disabled"}>${find ? "Find the store" : "See it"}
       <span aria-hidden="true">→</span></button>`;
+}
+
+// At the store, step 1: the dinner picked, what it costs there, and on to the list.
+function barTonight() {
+  const b = best(), name = state.tonight ? dinnerById(state.tonight)?.name ?? "" : "";
+  const answer = !state.atStore ? "Pick the store you’re at" : !state.tonight ? "Pick tonight’s dinner"
+    : state.status === "pricing" ? "Pricing it…"
+    : state.status === "failed" ? "The store didn’t answer"
+    : answered() && b ? `${shopName(b.store)} · ${euro.format(b.total_price)}` : "";
+  return `<p class="sb-info"><span lang="et">${esc(name) || "Tonight’s dinner"}</span><b>${answer}</b></p>
+    <button class="btn go" type="button" data-go="2" ${state.tonight ? "" : "disabled"}>The list <span aria-hidden="true">→</span></button>`;
 }
 
 // Step 2: on to how you'll get it.
