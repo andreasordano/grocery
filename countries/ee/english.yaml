@@ -1,0 +1,379 @@
+# English ingredient names → the Estonian words Estonian stores name products with (WEB-51).
+# Most recipes people find on Instagram are in English, and expats type their list in English. A recipe line or a
+# typed item whose name is here is searched (and, for a recipe, written) with the Estonian word.
+# Keys are singular and lower case: plurals ("onions", "tomatoes", "berries") and words like "fresh", "chopped",
+# "large" are handled in core/english.py. Longer names win ("red onion" before "onion").
+# A name that is also an Estonian word stays out ("paprika" is the spice in English, the vegetable here).
+# Every value must find the thing at the stores: scripts/check_english.py searches Rimi and Barbora for the words
+# web/vocab.json doesn't have (Selver's). New names come from the English lines the recipe_text log shows as
+# skipped. Left out for now, the stores have nothing that fits: mackerel, pork belly, tahini, pine nuts, lamb mince,
+# worcestershire sauce, shiitake, broad beans, squid, fish stock, custard, groundnut oil, shortcrust pastry.
+names:
+  # meat and fish
+  chicken: kana
+  chicken breast: kanafilee
+  chicken fillet: kanafilee
+  chicken thigh: kanakintsuliha
+  chicken drumstick: broileri koivad
+  chicken leg: broileri koivad
+  chicken wing: kanatiivad
+  whole chicken: broiler
+  ground chicken: kanahakkliha
+  minced chicken: kanahakkliha
+  turkey: kalkun
+  ground turkey: kalkunihakkliha
+  beef: veiseliha
+  ground beef: veisehakkliha
+  minced beef: veisehakkliha
+  beef mince: veisehakkliha
+  steak: veisesteik
+  sirloin: veise välisfilee
+  sirloin steak: veise välisfilee
+  beef fillet: veise sisefilee
+  pork: sealiha
+  ground pork: sealiha hakkliha
+  minced pork: sealiha hakkliha
+  pork chop: karbonaad
+  pork loin: sea välisfilee
+  pork tenderloin: sea sisefilee
+  pork shoulder: sea abatükk
+  mince: hakkliha
+  ground meat: hakkliha
+  minced meat: hakkliha
+  lamb: lambaliha
+  bacon: peekon
+  lard: searasv
+  ham: sink
+  sausage: vorst
+  chorizo: chorizo
+  salami: salaami
+  prosciutto: prosciutto
+  salmon: lõhe
+  salmon fillet: lõhefilee
+  smoked salmon: külmsuitsulõhe
+  cod: tursk
+  cod fillet: tursafilee
+  white fish: tursafilee
+  tuna: tuunikala
+  canned tuna: tuunikala
+  shrimp: krevetid
+  prawn: krevetid
+  herring: heeringas
+  trout: forell
+  mussel: rannakarbid
+  # dairy and eggs
+  egg: munad
+  egg yolk: munad
+  egg white: munad
+  milk: piim
+  almond milk: mandlijook
+  oat milk: kaerajook
+  soy milk: sojajook
+  soya milk: sojajook
+  butter: või
+  unsalted butter: või
+  cream: toidukoor
+  heavy cream: vahukoor
+  whipping cream: vahukoor
+  double cream: vahukoor
+  cooking cream: toidukoor
+  single cream: toidukoor
+  sour cream: hapukoor
+  creme fraiche: creme fraiche
+  yogurt: jogurt
+  yoghurt: jogurt
+  greek yogurt: kreeka jogurt
+  greek yoghurt: kreeka jogurt
+  cheese: juust
+  cheddar: cheddar
+  cheddar cheese: cheddar
+  mozzarella: mozzarella
+  parmesan: parmesan
+  parmesan cheese: parmesan
+  feta: feta
+  feta cheese: feta
+  halloumi: halloumi
+  ricotta: ricotta
+  mascarpone: mascarpone
+  cream cheese: toorjuust
+  cottage cheese: kodujuust
+  quark: kohupiim
+  grated cheese: riivjuust
+  shredded cheese: riivjuust
+  goat cheese: kitsejuust
+  blue cheese: sinihallitusjuust
+  kefir: keefir
+  buttermilk: pett
+  # vegetables
+  onion: sibul
+  red onion: punane sibul
+  yellow onion: sibul
+  white onion: sibul
+  spring onion: roheline sibul
+  green onion: roheline sibul
+  scallion: roheline sibul
+  shallot: šalottsibul
+  leek: porrulauk
+  garlic: küüslauk
+  garlic clove: küüslauk
+  potato: kartul
+  sweet potato: bataat
+  carrot: porgand
+  tomato: tomat
+  cherry tomato: kirsstomat
+  cucumber: kurk
+  bell pepper: paprika
+  red pepper: paprika
+  red bell pepper: paprika
+  green pepper: paprika
+  yellow pepper: paprika
+  pepper: pipar
+  black pepper: must pipar
+  chili: tšilli
+  chilli: tšilli
+  chili pepper: tšilli
+  jalapeno: jalapeno
+  zucchini: suvikõrvits
+  courgette: suvikõrvits
+  eggplant: baklažaan
+  aubergine: baklažaan
+  pumpkin: kõrvits
+  butternut squash: kõrvits
+  broccoli: brokoli
+  cauliflower: lillkapsas
+  cabbage: kapsas
+  red cabbage: punane kapsas
+  chinese cabbage: hiina kapsas
+  brussels sprout: brüsseli kapsas
+  spinach: spinat
+  baby spinach: spinat
+  kale: lehtkapsas
+  lettuce: salat
+  iceberg lettuce: jääsalat
+  rocket: rukola
+  arugula: rukola
+  mushroom: šampinjonid
+  champignon: šampinjonid
+  celery: varsseller
+  celery stalk: varsseller
+  beetroot: peet
+  beet: peet
+  radish: redis
+  asparagus: spargel
+  green bean: aedoad
+  pea: herned
+  green pea: herned
+  frozen pea: herned
+  corn: mais
+  sweetcorn: mais
+  avocado: avokaado
+  ginger: ingver
+  fresh ginger: ingver
+  parsnip: pastinaak
+  celeriac: juurseller
+  swede: kaalikas
+  sauerkraut: hapukapsas
+  fennel: apteegitill
+  # fruit and berries
+  lemon: sidrun
+  lime: laim
+  orange: apelsin
+  apple: õun
+  banana: banaan
+  pear: pirn
+  strawberry: maasikad
+  raspberry: vaarikad
+  blueberry: mustikad
+  cranberry: jõhvikad
+  mango: mango
+  pineapple: ananass
+  grape: viinamari
+  peach: virsik
+  plum: ploom
+  pomegranate: granaatõun
+  date: datlid
+  raisin: rosinad
+  apricot: aprikoos
+  dried apricot: kuivatatud aprikoosid
+  prune: kuivatatud ploomid
+  lemon juice: sidrun
+  lime juice: laimimahl
+  orange juice: apelsinimahl
+  # dry goods and tins
+  rice: riis
+  basmati rice: basmati
+  jasmine rice: jasmiiniriis
+  risotto rice: risotoriis
+  arborio rice: risotoriis
+  spaghetti: spaghetti
+  penne: penne
+  fusilli: fusilli
+  macaroni: makaronid
+  lasagna sheet: lasanjeplaadid
+  lasagne sheet: lasanjeplaadid
+  noodle: nuudlid
+  egg noodle: munanuudlid
+  rice noodle: riisinuudlid
+  couscous: kuskuss
+  bulgur: bulgur
+  semolina: manna
+  cornmeal: maisijahu
+  quinoa: kinoa
+  oat: kaerahelbed
+  rolled oat: kaerahelbed
+  oatmeal: kaerahelbed
+  flour: jahu
+  all-purpose flour: nisujahu
+  plain flour: nisujahu
+  wheat flour: nisujahu
+  self-raising flour: nisujahu
+  cornstarch: maisitärklis
+  cornflour: maisitärklis
+  breadcrumb: riivsai
+  panko: riivsai
+  bread: leib
+  white bread: sai
+  tortilla: tortilla
+  tortilla wrap: tortilla
+  wrap: tortilla
+  pita: pita
+  pita bread: pita
+  sugar: suhkur
+  brown sugar: pruun suhkur
+  icing sugar: tuhksuhkur
+  powdered sugar: tuhksuhkur
+  honey: mesi
+  maple syrup: vahtrasiirup
+  baking powder: küpsetuspulber
+  baking soda: sooda
+  yeast: pärm
+  chickpea: kikerherned
+  lentil: läätsed
+  red lentil: punased läätsed
+  brown lentil: läätsed
+  green lentil: läätsed
+  black bean: mustad oad
+  kidney bean: punased oad
+  white bean: valged oad
+  cannellini bean: valged oad
+  bean: oad
+  canned tomato: tomatikonserv
+  chopped tomato: tükeldatud tomatid
+  crushed tomato: purustatud tomatid
+  diced tomato: tükeldatud tomatid
+  tomato paste: tomatipasta
+  tomato puree: tomatipasta
+  passata: passata
+  tomato sauce: tomatikaste
+  coconut milk: kookospiim
+  coconut cream: kookoskoor
+  stock: puljong
+  broth: puljong
+  chicken stock: kanapuljong
+  chicken broth: kanapuljong
+  beef stock: veisepuljong
+  vegetable stock: köögiviljapuljong
+  vegetable broth: köögiviljapuljong
+  stock cube: puljongikuubik
+  vegetable stock cube: puljongikuubik
+  chicken stock cube: puljongikuubik
+  bouillon cube: puljongikuubik
+  # oils, sauces and spices
+  oil: õli
+  olive oil: oliiviõli
+  extra virgin olive oil: oliiviõli
+  vegetable oil: rapsiõli
+  sunflower oil: päevalilleõli
+  rapeseed oil: rapsiõli
+  canola oil: rapsiõli
+  sesame oil: seesamiõli
+  sesame seed oil: seesamiõli
+  coconut oil: kookosõli
+  vinegar: äädikas
+  balsamic vinegar: palsamiäädikas
+  red wine vinegar: veiniäädikas
+  white wine vinegar: veiniäädikas
+  rice vinegar: riisiäädikas
+  apple cider vinegar: õunaäädikas
+  cider vinegar: õunaäädikas
+  soy sauce: sojakaste
+  fish sauce: kalakaste
+  oyster sauce: austrikaste
+  sriracha: tšillikaste
+  hot sauce: tšillikaste
+  hotsauce: tšillikaste
+  sweet chili sauce: tšillikaste
+  ketchup: ketšup
+  mayonnaise: majonees
+  mayo: majonees
+  mustard: sinep
+  dijon mustard: dijoni sinep
+  pesto: pesto
+  hummus: hummus
+  peanut butter: maapähklivõi
+  jam: moos
+  salt: sool
+  sea salt: meresool
+  smoked paprika: suitsupaprika
+  cumin: vürtsköömned
+  ground cumin: vürtsköömned
+  cumin seed: vürtsköömned
+  caraway: köömned
+  caraway seed: köömned
+  cardamom: kardemon
+  cardomom: kardemon
+  clove: nelk
+  ground clove: nelk
+  saffron: safran
+  sage: salvei
+  marjoram: majoraan
+  cinnamon: kaneel
+  turmeric: kurkum
+  turmeric powder: kurkum
+  curry powder: karri
+  curry paste: karripasta
+  chili flake: tšillihelbed
+  red pepper flake: tšillihelbed
+  oregano: pune
+  dried oregano: pune
+  basil: basiilik
+  thyme: tüümian
+  rosemary: rosmariin
+  parsley: petersell
+  dill: till
+  coriander: koriander
+  cilantro: koriander
+  mint: münt
+  chive: murulauk
+  bay leaf: loorberileht
+  nutmeg: muskaatpähkel
+  garlic powder: küüslaugupulber
+  onion powder: sibulapulber
+  italian seasoning: itaalia maitseaine
+  vanilla: vaniljeekstrakt
+  vanilla extract: vaniljeekstrakt
+  vanilla sugar: vanillisuhkur
+  # nuts, seeds and the rest
+  walnut: kreeka pähklid
+  almond: mandlid
+  cashew: india pähklid
+  peanut: maapähklid
+  pecan: pekanipähklid
+  sesame seed: seesamiseemned
+  sunflower seed: päevalilleseemned
+  pumpkin seed: kõrvitsaseemned
+  chia seed: chia seemned
+  dark chocolate: tume šokolaad
+  chocolate: šokolaad
+  cocoa powder: kakaopulber
+  olive: oliivid
+  black olive: mustad oliivid
+  caper: kapparid
+  tofu: tofu
+  white wine: valge vein
+  red wine: punane vein
+  beer: õlu
+  brandy: brändi
+  ice cream: jäätis
+  puff pastry: lehttaigen
+  pizza dough: pitsatainas
