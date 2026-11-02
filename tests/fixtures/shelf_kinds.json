@@ -1,0 +1,7060 @@
+{
+"barbora|kookospiim": [
+{
+"name": "Kookosjook FUDO 400ml",
+"price": 1.85,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "FUDO",
+"unit": "tk",
+"store_id": "000000000001014782",
+"in_stock": true
+},
+{
+"name": "Kookosjook SANTA MARIA 250ml",
+"price": 2.79,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "SANTA MARIA",
+"unit": "tk",
+"store_id": "000000000001204218",
+"in_stock": true
+},
+{
+"name": "Orgaanile kookosjook BIONATURALIS 400ml",
+"price": 3.15,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "BIONATURALIS",
+"unit": "tk",
+"store_id": "000000000001045855",
+"in_stock": true
+},
+{
+"name": "Kookosjook väherasv.SANTA MARIA 250ml",
+"price": 2.69,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "SANTA MARIA",
+"unit": "tk",
+"store_id": "000000000001207531",
+"in_stock": true
+},
+{
+"name": "Kookosjook AROY-D 250ml",
+"price": 1.25,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "AROY-D",
+"unit": "tk",
+"store_id": "000000000001207373",
+"in_stock": true
+},
+{
+"name": "Kookosjook KARA 200ml",
+"price": 1.79,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "KARA",
+"unit": "tk",
+"store_id": "000000000001226437",
+"in_stock": true
+},
+{
+"name": "Kookoskreem THAI-CHOICE 400ml",
+"price": 2.99,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "THAI CHOICE",
+"unit": "tk",
+"store_id": "000000000000733824",
+"in_stock": true
+},
+{
+"name": "Kookoskreem SANTA MARIA 250ml",
+"price": 3.59,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "SANTA MARIA",
+"unit": "tk",
+"store_id": "000000000001204217",
+"in_stock": true
+},
+{
+"name": "Öko.kookosjook BIONATUR k.karri 400ml",
+"price": 3.15,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "BIONATURALIS",
+"unit": "tk",
+"store_id": "000000000001326556",
+"in_stock": true
+},
+{
+"name": "Kookoskreem väherasvane THAI-CHOICE 400ml",
+"price": 1.91,
+"shelf": "Kookosjoogid ja -kreemid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maailma köögid",
+"Kookosjoogid ja -kreemid"
+],
+"brand": "THAI CHOICE",
+"unit": "tk",
+"store_id": "000000000000807794",
+"in_stock": true
+},
+{
+"name": "Kookosjook ALPRO Barista, 1l",
+"price": 3.49,
+"shelf": "Taimsed piimavabad joogid",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Taimsed piimavabad joogid"
+],
+"brand": "ALPRO",
+"unit": "tk",
+"store_id": "000000000001253740",
+"in_stock": true
+},
+{
+"name": "Snäkid kookoskreem gl.v.Major Grain 40g",
+"price": 0.69,
+"shelf": "Gluteenivabad tooted",
+"category": [
+"Kauasäilivad toidukaubad",
+"Eridieettoidud",
+"Gluteenivabad tooted"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000001396061",
+"in_stock": true
+},
+{
+"name": "Kehakreem L'ANGELICA Kookospiim 250ml",
+"price": 7.59,
+"shelf": "Kehakreemid, kehaõlid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Kehakreemid, kehaõlid"
+],
+"brand": "L'ANGELICA",
+"unit": "tk",
+"store_id": "000000000001306203",
+"in_stock": true
+},
+{
+"name": "Kookoskreem KARA 1L",
+"price": 6.39,
+"shelf": "Taimsed piimavabad joogid",
+"category": [
+"Piimatooted ja munad",
+"Piimad",
+"Taimsed piimavabad joogid"
+],
+"brand": "KARA",
+"unit": "tk",
+"store_id": "000000000001226436",
+"in_stock": true
+},
+{
+"name": "Kookoskreem PLANTON 18% 180g",
+"price": 2.15,
+"shelf": "Taimsed koored",
+"category": [
+"Piimatooted ja munad",
+"Hapukoored ja koored",
+"Taimsed koored"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000001411681",
+"in_stock": false
+}
+],
+"barbora|rabarber": [
+{
+"name": "Gas.puuviljavein WÕLU Rabarber 750ml",
+"price": 5.99,
+"shelf": "Vahuveinid",
+"category": [
+"Joogid",
+"Muud veinid ja veinijoogid",
+"Vahuveinid"
+],
+"brand": "WÕLU",
+"unit": "tk",
+"store_id": "000000000001296973",
+"in_stock": true
+},
+{
+"name": "Gin KADA Rabarber 37.5% 500ml",
+"price": 9.99,
+"shelf": "Džinnid",
+"category": [
+"Joogid",
+"Kange alkohol",
+"Džinnid"
+],
+"brand": "KADA",
+"unit": "tk",
+"store_id": "000000000001327746",
+"in_stock": true
+},
+{
+"name": "Gin KINGSMILL Rabarber 38% 0,5l",
+"price": 14.79,
+"shelf": "Džinnid",
+"category": [
+"Joogid",
+"Kange alkohol",
+"Džinnid"
+],
+"brand": "KINGSMILL",
+"unit": "tk",
+"store_id": "000000000001321131",
+"in_stock": true
+},
+{
+"name": "Gin JUNIPERIUM Rabarber 40% 700ml",
+"price": 44.99,
+"shelf": "Džinnid",
+"category": [
+"Joogid",
+"Kange alkohol",
+"Džinnid"
+],
+"brand": "JUNIMPERIUM",
+"unit": "tk",
+"store_id": "000000000001329857",
+"in_stock": true
+},
+{
+"name": "Gin SAAREMAA Rabarber 37.5% 500ml",
+"price": 10.99,
+"shelf": "Džinnid",
+"category": [
+"Joogid",
+"Kange alkohol",
+"Džinnid"
+],
+"brand": "SAAREMAA GIN",
+"unit": "tk",
+"store_id": "000000000001234557",
+"in_stock": true
+},
+{
+"name": "Alk.vaba puuv.vah. Mulin Rabarber 750ml",
+"price": 7.05,
+"shelf": "Alkoholivabad veinid",
+"category": [
+"Joogid",
+"Alkoholivabad joogid",
+"Alkoholivabad veinid"
+],
+"brand": "MULIN",
+"unit": "tk",
+"store_id": "000000000001292165",
+"in_stock": true
+},
+{
+"name": "Alk.vaba vahuj. ÖUN Rabarber-kuusk 750ml",
+"price": 8.79,
+"shelf": "Alkoholivabad veinid",
+"category": [
+"Joogid",
+"Alkoholivabad joogid",
+"Alkoholivabad veinid"
+],
+"brand": "ÖUN DRINKS",
+"unit": "tk",
+"store_id": "000000000001294213",
+"in_stock": true
+},
+{
+"name": "Viin SAAREMAA Rabarber 37.5% 500ml",
+"price": 13.29,
+"shelf": "Viinad",
+"category": [
+"Joogid",
+"Kange alkohol",
+"Viinad"
+],
+"brand": "SAAREMAA",
+"unit": "tk",
+"store_id": "000000000000780552",
+"in_stock": true
+},
+{
+"name": "Spordijook maasika&rabarber NOCCO 330ml",
+"price": 2.49,
+"shelf": "Spordijoogid",
+"category": [
+"Joogid",
+"Karastusjoogid",
+"Spordijoogid"
+],
+"brand": "NOCCO",
+"unit": "tk",
+"store_id": "000000000001375024",
+"in_stock": true
+},
+{
+"name": "Külm.maasikas,rabarber HÄRMAVILI 300g",
+"price": 2.69,
+"shelf": "Külmutatud marjad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud köögiviljad, seened ja marjad",
+"Külmutatud marjad"
+],
+"brand": "HÄRMAVILI",
+"unit": "tk",
+"store_id": "000000000001394868",
+"in_stock": true
+},
+{
+"name": "Dušigeel&Šamp.NATURAPHY Rabarber Aloe 1L",
+"price": 6.99,
+"shelf": "Dušigeelid",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Dušigeelid"
+],
+"brand": "NATURAPHY",
+"unit": "tk",
+"store_id": "000000000001359756",
+"in_stock": true
+},
+{
+"name": "Maasik.rabarber.marmel.kompv.KALEV 175g",
+"price": 2.29,
+"shelf": "Kommipakid ja dražeed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Kommipakid ja dražeed"
+],
+"brand": "KALEV",
+"unit": "tk",
+"store_id": "000000000001237979",
+"in_stock": true
+}
+],
+"barbora|kama": [
+{
+"name": "Kamajahu TARTU MILL 400g",
+"price": 1.75,
+"shelf": "Jahusegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Jahud",
+"Jahusegud"
+],
+"brand": "TARTU MILL",
+"unit": "tk",
+"store_id": "000000000000741065",
+"in_stock": true
+},
+{
+"name": "Keefir GEFILUS kama, 300g",
+"price": 1.19,
+"shelf": "Keefirijoogid",
+"category": [
+"Piimatooted ja munad",
+"Keefirid ja hapupiimad",
+"Keefirijoogid"
+],
+"brand": "VALIO GEFILUS",
+"unit": "tk",
+"store_id": "000000000001001465",
+"in_stock": true
+},
+{
+"name": "Kamapallid BALSNACK 150g",
+"price": 1.85,
+"shelf": "Hommikusöögihelbed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hommikusöögid ja batoonid",
+"Hommikusöögihelbed"
+],
+"brand": "BALSNACK",
+"unit": "tk",
+"store_id": "000000000001156508",
+"in_stock": true
+},
+{
+"name": "Rukkikama TARTU MILL 400g",
+"price": 1.75,
+"shelf": "Jahusegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Jahud",
+"Jahusegud"
+],
+"brand": "TARTU MILL",
+"unit": "tk",
+"store_id": "000000000001010534",
+"in_stock": true
+},
+{
+"name": "Magus tahvel Kama KALEV 100g",
+"price": 1.49,
+"shelf": "Piimašokolaadid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Šokolaadid",
+"Piimašokolaadid"
+],
+"brand": "KALEV",
+"unit": "tk",
+"store_id": "000000000000401181",
+"in_stock": true
+},
+{
+"name": "Kama-jogurtibatoonike KALEV 150g",
+"price": 2.39,
+"shelf": "Kommipakid ja dražeed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Kommipakid ja dražeed"
+],
+"brand": "KALEV",
+"unit": "tk",
+"store_id": "000000000001336359",
+"in_stock": true
+},
+{
+"name": "Jah.surimipulgad Surimi Kama VICI, 180g",
+"price": 3.19,
+"shelf": "Mereannid ja kalamari",
+"category": [
+"Liha, kala, valmistoit",
+"Kalatooted",
+"Mereannid ja kalamari"
+],
+"brand": "VICI",
+"unit": "tk",
+"store_id": "000000000001291954",
+"in_stock": true
+},
+{
+"name": "Kamatahvel mustika küpsise KALEV 100g",
+"price": 1.49,
+"shelf": "Piimašokolaadid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Šokolaadid",
+"Piimašokolaadid"
+],
+"brand": "KALEV",
+"unit": "tk",
+"store_id": "000000000001385153",
+"in_stock": true
+},
+{
+"name": "Peekon kamaraga ,kg",
+"price": 9.69,
+"shelf": "Sealiha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Sealiha"
+],
+"brand": "",
+"unit": "kg",
+"store_id": "000000000000042074",
+"in_stock": true
+},
+{
+"name": "Kamm DIVUS, hõre",
+"price": 1.59,
+"shelf": "Juuksehooldustarvikud ja aksessuaarid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksehooldustarvikud ja aksessuaarid"
+],
+"brand": "DIVUS",
+"unit": "tk",
+"store_id": "000000000001348541",
+"in_stock": true
+},
+{
+"name": "Lemmiklooma kamm LOVETT",
+"price": 12.29,
+"shelf": "Lemmiklooma mänguasjad ja tarvikud",
+"category": [
+"Puhastustarbed ja lemmikloomatooted",
+"Lemmikloomakaubad",
+"Lemmiklooma mänguasjad ja tarvikud"
+],
+"brand": "LOVETT",
+"unit": "tk",
+"store_id": "000000000001333185",
+"in_stock": true
+},
+{
+"name": "Kaminatikud 10cm CORUBA, 50tk",
+"price": 1.39,
+"shelf": "Grillseadmed ja lisatarvikud",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Hooajakaubad ",
+"Grillseadmed ja lisatarvikud"
+],
+"brand": "CORUBA",
+"unit": "tk",
+"store_id": "000000000001318175",
+"in_stock": true
+},
+{
+"name": "Sea välisfilee kamaraga ,kg",
+"price": 11.79,
+"shelf": "Sealiha",
+"category": [
+"Liha, kala, valmistoit",
+"Liha",
+"Sealiha"
+],
+"brand": "",
+"unit": "kg",
+"store_id": "000000000000042081",
+"in_stock": true
+},
+{
+"name": "Juuksehari & kamm CANPOL Babies 0k+",
+"price": 4.49,
+"shelf": "Juuksehooldus lastele",
+"category": [
+"Lastekaubad",
+"Laste hügieenitarbed",
+"Juuksehooldus lastele"
+],
+"brand": "CANPOL",
+"unit": "tk",
+"store_id": "000000000000032283",
+"in_stock": true
+},
+{
+"name": "Käte-küüntekreem KAMILL Classic, 100ml",
+"price": 3.29,
+"shelf": "Kätehooldus",
+"category": [
+"Enesehooldustooted",
+"Kehahooldustooted",
+"Kätehooldus"
+],
+"brand": "KAMILL",
+"unit": "tk",
+"store_id": "000000000000097170",
+"in_stock": true
+},
+{
+"name": "Kamm DIVUS, tihe",
+"price": 1.39,
+"shelf": "Juuksehooldustarvikud ja aksessuaarid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksehooldustarvikud ja aksessuaarid"
+],
+"brand": "DIVUS",
+"unit": "tk",
+"store_id": "000000000001348568",
+"in_stock": true
+},
+{
+"name": "Kamaröst FAZER 400g",
+"price": 1.99,
+"shelf": "Röstsaiad",
+"category": [
+"Leivad, saiad, kondiitritooted",
+"Leivad ja saiad",
+"Röstsaiad"
+],
+"brand": "FAZER",
+"unit": "tk",
+"store_id": "000000000001406623",
+"in_stock": false
+}
+],
+"barbora|peet": [
+{
+"name": "Aurutatud riiv.peet vaakumis 350g",
+"price": 0.75,
+"shelf": "Töödeldud köögi - ja juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Töödeldud köögi - ja juurviljad"
+],
+"brand": "DIMDIŅI",
+"unit": "tk",
+"store_id": "000000000000906637",
+"in_stock": true
+},
+{
+"name": "Riivitud keedupeet vaakumis Jovaige,500g",
+"price": 1.19,
+"shelf": "Töödeldud köögi - ja juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Töödeldud köögi - ja juurviljad"
+],
+"brand": "JOVAIGE",
+"unit": "tk",
+"store_id": "000000000000180916",
+"in_stock": true
+},
+{
+"name": "Keedupeet vaakumis Jovaige, 500g",
+"price": 1.19,
+"shelf": "Töödeldud köögi - ja juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Töödeldud köögi - ja juurviljad"
+],
+"brand": "JOVAIGE",
+"unit": "tk",
+"store_id": "000000000000180915",
+"in_stock": true
+},
+{
+"name": "Punapeet, kg",
+"price": 0.79,
+"shelf": "Peedid ja muud juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Peedid ja muud juurviljad"
+],
+"brand": "",
+"unit": "kg",
+"store_id": "000000000000180823",
+"in_stock": true
+},
+{
+"name": "Marin.peedid vähehapud WELLDONE 500g",
+"price": 1.85,
+"shelf": "Muud konserveeritud köögiviljad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Muud konserveeritud köögiviljad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001324641",
+"in_stock": true
+},
+{
+"name": "Peedi-porgandi-pastinaagi pehmik EP 240g",
+"price": 1.29,
+"shelf": "Palaleivad",
+"category": [
+"Leivad, saiad, kondiitritooted",
+"Leivad ja saiad",
+"Palaleivad"
+],
+"brand": "EESTI PAGAR",
+"unit": "tk",
+"store_id": "000000000001086209",
+"in_stock": true
+},
+{
+"name": "Praetud punapeet WELL DONE 830g",
+"price": 1.99,
+"shelf": "Töödeldud köögi - ja juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Töödeldud köögi - ja juurviljad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001402209",
+"in_stock": true
+},
+{
+"name": "Aurutatud punapeet KADARBIKU,500g",
+"price": 1.99,
+"shelf": "Töödeldud köögi - ja juurviljad",
+"category": [
+"Köögiviljad, puuviljad",
+"Köögiviljad ja aedviljad",
+"Töödeldud köögi - ja juurviljad"
+],
+"brand": "KADARBIKU",
+"unit": "tk",
+"store_id": "000000000000713950",
+"in_stock": true
+},
+{
+"name": "Punapeedisupp EXTRA LINE 480g",
+"price": 1.29,
+"shelf": "Valmistoidud purgis",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Valmistoidud purgis"
+],
+"brand": "EXTRA LINE",
+"unit": "tk",
+"store_id": "000000000001357102",
+"in_stock": true
+},
+{
+"name": "Peedisupp WELL DONE 480g",
+"price": 1.99,
+"shelf": "Valmistoidud purgis",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Valmistoidud purgis"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001407803",
+"in_stock": true
+},
+{
+"name": "Hapendatud pett FARMI 0.2%, 1kg PP",
+"price": 1.29,
+"shelf": "Hapupiimajoogid",
+"category": [
+"Piimatooted ja munad",
+"Keefirid ja hapupiimad",
+"Hapupiimajoogid"
+],
+"brand": "FARMI",
+"unit": "tk",
+"store_id": "000000000001142548",
+"in_stock": true
+},
+{
+"name": "Pealinna peenleib EESTI PAGAR 1kg",
+"price": 2.29,
+"shelf": "Leivad",
+"category": [
+"Leivad, saiad, kondiitritooted",
+"Leivad ja saiad",
+"Leivad"
+],
+"brand": "EESTI PAGAR",
+"unit": "tk",
+"store_id": "000000000000300936",
+"in_stock": true
+},
+{
+"name": "Mängukomplekt PEPPA PIG Pepa perekond",
+"price": 18.99,
+"shelf": "Muud mänguasjad",
+"category": [
+"Lastekaubad",
+"Mänguasjad",
+"Muud mänguasjad"
+],
+"brand": "PEPPA PIG",
+"unit": "tk",
+"store_id": "000000000001389075",
+"in_stock": true
+},
+{
+"name": "Pett WELL DONE 0,5% 1kg",
+"price": 1.15,
+"shelf": "Hapupiimajoogid",
+"category": [
+"Piimatooted ja munad",
+"Keefirid ja hapupiimad",
+"Hapupiimajoogid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001405151",
+"in_stock": true
+},
+{
+"name": "Pealinna peenleib EESTI PAGAR 490g",
+"price": 0.79,
+"shelf": "Leivad",
+"category": [
+"Leivad, saiad, kondiitritooted",
+"Leivad ja saiad",
+"Leivad"
+],
+"brand": "EESTI PAGAR",
+"unit": "tk",
+"store_id": "000000000000300937",
+"in_stock": false
+},
+{
+"name": "Vab.peet.kanade munad M WELL DONE 10tk",
+"price": 2.99,
+"shelf": "Kanamunad",
+"category": [
+"Piimatooted ja munad",
+"Munad",
+"Kanamunad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001316981",
+"in_stock": false
+},
+{
+"name": "Pett WELL DONE ploomi 500g",
+"price": 0.89,
+"shelf": "Hapupiimajoogid",
+"category": [
+"Piimatooted ja munad",
+"Keefirid ja hapupiimad",
+"Hapupiimajoogid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001404950",
+"in_stock": false
+},
+{
+"name": "Kotlet oa-peedi MARTA PAGAR,240g",
+"price": 2.99,
+"shelf": "Taimsed valmistoidud",
+"category": [
+"Liha, kala, valmistoit",
+"Kulinaaria",
+"Taimsed valmistoidud"
+],
+"brand": "MARTA PAGAR",
+"unit": "tk",
+"store_id": "000000000001323338",
+"in_stock": false
+}
+],
+"rimi|nelk": [
+{
+"name": "Nelk Santa Maria 10g",
+"price": 1.05,
+"shelf": "SH-13-12",
+"category": [
+"SH-13-12-76"
+],
+"unit": "tk",
+"store_id": "117137",
+"in_stock": true
+},
+{
+"name": "Kodulõhnastaja Cozy Home nelk CH26",
+"price": 6.99,
+"shelf": "SH-10-18",
+"category": [
+"SH-10-18-78"
+],
+"unit": "tk",
+"store_id": "818489",
+"in_stock": true
+}
+],
+"barbora|taimeõli": [
+{
+"name": "Taimedele min.väetis GREEN MAMA 500ml",
+"price": 2.95,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "GREEN MAMA",
+"unit": "tk",
+"store_id": "000000000001094939",
+"in_stock": true
+},
+{
+"name": "Õitsevate taimede väetisepulgad 40g",
+"price": 3.55,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "ZIELONY DOM",
+"unit": "tk",
+"store_id": "000000000000835349",
+"in_stock": true
+},
+{
+"name": "Vedel väetis õitsv. taimed. FERTIS 500ml",
+"price": 4.55,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "ATGAIVA",
+"unit": "tk",
+"store_id": "000000000000138577",
+"in_stock": true
+},
+{
+"name": "Vedelväetis õitsv. taimed. FERTIS 250ml",
+"price": 2.49,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "ARVI FERTIS",
+"unit": "tk",
+"store_id": "000000000000939766",
+"in_stock": true
+},
+{
+"name": "Roheliste taimede väetisepulgad",
+"price": 3.55,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "ZIELONY DOM",
+"unit": "tk",
+"store_id": "000000000000835348",
+"in_stock": true
+},
+{
+"name": "Taime rasvavõie EVESOL 72%, 500g",
+"price": 2.89,
+"shelf": "Margariinid ja rasvasegud",
+"category": [
+"Piimatooted ja munad",
+"Võid ja margariinid ",
+"Margariinid ja rasvasegud"
+],
+"brand": "EVESOL",
+"unit": "tk",
+"store_id": "000000000000823562",
+"in_stock": true
+},
+{
+"name": "Väetis õitsvatele taimedele 300ml",
+"price": 3.05,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "ZIELONY DOM",
+"unit": "tk",
+"store_id": "000000000000950171",
+"in_stock": true
+},
+{
+"name": "Roheliste taimede väetisepulgad 20tk",
+"price": 2.39,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000001406401",
+"in_stock": true
+},
+{
+"name": "Väetis õitsevatele taimed.SCHULTZ, 350g",
+"price": 12.19,
+"shelf": "Väetised, mullad",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Aiakaubad",
+"Väetised, mullad"
+],
+"brand": "SCHULTZ",
+"unit": "tk",
+"store_id": "000000000001275630",
+"in_stock": true
+},
+{
+"name": "Konstruktor LEGO Kiikuvad taimed 11506",
+"price": 21.99,
+"shelf": "LEGO® Botanicals",
+"category": [
+"Lastekaubad",
+"LEGO® Konstruktor",
+"LEGO® Botanicals"
+],
+"brand": "LEGO®",
+"unit": "tk",
+"store_id": "000000000001402818",
+"in_stock": true
+}
+],
+"barbora|toiduõli": [
+{
+"name": "Toiduõli OILIO 1L",
+"price": 3.69,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "OILIO",
+"unit": "tk",
+"store_id": "000000000000158605",
+"in_stock": true
+},
+{
+"name": "Kuumaõhu fritüüri õli spr.MANTOVA 200ml",
+"price": 4.19,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "MANTOVA",
+"unit": "tk",
+"store_id": "000000000001384807",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli WELL DONE, 750ml",
+"price": 7.49,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001324371",
+"in_stock": true
+},
+{
+"name": "Fritüürõli OILIO 1L",
+"price": 4.45,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "OILIO",
+"unit": "tk",
+"store_id": "000000000001397987",
+"in_stock": true
+},
+{
+"name": "Maisiõli OILIO 500ml",
+"price": 5.99,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "OILIO",
+"unit": "tk",
+"store_id": "000000000001397971",
+"in_stock": true
+},
+{
+"name": "Seesamiõli KIKKOMAN 125ml",
+"price": 3.89,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "KIKKOMAN",
+"unit": "tk",
+"store_id": "000000000001300585",
+"in_stock": true
+},
+{
+"name": "Seesamiõli GLORIA 500ml",
+"price": 6.25,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "GLORIA",
+"unit": "tk",
+"store_id": "000000000000733876",
+"in_stock": true
+},
+{
+"name": "Kõrvitsaõli GLORIA 500ml",
+"price": 9.79,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "GLORIA",
+"unit": "tk",
+"store_id": "000000000000733875",
+"in_stock": true
+},
+{
+"name": "Linaseemneõli GLORIA 500ml",
+"price": 4.99,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "GLORIA",
+"unit": "tk",
+"store_id": "000000000000733877",
+"in_stock": true
+},
+{
+"name": "Kanepiseemneõli GLORIA 250ml",
+"price": 5.49,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "GLORIA",
+"unit": "tk",
+"store_id": "000000000001205746",
+"in_stock": true
+},
+{
+"name": "Avokaadoõli GLORIA 250ml",
+"price": 5.59,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "GLORIA",
+"unit": "tk",
+"store_id": "000000000001204008",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli sprei MANTOVA 200ml",
+"price": 4.95,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "MANTOVA",
+"unit": "tk",
+"store_id": "000000000001393228",
+"in_stock": true
+},
+{
+"name": "Riisiõli sprei MANTOVA 200ml",
+"price": 5.39,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "MANTOVA",
+"unit": "tk",
+"store_id": "000000000001393251",
+"in_stock": true
+},
+{
+"name": "Pähkliõli sprei MANTOVA 200ml",
+"price": 5.99,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "MANTOVA",
+"unit": "tk",
+"store_id": "000000000001393260",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli BORGES 500ml",
+"price": 6.09,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "BORGES",
+"unit": "tk",
+"store_id": "000000000000397168",
+"in_stock": true
+},
+{
+"name": "Kreeka pähkli õli GLORIA 500ml",
+"price": 5.79,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "GLORIA",
+"unit": "tk",
+"store_id": "000000000000733874",
+"in_stock": true
+},
+{
+"name": "Avok.õli sprei laimi-roosap.MANTOVA 200ml",
+"price": 5.99,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "MANTOVA",
+"unit": "tk",
+"store_id": "000000000001393259",
+"in_stock": true
+},
+{
+"name": "Küpsetusõli LA ESPANOLA 1l klaas",
+"price": 5.49,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "LA ESPANOLA",
+"unit": "tk",
+"store_id": "000000000001376379",
+"in_stock": true
+},
+{
+"name": "Mandliõli GOCCIA D'ORO 250ml",
+"price": 9.49,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "GOCCIA D'ORO",
+"unit": "tk",
+"store_id": "000000000001197768",
+"in_stock": true
+},
+{
+"name": "Röstitud seesamiõli WELL DONE 250ml",
+"price": 6.09,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001324315",
+"in_stock": true
+},
+{
+"name": "Avokaadoõli sprei MANTOVA 200ml",
+"price": 5.99,
+"shelf": "Muud toiduõlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Õlid",
+"Muud toiduõlid"
+],
+"brand": "MANTOVA",
+"unit": "tk",
+"store_id": "000000000001385160",
+"in_stock": false
+}
+],
+"rimi|suvikõrvits": [
+{
+"name": "Suvikõrvits roheline kg",
+"price": 2.29,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"unit": "kg",
+"store_id": "269171",
+"in_stock": true
+},
+{
+"name": "Suvikõrvits roheline mahe Rimi Eco 200g",
+"price": 1.79,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"unit": "tk",
+"store_id": "916576",
+"in_stock": true
+},
+{
+"name": "Kabatšokk kg",
+"price": 1.79,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"unit": "kg",
+"store_id": "278088",
+"in_stock": true
+},
+{
+"name": "Jaapani kõrvits praadimiseks, kg",
+"price": 1.49,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"unit": "kg",
+"store_id": "968932",
+"in_stock": true
+},
+{
+"name": "Kõrvits mikrolaineahjus küpsetamiseks",
+"price": 1.69,
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"unit": "kg",
+"store_id": "912261",
+"in_stock": true
+},
+{
+"name": "Pastakaste suvikõrvit.-paprika Selection 350g",
+"price": 2.79,
+"shelf": "SH-13-16",
+"category": [
+"SH-13-16-20"
+],
+"unit": "tk",
+"store_id": "803257",
+"in_stock": true
+},
+{
+"name": "Tatrap. pirn-suvik.-lillkap. Nogel öko 100g",
+"price": 1.69,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-17"
+],
+"unit": "tk",
+"store_id": "7297860",
+"in_stock": true
+},
+{
+"name": "Mahe suvikõrvitsapüree BabyCool 200g",
+"price": 5.69,
+"shelf": "SH-19-3",
+"category": [
+"SH-19-3"
+],
+"unit": "tk",
+"store_id": "976208",
+"in_stock": true
+},
+{
+"name": "Muskaatkõrvits kg",
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"store_id": "4005446",
+"in_stock": false
+},
+{
+"name": "Kõrvits, kg Eesti",
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"store_id": "4005607",
+"in_stock": false
+},
+{
+"name": "Dekoratiivkõrvits, tk",
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"store_id": "905042",
+"in_stock": false
+},
+{
+"name": "Kõrvits \"Celebration\" kg",
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"store_id": "4005454",
+"in_stock": false
+},
+{
+"name": "Talikõrvits kg",
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"store_id": "4005461",
+"in_stock": false
+},
+{
+"name": "Kõrvits, kg Eesti",
+"shelf": "SH-12-2",
+"category": [
+"SH-12-2-10"
+],
+"store_id": "980107",
+"in_stock": false
+}
+],
+"rimi|terve kana": [
+{
+"name": "Eestimaine broiler, värske, A-kl Tallegg kg",
+"price": 4.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "201640",
+"in_stock": true
+},
+{
+"name": "Broiler, värske, A-klass Rimi kg",
+"price": 3.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "803456",
+"in_stock": true
+},
+{
+"name": "Broileri kintsuliha, värske, A-kl Tallegg kg",
+"price": 11.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "291450",
+"in_stock": true
+},
+{
+"name": "Eestim. br.rinnafil., värske, A-kl Tallegg kg",
+"price": 9.35,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "120848",
+"in_stock": true
+},
+{
+"name": "Br.koib Eestim. seljaos. vär. A-kl Tallegg kg",
+"price": 5.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "221852",
+"in_stock": true
+},
+{
+"name": "Eesti br.r.fil.sisetk, vär. A-kl Tallegg 400g",
+"price": 4.69,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "295301",
+"in_stock": true
+},
+{
+"name": "Broileri rinnafilee värske, A-klass Rimi 500g",
+"price": 3.39,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "813046",
+"in_stock": true
+},
+{
+"name": "Eestim. br.pooltiib, värs., A-kl Tallegg 400g",
+"price": 3.25,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "911467",
+"in_stock": true
+},
+{
+"name": "Broileririnnafilee värske A-klass M&M 240g",
+"price": 2.69,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "4012383",
+"in_stock": true
+},
+{
+"name": "Br.kint.liha kon.-nahata, vär. A-kl Rimi 500g",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "814247",
+"in_stock": true
+},
+{
+"name": "Broilerikintsud, värske, A-klass Rimi 500g",
+"price": 2.19,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "814728",
+"in_stock": true
+},
+{
+"name": "Br.kints Eestim. seljaos. vär.A-kl Tallegg kg",
+"price": 5.29,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "203207",
+"in_stock": true
+},
+{
+"name": "Broileritiivad, värske, A-klass Rimi kg",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "813799",
+"in_stock": true
+},
+{
+"name": "Eesti br.r.fil.min.pihv vär.A-kl Tallegg 400g",
+"price": 5.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "905246",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivatükid värske Rimi 500g",
+"price": 2.09,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "816272",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivad, värske, A-kl Rimi 500g",
+"price": 2.15,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "809088",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivad Rimi 500g",
+"price": 1.79,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "816924",
+"in_stock": true
+},
+{
+"name": "Br. rinnafil. sisetükk, värs., A-kl Rimi 400g",
+"price": 3.59,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "809105",
+"in_stock": true
+},
+{
+"name": "Broileripooltiivad, värske Rimi, kg",
+"price": 3.65,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "816254",
+"in_stock": true
+},
+{
+"name": "Br.kint.liha kondi ja n-ta vär. A-kl. Rimi kg",
+"price": 6.79,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "810482",
+"in_stock": true
+},
+{
+"name": "Br.kint. koos seljaosaga Rimi Smart 500g",
+"price": 2.25,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "815984",
+"in_stock": true
+},
+{
+"name": "Broi. rinnafilee lõigud ilma nahata Rimi 400g",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "813983",
+"in_stock": true
+},
+{
+"name": "Br.poolkoivad, värske, A-kl Rannamõisa 500g",
+"price": 2.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "986569",
+"in_stock": true
+},
+{
+"name": "Broileritiiva õlaosa A-klass Rimi 500g",
+"price": 2.59,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "817436",
+"in_stock": true
+},
+{
+"name": "Vabapidamisel kanade munad Kodutalu 10tk",
+"price": 2.99,
+"shelf": "SH-11-7",
+"category": [
+"SH-11-7-29"
+],
+"unit": "tk",
+"store_id": "978403",
+"in_stock": true
+},
+{
+"name": "Eestim. br. koib värske A-kl Tallegg kg",
+"price": 5.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "200847",
+"in_stock": true
+},
+{
+"name": "Broileritiivad Rimi värske A-klass kg",
+"price": 4.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "813168",
+"in_stock": true
+},
+{
+"name": "Broilerimaks, värske, A-klass Tallegg 500g",
+"price": 2.19,
+"shelf": "SH-8-12",
+"category": [
+"SH-8-12-40"
+],
+"unit": "tk",
+"store_id": "916085",
+"in_stock": true
+},
+{
+"name": "Vabapidamisel kanade munad Rimi M/L 10tk",
+"price": 3.09,
+"shelf": "SH-11-7",
+"category": [
+"SH-11-7-29"
+],
+"unit": "tk",
+"store_id": "817920",
+"in_stock": true
+},
+{
+"name": "Puljong kana Maggi 120g",
+"price": 1.45,
+"shelf": "SH-13-8",
+"category": [
+"SH-13-8-43"
+],
+"unit": "tk",
+"store_id": "107493",
+"in_stock": true
+},
+{
+"name": "Piimašokol. Piret tervete metspäh. Kalev 270g",
+"price": 6.99,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "1021279",
+"in_stock": true
+},
+{
+"name": "Perekurk terved Felix 680/360g",
+"price": 2.99,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "1024902",
+"in_stock": true
+},
+{
+"name": "Kana-juustupihvid Tallegg 320g",
+"price": 1.99,
+"shelf": "SH-8-12",
+"category": [
+"SH-8-12-30"
+],
+"unit": "tk",
+"store_id": "290629",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad terv.pähklitega Karl Fazer 200g",
+"price": 5.19,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "100694",
+"in_stock": true
+},
+{
+"name": "Tume šok. Leiger tervete mandlite. Kalev 270g",
+"price": 6.99,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-22"
+],
+"unit": "tk",
+"store_id": "1021299",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad tervete pähklitega Milka 250g",
+"price": 6.39,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "139448",
+"in_stock": true
+},
+{
+"name": "Tume šok. Suur Tõll metspähklitega Kalev 270g",
+"price": 6.99,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-22"
+],
+"unit": "tk",
+"store_id": "1021286",
+"in_stock": true
+},
+{
+"name": "Tume šokolaad terv.metspähklitega Kalev 100g",
+"price": 1.89,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-22"
+],
+"unit": "tk",
+"store_id": "1010600",
+"in_stock": true
+},
+{
+"name": "Sulatatud juust röstitud kanaga Merevaik 200g",
+"price": 1.99,
+"shelf": "SH-11-3",
+"category": [
+"SH-11-3-15"
+],
+"unit": "tk",
+"store_id": "206544",
+"in_stock": true
+},
+{
+"name": "Pelmeenid kanaga Viči 400g",
+"price": 3.89,
+"shelf": "SH-4-7",
+"category": [
+"SH-4-7-25"
+],
+"unit": "tk",
+"store_id": "297436",
+"in_stock": true
+}
+],
+"rimi|tervekana": [],
+"rimi|terve": [
+{
+"name": "Piimašokol. Piret tervete metspäh. Kalev 270g",
+"price": 6.99,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "1021279",
+"in_stock": true
+},
+{
+"name": "Perekurk terved Felix 680/360g",
+"price": 2.99,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "1024902",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad terv.pähklitega Karl Fazer 200g",
+"price": 5.19,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "100694",
+"in_stock": true
+},
+{
+"name": "Tume šok. Leiger tervete mandlite. Kalev 270g",
+"price": 6.99,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-22"
+],
+"unit": "tk",
+"store_id": "1021299",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad tervete pähklitega Milka 250g",
+"price": 6.39,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "139448",
+"in_stock": true
+},
+{
+"name": "Tume šok. Suur Tõll metspähklitega Kalev 270g",
+"price": 6.99,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-22"
+],
+"unit": "tk",
+"store_id": "1021286",
+"in_stock": true
+},
+{
+"name": "Tume šokolaad terv.metspähklitega Kalev 100g",
+"price": 1.89,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-22"
+],
+"unit": "tk",
+"store_id": "1010600",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad tervete metspähklit. Kalev 190g",
+"price": 4.99,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "4008144",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad terv.pähklite Milka Toffee 300g",
+"price": 6.39,
+"shelf": "SH-9-9",
+"category": [
+"SH-9-9-20"
+],
+"unit": "tk",
+"store_id": "165319",
+"in_stock": true
+},
+{
+"name": "Õlu Tervetes 5,3%vol 0,5l",
+"price": 2.15,
+"shelf": "SH-1-6",
+"category": [
+"SH-1-6-1"
+],
+"unit": "tk",
+"store_id": "1373510",
+"in_stock": true
+},
+{
+"name": "Õlu Tervete Original 5,4%vol 0,5l",
+"price": 1.65,
+"shelf": "SH-1-6",
+"category": [
+"SH-1-6-1"
+],
+"unit": "tk",
+"store_id": "1375502",
+"in_stock": true
+},
+{
+"name": "Õlu Tervete Extra Classic 4.5%vol 0,33l",
+"price": 1.69,
+"shelf": "SH-1-6",
+"category": [
+"SH-1-6-1"
+],
+"unit": "tk",
+"store_id": "1376669",
+"in_stock": true
+},
+{
+"name": "Piimašokolaad Piret talvekollekts. Kalev 270g",
+"price": 6.99,
+"shelf": "SH-9-13",
+"category": [
+"SH-9-13"
+],
+"unit": "tk",
+"store_id": "1024921",
+"in_stock": true
+},
+{
+"name": "Piim laktoosivaba Tere 2,5% 1l",
+"price": 1.29,
+"shelf": "SH-11-8",
+"category": [
+"SH-11-8-37"
+],
+"unit": "tk",
+"store_id": "952490",
+"in_stock": true
+},
+{
+"name": "Kreeka jogurt maitsestamata Tere 350g",
+"price": 1.29,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-8"
+],
+"unit": "tk",
+"store_id": "952654",
+"in_stock": true
+},
+{
+"name": "Või Tere 82% 200g",
+"price": 1.49,
+"shelf": "SH-11-9",
+"category": [
+"SH-11-9-41"
+],
+"unit": "tk",
+"store_id": "266294",
+"in_stock": true
+},
+{
+"name": "Hapukoor laktoosivaba 20% 300g",
+"price": 1.59,
+"shelf": "SH-11-5",
+"category": [
+"SH-11-5-22"
+],
+"unit": "tk",
+"store_id": "904061",
+"in_stock": true
+},
+{
+"name": "Kohupiim Tere 5% 200g",
+"price": 1.09,
+"shelf": "SH-11-4",
+"category": [
+"SH-11-4-21"
+],
+"unit": "tk",
+"store_id": "265507",
+"in_stock": true
+},
+{
+"name": "Kohupiimapasta vanilje Tere 4% 300g",
+"price": 1.25,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-2"
+],
+"unit": "tk",
+"store_id": "287924",
+"in_stock": true
+},
+{
+"name": "Glasuurkohuke vanilli multipakk Tere 7x40g",
+"price": 2.49,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-7"
+],
+"unit": "tk",
+"store_id": "996328",
+"in_stock": true
+},
+{
+"name": "Vahukoor laktoosivaba 35% Tere 200ml",
+"price": 1.49,
+"shelf": "SH-11-5",
+"category": [
+"SH-11-5-24"
+],
+"unit": "tk",
+"store_id": "200092",
+"in_stock": true
+},
+{
+"name": "Glasuurkohuke vanilli Tere 40g",
+"price": 0.56,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-7"
+],
+"unit": "tk",
+"store_id": "996339",
+"in_stock": true
+},
+{
+"name": "Ajakiri Tervendaja",
+"price": 3.4,
+"shelf": "SH-10-71",
+"category": [
+"SH-10-71"
+],
+"unit": "tk",
+"store_id": "494298",
+"in_stock": true
+},
+{
+"name": "Kohuke šokolaadi šokolaadigl. Tere 37g",
+"price": 0.56,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-7"
+],
+"unit": "tk",
+"store_id": "4012228",
+"in_stock": true
+},
+{
+"name": "Kali Tervete Godu 0,5l EXP",
+"price": 1.19,
+"shelf": "SH-3-6",
+"category": [
+"SH-3-6"
+],
+"unit": "tk",
+"store_id": "1374800",
+"in_stock": true
+},
+{
+"name": "Kakao kohupiimapasta Tere 300g",
+"price": 1.39,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-2"
+],
+"unit": "tk",
+"store_id": "963419",
+"in_stock": true
+},
+{
+"name": "Kodujuust klassikaline Tere 300g",
+"price": 1.99,
+"shelf": "SH-11-4",
+"category": [
+"SH-11-4-20"
+],
+"unit": "tk",
+"store_id": "201377",
+"in_stock": true
+},
+{
+"name": "Kohupiim magus vanilli Tere 0,1% 200g",
+"price": 1.09,
+"shelf": "SH-11-4",
+"category": [
+"SH-11-4-21"
+],
+"unit": "tk",
+"store_id": "265509",
+"in_stock": true
+},
+{
+"name": "Või laktoosivaba Tere 82% 200g",
+"price": 2.79,
+"shelf": "SH-11-9",
+"category": [
+"SH-11-9-41"
+],
+"unit": "tk",
+"store_id": "942694",
+"in_stock": true
+},
+{
+"name": "Kohupiimapasta banaani Tere 300g",
+"price": 1.25,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-2"
+],
+"unit": "tk",
+"store_id": "266864",
+"in_stock": true
+},
+{
+"name": "Kodujuust karulaugupestoga Tere 200g",
+"price": 1.29,
+"shelf": "SH-11-4",
+"category": [
+"SH-11-4-20"
+],
+"unit": "tk",
+"store_id": "4012385",
+"in_stock": true
+},
+{
+"name": "Piim Latte Tere UHT 2,5% 1l",
+"price": 2.09,
+"shelf": "SH-11-8",
+"category": [
+"SH-11-8-34"
+],
+"unit": "tk",
+"store_id": "286666",
+"in_stock": true
+},
+{
+"name": "Kohupiim rosinatega Tere 0,1% 200g",
+"price": 1.09,
+"shelf": "SH-11-4",
+"category": [
+"SH-11-4-21"
+],
+"unit": "tk",
+"store_id": "265510",
+"in_stock": true
+},
+{
+"name": "Suitsujuust Tere 18% 200g",
+"price": 2.99,
+"shelf": "SH-11-3",
+"category": [
+"SH-11-3-15"
+],
+"unit": "tk",
+"store_id": "903943",
+"in_stock": true
+},
+{
+"name": "Kohupiimapasta Tere 5% 300g",
+"price": 1.49,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-2"
+],
+"unit": "tk",
+"store_id": "266818",
+"in_stock": true
+},
+{
+"name": "Kodujuust riisikatega Tere 200g",
+"price": 1.49,
+"shelf": "SH-11-4",
+"category": [
+"SH-11-4-20"
+],
+"unit": "tk",
+"store_id": "4012349",
+"in_stock": true
+},
+{
+"name": "Hapukoor tuubis 20% Tere 250g",
+"price": 1.69,
+"shelf": "SH-11-5",
+"category": [
+"SH-11-5-22"
+],
+"unit": "tk",
+"store_id": "992930",
+"in_stock": true
+},
+{
+"name": "Kohuke kondenspiima, karamelli Tere 40g",
+"price": 0.56,
+"shelf": "SH-11-2",
+"category": [
+"SH-11-2-7"
+],
+"unit": "tk",
+"store_id": "4000433",
+"in_stock": true
+},
+{
+"name": "Kodujuust väherasvane laktoosivaba Tere 200g",
+"price": 1.29,
+"shelf": "SH-11-4",
+"category": [
+"SH-11-4-20"
+],
+"unit": "tk",
+"store_id": "4012375",
+"in_stock": true
+},
+{
+"name": "Piim Cappuccino Tere 3,5% 1l",
+"price": 2.09,
+"shelf": "SH-11-8",
+"category": [
+"SH-11-8-34"
+],
+"unit": "tk",
+"store_id": "286625",
+"in_stock": true
+}
+],
+"rimi|kana": [
+{
+"name": "Eestimaine broiler, värske, A-kl Tallegg kg",
+"price": 4.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "201640",
+"in_stock": true
+},
+{
+"name": "Broiler, värske, A-klass Rimi kg",
+"price": 3.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "803456",
+"in_stock": true
+},
+{
+"name": "Broileri kintsuliha, värske, A-kl Tallegg kg",
+"price": 11.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "291450",
+"in_stock": true
+},
+{
+"name": "Eestim. br.rinnafil., värske, A-kl Tallegg kg",
+"price": 9.35,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "120848",
+"in_stock": true
+},
+{
+"name": "Br.koib Eestim. seljaos. vär. A-kl Tallegg kg",
+"price": 5.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "221852",
+"in_stock": true
+},
+{
+"name": "Eesti br.r.fil.sisetk, vär. A-kl Tallegg 400g",
+"price": 4.69,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "295301",
+"in_stock": true
+},
+{
+"name": "Broileri rinnafilee värske, A-klass Rimi 500g",
+"price": 3.39,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "813046",
+"in_stock": true
+},
+{
+"name": "Eestim. br.pooltiib, värs., A-kl Tallegg 400g",
+"price": 3.25,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "911467",
+"in_stock": true
+},
+{
+"name": "Broileririnnafilee värske A-klass M&M 240g",
+"price": 2.69,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "4012383",
+"in_stock": true
+},
+{
+"name": "Br.kint.liha kon.-nahata, vär. A-kl Rimi 500g",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "814247",
+"in_stock": true
+},
+{
+"name": "Broilerikintsud, värske, A-klass Rimi 500g",
+"price": 2.19,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "814728",
+"in_stock": true
+},
+{
+"name": "Br.kints Eestim. seljaos. vär.A-kl Tallegg kg",
+"price": 5.29,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "203207",
+"in_stock": true
+},
+{
+"name": "Broileritiivad, värske, A-klass Rimi kg",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "813799",
+"in_stock": true
+},
+{
+"name": "Eesti br.r.fil.min.pihv vär.A-kl Tallegg 400g",
+"price": 5.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "905246",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivatükid värske Rimi 500g",
+"price": 2.09,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "816272",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivad, värske, A-kl Rimi 500g",
+"price": 2.15,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "809088",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivad Rimi 500g",
+"price": 1.79,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "816924",
+"in_stock": true
+},
+{
+"name": "Br. rinnafil. sisetükk, värs., A-kl Rimi 400g",
+"price": 3.59,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "809105",
+"in_stock": true
+},
+{
+"name": "Broileripooltiivad, värske Rimi, kg",
+"price": 3.65,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "816254",
+"in_stock": true
+},
+{
+"name": "Br.kint.liha kondi ja n-ta vär. A-kl. Rimi kg",
+"price": 6.79,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "810482",
+"in_stock": true
+},
+{
+"name": "Br.kint. koos seljaosaga Rimi Smart 500g",
+"price": 2.25,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "815984",
+"in_stock": true
+},
+{
+"name": "Broi. rinnafilee lõigud ilma nahata Rimi 400g",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "813983",
+"in_stock": true
+},
+{
+"name": "Br.poolkoivad, värske, A-kl Rannamõisa 500g",
+"price": 2.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "986569",
+"in_stock": true
+},
+{
+"name": "Broileritiiva õlaosa A-klass Rimi 500g",
+"price": 2.59,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "817436",
+"in_stock": true
+},
+{
+"name": "Vabapidamisel kanade munad Kodutalu 10tk",
+"price": 2.99,
+"shelf": "SH-11-7",
+"category": [
+"SH-11-7-29"
+],
+"unit": "tk",
+"store_id": "978403",
+"in_stock": true
+},
+{
+"name": "Eestim. br. koib värske A-kl Tallegg kg",
+"price": 5.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "200847",
+"in_stock": true
+},
+{
+"name": "Broileritiivad Rimi värske A-klass kg",
+"price": 4.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "813168",
+"in_stock": true
+},
+{
+"name": "Broilerimaks, värske, A-klass Tallegg 500g",
+"price": 2.19,
+"shelf": "SH-8-12",
+"category": [
+"SH-8-12-40"
+],
+"unit": "tk",
+"store_id": "916085",
+"in_stock": true
+},
+{
+"name": "Vabapidamisel kanade munad Rimi M/L 10tk",
+"price": 3.09,
+"shelf": "SH-11-7",
+"category": [
+"SH-11-7-29"
+],
+"unit": "tk",
+"store_id": "817920",
+"in_stock": true
+},
+{
+"name": "Puljong kana Maggi 120g",
+"price": 1.45,
+"shelf": "SH-13-8",
+"category": [
+"SH-13-8-43"
+],
+"unit": "tk",
+"store_id": "107493",
+"in_stock": true
+},
+{
+"name": "Kana-juustupihvid Tallegg 320g",
+"price": 1.99,
+"shelf": "SH-8-12",
+"category": [
+"SH-8-12-30"
+],
+"unit": "tk",
+"store_id": "290629",
+"in_stock": true
+},
+{
+"name": "Sulatatud juust röstitud kanaga Merevaik 200g",
+"price": 1.99,
+"shelf": "SH-11-3",
+"category": [
+"SH-11-3-15"
+],
+"unit": "tk",
+"store_id": "206544",
+"in_stock": true
+},
+{
+"name": "Pelmeenid kanaga Viči 400g",
+"price": 3.89,
+"shelf": "SH-4-7",
+"category": [
+"SH-4-7-25"
+],
+"unit": "tk",
+"store_id": "297436",
+"in_stock": true
+},
+{
+"name": "Krõbe paneering kanale Santa Maria 50g",
+"price": 2.09,
+"shelf": "SH-13-11",
+"category": [
+"SH-13-11-68"
+],
+"unit": "tk",
+"store_id": "174851",
+"in_stock": true
+},
+{
+"name": "Kiisueine Felix kana/loomaliha 4x85g",
+"price": 2.65,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"unit": "tk",
+"store_id": "7255804",
+"in_stock": true
+},
+{
+"name": "Võileib kanaga Rimi 150g",
+"price": 2.65,
+"shelf": "SH-16-9",
+"category": [
+"SH-16-9"
+],
+"unit": "tk",
+"store_id": "804090",
+"in_stock": true
+},
+{
+"name": "Kassieine Gourmet Gold kana/porgand 85g",
+"price": 0.99,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"unit": "tk",
+"store_id": "7124728",
+"in_stock": true
+},
+{
+"name": "Pelmeenid kana ja seentega Gyoza Viči 400g",
+"price": 2.69,
+"shelf": "SH-4-7",
+"category": [
+"SH-4-7-25"
+],
+"unit": "tk",
+"store_id": "904947",
+"in_stock": true
+},
+{
+"name": "Kiisueine Felix kassipoegade. kana 4x85g",
+"price": 2.65,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"unit": "tk",
+"store_id": "7255803",
+"in_stock": true
+},
+{
+"name": "Skandinaavia leib kanaga 160g",
+"price": 3.79,
+"shelf": "SH-16-9",
+"category": [
+"SH-16-9"
+],
+"unit": "tk",
+"store_id": "803850",
+"in_stock": true
+}
+],
+"rimi|broiler": [
+{
+"name": "Eestimaine broiler, värske, A-kl Tallegg kg",
+"price": 4.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "201640",
+"in_stock": true
+},
+{
+"name": "Broiler, värske, A-klass Rimi kg",
+"price": 3.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "803456",
+"in_stock": true
+},
+{
+"name": "Broileri kintsuliha, värske, A-kl Tallegg kg",
+"price": 11.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "291450",
+"in_stock": true
+},
+{
+"name": "Eestim. br.rinnafil., värske, A-kl Tallegg kg",
+"price": 9.35,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "120848",
+"in_stock": true
+},
+{
+"name": "Br.koib Eestim. seljaos. vär. A-kl Tallegg kg",
+"price": 5.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "221852",
+"in_stock": true
+},
+{
+"name": "Broileri rinnafilee värske, A-klass Rimi 500g",
+"price": 3.39,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "813046",
+"in_stock": true
+},
+{
+"name": "Eesti br.r.fil.sisetk, vär. A-kl Tallegg 400g",
+"price": 4.69,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "295301",
+"in_stock": true
+},
+{
+"name": "Br.kint.liha kon.-nahata, vär. A-kl Rimi 500g",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "814247",
+"in_stock": true
+},
+{
+"name": "Broileririnnafilee värske A-klass M&M 240g",
+"price": 2.69,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "4012383",
+"in_stock": true
+},
+{
+"name": "Eestim. br.pooltiib, värs., A-kl Tallegg 400g",
+"price": 3.25,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "911467",
+"in_stock": true
+},
+{
+"name": "Broilerikintsud, värske, A-klass Rimi 500g",
+"price": 2.19,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "814728",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivatükid värske Rimi 500g",
+"price": 2.09,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "816272",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivad, värske, A-kl Rimi 500g",
+"price": 2.15,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "809088",
+"in_stock": true
+},
+{
+"name": "Eesti br.r.fil.min.pihv vär.A-kl Tallegg 400g",
+"price": 5.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "905246",
+"in_stock": true
+},
+{
+"name": "Broileri poolkoivad Rimi 500g",
+"price": 1.79,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "816924",
+"in_stock": true
+},
+{
+"name": "Br.kints Eestim. seljaos. vär.A-kl Tallegg kg",
+"price": 5.29,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "203207",
+"in_stock": true
+},
+{
+"name": "Broileritiivad, värske, A-klass Rimi kg",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "813799",
+"in_stock": true
+},
+{
+"name": "Br. rinnafil. sisetükk, värs., A-kl Rimi 400g",
+"price": 3.59,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "809105",
+"in_stock": true
+},
+{
+"name": "Broileripooltiivad, värske Rimi, kg",
+"price": 3.65,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "816254",
+"in_stock": true
+},
+{
+"name": "Br.kint.liha kondi ja n-ta vär. A-kl. Rimi kg",
+"price": 6.79,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "810482",
+"in_stock": true
+},
+{
+"name": "Br.kint. koos seljaosaga Rimi Smart 500g",
+"price": 2.25,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "815984",
+"in_stock": true
+},
+{
+"name": "Broi. rinnafilee lõigud ilma nahata Rimi 400g",
+"price": 3.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "813983",
+"in_stock": true
+},
+{
+"name": "Br.poolkoivad, värske, A-kl Rannamõisa 500g",
+"price": 2.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "986569",
+"in_stock": true
+},
+{
+"name": "Broileritiiva õlaosa A-klass Rimi 500g",
+"price": 2.59,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "tk",
+"store_id": "817436",
+"in_stock": true
+},
+{
+"name": "Eestim. br. koib värske A-kl Tallegg kg",
+"price": 5.99,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "200847",
+"in_stock": true
+},
+{
+"name": "Broileritiivad Rimi värske A-klass kg",
+"price": 4.49,
+"shelf": "SH-8-9",
+"category": [
+"SH-8-9-25"
+],
+"unit": "kg",
+"store_id": "813168",
+"in_stock": true
+},
+{
+"name": "Broilerimaks, värske, A-klass Tallegg 500g",
+"price": 2.19,
+"shelf": "SH-8-12",
+"category": [
+"SH-8-12-40"
+],
+"unit": "tk",
+"store_id": "916085",
+"in_stock": true
+},
+{
+"name": "Vabapidamisel kanade munad Kodutalu 10tk",
+"price": 2.99,
+"shelf": "SH-11-7",
+"category": [
+"SH-11-7-29"
+],
+"unit": "tk",
+"store_id": "978403",
+"in_stock": true
+},
+{
+"name": "Puljong kana Maggi 120g",
+"price": 1.45,
+"shelf": "SH-13-8",
+"category": [
+"SH-13-8-43"
+],
+"unit": "tk",
+"store_id": "107493",
+"in_stock": true
+},
+{
+"name": "Kana-juustupihvid Tallegg 320g",
+"price": 1.99,
+"shelf": "SH-8-12",
+"category": [
+"SH-8-12-30"
+],
+"unit": "tk",
+"store_id": "290629",
+"in_stock": true
+},
+{
+"name": "Vabapidamisel kanade munad Rimi M/L 10tk",
+"price": 3.09,
+"shelf": "SH-11-7",
+"category": [
+"SH-11-7-29"
+],
+"unit": "tk",
+"store_id": "817920",
+"in_stock": true
+},
+{
+"name": "Pelmeenid kanaga Viči 400g",
+"price": 3.89,
+"shelf": "SH-4-7",
+"category": [
+"SH-4-7-25"
+],
+"unit": "tk",
+"store_id": "297436",
+"in_stock": true
+},
+{
+"name": "Sulatatud juust röstitud kanaga Merevaik 200g",
+"price": 1.99,
+"shelf": "SH-11-3",
+"category": [
+"SH-11-3-15"
+],
+"unit": "tk",
+"store_id": "206544",
+"in_stock": true
+},
+{
+"name": "Krõbe paneering kanale Santa Maria 50g",
+"price": 2.09,
+"shelf": "SH-13-11",
+"category": [
+"SH-13-11-68"
+],
+"unit": "tk",
+"store_id": "174851",
+"in_stock": true
+},
+{
+"name": "Kiisueine Felix kana/loomaliha 4x85g",
+"price": 2.65,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"unit": "tk",
+"store_id": "7255804",
+"in_stock": true
+},
+{
+"name": "Võileib kanaga Rimi 150g",
+"price": 2.65,
+"shelf": "SH-16-9",
+"category": [
+"SH-16-9"
+],
+"unit": "tk",
+"store_id": "804090",
+"in_stock": true
+},
+{
+"name": "Skandinaavia leib kanaga 160g",
+"price": 3.79,
+"shelf": "SH-16-9",
+"category": [
+"SH-16-9"
+],
+"unit": "tk",
+"store_id": "803850",
+"in_stock": true
+},
+{
+"name": "Caesari salat kanaga 200g",
+"price": 3.85,
+"shelf": "SH-16-6",
+"category": [
+"SH-16-6"
+],
+"unit": "tk",
+"store_id": "2000640",
+"in_stock": true
+},
+{
+"name": "Kassieine Gourmet Gold kana/porgand 85g",
+"price": 0.99,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"unit": "tk",
+"store_id": "7124728",
+"in_stock": true
+},
+{
+"name": "Kiisueine Felix kassipoegade. kana 4x85g",
+"price": 2.65,
+"shelf": "SH-7-1",
+"category": [
+"SH-7-1-1"
+],
+"unit": "tk",
+"store_id": "7255803",
+"in_stock": true
+}
+],
+"barbora|šampoon": [
+{
+"name": "Šampoon NIVEA Strong Power Men 500ml",
+"price": 7.39,
+"shelf": "Meeste šampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Meeste šampoonid"
+],
+"brand": "NIVEA MEN",
+"unit": "tk",
+"store_id": "000000000001391637",
+"in_stock": true
+},
+{
+"name": "Šampoon FRUCTIS Grow Strong Orange 400ml",
+"price": 6.39,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "GARNIER FRUCTIS",
+"unit": "tk",
+"store_id": "000000000001302559",
+"in_stock": true
+},
+{
+"name": "Šampoon SYOSS Power meeste 440ml",
+"price": 7.99,
+"shelf": "Meeste šampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Meeste šampoonid"
+],
+"brand": "SYOSS",
+"unit": "tk",
+"store_id": "000000000001233999",
+"in_stock": true
+},
+{
+"name": "Šampoon SYOSS Keratiin 440ml",
+"price": 7.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "SYOSS",
+"unit": "tk",
+"store_id": "000000000001233980",
+"in_stock": true
+},
+{
+"name": "Šampoon SCHAUMA Men 400ml",
+"price": 5.09,
+"shelf": "Meeste šampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Meeste šampoonid"
+],
+"brand": "SCHAUMA",
+"unit": "tk",
+"store_id": "000000000000425284",
+"in_stock": true
+},
+{
+"name": "Šampoon AUSSIE SOS Repair&Revive 300ml",
+"price": 10.69,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "AUSSIE",
+"unit": "tk",
+"store_id": "000000000001365882",
+"in_stock": true
+},
+{
+"name": "Šampoon PUHAS LOODUS Greip värsk.250ml",
+"price": 2.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "PUHAS LOODUS",
+"unit": "tk",
+"store_id": "000000000001028221",
+"in_stock": true
+},
+{
+"name": "Šampoon NS Men Fury of the Tiger 250ml",
+"price": 6.69,
+"shelf": "Meeste šampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Meeste šampoonid"
+],
+"brand": "NATURA SIBERICA",
+"unit": "tk",
+"store_id": "000000000001010135",
+"in_stock": true
+},
+{
+"name": "Šampoon NS ESTONICA SevenBenefits 400ml",
+"price": 5.49,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "NATURA ESTONICA BIO",
+"unit": "tk",
+"store_id": "000000000001163857",
+"in_stock": true
+},
+{
+"name": "Šampoon RBA Takja 550ml",
+"price": 3.65,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "RECEPTY BABUSKI AGAFJI",
+"unit": "tk",
+"store_id": "000000000001275808",
+"in_stock": true
+},
+{
+"name": "Šampoon SYOSS Volume 440ml",
+"price": 7.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "SYOSS",
+"unit": "tk",
+"store_id": "000000000001233985",
+"in_stock": true
+},
+{
+"name": "Šampoon PANTENE Thick&Strong 3in1, 325ml",
+"price": 6.79,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "PANTENE",
+"unit": "tk",
+"store_id": "000000000001365893",
+"in_stock": true
+},
+{
+"name": "Šampoon CP-1 Bright Complex 500ml",
+"price": 19.49,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "CP-1",
+"unit": "tk",
+"store_id": "000000000001339812",
+"in_stock": true
+},
+{
+"name": "Šampoon ELSEVE Dream Long 1L",
+"price": 11.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ELSEVE",
+"unit": "tk",
+"store_id": "000000000001376629",
+"in_stock": true
+},
+{
+"name": "Šampoon ZIAJA Cocoa Butter 400ml",
+"price": 2.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ZIAJA",
+"unit": "tk",
+"store_id": "000000000001387062",
+"in_stock": true
+},
+{
+"name": "Šampoon PANTENE Thick&Strong, 400 ml",
+"price": 3.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "PANTENE",
+"unit": "tk",
+"store_id": "000000000001365902",
+"in_stock": true
+},
+{
+"name": "Šampoon ELSEVE Hyaluron Plump 400ml",
+"price": 4.91,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ELSEVE",
+"unit": "tk",
+"store_id": "000000000001373391",
+"in_stock": true
+},
+{
+"name": "Šampoon SCHAUMA Süsi&Savi meeste 400ml",
+"price": 5.09,
+"shelf": "Meeste šampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Meeste šampoonid"
+],
+"brand": "SCHAUMA",
+"unit": "tk",
+"store_id": "000000000001229441",
+"in_stock": true
+},
+{
+"name": "Šampoon PUHAS LOODUS Nõges toitev 250ml",
+"price": 2.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "PUHAS LOODUS",
+"unit": "tk",
+"store_id": "000000000001028217",
+"in_stock": true
+},
+{
+"name": "Šampoon SCHAUMA Color Shine 400ml",
+"price": 5.09,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "SCHAUMA",
+"unit": "tk",
+"store_id": "000000000000425283",
+"in_stock": true
+},
+{
+"name": "Šampoon ECOLATIER Organic Cannabis 250ml",
+"price": 5.49,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ECOLATIER",
+"unit": "tk",
+"store_id": "000000000001349076",
+"in_stock": true
+},
+{
+"name": "Šampoon GLISS Scalp Gentle 200ml",
+"price": 10.29,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "GLISS",
+"unit": "tk",
+"store_id": "000000000001405536",
+"in_stock": true
+},
+{
+"name": "Šampoon PUHAS LOODUS Mustsõstar 250ml",
+"price": 2.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "PUHAS LOODUS",
+"unit": "tk",
+"store_id": "000000000001028222",
+"in_stock": true
+},
+{
+"name": "Šampoon FRUCTIS Strength&Shin.2in1 400ml",
+"price": 6.39,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "FRUCTIS",
+"unit": "tk",
+"store_id": "000000000001094500",
+"in_stock": true
+},
+{
+"name": "Šampoon LILIEN Olive Oil 350ml",
+"price": 3.59,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "LILIEN",
+"unit": "tk",
+"store_id": "000000000001385526",
+"in_stock": true
+},
+{
+"name": "Šampoon RICH kohevust andev 250ml",
+"price": 14.19,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "RICH",
+"unit": "tk",
+"store_id": "000000000001284611",
+"in_stock": true
+},
+{
+"name": "Šampoon GLISS Liquid Silk 400ml",
+"price": 6.59,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "GLISS",
+"unit": "tk",
+"store_id": "000000000001365751",
+"in_stock": true
+},
+{
+"name": "Šampoon ELSEVE Hyaluron Plump 1L",
+"price": 11.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ELSEVE",
+"unit": "tk",
+"store_id": "000000000001376645",
+"in_stock": true
+},
+{
+"name": "Šampoon NURME Rosmariiniga 250ml",
+"price": 10.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "NURME",
+"unit": "tk",
+"store_id": "000000000001235309",
+"in_stock": true
+},
+{
+"name": "Šampoon ELSEVE Hyaluron Pure 400ml",
+"price": 4.79,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ELSEVE",
+"unit": "tk",
+"store_id": "000000000001376632",
+"in_stock": true
+},
+{
+"name": "Šampoon BYPHASSE Family kookos 750ml",
+"price": 6.19,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "BYPHASSE",
+"unit": "tk",
+"store_id": "000000000001329937",
+"in_stock": true
+},
+{
+"name": "Šampoon PANTENE Intensive Repair 400ml",
+"price": 6.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "PANTENE",
+"unit": "tk",
+"store_id": "000000000000817096",
+"in_stock": true
+},
+{
+"name": "Šampoon NIVEA MEN Strong Power 250ml",
+"price": 5.59,
+"shelf": "Meeste šampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Meeste šampoonid"
+],
+"brand": "NIVEA MEN",
+"unit": "tk",
+"store_id": "000000000000505622",
+"in_stock": true
+},
+{
+"name": "Šampoon GLISS Split&Miracle 400ml",
+"price": 6.59,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "GLISS",
+"unit": "tk",
+"store_id": "000000000001234522",
+"in_stock": true
+},
+{
+"name": "Šampoon L'OREAL ELSEVE Coll.Lifter 400ml",
+"price": 4.79,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ELSEVE",
+"unit": "tk",
+"store_id": "000000000001406862",
+"in_stock": true
+},
+{
+"name": "Šampoon&dušigeel PUHAS LIMPA laste 300ml",
+"price": 2.39,
+"shelf": "Juuksehooldus lastele",
+"category": [
+"Lastekaubad",
+"Laste hügieenitarbed",
+"Juuksehooldus lastele"
+],
+"brand": "PUHAS LIMPA",
+"unit": "tk",
+"store_id": "000000000001028231",
+"in_stock": true
+},
+{
+"name": "Šampoon PANTENE Aqua Light 400ml",
+"price": 6.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "PANTENE",
+"unit": "tk",
+"store_id": "000000000000740906",
+"in_stock": true
+},
+{
+"name": "Šampoon ELSEVE Hyaluron Plump 250ml",
+"price": 3.59,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "ELSEVE",
+"unit": "tk",
+"store_id": "000000000001376612",
+"in_stock": true
+},
+{
+"name": "Šampoon OGX Argan Oil of Morocco 385ml",
+"price": 14.99,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000000941735",
+"in_stock": true
+},
+{
+"name": "Šampoon NURME Sidrunheina 250ml",
+"price": 11.19,
+"shelf": "Juuksešampoonid",
+"category": [
+"Enesehooldustooted",
+"Juuksehooldustooted",
+"Juuksešampoonid"
+],
+"brand": "NURME",
+"unit": "tk",
+"store_id": "000000000001264339",
+"in_stock": true
+}
+],
+"barbora|kakaopulber": [
+{
+"name": "Kakaopulber KALEV 150g",
+"price": 3.65,
+"shelf": "Kakaod",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Kakaod"
+],
+"brand": "KALEV",
+"unit": "tk",
+"store_id": "000000000001414490",
+"in_stock": true
+},
+{
+"name": "Kakaopulber FAZER 200g",
+"price": 5.19,
+"shelf": "Kakaod",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Kakaod"
+],
+"brand": "FAZER",
+"unit": "tk",
+"store_id": "000000000001029116",
+"in_stock": true
+},
+{
+"name": "Kakaojoogipulber Paw Patrol GELLWE 150g",
+"price": 2.19,
+"shelf": "Kakaod",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Kakaod"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000001356321",
+"in_stock": true
+},
+{
+"name": "Kakaoplombiir NOSTALGIA Bronze, 70g",
+"price": 1.29,
+"shelf": "Pulgajäätised",
+"category": [
+"Külmutatud tooted",
+"Jäätised ja jääkuubikud",
+"Pulgajäätised"
+],
+"brand": "NOSTALGIA",
+"unit": "tk",
+"store_id": "000000000001186414",
+"in_stock": true
+},
+{
+"name": "Kakaojoogipulber Paw Patrol GELLWE 300g",
+"price": 4.39,
+"shelf": "Kakaod",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Kakaod"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000001356099",
+"in_stock": true
+},
+{
+"name": "Kakaojook NESQUIK 600g",
+"price": 8.49,
+"shelf": "Kakaod",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Kakaod"
+],
+"brand": "NESQUIK",
+"unit": "tk",
+"store_id": "000000000001381298",
+"in_stock": true
+},
+{
+"name": "Kakaojook vitamiini kaltsiu.MIO&RIO 350g",
+"price": 3.99,
+"shelf": "Kakaod",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Kakaod"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001405965",
+"in_stock": true
+},
+{
+"name": "Kakaojook vitamiinidega MIO&RIO 500g",
+"price": 4.99,
+"shelf": "Kakaod",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Kakaod"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001405966",
+"in_stock": true
+},
+{
+"name": "Kaljapulber KLINGAI 126g",
+"price": 1.29,
+"shelf": " Küpsetuslisandid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained ",
+" Küpsetuslisandid"
+],
+"brand": "KLINGAI",
+"unit": "tk",
+"store_id": "000000000000180611",
+"in_stock": true
+},
+{
+"name": "Kodukeeksipulber TARTU MILL 450g",
+"price": 2.49,
+"shelf": "Jahusegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Jahud",
+"Jahusegud"
+],
+"brand": "TARTU MILL",
+"unit": "tk",
+"store_id": "000000000000767177",
+"in_stock": true
+},
+{
+"name": "Puding KABRITA puuv.kakao.100g 9k",
+"price": 2.39,
+"shelf": "Pudrud piimaga 8+ kuud",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud piimaga 8+ kuud"
+],
+"brand": "KABRITA",
+"unit": "tk",
+"store_id": "000000000001316781",
+"in_stock": true
+},
+{
+"name": "Kakaopiparkook šokolaaditük.MARMITON180g",
+"price": 2.99,
+"shelf": "Piparkoogid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Pühadekaubad",
+"Piparkoogid"
+],
+"brand": "MARMITON",
+"unit": "tk",
+"store_id": "000000000001395169",
+"in_stock": true
+},
+{
+"name": "Vahukulp FISKARS Functional Form",
+"price": 16.99,
+"shelf": "Muud köögitarvikud",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Köögitarvikud ja söögiriistad",
+"Muud köögitarvikud"
+],
+"brand": "FISKARS",
+"unit": "tk",
+"store_id": "000000000001283042",
+"in_stock": true
+},
+{
+"name": "Mahe kanapuljong NATUR COMPAGNIE 88g",
+"price": 3.65,
+"shelf": "Puljongid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kiirtoidud",
+"Puljongid"
+],
+"brand": "NATUR COMPAGNIE",
+"unit": "tk",
+"store_id": "000000000000706075",
+"in_stock": true
+},
+{
+"name": "Kakao-hapukoorekook 350g",
+"price": 2.19,
+"shelf": "Koogid",
+"category": [
+"Leivad, saiad, kondiitritooted",
+"Koogid ja tordid",
+"Koogid"
+],
+"brand": "MEISTRITE KVALITEET",
+"unit": "tk",
+"store_id": "000000000001374987",
+"in_stock": true
+},
+{
+"name": "Küpsetuspulber SANTA MARIA 45g",
+"price": 0.85,
+"shelf": " Küpsetuslisandid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained ",
+" Küpsetuslisandid"
+],
+"brand": "SANTA MARIA",
+"unit": "tk",
+"store_id": "000000000000016072",
+"in_stock": true
+}
+],
+"rimi|sooda": [
+{
+"name": "Söögisooda Lombardi 500g",
+"price": 1.49,
+"shelf": "SH-13-13",
+"category": [
+"SH-13-13-83"
+],
+"unit": "tk",
+"store_id": "1008884",
+"in_stock": true
+},
+{
+"name": "Söögisooda Rimi Smart, 400g",
+"price": 0.95,
+"shelf": "SH-13-13",
+"category": [
+"SH-13-13-83"
+],
+"unit": "tk",
+"store_id": "817377",
+"in_stock": true
+},
+{
+"name": "Söögisool peeneteraline Santa Maria 92g",
+"price": 1.75,
+"shelf": "SH-13-12",
+"category": [
+"SH-13-12-77"
+],
+"unit": "tk",
+"store_id": "191169",
+"in_stock": true
+},
+{
+"name": "Universaalne puh.vahend Frosch soodaga 500ml",
+"price": 3.35,
+"shelf": "SH-10-18",
+"category": [
+"SH-10-18-81-1"
+],
+"unit": "tk",
+"store_id": "417628",
+"in_stock": true
+},
+{
+"name": "Nõudepesuvahend soodaga 500ml",
+"price": 2.29,
+"shelf": "SH-10-12",
+"category": [
+"SH-10-12-57"
+],
+"unit": "tk",
+"store_id": "468501",
+"in_stock": true
+},
+{
+"name": "Söögisool jäme LSTK Cook 1kg",
+"price": 1.59,
+"shelf": "SH-13-12",
+"category": [
+"SH-13-12-77"
+],
+"unit": "tk",
+"store_id": "126778",
+"in_stock": true
+},
+{
+"name": "Söögisooda Dr. Oetker 70g",
+"price": 0.65,
+"shelf": "SH-13-13",
+"category": [
+"SH-13-13-83"
+],
+"unit": "tk",
+"store_id": "1023870",
+"in_stock": true
+},
+{
+"name": "Sipelga söödatoos Bros Mrowex 10g",
+"price": 4.99,
+"shelf": "SH-10-19",
+"category": [
+"SH-10-19"
+],
+"unit": "tk",
+"store_id": "7183361",
+"in_stock": true
+},
+{
+"name": "Soolatud lõhefilee Rimi Mare viilutatud 100g",
+"price": 3.99,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-21"
+],
+"unit": "tk",
+"store_id": "810343",
+"in_stock": true
+},
+{
+"name": "Atl. heeringafilee Rimi Smart õlis 1kg",
+"price": 5.79,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "813531",
+"in_stock": true
+},
+{
+"name": "Sool. Atlandi lõhefilee viil. Rimi Smart 100g",
+"price": 3.19,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-21"
+],
+"unit": "tk",
+"store_id": "817324",
+"in_stock": true
+},
+{
+"name": "Soolatud heeringafilee õlis Rimi 240g/192g",
+"price": 2.35,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "803783",
+"in_stock": true
+},
+{
+"name": "Heeringafilee soolatud õlita Zigmas 190g",
+"price": 2.49,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "981606",
+"in_stock": true
+},
+{
+"name": "Heeringafilee traditsiooniline Viči 240g/190g",
+"price": 2.19,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "201469",
+"in_stock": true
+},
+{
+"name": "Õrn.sool. vik.for.fil. Viil. Saare Kala 200g",
+"price": 8.39,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-21"
+],
+"unit": "tk",
+"store_id": "996661",
+"in_stock": true
+},
+{
+"name": "Või soolata Valio 500g",
+"price": 5.89,
+"shelf": "SH-11-9",
+"category": [
+"SH-11-9-41"
+],
+"unit": "tk",
+"store_id": "200287",
+"in_stock": true
+},
+{
+"name": "Tortiljakrõpsud kerge soolaga Santa Maria 185",
+"price": 1.79,
+"shelf": "SH-13-11",
+"category": [
+"SH-13-11-65"
+],
+"unit": "tk",
+"store_id": "174868",
+"in_stock": true
+},
+{
+"name": "Maapähkel Awake röstitud, soolatud 400g",
+"price": 1.99,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-14"
+],
+"unit": "tk",
+"store_id": "804385",
+"in_stock": true
+},
+{
+"name": "Heeringafilee traditsiooni. õlita Viči 190g",
+"price": 2.19,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "270324",
+"in_stock": true
+},
+{
+"name": "Popkorn soolaga Pophouse 130g",
+"price": 1.45,
+"shelf": "SH-9-8",
+"category": [
+"SH-9-8-19"
+],
+"unit": "tk",
+"store_id": "1019989",
+"in_stock": true
+},
+{
+"name": "Küpsised soolatud Tuc Original 100g",
+"price": 1.65,
+"shelf": "SH-9-5",
+"category": [
+"SH-9-5-6"
+],
+"unit": "tk",
+"store_id": "100854",
+"in_stock": true
+},
+{
+"name": "Soolaheeringafilee õlita Rimi 150g",
+"price": 1.99,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "812542",
+"in_stock": true
+},
+{
+"name": "Ketšup Felix vähendatud soola-suhkruga 980g",
+"price": 4.79,
+"shelf": "SH-13-6",
+"category": [
+"SH-13-6-32"
+],
+"unit": "tk",
+"store_id": "171692",
+"in_stock": true
+},
+{
+"name": "Rõngik soolaga Elephant 80g",
+"price": 1.59,
+"shelf": "SH-9-5",
+"category": [
+"SH-9-5-6"
+],
+"unit": "tk",
+"store_id": "177034",
+"in_stock": true
+},
+{
+"name": "Soolaheeringafilee õlis Rimi Smart 240g/175g",
+"price": 1.49,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "811810",
+"in_stock": true
+},
+{
+"name": "Pistaatsiapähklid Rimi röstit.ja soolat. 400g",
+"price": 8.39,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-10"
+],
+"unit": "tk",
+"store_id": "813649",
+"in_stock": true
+},
+{
+"name": "Soolatud kurgid Rimi 670g/390g",
+"price": 2.65,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "807146",
+"in_stock": true
+},
+{
+"name": "Pistaatsiapähkel Awake röstitud,soolatud 400g",
+"price": 7.59,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-14"
+],
+"unit": "tk",
+"store_id": "804387",
+"in_stock": true
+},
+{
+"name": "Maapähkel röst. ja soolatud  Awake 150g",
+"price": 1.29,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-14"
+],
+"unit": "tk",
+"store_id": "804391",
+"in_stock": true
+},
+{
+"name": "Pistaatsiapähklid Arimex röstitud, sool. 250g",
+"price": 4.39,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-14"
+],
+"unit": "tk",
+"store_id": "1011616",
+"in_stock": true
+},
+{
+"name": "Kreekerid soolatud Rimi Smart 70g",
+"price": 0.75,
+"shelf": "SH-9-5",
+"category": [
+"SH-9-5-6"
+],
+"unit": "tk",
+"store_id": "817388",
+"in_stock": true
+},
+{
+"name": "Soolalõhe viilutatud M.V.Wool 100g",
+"price": 4.59,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-21"
+],
+"unit": "tk",
+"store_id": "203046",
+"in_stock": true
+},
+{
+"name": "Röst.,soolatud pistaatsiapähkel Rimi kg",
+"price": 15.99,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-10"
+],
+"unit": "kg",
+"store_id": "807420",
+"in_stock": true
+},
+{
+"name": "Pistaatsiapähklid röstitud, sool. Rimi 700g",
+"price": 11.99,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-10"
+],
+"unit": "tk",
+"store_id": "814910",
+"in_stock": true
+},
+{
+"name": "Vürtskilufilee Briis 160g",
+"price": 2.59,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-21"
+],
+"unit": "tk",
+"store_id": "293661",
+"in_stock": true
+},
+{
+"name": "Röstitud maapähklid soolaga Estrella 240g",
+"price": 2.99,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-14"
+],
+"unit": "tk",
+"store_id": "1019414",
+"in_stock": true
+},
+{
+"name": "Röstit.maapähklid soolaga 140g Estrella",
+"price": 2.99,
+"shelf": "SH-9-4",
+"category": [
+"SH-9-4-14"
+],
+"unit": "tk",
+"store_id": "176565",
+"in_stock": true
+},
+{
+"name": "Heeringafil. vähesool. Kapten Grant 240g/180g",
+"price": 2.49,
+"shelf": "SH-8-16",
+"category": [
+"SH-8-16-20"
+],
+"unit": "tk",
+"store_id": "203060",
+"in_stock": true
+},
+{
+"name": "Triibuliha soola-pipraga M&M 500g",
+"price": 3.59,
+"shelf": "SH-8-14",
+"category": [
+"SH-8-14-20"
+],
+"unit": "tk",
+"store_id": "4012368",
+"in_stock": true
+},
+{
+"name": "Grissinid soolaga Laurieri 125g",
+"price": 2.05,
+"shelf": "SH-6-4",
+"category": [
+"SH-6-4-10"
+],
+"unit": "tk",
+"store_id": "981120",
+"in_stock": true
+}
+],
+"barbora|pitsatainas": [
+{
+"name": "Külm.pitsataigen EESTI PAGAR,600g",
+"price": 1.79,
+"shelf": "Külmutatud taignad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud kondiitritooted",
+"Külmutatud taignad"
+],
+"brand": "EESTI PAGAR",
+"unit": "tk",
+"store_id": "000000000001204966",
+"in_stock": true
+},
+{
+"name": "Külm.pitsapõhjad 2tk VICI, 320g",
+"price": 1.89,
+"shelf": "Külmutatud taignad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud kondiitritooted",
+"Külmutatud taignad"
+],
+"brand": "VICI",
+"unit": "tk",
+"store_id": "000000000000511715",
+"in_stock": true
+},
+{
+"name": "Pitsakaste Tomapizza PANZANI 390g",
+"price": 2.99,
+"shelf": "Tomatikastmed ja - pastad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kastmed",
+"Tomatikastmed ja - pastad"
+],
+"brand": "PANZANI",
+"unit": "tk",
+"store_id": "000000000000927084",
+"in_stock": true
+},
+{
+"name": "Pitsakaste Classica MUTTI 400g",
+"price": 2.75,
+"shelf": "Tomatikastmed ja - pastad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kastmed",
+"Tomatikastmed ja - pastad"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000001375411",
+"in_stock": true
+},
+{
+"name": "Külm.pitsa prosciutto&pes.FELICIANA 360g",
+"price": 3.85,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "DR.OETKER",
+"unit": "tk",
+"store_id": "000000000001111717",
+"in_stock": true
+},
+{
+"name": "Külm.Margherita pitsa PEALINNA 300g",
+"price": 3.59,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "PEALINNA",
+"unit": "tk",
+"store_id": "000000000001324077",
+"in_stock": true
+},
+{
+"name": "Pitsid ILAJA Lucia 65ml, 6tk",
+"price": 4.99,
+"shelf": "Klaasid",
+"category": [
+"Kodukaubad ja vaba aeg",
+"Köögitarvikud ja söögiriistad",
+"Klaasid"
+],
+"brand": "ILAJA",
+"unit": "tk",
+"store_id": "000000000001403252",
+"in_stock": true
+},
+{
+"name": "Pitsakate NÕO, 300g",
+"price": 3.29,
+"shelf": "Sink, peekon ja rulaadid",
+"category": [
+"Liha, kala, valmistoit",
+"Lihatooted",
+"Sink, peekon ja rulaadid"
+],
+"brand": "NÕO",
+"unit": "tk",
+"store_id": "000000000000605540",
+"in_stock": true
+},
+{
+"name": "Külm. pitsa WELL DONE Margherita 350g",
+"price": 2.39,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001355837",
+"in_stock": true
+},
+{
+"name": "Pitsakaste Aromatica MUTTI 400g",
+"price": 2.69,
+"shelf": "Tomatikastmed ja - pastad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kastmed",
+"Tomatikastmed ja - pastad"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000000152404",
+"in_stock": true
+},
+{
+"name": "Riivjuust WELL DONE pitsale, 200g",
+"price": 2.45,
+"shelf": "Riivjuustud",
+"category": [
+"Piimatooted ja munad",
+"Juustud ",
+"Riivjuustud"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001360638",
+"in_stock": true
+},
+{
+"name": "Pitsamaitseaine SALDVA 25g",
+"price": 0.65,
+"shelf": "Maitseainesegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained ",
+"Maitseainesegud"
+],
+"brand": "SALDVA",
+"unit": "tk",
+"store_id": "000000000000754550",
+"in_stock": true
+},
+{
+"name": "Külm. pitsa FELICIANA Speciale, 335g",
+"price": 5.79,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "DR.OETKER",
+"unit": "tk",
+"store_id": "000000000001220034",
+"in_stock": true
+},
+{
+"name": "Külm. pitsa Speciale WD 325g",
+"price": 3.69,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001355441",
+"in_stock": true
+},
+{
+"name": "Külm. pitsa Salami WELL DONE 370g",
+"price": 3.69,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001364838",
+"in_stock": true
+},
+{
+"name": "Külm. pitsa WELL DONE Tradizionale 310g",
+"price": 2.99,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001355827",
+"in_stock": true
+},
+{
+"name": "Pizzamaitseaine SANTA MARIA 5g",
+"price": 0.61,
+"shelf": "Maitseainesegud",
+"category": [
+"Kauasäilivad toidukaubad",
+"Maitseained ",
+"Maitseainesegud"
+],
+"brand": "SANTA MARIA",
+"unit": "tk",
+"store_id": "000000000000031588",
+"in_stock": false
+},
+{
+"name": "Külm.pitsa Prosciutto RISTORANTE, 340g",
+"price": 4.05,
+"shelf": "Külmutatud pitsad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud pooltooted",
+"Külmutatud pitsad"
+],
+"brand": "DR.OETKER",
+"unit": "tk",
+"store_id": "000000000001291761",
+"in_stock": false
+}
+],
+"rimi|salvei": [
+{
+"name": "Ökoloogiline mangopüree Salvest 450g",
+"price": 3.09,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-54"
+],
+"unit": "tk",
+"store_id": "1002929",
+"in_stock": true
+},
+{
+"name": "Tomatipasta Salvest 300g",
+"price": 1.89,
+"shelf": "SH-13-6",
+"category": [
+"SH-13-6-31"
+],
+"unit": "tk",
+"store_id": "109053",
+"in_stock": true
+},
+{
+"name": "Kurk Marineeritud Salvest 675g/385g",
+"price": 2.69,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "198945",
+"in_stock": true
+},
+{
+"name": "Majonees kerge Salvest 430g",
+"price": 2.49,
+"shelf": "SH-11-6",
+"category": [
+"SH-11-6-27"
+],
+"unit": "tk",
+"store_id": "955480",
+"in_stock": true
+},
+{
+"name": "Praekapsas porgandiga Salvest 530g",
+"price": 2.25,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-64"
+],
+"unit": "tk",
+"store_id": "106744",
+"in_stock": true
+},
+{
+"name": "Seljanka kodune Salvest 530g",
+"price": 3.35,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "110213",
+"in_stock": true
+},
+{
+"name": "Võileivakurk Salvest 530g/290g",
+"price": 2.85,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "1010420",
+"in_stock": true
+},
+{
+"name": "Pilaff Salvest 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-64"
+],
+"unit": "tk",
+"store_id": "104711",
+"in_stock": true
+},
+{
+"name": "Salatikurk Salvest 395g/237g",
+"price": 1.99,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-55"
+],
+"unit": "tk",
+"store_id": "195663",
+"in_stock": true
+},
+{
+"name": "Ketšup Salvest 530g",
+"price": 2.99,
+"shelf": "SH-13-6",
+"category": [
+"SH-13-6-32"
+],
+"unit": "tk",
+"store_id": "194502",
+"in_stock": true
+},
+{
+"name": "Hapukapsaborš lihata Salvest 530g",
+"price": 3.05,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100379",
+"in_stock": true
+},
+{
+"name": "Hapukapsaborš sealihaga Salvest 530g",
+"price": 3.69,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100358",
+"in_stock": true
+},
+{
+"name": "Salatiporgand Salvest 400g",
+"price": 2.09,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-55"
+],
+"unit": "tk",
+"store_id": "195662",
+"in_stock": true
+},
+{
+"name": "Mulgikapsad Salvest 530g",
+"price": 2.99,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-64"
+],
+"unit": "tk",
+"store_id": "100347",
+"in_stock": true
+},
+{
+"name": "Hapukapsaborš veiselihaga Salvest 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100378",
+"in_stock": true
+},
+{
+"name": "Salat kõrvitsa Salvest 560/315g",
+"price": 2.59,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-55"
+],
+"unit": "tk",
+"store_id": "100536",
+"in_stock": true
+},
+{
+"name": "Ökoloogiline pirnipüree Salvest 450g",
+"price": 3.89,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-54"
+],
+"unit": "tk",
+"store_id": "1002940",
+"in_stock": true
+},
+{
+"name": "Mulgipuder sealihaga Salvest 530g",
+"price": 3.29,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-64"
+],
+"unit": "tk",
+"store_id": "123078",
+"in_stock": true
+},
+{
+"name": "Värske kapsa borš veiseliha Salvest 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100384",
+"in_stock": true
+},
+{
+"name": "Ketšup Salvest 1000g",
+"price": 4.09,
+"shelf": "SH-13-6",
+"category": [
+"SH-13-6-32"
+],
+"unit": "tk",
+"store_id": "179394",
+"in_stock": true
+},
+{
+"name": "Mulgikapsad Salvest 900g",
+"price": 4.49,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-64"
+],
+"unit": "tk",
+"store_id": "100235",
+"in_stock": true
+},
+{
+"name": "Supp frikadelli Salvest 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "105519",
+"in_stock": true
+},
+{
+"name": "Supp herne suitsulihaga Salvest 530g",
+"price": 3.49,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100186",
+"in_stock": true
+},
+{
+"name": "Herned rohelised Salvest 690g/450g",
+"price": 2.29,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-49"
+],
+"unit": "tk",
+"store_id": "109264",
+"in_stock": true
+},
+{
+"name": "Hernesupp sealihaga Salvest 530g",
+"price": 3.49,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100257",
+"in_stock": true
+},
+{
+"name": "Kanasupp Salvest 530g",
+"price": 4.19,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "1020464",
+"in_stock": true
+},
+{
+"name": "Ketšup Salvest 360g",
+"price": 2.25,
+"shelf": "SH-13-6",
+"category": [
+"SH-13-6-32"
+],
+"unit": "tk",
+"store_id": "1004636",
+"in_stock": true
+},
+{
+"name": "Salat Toome Salvest 520g",
+"price": 2.59,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-55"
+],
+"unit": "tk",
+"store_id": "100202",
+"in_stock": true
+},
+{
+"name": "Kurk magus Salvest 675/360g",
+"price": 2.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "104540",
+"in_stock": true
+},
+{
+"name": "Värskekapsaborš lihata Salvest 530g",
+"price": 2.99,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100275",
+"in_stock": true
+},
+{
+"name": "Pastakaste ürtidega Salvest 460g",
+"price": 3.19,
+"shelf": "SH-13-16",
+"category": [
+"SH-13-16-20"
+],
+"unit": "tk",
+"store_id": "1004634",
+"in_stock": true
+},
+{
+"name": "Pastakaste köögiviljadega Salvest 460g",
+"price": 3.19,
+"shelf": "SH-13-16",
+"category": [
+"SH-13-16-20"
+],
+"unit": "tk",
+"store_id": "1005949",
+"in_stock": true
+},
+{
+"name": "Kurk maitselt mahe Salvest 675g / 360g",
+"price": 2.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "104537",
+"in_stock": true
+},
+{
+"name": "Rassolnik lihata Salvest 530g",
+"price": 3.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100416",
+"in_stock": true
+},
+{
+"name": "Küüslaugukurk Salvest 675g/360g",
+"price": 2.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "140862",
+"in_stock": true
+},
+{
+"name": "Talukurk Salvest 675g/360g",
+"price": 2.79,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-51"
+],
+"unit": "tk",
+"store_id": "169598",
+"in_stock": true
+},
+{
+"name": "Seljanka Salvest 530g",
+"price": 4.69,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-58"
+],
+"unit": "tk",
+"store_id": "100333",
+"in_stock": true
+},
+{
+"name": "Pastakaste bolognese hakklihaga Salvest 460g",
+"price": 2.65,
+"shelf": "SH-13-16",
+"category": [
+"SH-13-16-20"
+],
+"unit": "tk",
+"store_id": "1004648",
+"in_stock": true
+},
+{
+"name": "Ketšup Salvest 270g",
+"price": 2.15,
+"shelf": "SH-13-6",
+"category": [
+"SH-13-6-32"
+],
+"unit": "tk",
+"store_id": "175594",
+"in_stock": true
+},
+{
+"name": "Kaste Guljašš Salvest 530g",
+"price": 4.25,
+"shelf": "SH-13-10",
+"category": [
+"SH-13-10-64"
+],
+"unit": "tk",
+"store_id": "120232",
+"in_stock": true
+}
+],
+"barbora|vaarikad": [
+{
+"name": "Külm.vaarikad, mustikad HÄRMAVILI, 300g",
+"price": 5.89,
+"shelf": "Külmutatud marjad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud köögiviljad, seened ja marjad",
+"Külmutatud marjad"
+],
+"brand": "HÄRMAVILI",
+"unit": "tk",
+"store_id": "000000000001276213",
+"in_stock": true
+},
+{
+"name": "Vaarikad WELL DONE, 125g",
+"price": 3.99,
+"shelf": "Viinamarjad ja marjad",
+"category": [
+"Köögiviljad, puuviljad",
+"Puuviljad ja marjad",
+"Viinamarjad ja marjad"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001318519",
+"in_stock": true
+},
+{
+"name": "YOPRO joogijogurt maasika,vaarika 300g",
+"price": 1.37,
+"shelf": "Joogijogurtid",
+"category": [
+"Piimatooted ja munad",
+"Jogurtid ja desserdid",
+"Joogijogurtid"
+],
+"brand": "YOPRO",
+"unit": "tk",
+"store_id": "000000000001420694",
+"in_stock": true
+},
+{
+"name": "Külm.marjasegu vaarikatega HORTEX, 300g",
+"price": 3.29,
+"shelf": "Külmutatud marjad",
+"category": [
+"Külmutatud tooted",
+"Külmutatud köögiviljad, seened ja marjad",
+"Külmutatud marjad"
+],
+"brand": "HORTEX",
+"unit": "tk",
+"store_id": "000000000001205547",
+"in_stock": true
+},
+{
+"name": "Limonaad vaarika-rabarberi HEAVENLY330ml",
+"price": 1.49,
+"shelf": "Limonaadid",
+"category": [
+"Joogid",
+"Karastusjoogid",
+"Limonaadid"
+],
+"brand": "HEAVENLY",
+"unit": "tk",
+"store_id": "000000000001367502",
+"in_stock": true
+},
+{
+"name": "Puding ALMA vaarika-mascarpon 230g",
+"price": 1.25,
+"shelf": "Desserdid",
+"category": [
+"Piimatooted ja munad",
+"Jogurtid ja desserdid",
+"Desserdid"
+],
+"brand": "ALMA",
+"unit": "tk",
+"store_id": "000000000001381296",
+"in_stock": true
+},
+{
+"name": "Riisivahvlid tum.šok.vaarika KUPIEC 64g",
+"price": 2.39,
+"shelf": "Muud snäkid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Muud snäkid"
+],
+"brand": "KUPIEC",
+"unit": "tk",
+"store_id": "000000000001221562",
+"in_stock": true
+},
+{
+"name": "Karb.jook vaarika CAPT.KOMBUCA,400ml",
+"price": 2.85,
+"shelf": "Kaljad ja muud kääritatud joogid",
+"category": [
+"Joogid",
+"Karastusjoogid",
+"Kaljad ja muud kääritatud joogid"
+],
+"brand": "CAPTAIN",
+"unit": "tk",
+"store_id": "000000000001310892",
+"in_stock": true
+},
+{
+"name": "Vaarikad külmkuivatatud SEEBERGER 12g",
+"price": 2.24,
+"shelf": "Kuivatatud marjad ja puuviljad",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Kuivatatud marjad ja puuviljad"
+],
+"brand": "SEEBERGER",
+"unit": "tk",
+"store_id": "000000000001389487",
+"in_stock": true
+},
+{
+"name": "Puuviljatee LOYD vaarikas&kar.20x2.5g",
+"price": 1.85,
+"shelf": "Puuvilja - ja taimeteed",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Puuvilja - ja taimeteed"
+],
+"brand": "LOYD",
+"unit": "tk",
+"store_id": "000000000001414618",
+"in_stock": true
+},
+{
+"name": "Küpsis Jaffa vaarikaga MIO & RIO 135g",
+"price": 1.35,
+"shelf": "Magusad küpsised ja vahvlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Küpsised",
+"Magusad küpsised ja vahvlid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001326302",
+"in_stock": true
+},
+{
+"name": "Vaarika-mustika smuuti PAI 750ml",
+"price": 2.99,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "PAI",
+"unit": "tk",
+"store_id": "000000000001411838",
+"in_stock": true
+},
+{
+"name": "Vaarika maits. närimiskomm CHEWITS 30g",
+"price": 0.59,
+"shelf": "Kummikommid ja nätsukommid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Kummikommid ja nätsukommid"
+],
+"brand": "CHEWITS",
+"unit": "tk",
+"store_id": "000000000001298518",
+"in_stock": true
+},
+{
+"name": "Vaarikad piima-kakaoglasuuris PICKS 90g",
+"price": 3.59,
+"shelf": "Muud maiustused",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Muud maiustused"
+],
+"brand": "PERGALE",
+"unit": "tk",
+"store_id": "000000000001377408",
+"in_stock": true
+},
+{
+"name": "Vaarika-kohupiima tort EESTI PAGAR 400g",
+"price": 5.99,
+"shelf": "Tordid",
+"category": [
+"Leivad, saiad, kondiitritooted",
+"Koogid ja tordid",
+"Tordid"
+],
+"brand": "EESTI PAGAR",
+"unit": "tk",
+"store_id": "000000000001415560",
+"in_stock": true
+},
+{
+"name": "Puuvilja tee WELL DONE vaarika 20X2.5g",
+"price": 1.65,
+"shelf": "Puuvilja - ja taimeteed",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Puuvilja - ja taimeteed"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001379021",
+"in_stock": true
+},
+{
+"name": "Vaarikad valg. šok.WELL DONE PREMIUM 80g",
+"price": 3.29,
+"shelf": "Muud maiustused",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Muud maiustused"
+],
+"brand": "WELL DONE PREMIUM",
+"unit": "tk",
+"store_id": "000000000001398157",
+"in_stock": true
+},
+{
+"name": "Šokolaadivaht vaarikatega 70g",
+"price": 1.35,
+"shelf": "Magustoidud",
+"category": [
+"Liha, kala, valmistoit",
+"Kulinaaria",
+"Magustoidud"
+],
+"brand": "MEISTRITE KVALITEET",
+"unit": "tk",
+"store_id": "000000000001367789",
+"in_stock": true
+},
+{
+"name": "Näts vaarika granaatõuna ORBIT 14g",
+"price": 0.85,
+"shelf": "Nätsud ja pastillid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Kommid ja maiustused",
+"Nätsud ja pastillid"
+],
+"brand": "ORBIT",
+"unit": "tk",
+"store_id": "000000000001306518",
+"in_stock": true
+},
+{
+"name": "Tee Vaarika-leeder LIPTON,20x1.6g",
+"price": 2.49,
+"shelf": "Puuvilja - ja taimeteed",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Puuvilja - ja taimeteed"
+],
+"brand": "LIPTON",
+"unit": "tk",
+"store_id": "000000000001308664",
+"in_stock": true
+},
+{
+"name": "Kohuke ALMA vaarika, 5x40g",
+"price": 2.23,
+"shelf": "Kohukesed",
+"category": [
+"Piimatooted ja munad",
+"Kohupiimatooted",
+"Kohukesed"
+],
+"brand": "ALMA",
+"unit": "tk",
+"store_id": "000000000001364497",
+"in_stock": true
+},
+{
+"name": "Puuv.batoon HIPP õun/ban. vaarika 23g 1a",
+"price": 1.69,
+"shelf": "Snäkid",
+"category": [
+"Lastekaubad",
+"Snäkid ja joogid",
+"Snäkid"
+],
+"brand": "HIPP",
+"unit": "tk",
+"store_id": "000000000001103425",
+"in_stock": true
+},
+{
+"name": "Karastusjook vaarika KELLUKE 500ml",
+"price": 0.97,
+"shelf": "Limonaadid",
+"category": [
+"Joogid",
+"Karastusjoogid",
+"Limonaadid"
+],
+"brand": "A LE COQ",
+"unit": "tk",
+"store_id": "000000000001384398",
+"in_stock": true
+},
+{
+"name": "Karastusjook vaarika KELLUKE 1.5L",
+"price": 1.59,
+"shelf": "Limonaadid",
+"category": [
+"Joogid",
+"Karastusjoogid",
+"Limonaadid"
+],
+"brand": "A. LE COQ",
+"unit": "tk",
+"store_id": "000000000001383056",
+"in_stock": true
+},
+{
+"name": "Küpsised Choco Jaffa vaarika MILKA 147g",
+"price": 2.59,
+"shelf": "Magusad küpsised ja vahvlid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Küpsised",
+"Magusad küpsised ja vahvlid"
+],
+"brand": "MILKA",
+"unit": "tk",
+"store_id": "000000000000752540",
+"in_stock": true
+},
+{
+"name": "Roheline tee NESTEA vaarika Zero 1.5l",
+"price": 2.09,
+"shelf": "Jääteed",
+"category": [
+"Joogid",
+"Karastusjoogid",
+"Jääteed"
+],
+"brand": "NESTEA",
+"unit": "tk",
+"store_id": "000000000001421515",
+"in_stock": true
+},
+{
+"name": "Jogurtikreem SAARE vaarika-passioni,400g",
+"price": 1.29,
+"shelf": "Maitsestatud jogurtid",
+"category": [
+"Piimatooted ja munad",
+"Jogurtid ja desserdid",
+"Maitsestatud jogurtid"
+],
+"brand": "SAARE",
+"unit": "tk",
+"store_id": "000000000001348127",
+"in_stock": true
+},
+{
+"name": "Smuuti Banaani-vaarika-mustika CORNY 120g",
+"price": 1.99,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "CORNY",
+"unit": "tk",
+"store_id": "000000000001304575",
+"in_stock": true
+},
+{
+"name": "Kaerabatoon ORGANIX vaarika-õuna 23g",
+"price": 1.59,
+"shelf": "Snäkid",
+"category": [
+"Lastekaubad",
+"Snäkid ja joogid",
+"Snäkid"
+],
+"brand": "ORGANIX",
+"unit": "tk",
+"store_id": "000000000001393147",
+"in_stock": true
+},
+{
+"name": "Joogijogurt TERE mustika-vaarika, 900g",
+"price": 1.99,
+"shelf": "Joogijogurtid",
+"category": [
+"Piimatooted ja munad",
+"Jogurtid ja desserdid",
+"Joogijogurtid"
+],
+"brand": "TERE",
+"unit": "tk",
+"store_id": "000000000001318218",
+"in_stock": true
+},
+{
+"name": "Marjapüree MASHIE vaarika-must. 4x45g",
+"price": 4.99,
+"shelf": "Puuvilja - ja taimeteed",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Puuvilja - ja taimeteed"
+],
+"brand": "MASHIE",
+"unit": "tk",
+"store_id": "000000000001285090",
+"in_stock": true
+},
+{
+"name": "Smuuti FROOSH mustikas, vaarikas 250ml",
+"price": 2.75,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "FROOSH",
+"unit": "tk",
+"store_id": "000000000000957426",
+"in_stock": true
+},
+{
+"name": "Marjapür. MASHIE vaarika-mustika 15x45g",
+"price": 13.99,
+"shelf": "Puuvilja - ja taimeteed",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Puuvilja - ja taimeteed"
+],
+"brand": "MASHIE",
+"unit": "tk",
+"store_id": "000000000001345994",
+"in_stock": true
+},
+{
+"name": "Kiirkaerapuder vaarikatega ELOVENA 6x35g",
+"price": 2.99,
+"shelf": "Pudruhelbed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hommikusöögid ja batoonid",
+"Pudruhelbed"
+],
+"brand": "ELOVENA",
+"unit": "tk",
+"store_id": "000000000000178781",
+"in_stock": true
+},
+{
+"name": "Müslibat.jõhvika ja vaarika SANTE 40g",
+"price": 0.75,
+"shelf": "Hommikusöögibatoonid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hommikusöögid ja batoonid",
+"Hommikusöögibatoonid"
+],
+"brand": "SANTE",
+"unit": "tk",
+"store_id": "000000000001009504",
+"in_stock": true
+},
+{
+"name": "Maisisnäkid kakao ja vaarikaga Gusto 50g",
+"price": 1.49,
+"shelf": "Maisisnäkid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Snäkid",
+"Maisisnäkid"
+],
+"brand": "GUSTO",
+"unit": "tk",
+"store_id": "000000000001404194",
+"in_stock": true
+},
+{
+"name": "Pirni.vaarika.ban.püree MUUTI 110g al.6k",
+"price": 1.59,
+"shelf": "Puuviljapüreed 6+ kuud",
+"category": [
+"Lastekaubad",
+"Puuviljapüreed",
+"Puuviljapüreed 6+ kuud"
+],
+"brand": "MUUTI",
+"unit": "tk",
+"store_id": "000000000001168466",
+"in_stock": true
+},
+{
+"name": "Vaarika-mustsõstramoos KÜLLUS 400g",
+"price": 4.69,
+"shelf": "Magusad hoidised",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hoidised ja konservid",
+"Magusad hoidised"
+],
+"brand": "KÜLLUS",
+"unit": "tk",
+"store_id": "000000000001245976",
+"in_stock": true
+},
+{
+"name": "Vaarika-mustika smuuti PAI 250ml",
+"price": 2.19,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "PAI",
+"unit": "tk",
+"store_id": "000000000001411818",
+"in_stock": true
+},
+{
+"name": "Vaarika-õunatäidisega berliiner 50g",
+"price": 0.59,
+"shelf": "Värskelt küpsetatud magusad saiakesed",
+"category": [
+"Leivad, saiad, kondiitritooted",
+"Värsked pagaritooted",
+"Värskelt küpsetatud magusad saiakesed"
+],
+"brand": "",
+"unit": "tk",
+"store_id": "000000000001407981",
+"in_stock": true
+}
+],
+"barbora|vaarik": [
+{
+"name": "Marjatee Münd.vaarik.PÕH.TEETALU 10x2.5g",
+"price": 7.29,
+"shelf": "Puuvilja - ja taimeteed",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Puuvilja - ja taimeteed"
+],
+"brand": "PÕHJALA",
+"unit": "tk",
+"store_id": "000000000001207921",
+"in_stock": true
+},
+{
+"name": "Puuviljatee LOYD pür.vaarik.-sidr.20x2g",
+"price": 2.75,
+"shelf": "Puuvilja - ja taimeteed",
+"category": [
+"Joogid",
+"Kohv, tee, kakao",
+"Puuvilja - ja taimeteed"
+],
+"brand": "LOYD",
+"unit": "tk",
+"store_id": "000000000001247995",
+"in_stock": true
+},
+{
+"name": "3-vilja puder MILUPA vaarik.maas.225g 6+",
+"price": 4.95,
+"shelf": "Pudrud piimaga 6+ kuud",
+"category": [
+"Lastekaubad",
+"Pudrud",
+"Pudrud piimaga 6+ kuud"
+],
+"brand": "MILUPA",
+"unit": "tk",
+"store_id": "000000000001226769",
+"in_stock": true
+},
+{
+"name": "Kiirkaerah.puder vaarik.ja põldmar. AXA 40g",
+"price": 0.55,
+"shelf": "Pudruhelbed",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hommikusöögid ja batoonid",
+"Pudruhelbed"
+],
+"brand": "AXA",
+"unit": "tk",
+"store_id": "000000000001137396",
+"in_stock": true
+},
+{
+"name": "E.j.BATTERY granaatõun.vaarik.s/v 500ml",
+"price": 1.59,
+"shelf": "Energiajoogid",
+"category": [
+"Joogid",
+"Karastusjoogid",
+"Energiajoogid"
+],
+"brand": "BATTERY",
+"unit": "tk",
+"store_id": "000000000001410651",
+"in_stock": true
+},
+{
+"name": "Karb.mahlaj.VÄRSKA Vurtsv.Rab.-Vaarik.1L",
+"price": 2.35,
+"shelf": "Maitsestatud veed",
+"category": [
+"Joogid",
+"Veed",
+"Maitsestatud veed"
+],
+"brand": "VÄRSKA VURTSVASSER",
+"unit": "tk",
+"store_id": "000000000001218371",
+"in_stock": true
+},
+{
+"name": "Püree õun.pirn.vaarik.GERBER 80g 6k",
+"price": 1.79,
+"shelf": "Puuviljapüreed 6+ kuud",
+"category": [
+"Lastekaubad",
+"Puuviljapüreed",
+"Puuviljapüreed 6+ kuud"
+],
+"brand": "GERBER",
+"unit": "tk",
+"store_id": "000000000001384910",
+"in_stock": true
+},
+{
+"name": "Krõbe müsli kakao ja vaarik.PAULUNS 450g",
+"price": 4.99,
+"shelf": "Müslid",
+"category": [
+"Kauasäilivad toidukaubad",
+"Hommikusöögid ja batoonid",
+"Müslid"
+],
+"brand": "PAULUNS",
+"unit": "tk",
+"store_id": "000000000001074475",
+"in_stock": true
+},
+{
+"name": "Muu al.jook Vaarik.&sencha 6.5%250ml",
+"price": 3.69,
+"shelf": "Kokteilijoogid",
+"category": [
+"Joogid",
+"Õlu ja siider",
+"Kokteilijoogid"
+],
+"brand": "PUNCH CLUB",
+"unit": "tk",
+"store_id": "000000000001177075",
+"in_stock": true
+},
+{
+"name": "Riisiv.vaarik.ban.SALVEST PÕNNÖko 40g8k",
+"price": 2.05,
+"shelf": "Snäkid",
+"category": [
+"Lastekaubad",
+"Snäkid ja joogid",
+"Snäkid"
+],
+"brand": "PÕNN",
+"unit": "tk",
+"store_id": "000000000001369224",
+"in_stock": false
+}
+],
+"rimi|viinamarjad": [
+{
+"name": "Viinamari hele s.-ta Sultan 1kl kg",
+"price": 3.49,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "kg",
+"store_id": "269179",
+"in_stock": true
+},
+{
+"name": "Viinamari s.-ta Autumn Crisp 1kl 500g",
+"price": 3.29,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "213328",
+"in_stock": true
+},
+{
+"name": "Viinamari hele s-ta Sugarone Rimi 1kl500",
+"price": 2.99,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "297277",
+"in_stock": true
+},
+{
+"name": "Viinamar.mix   Crimson/Autumn Crisp 1kl 500g",
+"price": 2.99,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "920439",
+"in_stock": true
+},
+{
+"name": "Viinamari tume seemnetega Moldova 1kl, kg",
+"price": 2.39,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "kg",
+"store_id": "213260",
+"in_stock": true
+},
+{
+"name": "Mahlajook Rimi virsiku ja viinamarja 0,2l",
+"price": 0.4,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-6"
+],
+"unit": "tk",
+"store_id": "812371",
+"in_stock": true
+},
+{
+"name": "Mahlajook viinamarja Aura Fresh 2l",
+"price": 2.35,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "154928",
+"in_stock": true
+},
+{
+"name": "Nektar punase viinamarja Rimi 1l",
+"price": 1.95,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "803424",
+"in_stock": true
+},
+{
+"name": "Punase viinamarja nektar Loodusvägi mahe 0,2l",
+"price": 1.35,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "179911",
+"in_stock": true
+},
+{
+"name": "Punase viinamarja mahl Don Simon 100% 1l",
+"price": 2.99,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "1015417",
+"in_stock": true
+},
+{
+"name": "Punase viinamarja mah.j. Don Simon m.a. 0,33l",
+"price": 1.39,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-5"
+],
+"unit": "tk",
+"store_id": "1376220",
+"in_stock": true
+},
+{
+"name": "Kuiv.v.valm.vein Barone Montalto Rosato 0,75l",
+"price": 12.99,
+"shelf": "SH-1-11",
+"category": [
+"SH-1-11-5"
+],
+"unit": "tk",
+"store_id": "7182488",
+"in_stock": true
+},
+{
+"name": "Kuiv.v.valm.vein Barone Montalto Rosso 0,75l",
+"price": 12.99,
+"shelf": "SH-1-11",
+"category": [
+"SH-1-11-3"
+],
+"unit": "tk",
+"store_id": "7045074",
+"in_stock": true
+},
+{
+"name": "Kuiv.vi.marj.vein Barone Montalto P. Rosso 3l",
+"price": 32.89,
+"shelf": "SH-1-11",
+"category": [
+"SH-1-11-3"
+],
+"unit": "tk",
+"store_id": "7140060",
+"in_stock": true
+},
+{
+"name": "Nektar õun-viinam.-pirn Kubuš Baby 12+k 0,3l",
+"price": 1.69,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-19"
+],
+"unit": "tk",
+"store_id": "7309998",
+"in_stock": true
+},
+{
+"name": "Smuuti Green Dream Froosh 250ml",
+"price": 2.99,
+"shelf": "SH-12-8",
+"category": [
+"SH-12-8-35"
+],
+"unit": "tk",
+"store_id": "1376994",
+"in_stock": true
+},
+{
+"name": "Viinamari tume Midnight beauty 1kl 400g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "900227",
+"in_stock": false
+},
+{
+"name": "Viinamari punane Ralli 1kl 500g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "297278",
+"in_stock": false
+},
+{
+"name": "Viinamari seemneteta Cotton Candy 1kl 400g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "4000358",
+"in_stock": false
+},
+{
+"name": "Viinamari punane seemnetega Red Globe 1kl, kg",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "269181",
+"in_stock": false
+},
+{
+"name": "Nektar punase viinamarja Rimi 1l",
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-5"
+],
+"store_id": "1377057",
+"in_stock": false
+}
+],
+"rimi|viinamarj": [
+{
+"name": "Viinamari hele s.-ta Sultan 1kl kg",
+"price": 3.49,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "kg",
+"store_id": "269179",
+"in_stock": true
+},
+{
+"name": "Viinamari s.-ta Autumn Crisp 1kl 500g",
+"price": 3.29,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "213328",
+"in_stock": true
+},
+{
+"name": "Viinamari hele s-ta Sugarone Rimi 1kl500",
+"price": 2.99,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "297277",
+"in_stock": true
+},
+{
+"name": "Viinamari tume seemnetega Moldova 1kl, kg",
+"price": 2.39,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "kg",
+"store_id": "213260",
+"in_stock": true
+},
+{
+"name": "Viinamar.mix   Crimson/Autumn Crisp 1kl 500g",
+"price": 2.99,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "920439",
+"in_stock": true
+},
+{
+"name": "Mahlajook Rimi virsiku ja viinamarja 0,2l",
+"price": 0.4,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-6"
+],
+"unit": "tk",
+"store_id": "812371",
+"in_stock": true
+},
+{
+"name": "Mahlajook viinamarja Aura Fresh 2l",
+"price": 2.35,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "154928",
+"in_stock": true
+},
+{
+"name": "Nektar punase viinamarja Rimi 1l",
+"price": 1.95,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "803424",
+"in_stock": true
+},
+{
+"name": "Punase viinamarja nektar Loodusvägi mahe 0,2l",
+"price": 1.35,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "179911",
+"in_stock": true
+},
+{
+"name": "Punase viinamarja mahl Don Simon 100% 1l",
+"price": 2.99,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-4"
+],
+"unit": "tk",
+"store_id": "1015417",
+"in_stock": true
+},
+{
+"name": "Kuiv.v.valm.vein Barone Montalto Rosato 0,75l",
+"price": 12.99,
+"shelf": "SH-1-11",
+"category": [
+"SH-1-11-5"
+],
+"unit": "tk",
+"store_id": "7182488",
+"in_stock": true
+},
+{
+"name": "Kuiv.vi.marj.vein Barone Montalto P. Rosso 3l",
+"price": 32.89,
+"shelf": "SH-1-11",
+"category": [
+"SH-1-11-3"
+],
+"unit": "tk",
+"store_id": "7140060",
+"in_stock": true
+},
+{
+"name": "Kuiv.v.valm.vein Barone Montalto Rosso 0,75l",
+"price": 12.99,
+"shelf": "SH-1-11",
+"category": [
+"SH-1-11-3"
+],
+"unit": "tk",
+"store_id": "7045074",
+"in_stock": true
+},
+{
+"name": "Punase viinamarja mah.j. Don Simon m.a. 0,33l",
+"price": 1.39,
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-5"
+],
+"unit": "tk",
+"store_id": "1376220",
+"in_stock": true
+},
+{
+"name": "Nektar õun-viinam.-pirn Kubuš Baby 12+k 0,3l",
+"price": 1.69,
+"shelf": "SH-5-6",
+"category": [
+"SH-5-6-19"
+],
+"unit": "tk",
+"store_id": "7309998",
+"in_stock": true
+},
+{
+"name": "Smuuti Green Dream Froosh 250ml",
+"price": 2.99,
+"shelf": "SH-12-8",
+"category": [
+"SH-12-8-35"
+],
+"unit": "tk",
+"store_id": "1376994",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli rafineeritud Rimi 750ml",
+"price": 6.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"unit": "tk",
+"store_id": "808158",
+"in_stock": true
+},
+{
+"name": "Vannitoa puh.vah. Frosch viinamar.hap. 500ml",
+"price": 3.39,
+"shelf": "SH-10-5",
+"category": [
+"SH-10-5-26"
+],
+"unit": "tk",
+"store_id": "514956",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli Rimi rafineeritud 1l",
+"price": 11.49,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"unit": "tk",
+"store_id": "813004",
+"in_stock": true
+},
+{
+"name": "Õli viinamarjaseemne Borges 500ml",
+"price": 6.15,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"unit": "tk",
+"store_id": "102297",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli Goccia Doro 1l",
+"price": 9.99,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"unit": "tk",
+"store_id": "182845",
+"in_stock": true
+},
+{
+"name": "Viinamarjaseemneõli Gustolu 500ml",
+"price": 6.29,
+"shelf": "SH-13-19",
+"category": [
+"SH-13-19-107"
+],
+"unit": "tk",
+"store_id": "1016673",
+"in_stock": true
+},
+{
+"name": "Viinamari tume Midnight beauty 1kl 400g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "900227",
+"in_stock": false
+},
+{
+"name": "Viinamari punane Ralli 1kl 500g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "297278",
+"in_stock": false
+},
+{
+"name": "Viinamari seemneteta Cotton Candy 1kl 400g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "4000358",
+"in_stock": false
+},
+{
+"name": "Viinamari punane seemnetega Red Globe 1kl, kg",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "269181",
+"in_stock": false
+},
+{
+"name": "Nektar punase viinamarja Rimi 1l",
+"shelf": "SH-12-20",
+"category": [
+"SH-12-20-5"
+],
+"store_id": "1377057",
+"in_stock": false
+}
+],
+"rimi|viinamari": [
+{
+"name": "Viinamari hele s.-ta Sultan 1kl kg",
+"price": 3.49,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "kg",
+"store_id": "269179",
+"in_stock": true
+},
+{
+"name": "Viinamari s.-ta Autumn Crisp 1kl 500g",
+"price": 3.29,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "213328",
+"in_stock": true
+},
+{
+"name": "Viinamari hele s-ta Sugarone Rimi 1kl500",
+"price": 2.99,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "tk",
+"store_id": "297277",
+"in_stock": true
+},
+{
+"name": "Viinamari tume seemnetega Moldova 1kl, kg",
+"price": 2.39,
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"unit": "kg",
+"store_id": "213260",
+"in_stock": true
+},
+{
+"name": "Lambapiimajogurt Viinamärdi 350g",
+"price": 4.19,
+"shelf": "SH-19-1",
+"category": [
+"SH-19-1"
+],
+"unit": "tk",
+"store_id": "968069",
+"in_stock": true
+},
+{
+"name": "Ricotta Fresca Viinamärdi 200g",
+"price": 2.49,
+"shelf": "SH-19-1",
+"category": [
+"SH-19-1"
+],
+"unit": "tk",
+"store_id": "947775",
+"in_stock": true
+},
+{
+"name": "Lambapiimajogurt kohviga Viinamärdi 350g",
+"price": 4.19,
+"shelf": "SH-19-1",
+"category": [
+"SH-19-1"
+],
+"unit": "tk",
+"store_id": "968075",
+"in_stock": true
+},
+{
+"name": "Mozzarella Viinamärdi 125g",
+"price": 3.09,
+"shelf": "SH-19-1",
+"category": [
+"SH-19-1"
+],
+"unit": "tk",
+"store_id": "949285",
+"in_stock": true
+},
+{
+"name": "Lambapiimajogurt sidruni Viinamärdi 350g",
+"price": 4.19,
+"shelf": "SH-19-1",
+"category": [
+"SH-19-1"
+],
+"unit": "tk",
+"store_id": "968068",
+"in_stock": true
+},
+{
+"name": "Stracciatella juust Viinamärdi 180g",
+"price": 4.29,
+"shelf": "SH-19-1",
+"category": [
+"SH-19-1"
+],
+"unit": "tk",
+"store_id": "947777",
+"in_stock": true
+},
+{
+"name": "Lambapiimajogurt kookose Viinamärdi 350g",
+"price": 4.19,
+"shelf": "SH-19-1",
+"category": [
+"SH-19-1"
+],
+"unit": "tk",
+"store_id": "968074",
+"in_stock": true
+},
+{
+"name": "Viinamari tume Midnight beauty 1kl 400g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "900227",
+"in_stock": false
+},
+{
+"name": "Viinamari punane Ralli 1kl 500g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "297278",
+"in_stock": false
+},
+{
+"name": "Viinamari seemneteta Cotton Candy 1kl 400g",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "4000358",
+"in_stock": false
+},
+{
+"name": "Viinamari punane seemnetega Red Globe 1kl, kg",
+"shelf": "SH-12-5",
+"category": [
+"SH-12-5-30"
+],
+"store_id": "269181",
+"in_stock": false
+}
+],
+"barbora|õunamahl": [
+{
+"name": "Õunamahl WELL DONE 100% 3L",
+"price": 5.19,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001343084",
+"in_stock": true
+},
+{
+"name": "Õunamahl AURA 100% 1L",
+"price": 1.99,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "AURA",
+"unit": "tk",
+"store_id": "000000000000099158",
+"in_stock": true
+},
+{
+"name": "Õunamahl MIO&RIO 1l",
+"price": 0.99,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001019412",
+"in_stock": true
+},
+{
+"name": "Õunamahl WELL DONE 1L",
+"price": 1.75,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001354703",
+"in_stock": true
+},
+{
+"name": "Õunamahl PÕLTSAMAA 1L",
+"price": 1.99,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "PÕLTSAMAA",
+"unit": "tk",
+"store_id": "000000000000582681",
+"in_stock": true
+},
+{
+"name": "Õunamahl PURE 1L",
+"price": 3.69,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "PURE",
+"unit": "tk",
+"store_id": "000000000001357336",
+"in_stock": true
+},
+{
+"name": "Õuna-laimi mahl WELL DONE NFC 3L",
+"price": 5.19,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001403016",
+"in_stock": true
+},
+{
+"name": "Õunamahl kontsent. WELL DONE 1L pet",
+"price": 1.79,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001349369",
+"in_stock": true
+},
+{
+"name": "Õuna-ja Pirnimahl WELL DONE 100% 3L",
+"price": 5.19,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001343077",
+"in_stock": true
+},
+{
+"name": "Virsiku-õunamahl SADOCHOK 200ml",
+"price": 0.59,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "SADOCHOK",
+"unit": "tk",
+"store_id": "000000000001403192",
+"in_stock": true
+},
+{
+"name": "Apelsini-õuna mahl KADARBIKU, 750ml",
+"price": 5.59,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "KADARBIKU",
+"unit": "tk",
+"store_id": "000000000001092920",
+"in_stock": true
+},
+{
+"name": "Õunamahl SADOCHOK 200ml",
+"price": 0.59,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "SADOCHOK",
+"unit": "tk",
+"store_id": "000000000001403177",
+"in_stock": true
+},
+{
+"name": "Õuna-kirsinektar SADOCHOK 950ml",
+"price": 2.09,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "SADOCHOK",
+"unit": "tk",
+"store_id": "000000000001398323",
+"in_stock": true
+},
+{
+"name": "Õuna-viinamarjanektar SADOCHOK 200ml",
+"price": 0.45,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "SADOCHOK",
+"unit": "tk",
+"store_id": "000000000000371499",
+"in_stock": true
+},
+{
+"name": "Õuna porgandi-maasikanektar MIO&RIO300ml",
+"price": 0.5,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001406836",
+"in_stock": true
+},
+{
+"name": "Õuna-granaatõunanektar SADOCHOK 950ml",
+"price": 2.09,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "SADOCHOK",
+"unit": "tk",
+"store_id": "000000000001398308",
+"in_stock": true
+},
+{
+"name": "Õuna-viinamarjanektar SADOCHOK 950ml",
+"price": 2.09,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "SADOCHOK",
+"unit": "tk",
+"store_id": "000000000001398324",
+"in_stock": true
+},
+{
+"name": "Õuna-porgandi virsikunektar MIO&RIO300ml",
+"price": 0.5,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001406779",
+"in_stock": true
+},
+{
+"name": "Õuna-porgand.virsikunektar MIO&RIO 900ml",
+"price": 1.25,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001406863",
+"in_stock": true
+},
+{
+"name": "Õuna porgand.banaaninektar MIO&RIO 300ml",
+"price": 0.5,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001406845",
+"in_stock": true
+},
+{
+"name": "Õuna-porgand.banaaninektar MIO&RIO 900ml",
+"price": 1.25,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001406829",
+"in_stock": true
+},
+{
+"name": "Õuna-porgand.maasikanektar MIO&RIO 900ml",
+"price": 1.25,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "MIO&RIO",
+"unit": "tk",
+"store_id": "000000000001406853",
+"in_stock": true
+},
+{
+"name": "Õuna-peedimahl KADARBIKU, 0.33L",
+"price": 2.39,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "KADARBIKU",
+"unit": "tk",
+"store_id": "000000000000886866",
+"in_stock": true
+},
+{
+"name": "Õuna-sidruni-piparmün.mahlKADARBIKU250ml",
+"price": 3.29,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "KADARBIKU",
+"unit": "tk",
+"store_id": "000000000001058887",
+"in_stock": true
+},
+{
+"name": "Õuna-maasika-mustika smuuti CORNY 120g",
+"price": 1.99,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "CORNY",
+"unit": "tk",
+"store_id": "000000000001345162",
+"in_stock": true
+},
+{
+"name": "Õuna-mangopüree Pombel 4x100g",
+"price": 3.39,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "POMBEL",
+"unit": "tk",
+"store_id": "000000000001345897",
+"in_stock": true
+},
+{
+"name": "Mahlajook DR.ACTIVE Õuna-arbuusi 1.5l",
+"price": 1.85,
+"shelf": "Mahlajoogid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlajoogid"
+],
+"brand": "DR. ACTIVE",
+"unit": "tk",
+"store_id": "000000000001215822",
+"in_stock": true
+},
+{
+"name": "Mahlajook PÕLTSAMAA Õuna-küdoonia 1L",
+"price": 1.99,
+"shelf": "Mahlajoogid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlajoogid"
+],
+"brand": "PÕLTSAMAA",
+"unit": "tk",
+"store_id": "000000000001362559",
+"in_stock": true
+},
+{
+"name": "Mahlajook DR.ACTIVE roh. õuna-mündi 1.5L",
+"price": 1.85,
+"shelf": "Mahlajoogid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlajoogid"
+],
+"brand": "DR. ACTIVE",
+"unit": "tk",
+"store_id": "000000000001292403",
+"in_stock": true
+},
+{
+"name": "Mahlajook DR.ACTIVE roh.õuna-mündi 500ml",
+"price": 1.09,
+"shelf": "Mahlajoogid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlajoogid"
+],
+"brand": "DR. ACTIVE",
+"unit": "tk",
+"store_id": "000000000001292402",
+"in_stock": true
+},
+{
+"name": "Õunamahl mahe Bio HIPP 200ml, 4k",
+"price": 1.79,
+"shelf": "Joogid",
+"category": [
+"Lastekaubad",
+"Snäkid ja joogid",
+"Joogid"
+],
+"brand": "HIPP",
+"unit": "tk",
+"store_id": "000000000000025675",
+"in_stock": true
+},
+{
+"name": "Õuna-pun. marjade mahl BIO HIPP200ml,4k",
+"price": 1.79,
+"shelf": "Joogid",
+"category": [
+"Lastekaubad",
+"Snäkid ja joogid",
+"Joogid"
+],
+"brand": "HIPP BIO",
+"unit": "tk",
+"store_id": "000000000000014939",
+"in_stock": true
+},
+{
+"name": "Õunamahl WELL DONE NFC 1L pet",
+"price": 2.19,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001344169",
+"in_stock": false
+},
+{
+"name": "Porgandi-õunamahl KADARBIKU, 0.5L",
+"price": 2.89,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "KADARBIKU",
+"unit": "tk",
+"store_id": "000000000000878731",
+"in_stock": false
+},
+{
+"name": "Õuna-banaani-maasikapüree Pombel 4x100g",
+"price": 3.69,
+"shelf": "Värskelt pressitud mahlad ja smuutid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Värskelt pressitud mahlad ja smuutid"
+],
+"brand": "POMBEL",
+"unit": "tk",
+"store_id": "000000000001345896",
+"in_stock": false
+},
+{
+"name": "Õuna-mangomahl WELL DONE NFC 1L",
+"price": 2.09,
+"shelf": "Mahlad ja nektarid",
+"category": [
+"Joogid",
+"Mahlad, nektarid ja mahlajoogid",
+"Mahlad ja nektarid"
+],
+"brand": "WELL DONE",
+"unit": "tk",
+"store_id": "000000000001402576",
+"in_stock": false
+}
+]
+}

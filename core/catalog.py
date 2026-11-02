@@ -292,7 +292,7 @@ def _pick(options, pref, store):
     words = [fold(w.strip()) for w in pref.get("words") or [] if w.strip()]
     if words:
         for o in options:
-            if all(w in fold(o["product"]) for w in words):
+            if all(w.lower() in fold(o["product"]).lower() for w in words):
                 return {**o, "preferred": True}
     return options[0]
 
@@ -530,13 +530,13 @@ def free_text_offers(items, stores, needs=None, failed=None, sold_out=None):
                     continue
                 priced = cost_for(p, needs[it], "g") if it in needs else None
                 cost, packs, how, bought = priced or (p["price"], 1, f"1 × {p['price']:.2f} €", None)
-                options.append((p.get("relevance", 0), p["score"], _with_discount(
+                options.append((p.get("relevance", 0) + (0.5 if p.get("match", 5) >= 5 else 0), p["score"], _with_discount(
                     {"product": p["name"], "price": p["price"], "cost": cost, "packs": packs, "how": how, "bought": bought,
                      "substitute": bool(p.get("swap")),
                      "used_cost": used_cost(p, needs[it], "g") if it in needs else None,
                      "cart_qty": cart_qty(p, needs[it], "g", packs) if it in needs else packs,
                      **_looks(p)}, p)))
-            by_amount = it in needs
+            by_amount = it in needs  # the thing itself first (the half point), then the cheapest for the amount
             options.sort(key=lambda o: (-o[0], o[2]["cost"]) if by_amount else o[1])
             out[it][store] = [o[2] for o in options]
     return out

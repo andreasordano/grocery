@@ -125,7 +125,7 @@ def test_tilapia_is_fish_not_tilsit_cheese(stores):
 
 def test_beef_is_not_pet_food_stock_or_tinned(stores):
     found = picks("veiseliha", "barbora")
-    assert found[0] == "Jahutatud veise koot kondig.WELL DONE,kg"
+    assert found[0] == "Veiseliha tagaosa kon-ta WELL DONE,kg"  # named as typed, before the cheaper "veise koot"
     made_from = ("kassi", "koera", "puljong", "püree", "hautatud", "omas mahlas", "kuiv", "vinnut", "borš", "pelmeen")
     assert not any(w in n.lower() for n in found for w in made_from), found
     # Rimi's "veiseliha" search finds only stock, tins, jerky, baby and pet food: none of it is offered

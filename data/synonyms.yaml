@@ -11,6 +11,10 @@ groups:
   - [tursk, tursafilee, tursa filee]
   - [kanakintsuliha, broileri kintsuliha, kana kintsuliha]
   - [suvikõrvits, kabatšokk]
+  - [terve kana, broiler, terve broiler]
+  - [taimeõli, toiduõli, rapsiõli, päevalilleõli]
+  - [tahini, seesamipasta, seesamiseemnepasta]
+  - [viinamarjad, viinamari]
 
 # Swaps: different things that do the same job in a dinner. Tried only when an item and its other names find
 # nothing at a store; the receipt tags the line "swap" so it's never a surprise. Rimi rarely has cod, but has
