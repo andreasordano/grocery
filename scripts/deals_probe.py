@@ -21,11 +21,9 @@ import re
 import sys
 from collections import Counter
 
-import requests
-
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from core import catalog  # noqa: E402
+from core import catalog, deals  # noqa: E402
 from core.fetch import _cached_fetch  # noqa: E402
 from core.scoring import fold  # noqa: E402
 from stores_config import dinner_stores  # noqa: E402
@@ -35,13 +33,6 @@ PROTEIN_RULES = {"hakkliha", "broileri_koivad", "kanafilee", "sealiha", "lohefil
 PROTEIN_WORDS = ("veise", "sea", "kana", "broiler", "kala", "forell", "lõhe", "tursk", "heik", "räim",
                  "kilu", "sink", "peekon", "vorst", "viiner", "kalkun", "part", "krevet", "tuunikala",
                  "tofu", "hakkliha", "maks")
-# Selver files each discount under one of two virtual categories; only food ones are listed.
-SELVER_FOOD_DEALS = "Soodushinnaga toidukaubad"
-# Food shelves that never make dinner, left out of the unmatched list.
-NOT_DINNER = ("vein", "joogid", "šampan", "õlled", "konjak", "viin", "liköör", "siidr", "veed", "kohvid",
-              "teed", "šokolaad", "komm", "küpsis", "jäätis", "lastetoid", "mahlad", "toidulisand",
-              "nätsud", "maiustus", "hommikuhelbed", "kassi", "koera")
-SELVER_URL = "https://www.selver.ee/api/catalog/vue_storefront_catalog_et/product/_search"
 
 
 def is_discounted(p):
@@ -122,47 +113,12 @@ def probe(store, dishes, rules, top):
 
 
 def selver_unmatched(rules):
-    """Discounted Selver food that no rule accepts, by shelf."""
-    after, unmatched, total, on_sale = None, Counter(), 0, 0
-    examples = {}
-    while True:
-        body = {"query": {"match_all": {}}, "size": 1000, "sort": [{"_id": "asc"}],
-                "_source": ["name", "final_price", "price", "original_price", "product_group_price", "category", "stock"]}
-        if after:
-            body["search_after"] = after
-        r = requests.post(SELVER_URL, json=body, headers={"User-Agent": "Mozilla/5.0"}, timeout=30)
-        r.raise_for_status()
-        hits = r.json()["hits"]["hits"]
-        if not hits:
-            break
-        for h in hits:
-            total += 1
-            s = h["_source"]
-            price, regular = s.get("final_price") or s.get("price"), s.get("original_price")
-            card = s.get("product_group_price")  # Partnerkaart price, as in api/selver_api.py
-            try:
-                if not (price and ((regular and float(regular) > float(price) + 0.004)
-                                   or (card and float(card) < float(price) - 0.004))):
-                    continue
-            except (TypeError, ValueError):
-                continue
-            on_sale += 1
-            cats = s.get("category") or []
-            shelf = next((c.get("name") for c in cats if str(c.get("is_virtual")).lower() != "true" and c.get("name")), None)
-            if SELVER_FOOD_DEALS not in [c.get("name") for c in cats] or not shelf \
-                    or any(x in shelf.lower() for x in NOT_DINNER):
-                continue
-            p = {"name": s.get("name"), "category": [c.get("name") for c in cats if c.get("name")],
-                 "in_stock": (s.get("stock") or {}).get("stock_status", 1) == 1}
-            if any(catalog.matches_rule(p, rule) for key in rules for rule in catalog.rule_chain(rules, key, "selver")):
-                continue
-            unmatched[shelf] += 1
-            examples.setdefault(shelf, []).append(p["name"])
-        after = hits[-1]["sort"]
-    print(f"\n=== SELVER UNMATCHED === {total} products, {on_sale} on sale, "
-          f"{sum(unmatched.values())} discounted food products match no rule")
-    for shelf, c in unmatched.most_common(30):
-        print(f"  {c:4}  {shelf}: {'; '.join(examples[shelf][:3])}")
+    """Discounted Selver food that no rule accepts, by shelf (core/deals.py; the site's /deals/unmatched too)."""
+    found = deals.unmatched_food(rules)
+    print(f"\n=== SELVER UNMATCHED === {found['total']} products, {found['on_sale']} on sale, "
+          f"{found['unmatched']} discounted food products match no rule")
+    for s in found["shelves"]:
+        print(f"  {s['count']:4}  {s['shelf']}: {'; '.join(s['examples'])}")
 
 
 def main():

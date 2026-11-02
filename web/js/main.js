@@ -1,7 +1,8 @@
-// pantryrun's web page: start-up, and the Dinner / Shopping list switch in the top bar.
+// pantryrun's web page: start-up, and the Dinner / Shopping list / At the store switch in the top bar.
 //
 // How the page is put together:
-//   screens.js         which screen is on the left; dinner-screen.js, editor-screen.js, list-screen.js are the screens
+//   screens.js         which screen is on the left; dinner-screen.js, editor-screen.js, list-screen.js and
+//                      store-screen.js are the screens
 //   basket.js          asks the stores and acts on taps on the answer; receipt.js draws the answer
 //   products.js        choosing another product, and saved preferences
 //   items.js           adding and changing items (suggest.js: suggestions while typing)
@@ -21,10 +22,12 @@ import { refreshFooter, startFooter } from "./footer.js";
 import * as dinnerScreen from "./dinner-screen.js";
 import * as editorScreen from "./editor-screen.js";
 import * as listScreen from "./list-screen.js";
+import * as storeScreen from "./store-screen.js";
 
 addScreen("dinner", dinnerScreen);
 addScreen("editor", editorScreen);
 addScreen("list", listScreen);
+addScreen("store", storeScreen);
 
 // ── the switch: the dark pill slides to the chosen mode ──
 const modeSwitch = $(".switch");

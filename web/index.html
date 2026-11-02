@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/dinner.css">
   <link rel="stylesheet" href="css/import.css">
   <link rel="stylesheet" href="css/items.css">
+  <link rel="stylesheet" href="css/store.css">
   <link rel="stylesheet" href="css/receipt.css">
   <link rel="stylesheet" href="css/sheet.css">
   <link rel="stylesheet" href="css/peek.css">
@@ -36,7 +37,8 @@
     <div class="switch" role="group" aria-label="What you need">
       <span class="pill" aria-hidden="true"></span>
       <button type="button" data-mode="dinner" aria-pressed="true">Dinner</button>
-      <button type="button" data-mode="list" aria-pressed="false">Shopping list</button>
+      <button type="button" data-mode="list" aria-pressed="false"><span class="long">Shopping list</span><span class="short">List</span></button>
+      <button type="button" data-mode="store" aria-pressed="false"><span class="long">At the store</span><span class="short">In store</span></button>
     </div>
   </div>
 </header>
@@ -48,7 +50,7 @@
     <nav class="steps" id="steps" aria-label="Steps"></nav>
   </div>
 
-  <!-- 1. The current screen: dinners, writing your own dinner, or the shopping list (js/screens.js). -->
+  <!-- 1. The current screen: dinners, writing your own dinner, the shopping list, or At the store (js/screens.js). -->
   <div id="pick" class="pick card">
     <noscript><p class="sub">pantryrun needs JavaScript to find your store.</p></noscript>
   </div>

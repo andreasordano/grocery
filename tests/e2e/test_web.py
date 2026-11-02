@@ -891,3 +891,42 @@ def test_tapping_a_dinner_shows_its_page_and_adds_only_on_request(base_url, page
     receipt_lines(page)
     assert page.locator(".trip li:has-text('Testi hautis') .open").count() == 1  # its recipe, a tap away
     assert page.locator("#newsletter-footer").count() == 1
+
+
+def test_at_the_store_shows_its_deal_dinners_and_prices_one_there(base_url, browser):
+    """At the store (WEB-29): the usual store's deal dinners; one picked is priced at that store only."""
+    from core import catalog, deals
+    first, second = [r["id"] for r in catalog.load_store_recipes()["dinners"][:2]]  # the fake stores sell their items
+    sale = [{"label": "Kanafilee", "product": "Kanafilee Test", "off": 25}, {"label": "Riis", "product": "Riis Test", "off": 10}]
+    deals.set_week({"selver": [{"id": first, "count": 5, "on_sale": sale, "share": 0.6, "saving": 2.0, "total": 9.0},
+                               {"id": second, "count": 4, "on_sale": sale, "share": 0.5, "saving": 1.0, "total": 7.0}],
+                    "rimi": []})
+    try:
+        ctx = browser.new_context(viewport={"width": 390, "height": 844}, is_mobile=True)
+        page = ctx.new_page()
+        page.goto(base_url + "/?u=e2e-at-store")
+        page.click("[data-mode=store]")
+        page.wait_for_selector(".deal")  # the usual store, Selver, is picked already
+        assert page.get_attribute("[data-at=selver]", "aria-pressed") == "true"
+        assert page.locator(".deal").count() == 2 and "2 of 5 on sale" in page.text_content(".deal")
+        assert page.evaluate("document.documentElement.scrollWidth") <= 390
+        page.click(".deal >> nth=1")
+        assert page.get_attribute(".deal >> nth=1", "class") == "deal in"
+        page.click(".stepbar [data-go='2']")  # "The list"
+        receipt_lines(page)
+        assert page.text_content(".r-go") == "At" and page.locator(".stores").count() == 0  # Selver's list, no comparing
+
+        _, shown = logged("deals_store", "e2e-at-store", wait=1)[-1]
+        assert {k: shown[k] for k in ("store", "how", "dinners", "from")} == \
+            {"store": "selver", "how": "usual", "dinners": [first, second], "from": 0}
+        _, picked = logged("deal_pick", "e2e-at-store", wait=1)[-1]
+        assert (picked["store"], picked["id"], picked["rank"]) == ("selver", second, 2)
+        _, basket = logged("basket", "e2e-at-store", wait=1)[-1]
+        assert basket["stores"] == ["selver"] and basket["recipe_ids"] == [second]
+
+        page.click(".steps [data-go='1']")
+        page.click("[data-at=rimi]")  # nothing on sale makes a dinner there
+        assert "Nothing on sale at Rimi" in page.text_content("#pick")
+        ctx.close()
+    finally:
+        deals.set_week({}, worked_out=False)

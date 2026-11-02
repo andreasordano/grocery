@@ -12,10 +12,11 @@ import { bindPeek } from "./peek.js";
 
 // fresh: a new question, so the receipt prints anew. keepView: stay on the store being looked at.
 // On phones the receipt is step 2: the bar at the bottom says what it found and goes there (steps.js).
+// At the store, the one dinner picked is priced at that store only.
 export async function ask({ fresh = false, keepView = false } = {}) {
-  const dinner = state.mode === "dinner";
-  const items = dinner ? state.extras : state.items;
-  const ids = dinner ? picked() : [];
+  const atStore = state.mode === "store", dinner = state.mode === "dinner" || atStore;
+  const items = atStore ? [] : dinner ? state.extras : state.items;
+  const ids = atStore ? (state.tonight ? [state.tonight] : []) : dinner ? picked() : [];
   if (dinner ? !ids.length : !items.length) return;
   const req = ++state.request;
   const view = keepView ? state.view : null;
@@ -34,6 +35,7 @@ export async function ask({ fresh = false, keepView = false } = {}) {
       recipe_id: ids.length === 1 ? ids[0] : null, servings: people[0] ?? state.servings, items,
       recipes: ids.length > 1 ? ids.map((id, i) => ({ id, servings: people[i] })) : [],
       prefs: state.prefs, skip: state.skipped.map(s => s.key), user_id: identity.personId, session_id: identity.sessionId, name: identity.name,
+      ...(atStore ? { stores: [state.atStore] } : {}),
     });
     if (req !== state.request) return;
     feed.classList.remove("busy");

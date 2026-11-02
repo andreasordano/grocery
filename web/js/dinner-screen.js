@@ -15,7 +15,7 @@ import { idle } from "./receipt.js";
 import { editDinner } from "./editor-screen.js";
 import { recipeBody, recipeActions, hasPhoto } from "./recipe.js";
 import { refreshSteps } from "./steps.js";
-import { storeNames, allStores } from "./format.js";
+import { storeNames, allStores, shopName } from "./format.js";
 
 const pickADinner = () => idle("Pick a dinner", "Where it’s cheapest prints here, with your shopping list.");
 
@@ -49,7 +49,8 @@ const ICON = {
 };
 const CATEGORY_EMOJI = { soup: "🍲", fish: "🐟", chicken: "🍗", mince: "🥘", meat: "🥩", veggie: "🥦" };
 
-// One dinner to pick: its photo (or a sticker), name, time and how many things to buy. The card opens the
+// One dinner to pick: its photo (or a sticker), name, time and how many things to buy, and where it's a deal this
+// week ("Cheap this week", core/deals.py). The card opens the
 // recipe; the round + on the photo puts it in the basket (a tick takes it out again).
 function dinnerCard(r, inBasket) {
   const own = r.id.startsWith("my-"), name = esc(r.name);
@@ -62,6 +63,7 @@ function dinnerCard(r, inBasket) {
         : `<span class="dc-emoji" aria-hidden="true">${r.emoji ?? CATEGORY_EMOJI[r.category] ?? "🍽️"}</span>`}</span>
       <span class="dc-name" lang="et">${name}</span>
       ${r.label ? `<span class="dc-label">${esc(r.label)}</span>` : ""}
+      ${r.deal ? `<span class="dc-label">${r.deal.on_sale} of ${r.deal.count} on sale at ${esc(shopName(r.deal.store))}</span>` : ""}
       ${meta ? `<span class="dc-meta">${meta}</span>` : ""}
       <span class="dc-look">${ICON.look}${own ? "Recipe" : "See the recipe"}</span>
     </button>
