@@ -248,6 +248,28 @@ def test_empty_results_are_not_cached(monkeypatch):
     assert len(calls) == 2
 
 
+
+def test_an_answer_showing_an_ended_offer_is_asked_again(monkeypatch):
+    """Selver's vegetable campaign "until 2026-11-13" stayed in baskets and deals on the 14th (WEB-28)."""
+    calls = []
+    answer = [{"store_id": "1", "name": "Tomat, kg", "price": 2.12, "regular_price": 2.49, "deal_until": "2026-11-13"}]
+    monkeypatch.setattr(fetch, "connector", lambda store: lambda q, **kw: calls.append(q) or answer)
+    monkeypatch.setattr(fetch, "store_today", lambda: "2026-11-13")
+    fetch._cached_fetch("teststore", "tomat-ending")
+    fetch._cached_fetch("teststore", "tomat-ending")
+    assert len(calls) == 1  # the offer's last day: still the shelf price
+    monkeypatch.setattr(fetch, "store_today", lambda: "2026-11-14")
+    fetch._cached_fetch("teststore", "tomat-ending")
+    assert len(calls) == 2
+
+
+def test_offers_end_at_midnight_in_tallinn():
+    from datetime import datetime, timezone
+    # 23:11 UTC on the 13th is already the 14th in Tallinn
+    assert datetime(2026, 11, 13, 23, 11, tzinfo=timezone.utc).astimezone(fetch.STORE_TZ).date().isoformat() == "2026-11-14"
+    assert fetch.deal_ended([{"deal_until": "2026-11-13"}, {"deal_until": None}]) is (fetch.store_today() > "2026-11-13")
+    assert not fetch.deal_ended([{"name": "no offer"}])
+
 # ── discounts in adapters ────────────────────────────────────────────────────
 
 @pytest.mark.parametrize("item, expected", [

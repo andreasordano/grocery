@@ -122,3 +122,13 @@ def test_unmatched_food_lists_discounted_food_no_rule_catches(monkeypatch):
     found = deals.unmatched_food(rules)
     assert (found["total"], found["on_sale"], found["unmatched"]) == (6, 5, 2)
     assert found["shelves"] == [{"shelf": "Lihatooted", "count": 2, "examples": ["Peekon 200 g", "Peekon suitsu 150 g"]}]
+
+
+def test_the_warm_up_runs_again_just_after_midnight_in_tallinn():
+    from datetime import datetime
+    from api.service import _until_next_round
+    from core.fetch import STORE_TZ
+    assert _until_next_round(4 * 3600, datetime(2026, 11, 13, 23, 0, tzinfo=STORE_TZ)) == 65 * 60
+    assert _until_next_round(4 * 3600, datetime(2026, 11, 13, 12, 0, tzinfo=STORE_TZ)) == 4 * 3600
+    assert _until_next_round(4 * 3600, datetime(2026, 11, 14, 0, 2, tzinfo=STORE_TZ)) == 180
+    assert _until_next_round(4 * 3600, datetime(2026, 11, 14, 0, 5, 0, tzinfo=STORE_TZ)) == 4 * 3600

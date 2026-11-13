@@ -13,6 +13,7 @@ import os
 import re
 import threading
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from core import db, price_log
 from core.cache import TTLCache
 from core.scoring import (head_weight, made_from, misses_the_thing, pack_size, parse_price, preserved, relevance_score,
@@ -31,6 +32,8 @@ _CACHE = TTLCache(
     maxsize=int(os.environ.get("FETCH_CACHE_MAX", 2048)),
 )
 SIZE = 40  # products per search
+# The stores' own calendar: an offer "until 2026-11-13" ends at midnight in Tallinn, not in UTC.
+STORE_TZ = ZoneInfo("Europe/Tallinn")
 
 _inflight = {}  # cache key → Future of the store request already on its way
 _lock = threading.Lock()
@@ -50,7 +53,7 @@ def _cached_fetch(store: str, query: str, size: int = SIZE, refresh: bool = Fals
     max_concurrency requests at a time, however many answers are being priced."""
     key = (store, query.strip().lower(), size)
     cached = None if refresh else _CACHE.get(key)
-    if cached is not None:
+    if cached is not None and not deal_ended(cached):
         return cached
     with _lock:
         pending = _inflight.get(key)
@@ -91,10 +94,23 @@ def load_saved_searches():
         return 0
     loaded = 0
     for retailer, query, fetched_at, products in rows:
-        if products and "store_id" in products[0]:  # answers saved before the connector contract are left out
+        # answers saved before the connector contract, and ones showing an offer that has since ended, are left out
+        if products and "store_id" in products[0] and not deal_ended(products):
             _CACHE.set((retailer, query, SIZE), products, at=fetched_at.timestamp())
             loaded += 1
     return loaded
+
+
+def store_today():
+    """Today's date in the stores' calendar, as YYYY-MM-DD (how adapters write deal_until)."""
+    return datetime.now(STORE_TZ).date().isoformat()
+
+
+def deal_ended(products):
+    """Whether a saved answer shows an offer past its last day: its prices are no longer the shelf's, so it's
+    asked again (a campaign ending at midnight would otherwise stay in baskets and deals for up to the TTL)."""
+    today = store_today()
+    return any((p.get("deal_until") or "9999") < today for p in products if isinstance(p, dict))
 
 
 def _ask_store(store, query, size, kind):

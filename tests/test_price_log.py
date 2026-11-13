@@ -101,6 +101,7 @@ def recorded(monkeypatch):
 
 def test_fresh_fetch_is_recorded_and_cache_hit_is_not(recorded, monkeypatch):
     monkeypatch.setattr(fetch, "connector", lambda store: lambda q, **kw: [SELVER_MILK])
+    monkeypatch.setattr(fetch, "store_today", lambda: "2026-10-26")  # the milk's offer still on
     fetch._cached_fetch("selver", "piim")
     fetch._cached_fetch("selver", "piim")
     fetch._cached_fetch("selver", "piim", refresh=True)
