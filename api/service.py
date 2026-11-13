@@ -1,5 +1,6 @@
 import threading
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta
 
 import hmac
 import re
@@ -54,7 +55,17 @@ def _keep_cache_warm():
         except Exception as exc:
             print(f"deals failed: {exc}")
         refresh = True
-        time.sleep(fetch._CACHE.ttl * 0.8)
+        time.sleep(_until_next_round(fetch._CACHE.ttl * 0.8))
+
+
+def _until_next_round(every, now=None):
+    """Seconds to the next warm-up: `every` seconds, or sooner when the stores' day changes first. Offers start
+    and end at midnight in Tallinn, and Rimi's answers don't say when an offer ends, so a round runs at 00:05."""
+    now = now or datetime.now(fetch.STORE_TZ)
+    midnight = (now + timedelta(days=1)).replace(hour=0, minute=5, second=0, microsecond=0)
+    if now.hour == 0 and now.minute < 5:
+        midnight = now.replace(minute=5, second=0, microsecond=0)
+    return max(60, min(every, (midnight - now).total_seconds()))
 
 
 @asynccontextmanager
